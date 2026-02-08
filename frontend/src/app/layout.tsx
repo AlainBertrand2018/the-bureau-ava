@@ -8,13 +8,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://the-bureau.vercel.app'),
+  metadataBase: new URL('https://the-bureau-ava.vercel.app'),
   title: "The Bureau | Predicting survey bias, dropouts, and sentiment",
   description: "The Bureau utilizes census-weighted synthetic populations to stress-test market research. We predict survey bias, dropouts, and sentiment using privacy-first AI agents.",
   openGraph: {
     title: "The Bureau | Predicting survey bias, dropouts, and sentiment",
     description: "The Bureau is the authority on synthetic market research. We replace guesswork with 'Pre-Flight Validation,' utilizing AI agents engineered via Iterative Proportional Fitting (IPF) to mirror the 2022 Census. From stress-testing questionnaires to predicting consumer backlash, our Google Confidential Computing stack delivers risk-free insights before you spend your real budget.",
-    url: 'https://the-bureau.vercel.app',
+    url: 'https://the-bureau-ava.vercel.app',
     siteName: 'The Bureau',
     images: [
       {
@@ -39,9 +39,9 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "The Bureau",
-  "image": "https://the-bureau.vercel.app/og-image.webp",
-  "@id": "https://the-bureau.vercel.app",
-  "url": "https://the-bureau.vercel.app",
+  "image": "https://the-bureau-ava.vercel.app/og-image.webp",
+  "@id": "https://the-bureau-ava.vercel.app",
+  "url": "https://the-bureau-ava.vercel.app",
   "telephone": "+2300000000",
   "address": {
     "@type": "PostalAddress",
