@@ -1,0 +1,47 @@
+[
+    {
+        "id": "P001",
+        "name": "Sarah",
+        "age": 24,
+        "location": "Ebène",
+        "occupation": "Junior Auditor",
+        "income_level": "Middle-High",
+        "traits": "Tech-savvy, skeptical of marketing, busy."
+    },
+    {
+        "id": "P002",
+        "name": "Ramesh",
+        "age": 52,
+        "location": "Flacq",
+        "occupation": "Shop Owner",
+        "income_level": "Variable",
+        "traits": "Price-sensitive, traditional values, practical."
+    },
+    {
+        "id": "P003",
+        "name": "Kevin",
+        "age": 19,
+        "location": "Grand Baie",
+        "occupation": "Student",
+        "income_level": "Dependent",
+        "traits": "Trend-follower, mobile-first, short attention span."
+    },
+    {
+        "id": "P004",
+        "name": "Mrs. Devi",
+        "age": 65,
+        "location": "Vacoas",
+        "occupation": "Retired",
+        "income_level": "Pension",
+        "traits": "Risk-averse, careful reader, health-conscious."
+    },
+    {
+        "id": "P005",
+        "name": "Jean-Claude",
+        "age": 38,
+        "location": "Black River",
+        "occupation": "Construction Foreman",
+        "income_level": "Middle",
+        "traits": "Blunt, dislikes bureaucracy, direct."
+    }
+]
