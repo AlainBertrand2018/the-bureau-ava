@@ -111,22 +111,22 @@ export default function LabShell() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white">
+        <div className="min-h-screen bg-white text-slate-900">
             {/* Lab Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-slate-950/80 border-b border-white/5">
+            <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-100">
                 <div className="max-w-[1600px] mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link
                             href="/"
-                            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+                            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors text-xs font-bold uppercase tracking-widest"
                         >
                             <ArrowLeft size={14} />
                             Bureau
                         </Link>
-                        <div className="w-px h-6 bg-white/10" />
+                        <div className="w-px h-6 bg-slate-200" />
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
-                                <FlaskConical size={14} className="text-blue-400" />
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                <FlaskConical size={14} className="text-blue-600" />
                             </div>
                             <div>
                                 <h1 className="text-sm font-black tracking-tight">
@@ -147,7 +147,7 @@ export default function LabShell() {
             </header>
 
             {/* Step Progress Bar */}
-            <div className="fixed top-16 left-0 right-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-white/5">
+            <div className="fixed top-16 left-0 right-0 z-40 bg-slate-50/90 backdrop-blur-md border-b border-slate-100">
                 <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center gap-2 overflow-x-auto">
                     {STEPS.map((step, i) => (
                         <React.Fragment key={step.id}>
@@ -157,18 +157,18 @@ export default function LabShell() {
                                 }}
                                 disabled={i > currentStep}
                                 className={`flex items-center gap-2.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${i === currentStep
-                                    ? "bg-primary text-white shadow-lg shadow-blue-500/30"
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
                                     : i < currentStep
-                                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 cursor-pointer hover:bg-emerald-500/20"
-                                        : "bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed"
+                                        ? "bg-emerald-50 text-emerald-600 border border-emerald-100 cursor-pointer hover:bg-emerald-100"
+                                        : "bg-slate-50 text-slate-400 border border-slate-100 cursor-not-allowed"
                                     }`}
                             >
                                 <span
                                     className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] ${i === currentStep
                                         ? "bg-white/20"
                                         : i < currentStep
-                                            ? "bg-emerald-500/20"
-                                            : "bg-white/5"
+                                            ? "bg-emerald-100"
+                                            : "bg-slate-100"
                                         }`}
                                 >
                                     {i < currentStep ? "✓" : i + 1}
@@ -178,7 +178,7 @@ export default function LabShell() {
                             {i < STEPS.length - 1 && (
                                 <ChevronRight
                                     size={12}
-                                    className={`shrink-0 ${i < currentStep ? "text-emerald-500/50" : "text-white/10"
+                                    className={`shrink-0 ${i < currentStep ? "text-emerald-500/30" : "text-slate-200"
                                         }`}
                                 />
                             )}
@@ -247,21 +247,21 @@ export default function LabShell() {
             </main>
 
             {/* Bottom Navigation */}
-            <div className="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-xl border-t border-white/5">
+            <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-100">
                 <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
                     <button
                         onClick={goBack}
                         disabled={currentStep === 0}
                         className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${currentStep === 0
-                            ? "text-slate-700 cursor-not-allowed"
-                            : "text-slate-400 hover:text-white hover:bg-white/5 border border-white/10"
+                            ? "text-slate-200 cursor-not-allowed"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200"
                             }`}
                     >
                         <ChevronLeft size={14} />
                         Back
                     </button>
 
-                    <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         Step {currentStep + 1} of {STEPS.length} •{" "}
                         {STEPS[currentStep].description}
                     </div>
@@ -271,8 +271,8 @@ export default function LabShell() {
                             onClick={goNext}
                             disabled={!canProceed()}
                             className={`flex items-center gap-2 px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${canProceed()
-                                ? "bg-primary text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl"
-                                : "bg-white/5 text-slate-700 cursor-not-allowed"
+                                ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl"
+                                : "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
                                 }`}
                         >
                             Continue

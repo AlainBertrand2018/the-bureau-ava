@@ -48,11 +48,11 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
             {/* Section Header */}
             <div className="mb-12">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-                        <Crosshair size={18} className="text-blue-400" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                        <Crosshair size={18} className="text-blue-600" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black tracking-tight text-white">
+                        <h2 className="text-2xl font-black tracking-tight text-slate-900">
                             Mission Brief
                         </h2>
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
@@ -60,11 +60,11 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
                         </p>
                     </div>
                 </div>
-                <p className="text-slate-400 font-medium leading-relaxed max-w-2xl">
+                <p className="text-slate-500 font-medium leading-relaxed max-w-2xl">
                     Describe the survey you're planning. Include your{" "}
-                    <span className="text-white font-bold">target audience</span>,{" "}
-                    <span className="text-white font-bold">industry</span>, and{" "}
-                    <span className="text-white font-bold">
+                    <span className="text-slate-900 font-bold">target audience</span>,{" "}
+                    <span className="text-slate-900 font-bold">industry</span>, and{" "}
+                    <span className="text-slate-900 font-bold">
                         what you're trying to find out
                     </span>
                     . The more detail you provide, the sharper our synthetic agents will
@@ -79,11 +79,11 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
                     onChange={(e) => setContext(e.target.value)}
                     placeholder="Example: We are launching a premium organic food subscription service targeting urban Mauritian millennials at Rs 500/month. We want to understand price sensitivity, brand perception, and channel preferences before committing to a full-scale survey..."
                     rows={6}
-                    className="w-full bg-slate-900/80 border border-white/10 rounded-3xl p-8 text-white placeholder:text-slate-600 font-medium leading-relaxed focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all resize-none text-base"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-8 text-slate-800 placeholder:text-slate-400 font-medium leading-relaxed focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none text-base"
                 />
                 <div className="absolute bottom-4 right-6 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
                     <span
-                        className={`${context.length > 10 ? "text-emerald-400" : "text-slate-600"
+                        className={`${context.length > 10 ? "text-emerald-600" : "text-slate-400"
                             }`}
                     >
                         {context.length} chars
@@ -92,7 +92,7 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
                         <motion.span
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="text-emerald-400 flex items-center gap-1"
+                            className="text-emerald-600 flex items-center gap-1"
                         >
                             ✓ Valid
                         </motion.span>
@@ -116,23 +116,23 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
                             whileHover={{ scale: 1.01 }}
                             whileTap={{ scale: 0.99 }}
                             className={`text-left p-6 rounded-2xl border transition-all duration-300 group ${context === preset.context
-                                    ? "bg-primary/10 border-primary/30 shadow-lg shadow-blue-500/10"
-                                    : "bg-slate-900/50 border-white/5 hover:border-white/10 hover:bg-slate-800/50"
+                                ? "bg-blue-50 border-blue-200 shadow-sm"
+                                : "bg-white border-slate-100 hover:border-slate-200"
                                 }`}
                         >
                             <div className="flex items-center gap-3 mb-3">
                                 <div
                                     className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${context === preset.context
-                                            ? "bg-primary/20 text-blue-400"
-                                            : "bg-white/5 text-slate-500 group-hover:text-slate-300"
+                                        ? "bg-blue-100 text-blue-600"
+                                        : "bg-slate-50 text-slate-400 group-hover:text-slate-600"
                                         }`}
                                 >
                                     {preset.icon}
                                 </div>
                                 <span
                                     className={`text-xs font-black uppercase tracking-widest ${context === preset.context
-                                            ? "text-blue-400"
-                                            : "text-slate-400"
+                                        ? "text-blue-600"
+                                        : "text-slate-600"
                                         }`}
                                 >
                                     {preset.label}

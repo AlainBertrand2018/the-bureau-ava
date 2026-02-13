@@ -5,7 +5,8 @@
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && ..\\.venv\\Scripts\\python.exe -m uvicorn main:app --reload --port 8000",
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:studio": "cd frontend && npx sanity dev --port 3333",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:studio\"",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && ..\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt"
   },
   "devDependencies": {

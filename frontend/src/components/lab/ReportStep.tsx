@@ -73,38 +73,38 @@ interface BureauReport {
 
 function getRiskIcon(level: string) {
     const l = level.toUpperCase();
-    if (l === "LOW") return <ShieldCheck size={16} className="text-emerald-400" />;
-    if (l === "MODERATE") return <ShieldAlert size={16} className="text-amber-400" />;
-    if (l === "HIGH") return <ShieldX size={16} className="text-rose-400" />;
-    if (l === "CRITICAL") return <ShieldX size={16} className="text-red-500" />;
+    if (l === "LOW") return <ShieldCheck size={16} className="text-emerald-600" />;
+    if (l === "MODERATE") return <ShieldAlert size={16} className="text-amber-600" />;
+    if (l === "HIGH") return <ShieldX size={16} className="text-rose-600" />;
+    if (l === "CRITICAL") return <ShieldX size={16} className="text-red-600" />;
     return <ShieldAlert size={16} className="text-slate-400" />;
 }
 
 function getRiskColor(level: string) {
     const l = level.toUpperCase();
-    if (l === "LOW") return "text-emerald-400";
-    if (l === "MODERATE") return "text-amber-400";
-    if (l === "HIGH") return "text-rose-400";
-    if (l === "CRITICAL") return "text-red-500";
+    if (l === "LOW") return "text-emerald-600";
+    if (l === "MODERATE") return "text-amber-600";
+    if (l === "HIGH") return "text-rose-600";
+    if (l === "CRITICAL") return "text-red-600";
     return "text-slate-400";
 }
 
 function getRiskBg(level: string) {
     const l = level.toUpperCase();
-    if (l === "LOW") return "bg-emerald-500/10 border-emerald-500/20";
-    if (l === "MODERATE") return "bg-amber-500/10 border-amber-500/20";
-    if (l === "HIGH") return "bg-rose-500/10 border-rose-500/20";
-    if (l === "CRITICAL") return "bg-red-500/10 border-red-500/20";
-    return "bg-slate-500/10 border-slate-500/20";
+    if (l === "LOW") return "bg-emerald-50 border-emerald-100";
+    if (l === "MODERATE") return "bg-amber-50 border-amber-100";
+    if (l === "HIGH") return "bg-rose-50 border-rose-100";
+    if (l === "CRITICAL") return "bg-red-50 border-red-100";
+    return "bg-slate-50 border-slate-100";
 }
 
 function getPriorityColor(priority: string) {
     const p = priority.toUpperCase();
-    if (p === "IMMEDIATE") return "text-red-400 bg-red-500/10 border-red-500/20";
-    if (p === "HIGH") return "text-rose-400 bg-rose-500/10 border-rose-500/20";
-    if (p === "MEDIUM") return "text-amber-400 bg-amber-500/10 border-amber-500/20";
-    if (p === "LOW") return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-    return "text-slate-400 bg-slate-500/10 border-slate-500/20";
+    if (p === "IMMEDIATE") return "text-red-600 bg-red-50 border-red-100";
+    if (p === "HIGH") return "text-rose-600 bg-rose-50 border-rose-100";
+    if (p === "MEDIUM") return "text-amber-600 bg-amber-50 border-amber-100";
+    if (p === "LOW") return "text-emerald-600 bg-emerald-50 border-emerald-100";
+    return "text-slate-500 bg-slate-50 border-slate-100";
 }
 
 export default function ReportStep({ context, results, questions, personas }: ReportStepProps) {
@@ -124,7 +124,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
         setIsLoading(true);
         setError("");
         try {
-            const resp = await fetch("http://127.0.0.1:8000/analyze_results", {
+            const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analyze_results`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ context, questions, results }),
@@ -144,7 +144,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
             generateReport();
         }
         // Fetch benchmark accuracy
-        fetch("http://127.0.0.1:8000/benchmark")
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/benchmark`)
             .then((r) => r.json())
             .then((data) => {
                 setBenchmarkGrade(data.grade || null);
@@ -163,7 +163,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
     ) => {
         const key = `${questionIndex}-${findingType}`;
         try {
-            const resp = await fetch("http://127.0.0.1:8000/feedback", {
+            const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -309,19 +309,19 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center"
+                        className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center"
                     >
-                        <Sparkles size={24} className="text-blue-400" />
+                        <Sparkles size={24} className="text-blue-600" />
                     </motion.div>
-                    <h3 className="text-xl font-black text-white tracking-tight mb-2">
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight mb-2">
                         Generating Bureau Report
                     </h3>
                     <p className="text-sm text-slate-500 font-medium max-w-md mx-auto">
                         Our quality auditors are analysing {results.length} diagnostic responses
                         across {questions.length} questions to produce a structural quality audit...
                     </p>
-                    <div className="flex items-center justify-center gap-2 mt-8 text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                        <Loader2 size={12} className="animate-spin text-primary" />
+                    <div className="flex items-center justify-center gap-2 mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <Loader2 size={12} className="animate-spin text-blue-600" />
                         Detecting bias, ambiguity, leading language, missing options, drop-off risks...
                     </div>
                 </div>
@@ -333,13 +333,13 @@ export default function ReportStep({ context, results, questions, personas }: Re
     if (error) {
         return (
             <div className="max-w-5xl mx-auto py-10">
-                <div className="text-center py-20 bg-rose-500/5 border border-rose-500/20 rounded-3xl">
-                    <AlertTriangle size={32} className="text-rose-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-black text-white mb-2">Report Generation Failed</h3>
-                    <p className="text-sm text-slate-400 font-medium mb-6">{error}</p>
+                <div className="text-center py-20 bg-red-50 border border-red-100 rounded-3xl">
+                    <AlertTriangle size={32} className="text-red-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-black text-slate-900 mb-2">Report Generation Failed</h3>
+                    <p className="text-sm text-slate-500 font-medium mb-6">{error}</p>
                     <button
                         onClick={generateReport}
-                        className="px-8 py-3 bg-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all"
+                        className="px-8 py-3 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all"
                     >
                         Retry
                     </button>
@@ -356,11 +356,11 @@ export default function ReportStep({ context, results, questions, personas }: Re
             <div className="mb-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-                            <FileText size={18} className="text-blue-400" />
+                        <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                            <FileText size={18} className="text-blue-600" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black tracking-tight text-white">Bureau Report</h2>
+                            <h2 className="text-2xl font-black tracking-tight text-slate-900">Bureau Report</h2>
                             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                                 Quality Audit & Mitigation Protocol
                             </p>
@@ -373,7 +373,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     </span>
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
                     >
                         <FileDown size={14} />
                         Export Report
@@ -385,13 +385,13 @@ export default function ReportStep({ context, results, questions, personas }: Re
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-br from-slate-900/80 to-blue-950/40 border border-primary/20 rounded-3xl p-8 md:p-10 mb-8"
+                className="bg-slate-50 border border-slate-100 rounded-3xl p-8 md:p-10 mb-8 shadow-sm"
             >
                 <div className="flex items-center gap-2 mb-4">
-                    <Gavel size={14} className="text-primary" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Executive Summary</h3>
+                    <Gavel size={14} className="text-blue-600" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Executive Summary</h3>
                 </div>
-                <p className="text-white font-medium leading-relaxed text-base md:text-lg mb-6">
+                <p className="text-slate-900 font-medium leading-relaxed text-base md:text-lg mb-6">
                     {report.executive_summary}
                 </p>
                 <div className="flex flex-wrap gap-4">
@@ -401,11 +401,11 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             {report.overall_risk_level} Risk
                         </span>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-blue-500/10 border-blue-500/20">
-                        <Target size={14} className="text-blue-400" />
-                        <span className="text-xs font-black text-blue-400">{report.quality_score}/100 Quality Score</span>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-blue-50 border-blue-100">
+                        <Target size={14} className="text-blue-600" />
+                        <span className="text-xs font-black text-blue-600">{report.quality_score}/100 Quality Score</span>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-white/5 border-white/10">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-white border-slate-100">
                         <Users size={14} className="text-slate-400" />
                         <span className="text-xs font-bold text-slate-400">
                             n={results.length} respondents • {questions.length} questions
@@ -420,14 +420,14 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-emerald-950/30 to-slate-900/50 border border-emerald-500/15 rounded-2xl p-6"
+                        className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6"
                     >
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                <Award size={18} className="text-emerald-400" />
+                            <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
+                                <Award size={18} className="text-emerald-600" />
                             </div>
                             <div>
-                                <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">
+                                <h4 className="text-xs font-black uppercase tracking-widest text-emerald-600">
                                     Benchmark Detection Accuracy
                                 </h4>
                                 <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
@@ -436,8 +436,8 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             </div>
                         </div>
                         <div className="flex items-end gap-3">
-                            <span className="text-4xl font-black text-emerald-400">{benchmarkAccuracy}%</span>
-                            <span className="text-lg font-black text-emerald-500/60 mb-1">Grade {benchmarkGrade}</span>
+                            <span className="text-4xl font-black text-emerald-600">{benchmarkAccuracy}%</span>
+                            <span className="text-lg font-black text-emerald-700/60 mb-1">Grade {benchmarkGrade}</span>
                         </div>
                         <p className="text-[10px] text-slate-500 font-medium mt-2">
                             Our engine was tested against 6 intentionally flawed survey questions with documented
@@ -450,14 +450,14 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-gradient-to-br from-blue-950/30 to-slate-900/50 border border-blue-500/15 rounded-2xl p-6"
+                    className="bg-blue-50 border border-blue-100 rounded-2xl p-6"
                 >
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                            <MessageSquareText size={18} className="text-blue-400" />
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center">
+                            <MessageSquareText size={18} className="text-blue-600" />
                         </div>
                         <div>
-                            <h4 className="text-xs font-black uppercase tracking-widest text-blue-400">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-blue-600">
                                 Client Validation Rate
                             </h4>
                             <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
@@ -467,7 +467,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     </div>
                     {agreementRate !== null ? (
                         <div className="flex items-end gap-3">
-                            <span className="text-4xl font-black text-blue-400">{agreementRate}%</span>
+                            <span className="text-4xl font-black text-blue-600">{agreementRate}%</span>
                             <span className="text-sm font-bold text-slate-500 mb-1">client agreement</span>
                         </div>
                     ) : (
@@ -500,25 +500,25 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.05 }}
-                                className="bg-slate-900/60 border border-white/5 rounded-2xl overflow-hidden"
+                                className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm"
                             >
                                 {/* Question Header */}
                                 <button
                                     onClick={() => setExpandedQuestion(isExpanded ? null : i)}
-                                    className="w-full flex items-center justify-between p-5 hover:bg-white/[0.02] transition-colors text-left"
+                                    className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors text-left"
                                 >
                                     <div className="flex items-start gap-4 flex-1 min-w-0">
-                                        <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                                        <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
                                             Q{i + 1}
                                         </span>
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-white font-bold text-sm leading-relaxed">{qa.original_question}</p>
+                                            <p className="text-slate-900 font-bold text-sm leading-relaxed">{qa.original_question}</p>
                                             <div className="flex flex-wrap items-center gap-2 mt-2">
                                                 <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${getRiskBg(qa.risk_level)} ${getRiskColor(qa.risk_level)}`}>
                                                     {qa.risk_level} Risk
                                                 </span>
                                                 {(qa.issues_identified || []).slice(0, 2).map((issue: string, j: number) => (
-                                                    <span key={j} className="text-[9px] font-bold text-slate-500 bg-white/5 border border-white/5 px-2 py-1 rounded-full">
+                                                    <span key={j} className="text-[9px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-2 py-1 rounded-full">
                                                         {issue.slice(0, 30)}{issue.length > 30 ? "..." : ""}
                                                     </span>
                                                 ))}
@@ -526,8 +526,8 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 shrink-0 ml-4">
-                                        <span className="text-emerald-400 text-xs font-black">+{qa.predicted_improvement}</span>
-                                        {isExpanded ? <ChevronUp size={14} className="text-slate-500" /> : <ChevronDown size={14} className="text-slate-500" />}
+                                        <span className="text-emerald-600 text-xs font-black">+{qa.predicted_improvement}</span>
+                                        {isExpanded ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
                                     </div>
                                 </button>
 
@@ -538,12 +538,12 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
-                                            className="border-t border-white/5"
+                                            className="border-t border-slate-100"
                                         >
                                             <div className="p-6 space-y-5">
                                                 {/* Issues with Feedback Buttons */}
                                                 <div>
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-400 mb-3 flex items-center gap-2">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-600 mb-3 flex items-center gap-2">
                                                         <AlertTriangle size={12} />
                                                         Issues Identified — Rate Each Finding
                                                     </h4>
@@ -554,13 +554,13 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                                             return (
                                                                 <div
                                                                     key={j}
-                                                                    className="flex items-start gap-3 text-sm text-slate-300 font-medium bg-rose-500/5 border border-rose-500/10 rounded-xl p-3"
+                                                                    className="flex items-start gap-3 text-sm text-slate-600 font-medium bg-rose-50 border border-rose-100 rounded-xl p-3"
                                                                 >
-                                                                    <span className="text-rose-400 shrink-0 mt-0.5">•</span>
+                                                                    <span className="text-rose-600 shrink-0 mt-0.5">•</span>
                                                                     <span className="flex-1">{issue}</span>
                                                                     <div className="flex items-center gap-1.5 shrink-0">
                                                                         {alreadySent ? (
-                                                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${alreadySent === "AGREE" ? "text-emerald-400 bg-emerald-500/10" : "text-rose-400 bg-rose-500/10"}`}>
+                                                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${alreadySent === "AGREE" ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>
                                                                                 {alreadySent === "AGREE" ? "✓ Confirmed" : "✗ Flagged"}
                                                                             </span>
                                                                         ) : (
@@ -571,10 +571,10 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                                                                         submitFeedback(i, qa.original_question, `ISSUE_${j}`, issue, "AGREE");
                                                                                         setFeedbackSent((prev) => ({ ...prev, [feedbackKey]: "AGREE" }));
                                                                                     }}
-                                                                                    className="p-1 rounded hover:bg-emerald-500/10 transition-colors"
+                                                                                    className="p-1 rounded hover:bg-emerald-100 transition-colors"
                                                                                     title="This finding is accurate"
                                                                                 >
-                                                                                    <ThumbsUp size={10} className="text-slate-600 hover:text-emerald-400" />
+                                                                                    <ThumbsUp size={10} className="text-slate-400 hover:text-emerald-600" />
                                                                                 </button>
                                                                                 <button
                                                                                     onClick={(e) => {
@@ -582,10 +582,10 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                                                                         submitFeedback(i, qa.original_question, `ISSUE_${j}`, issue, "DISAGREE");
                                                                                         setFeedbackSent((prev) => ({ ...prev, [feedbackKey]: "DISAGREE" }));
                                                                                     }}
-                                                                                    className="p-1 rounded hover:bg-rose-500/10 transition-colors"
+                                                                                    className="p-1 rounded hover:bg-rose-100 transition-colors"
                                                                                     title="Flag as inaccurate"
                                                                                 >
-                                                                                    <ThumbsDown size={10} className="text-slate-600 hover:text-rose-400" />
+                                                                                    <ThumbsDown size={10} className="text-slate-400 hover:text-rose-600" />
                                                                                 </button>
                                                                             </>
                                                                         )}
@@ -597,35 +597,35 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                                 </div>
 
                                                 {/* Rewrite */}
-                                                <div className="bg-emerald-500/5 border border-emerald-500/15 rounded-2xl p-6">
+                                                <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
                                                     <div className="flex items-center justify-between mb-3">
-                                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-2">
+                                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-2">
                                                             <CheckCircle2 size={12} />
                                                             Recommended Rewrite
                                                         </h4>
-                                                        <span className="text-emerald-400 text-xs font-black bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
+                                                        <span className="text-emerald-600 text-xs font-black bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full">
                                                             +{qa.predicted_improvement} predicted improvement
                                                         </span>
                                                     </div>
-                                                    <p className="text-white font-bold text-base leading-relaxed mb-3">
+                                                    <p className="text-slate-900 font-bold text-base leading-relaxed mb-3">
                                                         &quot;{qa.rewritten_question}&quot;
                                                     </p>
-                                                    <p className="text-sm text-slate-400 font-medium leading-relaxed">
+                                                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
                                                         {qa.rewrite_rationale}
                                                     </p>
                                                 </div>
 
                                                 {/* Before / After */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="bg-rose-500/5 border border-rose-500/10 rounded-xl p-4">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-400 block mb-2">Before</span>
-                                                        <p className="text-sm text-slate-300 font-medium line-through decoration-rose-500/30">
+                                                    <div className="bg-rose-50 border border-rose-100 rounded-xl p-4">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-600 block mb-2">Before</span>
+                                                        <p className="text-sm text-slate-400 font-medium line-through decoration-rose-200">
                                                             {qa.original_question}
                                                         </p>
                                                     </div>
-                                                    <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-4">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 block mb-2">After</span>
-                                                        <p className="text-sm text-white font-medium">{qa.rewritten_question}</p>
+                                                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 block mb-2">After</span>
+                                                        <p className="text-sm text-slate-900 font-medium">{qa.rewritten_question}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -641,7 +641,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
             {/* Strategic Recommendations */}
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Lightbulb size={16} className="text-amber-400" />
+                    <Lightbulb size={16} className="text-amber-600" />
                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Strategic Recommendations</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -651,16 +651,16 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.08 }}
-                            className="bg-slate-900/60 border border-white/5 rounded-2xl p-6 hover:border-primary/20 transition-all group"
+                            className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-blue-200 transition-all group shadow-sm"
                         >
                             <div className="flex items-start justify-between gap-3 mb-3">
-                                <h4 className="text-white font-black text-sm tracking-tight">{rec.title}</h4>
+                                <h4 className="text-slate-900 font-black text-sm tracking-tight">{rec.title}</h4>
                                 <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shrink-0 ${getPriorityColor(rec.priority)}`}>
                                     {rec.priority}
                                 </span>
                             </div>
-                            <p className="text-sm text-slate-400 font-medium leading-relaxed mb-4">{rec.description}</p>
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-primary">
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed mb-4">{rec.description}</p>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-blue-600">
                                 <TrendingUp size={12} />
                                 <span>{rec.expected_impact}</span>
                             </div>
@@ -673,7 +673,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
             {(report.demographic_insights || []).length > 0 && (
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-6">
-                        <Users size={16} className="text-violet-400" />
+                        <Users size={16} className="text-violet-600" />
                         <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Demographic Insights</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -683,16 +683,16 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.08 }}
-                                className="bg-slate-900/60 border border-white/5 rounded-2xl p-6"
+                                className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm"
                             >
                                 <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                                        <Users size={14} className="text-violet-400" />
+                                    <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                                        <Users size={14} className="text-violet-600" />
                                     </div>
-                                    <h4 className="text-white font-black text-sm">{insight.segment}</h4>
+                                    <h4 className="text-slate-900 font-black text-sm">{insight.segment}</h4>
                                 </div>
-                                <p className="text-sm text-slate-300 font-medium leading-relaxed mb-2">{insight.finding}</p>
-                                <p className="text-xs text-slate-500 font-medium leading-relaxed italic">→ {insight.implication}</p>
+                                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-2">{insight.finding}</p>
+                                <p className="text-xs text-slate-400 font-medium leading-relaxed italic">→ {insight.implication}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -702,22 +702,22 @@ export default function ReportStep({ context, results, questions, personas }: Re
             {/* Next Steps */}
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Clock size={16} className="text-blue-400" />
+                    <Clock size={16} className="text-blue-600" />
                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recommended Next Steps</h3>
                 </div>
-                <div className="bg-slate-900/60 border border-white/5 rounded-2xl overflow-hidden">
+                <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
                     {(report.next_steps || []).map((step: string, i: number) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className={`flex items-start gap-4 p-5 ${i < (report.next_steps || []).length - 1 ? "border-b border-white/5" : ""}`}
+                            className={`flex items-start gap-4 p-5 ${i < (report.next_steps || []).length - 1 ? "border-b border-slate-100" : ""}`}
                         >
-                            <span className="w-7 h-7 rounded-lg bg-primary/10 text-primary text-[10px] font-black flex items-center justify-center shrink-0">
+                            <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center shrink-0">
                                 {i + 1}
                             </span>
-                            <p className="text-white font-medium text-sm leading-relaxed pt-0.5">{step}</p>
+                            <p className="text-slate-900 font-medium text-sm leading-relaxed pt-0.5">{step}</p>
                         </motion.div>
                     ))}
                 </div>
@@ -728,26 +728,26 @@ export default function ReportStep({ context, results, questions, personas }: Re
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
-                className="bg-gradient-to-r from-slate-900 to-blue-950 border border-primary/20 rounded-3xl p-10 text-center"
+                className="bg-slate-50 border border-slate-100 rounded-3xl p-10 text-center shadow-sm"
             >
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <Gavel size={16} className="text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Bureau Verdict</span>
+                    <Gavel size={16} className="text-blue-600" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Bureau Verdict</span>
                 </div>
-                <p className="text-xl md:text-2xl font-black text-white tracking-tight leading-tight max-w-3xl mx-auto">
+                <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
                     &quot;{report.bureau_verdict}&quot;
                 </p>
                 <div className="mt-8 flex items-center justify-center gap-4">
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-8 py-3 bg-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                        className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
                     >
                         <FileDown size={14} />
                         Export Full Report
                     </button>
                     <button
                         onClick={generateReport}
-                        className="flex items-center gap-2 px-6 py-3 text-slate-400 border border-white/10 rounded-full text-xs font-black uppercase tracking-widest hover:text-white hover:bg-white/5 transition-all"
+                        className="flex items-center gap-2 px-6 py-3 text-slate-400 border border-slate-200 rounded-full text-xs font-black uppercase tracking-widest hover:text-slate-900 hover:bg-slate-50 transition-all"
                     >
                         <Zap size={14} />
                         Regenerate

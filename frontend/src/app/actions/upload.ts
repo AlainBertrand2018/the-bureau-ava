@@ -24,7 +24,7 @@ export async function uploadSurvey(formData: FormData) {
         const backendFormData = new FormData();
         backendFormData.append("file", file);
 
-        const response = await fetch("http://127.0.0.1:8000/parse", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/parse`, {
             method: "POST",
             body: backendFormData,
         });

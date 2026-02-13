@@ -165,7 +165,7 @@ export default function Home() {
     setAuditError("");
     setAuditResult(null);
     try {
-      const resp = await fetch("http://127.0.0.1:8000/quick_audit", {
+      const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quick_audit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: auditQuestion }),

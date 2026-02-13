@@ -86,7 +86,7 @@ export default function SimulationStep({
 
         for (const persona of personas) {
             try {
-                const resp = await fetch("http://127.0.0.1:8000/simulate", {
+                const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/simulate`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -156,11 +156,11 @@ export default function SimulationStep({
             {/* Section Header */}
             <div className="mb-10">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
-                        <Zap size={18} className="text-blue-400" />
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                        <Zap size={18} className="text-blue-600" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black tracking-tight text-white">
+                        <h2 className="text-2xl font-black tracking-tight text-slate-900">
                             Diagnostic Dry Run
                         </h2>
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
@@ -168,13 +168,13 @@ export default function SimulationStep({
                         </p>
                     </div>
                 </div>
-                <p className="text-slate-400 font-medium leading-relaxed max-w-2xl">
+                <p className="text-slate-500 font-medium leading-relaxed max-w-2xl">
                     Deploying{" "}
-                    <span className="text-white font-bold">{personas.length}</span>{" "}
+                    <span className="text-slate-900 font-bold">{personas.length}</span>{" "}
                     diagnostic respondents against{" "}
-                    <span className="text-white font-bold">{questions.length}</span>{" "}
+                    <span className="text-slate-900 font-bold">{questions.length}</span>{" "}
                     client questions ={" "}
-                    <span className="text-primary font-bold">{totalCalls}</span> unique
+                    <span className="text-blue-600 font-bold">{totalCalls}</span> unique
                     diagnostic interactions via Gemini 2.0 Flash.
                 </p>
             </div>
@@ -185,38 +185,38 @@ export default function SimulationStep({
                     {
                         label: "Respondents",
                         value: personas.length,
-                        color: "text-blue-400",
-                        bg: "from-blue-500/10",
+                        color: "text-blue-600",
+                        bg: "from-blue-50",
                     },
                     {
                         label: "Questions",
                         value: questions.length,
-                        color: "text-violet-400",
-                        bg: "from-violet-500/10",
+                        color: "text-indigo-600",
+                        bg: "from-indigo-50",
                     },
                     {
                         label: "Total Calls",
                         value: totalCalls,
-                        color: "text-amber-400",
-                        bg: "from-amber-500/10",
+                        color: "text-amber-600",
+                        bg: "from-amber-50",
                     },
                     {
                         label: "Completion",
                         value: `${progress}%`,
-                        color: "text-emerald-400",
-                        bg: "from-emerald-500/10",
+                        color: "text-emerald-600",
+                        bg: "from-emerald-50",
                     },
                 ].map((stat, i) => (
                     <div
                         key={i}
-                        className={`bg-gradient-to-br ${stat.bg} to-slate-900/50 border border-white/5 rounded-2xl p-5 text-center`}
+                        className={`bg-gradient-to-br ${stat.bg} to-white border border-slate-100 rounded-2xl p-5 text-center shadow-sm`}
                     >
                         <p
                             className={`text-3xl font-black tracking-tighter ${stat.color} mb-1`}
                         >
                             {stat.value}
                         </p>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                             {stat.label}
                         </p>
                     </div>
@@ -232,12 +232,12 @@ export default function SimulationStep({
                 >
                     <button
                         onClick={runSimulation}
-                        className="inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-r from-primary to-blue-700 text-white rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                        className="inline-flex items-center gap-3 px-12 py-5 bg-blue-600 text-white rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all active:scale-[0.98]"
                     >
                         <Rocket size={18} />
                         Launch Diagnostic Dry Run
                     </button>
-                    <p className="text-slate-600 text-xs font-bold mt-4 uppercase tracking-widest">
+                    <p className="text-slate-400 text-xs font-bold mt-4 uppercase tracking-widest">
                         This will make {totalCalls} diagnostic calls — estimated{" "}
                         {Math.ceil(totalCalls * 1.5)}s
                     </p>
@@ -256,16 +256,16 @@ export default function SimulationStep({
                                 ? "Diagnostic Dry Run In Progress"
                                 : "Diagnostic Dry Run Complete"}
                         </span>
-                        <span className="text-sm font-black text-primary">{progress}%</span>
+                        <span className="text-sm font-black text-blue-600">{progress}%</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: 0.5 }}
                             className={`h-full rounded-full ${progress === 100
-                                ? "bg-gradient-to-r from-emerald-500 to-emerald-400"
-                                : "bg-gradient-to-r from-primary to-blue-400"
+                                ? "bg-emerald-500"
+                                : "bg-blue-600"
                                 }`}
                         />
                     </div>
@@ -274,20 +274,20 @@ export default function SimulationStep({
 
             {/* Live Feed */}
             {liveLogs.length > 0 && (
-                <div className="bg-slate-900/80 border border-white/5 rounded-3xl overflow-hidden">
-                    <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+                    <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <MessageSquare size={14} className="text-primary" />
+                                <MessageSquare size={14} className="text-blue-600" />
                                 {isSimulating && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                                 )}
                             </div>
                             <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">
                                 Live Diagnostic Feed
                             </h3>
                         </div>
-                        <span className="text-[10px] font-bold text-slate-600">
+                        <span className="text-[10px] font-bold text-slate-400">
                             {liveLogs.length} / {totalCalls} responses
                         </span>
                     </div>
@@ -299,34 +299,34 @@ export default function SimulationStep({
                                     key={i}
                                     initial={{ opacity: 0, x: -10, height: 0 }}
                                     animate={{ opacity: 1, x: 0, height: "auto" }}
-                                    className="flex gap-3 p-3 bg-slate-800/40 rounded-xl border border-white/[0.03]"
+                                    className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100/50"
                                 >
-                                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                        <User size={12} className="text-blue-400" />
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                                        <User size={12} className="text-blue-600" />
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-xs font-black text-white">
+                                            <span className="text-xs font-black text-slate-900">
                                                 {log.persona}
                                             </span>
-                                            <span className="text-[9px] font-bold text-slate-600 uppercase tracking-wider truncate max-w-[200px]">
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider truncate max-w-[200px]">
                                                 re: {log.question}...
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                                        <p className="text-xs text-slate-500 font-medium leading-relaxed">
                                             &quot;{log.answer}...&quot;
                                         </p>
                                         {/* Provenance micro-badge */}
                                         {(log.latency_ms || log.tokens) && (
                                             <div className="flex items-center gap-3 mt-1.5">
                                                 {log.latency_ms ? (
-                                                    <span className="text-[8px] font-bold text-slate-600 flex items-center gap-1">
+                                                    <span className="text-[8px] font-bold text-slate-400 flex items-center gap-1">
                                                         <Clock size={8} />
                                                         {log.latency_ms}ms
                                                     </span>
                                                 ) : null}
                                                 {log.tokens ? (
-                                                    <span className="text-[8px] font-bold text-slate-600 flex items-center gap-1">
+                                                    <span className="text-[8px] font-bold text-slate-400 flex items-center gap-1">
                                                         <Hash size={8} />
                                                         {log.tokens} tokens
                                                     </span>
@@ -351,25 +351,25 @@ export default function SimulationStep({
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-6 bg-emerald-500/5 border border-emerald-500/15 rounded-2xl p-5"
+                    className="mt-6 bg-emerald-50 border border-emerald-100 rounded-2xl p-5"
                 >
                     <div className="flex items-center gap-2 mb-3">
-                        <ShieldCheck size={14} className="text-emerald-400" />
-                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                        <ShieldCheck size={14} className="text-emerald-600" />
+                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600">
                             Provenance Certificate — All Responses Verified
                         </h4>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {[
-                            { label: "Model", value: provenance.model, color: "text-blue-400" },
-                            { label: "API Calls", value: provenance.total_api_calls, color: "text-amber-400" },
-                            { label: "Input Tokens", value: provenance.total_input_tokens.toLocaleString(), color: "text-violet-400" },
-                            { label: "Output Tokens", value: provenance.total_output_tokens.toLocaleString(), color: "text-rose-400" },
-                            { label: "Avg Latency", value: `${provenance.avg_latency_ms}ms`, color: "text-emerald-400" },
+                            { label: "Model", value: provenance.model, color: "text-blue-600" },
+                            { label: "API Calls", value: provenance.total_api_calls, color: "text-amber-600" },
+                            { label: "Input Tokens", value: provenance.total_input_tokens.toLocaleString(), color: "text-indigo-600" },
+                            { label: "Output Tokens", value: provenance.total_output_tokens.toLocaleString(), color: "text-rose-600" },
+                            { label: "Avg Latency", value: `${provenance.avg_latency_ms}ms`, color: "text-emerald-600" },
                         ].map((item, i) => (
                             <div key={i} className="text-center">
                                 <p className={`text-sm font-black ${item.color}`}>{item.value}</p>
-                                <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">{item.label}</p>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.label}</p>
                             </div>
                         ))}
                     </div>
@@ -381,7 +381,7 @@ export default function SimulationStep({
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mt-6 flex items-center gap-3 text-rose-400 text-xs font-bold bg-rose-500/10 border border-rose-500/20 px-5 py-3 rounded-xl"
+                    className="mt-6 flex items-center gap-3 text-red-600 text-xs font-bold bg-red-50 border border-red-100 px-5 py-3 rounded-xl"
                 >
                     <AlertCircle size={14} />
                     {error}
@@ -395,14 +395,14 @@ export default function SimulationStep({
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-10 text-center"
                 >
-                    <div className="inline-flex items-center gap-2 text-emerald-400 text-sm font-black mb-4">
+                    <div className="inline-flex items-center gap-2 text-emerald-600 text-sm font-black mb-4">
                         <CheckCircle2 size={18} />
                         Diagnostic Dry Run Complete — {results.length} Respondents Processed
                     </div>
                     <br />
                     <button
                         onClick={onComplete}
-                        className="inline-flex items-center gap-3 px-10 py-4 bg-emerald-500 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all mt-4"
+                        className="inline-flex items-center gap-3 px-10 py-4 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all mt-4"
                     >
                         View Diagnostic Results
                     </button>
