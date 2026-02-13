@@ -17,15 +17,16 @@ export default function Header() {
                     <Link href="#clients" className="hover:text-blue-400 transition-colors">Deliveries</Link>
                     <Link href="#services" className="hover:text-blue-400 transition-colors">Mandates</Link>
                     <Link href="#intelligence" className="hover:text-blue-400 transition-colors">Intelligence</Link>
+                    <Link href="/lab" className="hover:text-blue-400 transition-colors text-blue-400/70">Simulation Lab</Link>
                 </nav>
 
                 <div className="flex gap-4">
                     <button className="text-white border border-white/10 px-6 py-2 rounded-full text-[11px] font-bold tracking-widest transition-all hover:bg-white/5 active:scale-95 uppercase">
                         Login
                     </button>
-                    <button className="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-full text-[11px] font-bold tracking-widest transition-all hover:shadow-xl hover:shadow-blue-500/20 active:scale-95 uppercase">
+                    <Link href="/lab" className="bg-primary hover:bg-blue-700 text-white px-6 py-2 rounded-full text-[11px] font-bold tracking-widest transition-all hover:shadow-xl hover:shadow-blue-500/20 active:scale-95 uppercase">
                         Stress Test Now
-                    </button>
+                    </Link>
                 </div>
             </div>
         </header>

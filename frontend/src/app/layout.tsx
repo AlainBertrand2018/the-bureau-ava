@@ -8,77 +8,66 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://the-bureau-ava.vercel.app'),
-  title: "The Bureau | Predicting survey bias, dropouts, and sentiment",
-  description: "The Bureau utilizes census-weighted synthetic populations to stress-test market research. We predict survey bias, dropouts, and sentiment using privacy-first AI agents.",
+  metadataBase: new URL("https://the-bureau-ava.vercel.app"),
+  title: "AVA by The Bureau | AI Survey Quality Auditor",
+  description:
+    "Stop launching broken surveys. AVA stress-tests your questionnaire with AI diagnostic personas to catch bias, ambiguity, and weak questions before you go live.",
   openGraph: {
-    title: "The Bureau | Predicting survey bias, dropouts, and sentiment",
-    description: "The Bureau is the authority on synthetic market research. We replace guesswork with 'Pre-Flight Validation,' utilizing AI agents engineered via Iterative Proportional Fitting (IPF) to mirror the 2022 Census. From stress-testing questionnaires to predicting consumer backlash, our Google Confidential Computing stack delivers risk-free insights before you spend your real budget.",
-    url: 'https://the-bureau-ava.vercel.app',
-    siteName: 'The Bureau',
+    title: "AVA by The Bureau | AI Survey Quality Auditor",
+    description:
+      "AVA deploys diagnostic AI personas to stress-test your survey questionnaire. Catch bias, confusion, drop-off risks, and structural flaws in under 5 minutes.",
+    url: "https://the-bureau-ava.vercel.app",
+    siteName: "AVA by The Bureau",
     images: [
       {
-        url: '/og-image.webp',
+        url: "/og-image.webp",
         width: 1200,
         height: 630,
-        alt: 'The Bureau - Synthetic Market Research Authority',
+        alt: "AVA — AI Survey Quality Auditor by The Bureau",
       },
     ],
-    locale: 'en_US',
-    type: 'website',
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: "The Bureau | Predicting survey bias, dropouts, and sentiment",
-    description: "Authority on synthetic market research. Predict survey bias and consumer sentiment with privacy-first AI agents.",
-    images: ['/og-image.webp'],
+    card: "summary_large_image",
+    title: "AVA by The Bureau | AI Survey Quality Auditor",
+    description:
+      "Stress-test your survey with AI. Catch bias, ambiguity, and drop-off risks before fieldwork.",
+    images: ["/og-image.webp"],
   },
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  "name": "The Bureau",
-  "image": "https://the-bureau-ava.vercel.app/og-image.webp",
+  "@type": "SoftwareApplication",
+  name: "AVA by The Bureau",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  image: "https://the-bureau-ava.vercel.app/og-image.webp",
   "@id": "https://the-bureau-ava.vercel.app",
-  "url": "https://the-bureau-ava.vercel.app",
-  "telephone": "+2300000000",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Cybercity",
-    "addressLocality": "Ebène",
-    "addressRegion": "Plaines Wilhems",
-    "postalCode": "72201",
-    "addressCountry": "MU"
+  url: "https://the-bureau-ava.vercel.app",
+  description:
+    "AI-powered survey quality auditor. Detects bias, ambiguity, leading language, and structural flaws in questionnaires before fieldwork begins.",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "MUR",
+    description: "Free tier: 1 audit, 10 personas, 5 questions",
   },
-  "geo": {
-    "@type": "GeoCoordinates",
-    "latitude": -20.2443,
-    "longitude": 57.4845
+  creator: {
+    "@type": "Organization",
+    name: "The Bureau",
+    url: "https://the-bureau-ava.vercel.app",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Cybercity",
+      addressLocality: "Ebène",
+      addressRegion: "Plaines Wilhems",
+      postalCode: "72201",
+      addressCountry: "MU",
+    },
   },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday"
-    ],
-    "opens": "09:00",
-    "closes": "18:00"
-  },
-  "sameAs": [
-    "https://www.linkedin.com/company/thebureau-syntax"
-  ],
-  "priceRange": "Rs 15,000 - Rs 45,000",
-  "description": "The Bureau utilizes census-weighted synthetic populations to stress-test market research. We predict survey bias, dropouts, and sentiment using privacy-first AI agents.",
-  "serviceType": [
-    "Market Research Simulation",
-    "Survey Stress Testing",
-    "Synthetic Population Modeling",
-    "Consumer Sentiment Prediction"
-  ]
 };
 
 export default function RootLayout({
@@ -89,7 +78,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} font-sans antialiased bg-[#0A1128] text-white selection:bg-[#FF4D00] selection:text-white`}
+        className={`${inter.variable} font-sans antialiased bg-white text-slate-900`}
       >
         <script
           type="application/ld+json"
