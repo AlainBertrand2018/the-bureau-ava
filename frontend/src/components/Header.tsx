@@ -1,8 +1,12 @@
 "use client";
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
+import LanguageToggle from './LanguageToggle';
 
 export default function Header() {
+    const { t } = useLanguage();
+
     return (
         <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-slate-950/20 border-b border-white/5">
             <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -12,15 +16,13 @@ export default function Header() {
                 </div>
 
                 <nav className="hidden md:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">
-                    <Link href="#methodology" className="hover:text-blue-400 transition-colors">Methodology</Link>
-                    <Link href="#rigor" className="hover:text-blue-400 transition-colors">Rigor</Link>
-                    <Link href="#clients" className="hover:text-blue-400 transition-colors">Deliveries</Link>
-                    <Link href="#services" className="hover:text-blue-400 transition-colors">Mandates</Link>
-                    <Link href="#intelligence" className="hover:text-blue-400 transition-colors">Intelligence</Link>
-                    <Link href="/lab" className="hover:text-blue-400 transition-colors text-blue-400/70">Simulation Lab</Link>
+                    <Link href="#methodology" className="hover:text-blue-400 transition-colors uppercase tracking-widest">{t.nav.how_it_works}</Link>
+                    <Link href="#services" className="hover:text-blue-400 transition-colors uppercase tracking-widest">{t.nav.who_its_for}</Link>
+                    <Link href="/lab" className="hover:text-blue-400 transition-colors text-blue-400/70 uppercase tracking-widest">{t.nav.open_lab}</Link>
                 </nav>
 
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
+                    <LanguageToggle />
                     <button className="text-white border border-white/10 px-6 py-2 rounded-full text-[11px] font-bold tracking-widest transition-all hover:bg-white/5 active:scale-95 uppercase">
                         Login
                     </button>

@@ -50,3 +50,7 @@ Thumbs.db
 # Misc
 *.pem
 .vercel
+*.db
+frontend/build_log.txt
+.agent/
+.gemini/

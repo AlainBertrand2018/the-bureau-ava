@@ -691,8 +691,12 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                     </div>
                                     <h4 className="text-slate-900 font-black text-sm">{insight.segment}</h4>
                                 </div>
-                                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-2">{insight.finding}</p>
-                                <p className="text-xs text-slate-400 font-medium leading-relaxed italic">→ {insight.implication}</p>
+                                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-2">
+                                    {typeof insight.finding === 'string' ? insight.finding : JSON.stringify(insight.finding)}
+                                </p>
+                                <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                                    → {typeof insight.implication === 'string' ? insight.implication : JSON.stringify(insight.implication)}
+                                </p>
                             </motion.div>
                         ))}
                     </div>
@@ -717,7 +721,9 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center shrink-0">
                                 {i + 1}
                             </span>
-                            <p className="text-slate-900 font-medium text-sm leading-relaxed pt-0.5">{step}</p>
+                            <p className="text-slate-900 font-medium text-sm leading-relaxed pt-0.5">
+                                {typeof step === 'string' ? step : (step as any)?.step || JSON.stringify(step)}
+                            </p>
                         </motion.div>
                     ))}
                 </div>

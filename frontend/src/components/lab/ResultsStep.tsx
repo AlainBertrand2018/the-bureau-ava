@@ -418,7 +418,7 @@ export default function ResultsStep({
                                                             {aSent.icon} {a.score}/10
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs text-slate-400 font-medium mb-2 italic">
+                                                    <p className="text-xs text-slate-400 font-medium mb-2">
                                                         "{a.question}"
                                                     </p>
                                                     <p className="text-sm text-slate-900 font-medium leading-relaxed">

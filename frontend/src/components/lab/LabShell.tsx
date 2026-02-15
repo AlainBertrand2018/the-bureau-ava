@@ -21,6 +21,7 @@ import PersonasStep from "./PersonasStep";
 import SimulationStep from "./SimulationStep";
 import ResultsStep from "./ResultsStep";
 import ReportStep from "./ReportStep";
+import { useLanguage } from "@/context/LanguageContext";
 
 
 export interface Persona {
@@ -37,46 +38,48 @@ export interface SimulationResult {
     [key: string]: string;
 }
 
-const STEPS = [
+const getSteps = (t: any) => [
     {
         id: "context",
-        label: "Mission Brief",
+        label: t.lab_ui.steps.context.label,
         icon: <Target size={16} />,
-        description: "Define your survey context",
+        description: t.lab_ui.steps.context.desc,
     },
     {
         id: "questions",
-        label: "Questionnaire",
+        label: t.lab_ui.steps.questions.label,
         icon: <FileQuestion size={16} />,
-        description: "Submit your questions for audit",
+        description: t.lab_ui.steps.questions.desc,
     },
     {
         id: "personas",
-        label: "Sample (n)",
+        label: t.lab_ui.steps.personas.label,
         icon: <Users size={16} />,
-        description: "Set sample size & generate respondents",
+        description: t.lab_ui.steps.personas.desc,
     },
     {
         id: "simulate",
-        label: "Dry Run",
+        label: t.lab_ui.steps.simulate.label,
         icon: <Zap size={16} />,
-        description: "Run diagnostic simulation",
+        description: t.lab_ui.steps.simulate.desc,
     },
     {
         id: "results",
-        label: "Diagnostics",
+        label: t.lab_ui.steps.results.label,
         icon: <BarChart3 size={16} />,
-        description: "Review diagnostic findings",
+        description: t.lab_ui.steps.results.desc,
     },
     {
         id: "report",
-        label: "Bureau Report",
+        label: t.lab_ui.steps.report.label,
         icon: <FileText size={16} />,
-        description: "Mitigation & redressment",
+        description: t.lab_ui.steps.report.desc,
     },
 ];
 
 export default function LabShell() {
+    const { t } = useLanguage();
+    const STEPS = getSteps(t);
     const [currentStep, setCurrentStep] = useState(0);
     const [context, setContext] = useState("");
     const [questions, setQuestions] = useState<string[]>([]);
@@ -121,7 +124,7 @@ export default function LabShell() {
                             className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors text-xs font-bold uppercase tracking-widest"
                         >
                             <ArrowLeft size={14} />
-                            Bureau
+                            {t.lab_ui.back_to_bureau}
                         </Link>
                         <div className="w-px h-6 bg-slate-200" />
                         <div className="flex items-center gap-2">
@@ -130,10 +133,10 @@ export default function LabShell() {
                             </div>
                             <div>
                                 <h1 className="text-sm font-black tracking-tight">
-                                    SIMULATION LAB
+                                    {t.lab_ui.header_title}
                                 </h1>
                                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                                    Pre-Flight Validation Engine
+                                    {t.lab_ui.header_sub}
                                 </p>
                             </div>
                         </div>
@@ -141,7 +144,7 @@ export default function LabShell() {
 
                     <div className="hidden md:flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                         <ShieldCheck size={12} className="text-emerald-500" />
-                        Zero PII • Synthetic Only • Census-Weighted
+                        {t.lab_ui.header_shield}
                     </div>
                 </div>
             </header>
@@ -258,11 +261,11 @@ export default function LabShell() {
                             }`}
                     >
                         <ChevronLeft size={14} />
-                        Back
+                        {t.lab_ui.back}
                     </button>
 
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        Step {currentStep + 1} of {STEPS.length} •{" "}
+                        {t.lab_ui.step_label} {currentStep + 1} {t.lab_ui.of} {STEPS.length} •{" "}
                         {STEPS[currentStep].description}
                     </div>
 
@@ -275,23 +278,23 @@ export default function LabShell() {
                                 : "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
                                 }`}
                         >
-                            Continue
+                            {t.lab_ui.continue}
                             <ChevronRight size={14} />
                         </button>
                     ) : currentStep === 3 ? (
                         <div className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
                             {isSimulating
-                                ? "Simulation in progress..."
+                                ? t.lab_ui.sim_in_progress
                                 : results.length > 0
-                                    ? "Complete — Proceed ↑"
-                                    : "Launch simulation above"}
+                                    ? t.lab_ui.sim_complete
+                                    : t.lab_ui.sim_launch}
                         </div>
                     ) : (
                         <Link
                             href="/"
                             className="flex items-center gap-2 px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/30"
                         >
-                            Back to Bureau
+                            {t.lab_ui.back_to_bureau}
                         </Link>
                     )}
                 </div>

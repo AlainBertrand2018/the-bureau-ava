@@ -33,13 +33,10 @@ interface LiveLog {
     answer: string;
     timestamp: number;
     latency_ms?: number;
-    tokens?: number;
 }
 
 interface ProvenanceSummary {
     total_api_calls: number;
-    total_input_tokens: number;
-    total_output_tokens: number;
     avg_latency_ms: number;
     model: string;
 }
@@ -76,10 +73,8 @@ export default function SimulationStep({
         const allResults: SimulationResult[] = [];
         const allProvenance: ProvenanceSummary = {
             total_api_calls: 0,
-            total_input_tokens: 0,
-            total_output_tokens: 0,
             avg_latency_ms: 0,
-            model: "gemini-2.0-flash",
+            model: "AVA Enterprise Intelligence",
         };
         let completedCalls = 0;
         let totalLatency = 0;
@@ -108,8 +103,6 @@ export default function SimulationStep({
                     // Accumulate provenance
                     if (prov) {
                         allProvenance.total_api_calls += prov.total_api_calls || 0;
-                        allProvenance.total_input_tokens += prov.total_input_tokens || 0;
-                        allProvenance.total_output_tokens += prov.total_output_tokens || 0;
                         allProvenance.model = prov.model || allProvenance.model;
                     }
 
@@ -132,7 +125,6 @@ export default function SimulationStep({
                                     answer: row[q].slice(0, 120),
                                     timestamp: Date.now(),
                                     latency_ms: latMs,
-                                    tokens: (callProv?.input_tokens || 0) + (callProv?.output_tokens || 0),
                                 },
                             ]);
                         }
@@ -317,7 +309,7 @@ export default function SimulationStep({
                                             &quot;{log.answer}...&quot;
                                         </p>
                                         {/* Provenance micro-badge */}
-                                        {(log.latency_ms || log.tokens) && (
+                                        {log.latency_ms && (
                                             <div className="flex items-center gap-3 mt-1.5">
                                                 {log.latency_ms ? (
                                                     <span className="text-[8px] font-bold text-slate-400 flex items-center gap-1">
@@ -325,15 +317,10 @@ export default function SimulationStep({
                                                         {log.latency_ms}ms
                                                     </span>
                                                 ) : null}
-                                                {log.tokens ? (
-                                                    <span className="text-[8px] font-bold text-slate-400 flex items-center gap-1">
-                                                        <Hash size={8} />
-                                                        {log.tokens} tokens
-                                                    </span>
-                                                ) : null}
+
                                                 <span className="text-[8px] font-bold text-emerald-600 flex items-center gap-1">
                                                     <Cpu size={8} />
-                                                    gemini-2.0-flash
+                                                    AVA Proprietary Core
                                                 </span>
                                             </div>
                                         )}
@@ -361,10 +348,8 @@ export default function SimulationStep({
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {[
-                            { label: "Model", value: provenance.model, color: "text-blue-600" },
-                            { label: "API Calls", value: provenance.total_api_calls, color: "text-amber-600" },
-                            { label: "Input Tokens", value: provenance.total_input_tokens.toLocaleString(), color: "text-indigo-600" },
-                            { label: "Output Tokens", value: provenance.total_output_tokens.toLocaleString(), color: "text-rose-600" },
+                            { label: "Engine Status", value: "Verified Active", color: "text-blue-600" },
+                            { label: "Audit Capacity", value: provenance.total_api_calls, color: "text-amber-600" },
                             { label: "Avg Latency", value: `${provenance.avg_latency_ms}ms`, color: "text-emerald-600" },
                         ].map((item, i) => (
                             <div key={i} className="text-center">
