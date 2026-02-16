@@ -214,8 +214,10 @@ export const dictionaries = {
         },
         architect: {
             badge: "Architect Protocol",
-            title: "Genesis Suite",
-            sub: "I generate high-fidelity research instruments from zero.",
+            title: "This is Our Genesis Suite",
+            sub: "No clue where to start? This is where my agents and me will make your project happen.",
+            card_title: "Let me Guide You",
+            card_sub: "Your blank page should never stop your market researches",
             onboarding: {
                 step1: "Strategic Objective",
                 step1_desc: "What is your primary research goal?",
@@ -461,8 +463,10 @@ export const dictionaries = {
         },
         architect: {
             badge: "Protocole Architecte",
-            title: "Suite Genesis",
-            sub: "Générez des instruments de recherche haute fidélité à partir de zéro.",
+            title: "Ceci est Notre Suite Genesis",
+            sub: "Vous ne savez pas par où commencer ? C'est ici que mes agents et moi concrétisons votre projet.",
+            card_title: "Laissez-moi vous guider",
+            card_sub: "Votre page blanche ne devrait jamais freiner vos études de marché",
             onboarding: {
                 step1: "Objectif Stratégique",
                 step1_desc: "Quel est votre objectif principal ?",

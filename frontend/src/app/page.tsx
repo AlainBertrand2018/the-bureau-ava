@@ -231,7 +231,7 @@ function TransitionalModal({
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.98 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className={`relative z-[110] w-full max-w-lg mx-4 rounded-3xl overflow-hidden transition-colors duration-700 ${dark
             ? "bg-slate-900/95 border border-white/10 shadow-2xl shadow-black/50"
             : "bg-white border border-slate-200 shadow-2xl shadow-slate-200/60"
@@ -347,9 +347,10 @@ export default function AVAGateway() {
 
   useEffect(() => {
     if (greeting.done) {
-      const t1 = setTimeout(() => setShowSubtitle(true), 300);
-      const t2 = setTimeout(() => setShowBody(true), 800);
-      const t3 = setTimeout(() => setShowCTAs(true), 1300);
+      // Slowed down the staging for a more cinematic feel
+      const t1 = setTimeout(() => setShowSubtitle(true), 500);
+      const t2 = setTimeout(() => setShowBody(true), 1200);
+      const t3 = setTimeout(() => setShowCTAs(true), 2000);
       return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [greeting.done]);
@@ -377,9 +378,9 @@ export default function AVAGateway() {
 
         {/* ─── LEFT: AVA PORTRAIT ─── */}
         <motion.div
-          initial={{ opacity: 0, x: -60, scale: 0.95 }}
+          initial={{ opacity: 0, x: -40, scale: 0.98 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          transition={{ duration: 1.8, ease: [0.19, 1, 0.22, 1], delay: 0.3 }}
           className="relative flex-shrink-0"
         >
           {/* Glow ring behind AVA */}
@@ -440,7 +441,7 @@ export default function AVAGateway() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.8, duration: 1.2, ease: "easeOut" }}
             className="flex items-center gap-3 mb-8"
           >
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-700 ${dark
@@ -474,9 +475,9 @@ export default function AVAGateway() {
           <AnimatePresence>
             {showSubtitle && (
               <motion.p
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                 className={`text-lg md:text-xl lg:text-2xl font-medium mb-5 transition-colors duration-700 ${dark ? "text-emerald-300/90" : "text-emerald-600"
                   }`}
               >
@@ -489,9 +490,9 @@ export default function AVAGateway() {
           <AnimatePresence>
             {showBody && (
               <motion.p
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                 className={`text-sm md:text-base leading-relaxed mb-10 max-w-md transition-colors duration-700 ${dark ? "text-slate-400" : "text-slate-500"
                   }`}
               >
@@ -515,7 +516,7 @@ export default function AVAGateway() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 1.0, ease: [0.19, 1, 0.22, 1] }}
                 >
                   <div
                     onClick={() => setActivePortal("discover")}
@@ -549,7 +550,7 @@ export default function AVAGateway() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                  transition={{ duration: 1.0, ease: [0.19, 1, 0.22, 1], delay: 0.1 }}
                 >
                   <div
                     onClick={() => setActivePortal("cockpit")}

@@ -114,10 +114,10 @@ export default function SurveyArchitect() {
                                     </span>
                                 </div>
                                 <h2 className="text-4xl font-black text-white tracking-tight mb-2 uppercase">
-                                    {t.architect.title}
+                                    {t.architect.card_title}
                                 </h2>
                                 <p className="text-slate-400 font-medium max-w-md">
-                                    {t.architect.sub}
+                                    {t.architect.card_sub}
                                 </p>
                             </div>
                             <div className="hidden md:flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-800/50 px-4 py-2 rounded-full border border-white/5">
