@@ -7,6 +7,8 @@ import {
   Globe, Cpu, ArrowRight, Sparkles, Sun, Moon,
   Shield, BarChart3, FileText, Users, Target, Microscope, X,
 } from "lucide-react";
+import Preloader from "@/components/Preloader";
+import Footer from "@/components/Footer";
 
 /* ─── Typewriter Hook ─── */
 function useTypewriter(text: string, speed = 45, delay = 800) {
@@ -337,6 +339,7 @@ function TransitionalModal({
    MAIN GATEWAY COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 export default function AVAGateway() {
+  const [loading, setLoading] = useState(true);
   const greeting = useTypewriter("Hello. I'm AVA.", 55, 1000);
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showBody, setShowBody] = useState(false);
@@ -346,14 +349,18 @@ export default function AVAGateway() {
   const [activePortal, setActivePortal] = useState<PortalType>(null);
 
   useEffect(() => {
-    if (greeting.done) {
+    if (greeting.done && !loading) {
       // Slowed down the staging for a more cinematic feel
       const t1 = setTimeout(() => setShowSubtitle(true), 500);
       const t2 = setTimeout(() => setShowBody(true), 1200);
       const t3 = setTimeout(() => setShowCTAs(true), 2000);
       return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
-  }, [greeting.done]);
+  }, [greeting.done, loading]);
+
+  if (loading) {
+    return <Preloader onComplete={() => setLoading(false)} />;
+  }
 
   return (
     <div className={`relative h-screen w-screen overflow-hidden flex items-center justify-center transition-colors duration-700 ${dark ? "bg-[#060B18] text-white" : "bg-white text-slate-900"
@@ -615,6 +622,10 @@ export default function AVAGateway() {
         className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent transition-colors duration-700 ${dark ? "via-emerald-500/30" : "via-emerald-400/20"
           }`}
       />
+
+      <div className="absolute bottom-0 left-0 right-0 z-50">
+        <Footer dark={dark} />
+      </div>
     </div>
   );
 }

@@ -19,7 +19,9 @@ import {
     FileText
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useMission } from "@/context/MissionContext";
+import Footer from "@/components/Footer";
 
 const COUNTRIES = [
     // ── AFRICA ──
@@ -274,7 +276,7 @@ export default function MissionControl() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30">
+        <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30 flex flex-col">
             {/* Background FX */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
@@ -282,7 +284,7 @@ export default function MissionControl() {
                 <div className="absolute inset-0 hero-dot-grid opacity-20" />
             </div>
 
-            <main className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-32">
+            <main className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-32 flex-grow w-full">
                 <AnimatePresence mode="wait">
                     {/* STEP 1: CONFIGURE */}
                     {step === "configure" && (
@@ -293,21 +295,64 @@ export default function MissionControl() {
                             exit={{ opacity: 0, y: -20 }}
                             className="space-y-12"
                         >
-                            <div className="text-center space-y-4">
+                            <div className="flex flex-col lg:flex-row items-center gap-12 mb-12">
+                                {/* AVA PORTRAIT (Identical to Hero) */}
                                 <motion.div
-                                    initial={{ scale: 0.8, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+                                    initial={{ opacity: 0, x: -40, scale: 0.98 }}
+                                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                                    transition={{ duration: 1.8, ease: [0.19, 1, 0.22, 1], delay: 0.3 }}
+                                    className="relative flex-shrink-0"
                                 >
-                                    <Cpu size={12} />
-                                    Mission Control Gateway
+                                    <motion.div
+                                        className="absolute inset-0 -m-4 rounded-full"
+                                        style={{
+                                            background: "radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)",
+                                        }}
+                                        animate={{ scale: [1, 1.05, 1], opacity: [0.6, 1, 0.6] }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    />
+
+                                    <div className="relative w-[180px] h-[220px] md:w-[220px] md:h-[280px] lg:w-[260px] lg:h-[320px]">
+                                        <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent opacity-60" />
+                                        <div className="relative w-full h-full rounded-3xl overflow-hidden backdrop-blur-sm bg-gradient-to-b from-slate-800/50 to-slate-900/80 border border-white/5">
+                                            <Image
+                                                src="/images/AVA.webp"
+                                                alt="AVA — Survey Intelligence Analyst"
+                                                fill
+                                                className="object-cover object-top"
+                                                priority
+                                            />
+                                            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-950 to-transparent" />
+                                        </div>
+
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: 1.8, duration: 0.5 }}
+                                            className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md bg-slate-900/90 border border-emerald-500/30"
+                                        >
+                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-300">Online</span>
+                                        </motion.div>
+                                    </div>
                                 </motion.div>
-                                <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase">
-                                    Welcome to My <span className="text-blue-500">Universal Bureau</span>
-                                </h1>
-                                <p className="text-slate-400 text-sm max-w-xl mx-auto font-medium">
-                                    Where I <span className="text-slate-300">simulate the world</span> to stress-test your research against global reality.
-                                </p>
+
+                                <div className="flex-1 text-center lg:text-left space-y-4">
+                                    <motion.div
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+                                    >
+                                        <Cpu size={12} />
+                                        Mission Control Gateway
+                                    </motion.div>
+                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-tight">
+                                        Welcome to My <span className="text-blue-500">Universal Bureau</span>
+                                    </h1>
+                                    <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
+                                        Where I <span className="text-slate-300">simulate the world</span> to stress-test your research against global reality.
+                                    </p>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -522,17 +567,60 @@ export default function MissionControl() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="space-y-12"
                         >
-                            <div className="text-center space-y-4">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
-                                    <CheckCircle2 size={14} />
-                                    Mission Established
+                            <div className="flex flex-col lg:flex-row items-center gap-12 mb-16">
+                                {/* AVA PORTRAIT (Identical to Hero) */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -40, scale: 0.98 }}
+                                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                                    transition={{ duration: 1.8, ease: [0.19, 1, 0.22, 1], delay: 0.3 }}
+                                    className="relative flex-shrink-0"
+                                >
+                                    <motion.div
+                                        className="absolute inset-0 -m-4 rounded-full"
+                                        style={{
+                                            background: "radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)",
+                                        }}
+                                        animate={{ scale: [1, 1.05, 1], opacity: [0.6, 1, 0.6] }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    />
+
+                                    <div className="relative w-[240px] h-[300px] md:w-[280px] md:h-[350px] lg:w-[320px] lg:h-[400px]">
+                                        <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent opacity-60" />
+                                        <div className="relative w-full h-full rounded-3xl overflow-hidden backdrop-blur-sm bg-gradient-to-b from-slate-800/50 to-slate-900/80 border border-white/5">
+                                            <Image
+                                                src="/images/AVA.webp"
+                                                alt="AVA — Survey Intelligence Analyst"
+                                                fill
+                                                className="object-cover object-top"
+                                                priority
+                                            />
+                                            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-950 to-transparent" />
+                                        </div>
+
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: 1.8, duration: 0.5 }}
+                                            className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md bg-slate-900/90 border border-emerald-500/30"
+                                        >
+                                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-300">Online</span>
+                                        </motion.div>
+                                    </div>
+                                </motion.div>
+
+                                <div className="flex-1 text-center lg:text-left space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+                                        <CheckCircle2 size={14} />
+                                        Mission Established
+                                    </div>
+                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-none">
+                                        Cultural <span className="text-emerald-500">Assertions</span>
+                                    </h1>
+                                    <p className="text-slate-400 text-sm md:text-base font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                                        I have analyzed the cultural landscape of {missionData.config.target_country}. Use these insights to build surveys that locals trust, understand, and answer honestly.
+                                    </p>
                                 </div>
-                                <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase">
-                                    Cultural <span className="text-emerald-500">Assertions</span>
-                                </h1>
-                                <p className="text-slate-400 text-sm font-medium max-w-2xl mx-auto leading-relaxed">
-                                    I have analyzed the cultural landscape of {missionData.config.target_country}. Use these insights to build surveys that locals trust, understand, and answer honestly.
-                                </p>
                             </div>
 
                             {/* ECONOMIC REALITY (NEW) */}
@@ -760,15 +848,7 @@ export default function MissionControl() {
                 </AnimatePresence>
             </main>
 
-            <footer className="fixed bottom-0 left-0 right-0 p-6 flex justify-between items-center bg-gradient-to-t from-slate-950 to-transparent pointer-events-none">
-                <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">
-                    Bureau Mission Terminal v2.4
-                </div>
-                <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Neural Link Active
-                </div>
-            </footer>
+            <Footer dark={true} />
 
             <style jsx global>{`
         .glass-card {

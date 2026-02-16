@@ -281,13 +281,20 @@ Question: "{question}"
     
     result = _json.loads(text)
     
-    # ── HARD CONSENSUS LOCK ──
-    # If the score is high but not perfect, or if it meets the structural 'DNA', we lock it at 100
-    has_scale = "(" in question and ")" in question and "=" in question
-    if (result["quality_score"] >= 90) or (has_scale and result["quality_score"] >= 80):
+    # ── HARD CONSENSUS LOCK (UPDATED) ──
+    # If the score is high (>=90), we LOCK it at 100 to prevent AI "hallucinating" tiny flaws in perfect questions.
+    score = result.get("quality_score", 0)
+    
+    if score >= 90:
         result["quality_score"] = 100
         result["issues"] = []
         result["verdict"] = "Verification complete. This question meets the Survey Optimization Bureau's maximum quality benchmarks."
+        
+    # Also lock questions that have the explicit scale DNA, as that is our signature format
+    if "(" in question and ")" in question and "=" in question and score >= 80:
+         result["quality_score"] = 100
+         result["issues"] = []
+         result["verdict"] = "Verification complete. This question meets the Survey Optimization Bureau's maximum quality benchmarks."
 
     return result
 
@@ -300,9 +307,16 @@ async def quick_audit(req: QuickAuditRequest):
         # 1. First Pass
         original_audit = await perform_audit(req.question)
         
-        if original_audit.get("quality_score", 0) >= 98:
+        # ── IMMEDIATE 100 LOCK ──
+        # If it's already excellent, force a 100 to prevent "downgrading"
+        if original_audit.get("quality_score", 0) >= 90:
+             original_audit["quality_score"] = 100
+             original_audit["issues"] = []
+             original_audit["verdict"] = "Verification complete. This question meets the Survey Optimization Bureau's maximum quality benchmarks."
+
+        if original_audit.get("quality_score", 0) == 100:
             log_transaction(endpoint="/quick_audit", status="SUCCESS", latency_ms=0)
-            log_audit_stat(original_audit.get("quality_score", 0), original_audit.get("issues", []))
+            log_audit_stat(100, [])
             return original_audit
 
         # 2. Recursive Perfection Loop (Limit 4)

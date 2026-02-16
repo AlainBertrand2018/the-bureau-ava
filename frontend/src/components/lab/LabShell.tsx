@@ -23,6 +23,7 @@ import ResultsStep from "./ResultsStep";
 import ReportStep from "./ReportStep";
 import { useLanguage } from "@/context/LanguageContext";
 import { useMission } from "@/context/MissionContext";
+import Footer from "@/components/Footer";
 
 
 export interface Persona {
@@ -312,6 +313,7 @@ export default function LabShell() {
                     )}
                 </div>
             </div>
+            <Footer dark={false} />
         </div>
     );
 }

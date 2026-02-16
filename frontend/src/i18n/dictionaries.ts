@@ -10,16 +10,16 @@ export const dictionaries = {
             badge: "The Elite Choice",
             badge_sub: "Used by Leading Mauritian Brands",
             title: "I Secure Success Before Launching Surveys",
-            description: "With my AI agents, we stress-test your research through AI simulation, ensuring your survey project is data-worth.",
-            cta_audit: "DROP SURVEY FOR AUDIT",
+            description: "My AI agents and me rigorously stress-test your market research across global markets, ensuring your survey delivers meaningful, reliable data within each unique cultural, economic, and social context.",
+            cta_audit: "Get a glimpse of what I can do",
             cta_auditing: "AUDITING...",
-            cta_demo: "Interactive Demo",
+            cta_demo: "Start from Scratch",
             scientific_link: "See Why Scientific Simulation Beats Panels"
         },
         quick_audit: {
             title: "Quick Diagnostic",
             header: "STRESS-TEST A SINGLE QUESTION",
-            footer: "I identify structural flaws in seconds",
+            footer: "We Value Privacy • No signup required • Results in under 5 minutes",
             placeholder: "Paste a survey question here...",
             btn: "Run Audit",
             btn_loading: "Analyzing...",
@@ -112,11 +112,11 @@ export const dictionaries = {
             acquiescence: "Acquiescence Bias",
             rewrite_label: "My Rewrite",
             rewrite_desc: "Neutral framing · Single construct · Eliminates acquiescence bias",
-            cta: "Generate Your Report Now"
+            cta: "Audit Your Survey For Free"
         },
         who_its_for: {
-            title_1: "Built for teams that depend",
-            title_2: "on reliable data.",
+            title_1: "Why Choose ME...",
+            title_2: "Why AVA?",
             card_1_title: "Research Agencies",
             card_1_desc: "Ensure questionnaire quality before sending to field",
             card_2_title: "Consultants",
@@ -134,8 +134,8 @@ export const dictionaries = {
         },
         proof: {
             badge: "Internal Pilot Results",
-            title: "We were tested on 12 internal surveys.",
-            sub: "Across healthcare, education, public policy, and consumer research.",
+            title: "I was challenged on 12 internal surveys.",
+            sub: "Across healthcare, education, public policy, and consumer research. And me and my agents, we nailed it!",
             stat_1: "questions stress-tested",
             stat_2: "average accuracy score",
             stat_3: "successful audits delivered",
@@ -181,7 +181,7 @@ export const dictionaries = {
             title_2: "Audit first.",
             sub: "Leave the stress-test to me. Run your first survey quality audit now — completely free.",
             btn: "Start Free Audit",
-            footer: "No credit card · No signup required · Results in under 5 minutes"
+            footer: "We Value Privacy • No signup required • Results in under 5 minutes"
         },
         shield_modal: {
             title: "My Stress-Test Audit",
@@ -259,21 +259,21 @@ export const dictionaries = {
             badge: "Le Choix de l'Élite",
             badge_sub: "Utilisé par les plus grandes marques mauriciennes",
             title: "Je Garantis le Succès Avant de Lancer Vos Sondages",
-            description: "Avec mes agents IA, nous stress-testons votre recherche par simulation, garantissant que votre projet de sondage en vaut la peine.",
-            cta_audit: "DÉPOSER LE SONDAGE POUR AUDIT",
+            description: "Mes agents IA et moi-même testons rigoureusement vos études de marché sur les marchés mondiaux, garantissant que votre sondage fournit des données significatives et fiables dans chaque contexte culturel, économique et social unique.",
+            cta_audit: "Découvrez un aperçu de ce que je peux faire",
             cta_auditing: "ANALYSE EN COURS...",
-            cta_demo: "Démo Interactive",
+            cta_demo: "Partir de Zéro",
             scientific_link: "Pourquoi la simulation scientifique bat les panels"
         },
         quick_audit: {
             title: "Diagnostic Rapide",
             header: "STRESTEZ UNE SEULE QUESTION",
-            footer: "J'identifie les failles structurelles en quelques secondes",
+            footer: "Confidentialité Garantie • Sans inscription • Résultats en moins de 5 minutes",
             placeholder: "Collez votre question ici...",
             btn: "Lancer l'Audit",
             btn_loading: "Analyse...",
             results_title: "Problèmes Identifiés",
-            rewrite_title: "Réécriture Recommandée par AVA",
+            rewrite_title: "Ma Réécriture Recommandée",
             dimensions: "Dimensions Analysées : Neutralité, Clarté, Portée",
             score_good: "Bon",
             score_neutral: "À Revoir",
@@ -361,11 +361,11 @@ export const dictionaries = {
             acquiescence: "Biais d'Acquiescement",
             rewrite_label: "Ma Réécriture",
             rewrite_desc: "Formulation neutre · Concept unique · Élimine le biais d'acquiescement",
-            cta: "Générez Votre Rapport Maintenant"
+            cta: "Auditez Votre Sondage Gratuitement"
         },
         who_its_for: {
-            title_1: "Conçu pour les équipes qui dépendent",
-            title_2: "de données fiables.",
+            title_1: "Pourquoi ME Choisir...",
+            title_2: "Pourquoi AVA?",
             card_1_title: "Agences de Recherche",
             card_1_desc: "Garantissez la qualité du questionnaire avant l'envoi sur le terrain",
             card_2_title: "Consultants",
@@ -383,8 +383,8 @@ export const dictionaries = {
         },
         proof: {
             badge: "Résultats du Pilote Interne",
-            title: "Nous avons été testés sur 12 sondages internes.",
-            sub: "Santé, éducation, politiques publiques et recherche de consommation.",
+            title: "J'ai été mise au défi sur 12 sondages internes.",
+            sub: "Santé, éducation, politiques publiques et recherche de consommation. Et moi et mes agents, nous avons assuré !",
             stat_1: "questions testées",
             stat_2: "score de précision moyen",
             stat_3: "audits réussis livrés",
@@ -428,9 +428,9 @@ export const dictionaries = {
         final_cta: {
             title_1: "Ne devinez plus.",
             title_2: "Auditez.",
-            sub: "Laissez le stress-test à AVA. Lancez votre premier audit de qualité dès maintenant — c'est gratuit.",
+            sub: "Laissez-moi m'occuper du stress-test. Lancez votre premier audit de qualité dès maintenant — c'est gratuit.",
             btn: "Commencer l'Audit Gratuit",
-            footer: "Pas de carte bancaire · Sans inscription · Résultats en moins de 5 minutes"
+            footer: "Confidentialité Garantie • Sans inscription • Résultats en moins de 5 minutes"
         },
         shield_modal: {
             title: "Mon Audit de Stress-Test",
@@ -493,7 +493,7 @@ export const dictionaries = {
                 best_practices: "Meilleures Pratiques de Déploiement",
                 outcomes: "Résultats de Données Prévus",
                 export: "Exporter le Pack",
-                certified: "CERTIFIÉ AVA"
+                certified: "CERTIFIÉ BUREAU"
             }
         }
     }
