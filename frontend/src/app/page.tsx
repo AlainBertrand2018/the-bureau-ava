@@ -162,9 +162,9 @@ const PORTAL_DATA = {
     accentBgLight: "bg-emerald-50",
     accentBorder: "border-emerald-500/20",
     accentBorderLight: "border-emerald-200",
-    title: "Entering The Cockpit",
+    title: "Survey Any Slice of the Global Market",
     subtitle: "My Mission Control & AI Lab",
-    description: "This is where the work happens. I brief you through my multi-agent intelligence system — I research your target market, build cultural dossiers, and generate statistically rigorous survey instruments — all in real time.",
+    description: 'This is where the work happens. Choose the country you want to probe into. My agents and me will  brief you about the "dos and donts" — We will research your target market, build the relevant cultural dossiers, and generate statistically rigorous survey instruments — all in real time. Try me...',
     features: [
       { icon: Target, label: "Mission Control", desc: "Configure demographics, country and language" },
       { icon: Microscope, label: "Sentinel & Profiler", desc: "My agents researching your target market live" },
@@ -529,7 +529,7 @@ export default function AVAGateway() {
                     onClick={() => setActivePortal("discover")}
                     onMouseEnter={() => setHoveredCard("discover")}
                     onMouseLeave={() => setHoveredCard(null)}
-                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 ${dark
+                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:w-[300px] min-h-[100px] ${dark
                       ? "border border-white/10 bg-white/[0.03] hover:border-slate-500/30 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-slate-500/5"
                       : "border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-100/40 shadow-md shadow-slate-100"
                       }`}
@@ -563,7 +563,7 @@ export default function AVAGateway() {
                     onClick={() => setActivePortal("cockpit")}
                     onMouseEnter={() => setHoveredCard("cockpit")}
                     onMouseLeave={() => setHoveredCard(null)}
-                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 ${dark
+                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:w-[300px] min-h-[100px] ${dark
                       ? "border border-emerald-500/20 bg-emerald-500/[0.05] hover:border-emerald-400/40 hover:bg-emerald-500/[0.1] hover:shadow-lg hover:shadow-emerald-500/10"
                       : "border border-emerald-200 bg-emerald-50/30 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-xl hover:shadow-emerald-100/40 shadow-md shadow-emerald-50"
                       }`}
@@ -576,7 +576,7 @@ export default function AVAGateway() {
                     </div>
                     <div className="flex-1">
                       <div className={`text-sm font-bold tracking-wide transition-colors duration-700 ${dark ? "text-white" : "text-slate-800"}`}>
-                        Enter The Cockpit
+                        Capture insights from any corner of the globe.
                       </div>
                       <div className={`text-[11px] mt-0.5 transition-colors duration-700 ${dark ? "text-emerald-500/70" : "text-emerald-600/70"}`}>
                         Mission Control & AI Lab
