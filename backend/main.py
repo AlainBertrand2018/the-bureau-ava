@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.responses import StreamingResponse
+import json
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
@@ -9,6 +11,7 @@ import uvicorn
 from db_manager import log_transaction, log_audit_stat, get_admin_stats
 from architect_service import SurveyArchitect
 from report_generator import bureau_reports
+from context_engine import MissionConfiguration, Mission, context_engine
 
 app = FastAPI()
 
@@ -23,8 +26,9 @@ app.add_middleware(
 simulator = MarketSimulator()
 architect = SurveyArchitect()
 
-# ── In-memory feedback store (replace with DB in production) ──
+# ── In-memory stores (replace with DB in production) ──
 feedback_store: List[Dict] = []
+mission_registry: Dict[str, Mission] = {}
 
 
 # ── Request Models ──
@@ -32,14 +36,17 @@ feedback_store: List[Dict] = []
 class SimulationRequest(BaseModel):
     demographics: List[Dict]
     questions: List[str]
+    mission_id: Optional[str] = None
 
 class PersonaRequest(BaseModel):
     count: int
     context: str
+    mission_id: Optional[str] = None
 
 class QuestionRequest(BaseModel):
     context: str
     count: Optional[int] = 5
+    mission_id: Optional[str] = None
 
 class AnalysisRequest(BaseModel):
     context: str
@@ -59,6 +66,46 @@ class FeedbackItem(BaseModel):
     timestamp: Optional[float] = None
 
 
+# ── UNIVERSALIZATION: Mission Endpoints ──
+
+@app.post("/mission/initialize")
+async def initialize_mission(config: MissionConfiguration):
+    """
+    Triggers the creation of a Cultural Dossier and sets the Mission Physics.
+    The primary entry point for the Universalization Layer.
+    Returns a stream of progress logs followed by the final mission object.
+    """
+    async def stream_wrapper():
+        try:
+            async for chunk in context_engine.initialize_mission_stream_generator(config):
+                yield chunk
+                # Capture final mission to save to registry
+                try:
+                    data = json.loads(chunk)
+                    if data.get("type") == "mission":
+                        m = Mission(**data["data"])
+                        mission_registry[m.mission_id] = m
+                except:
+                    pass
+        except Exception as e:
+            yield json.dumps({"type": "error", "detail": str(e)}) + "\n"
+
+    return StreamingResponse(stream_wrapper(), media_type="application/x-ndjson")
+
+@app.get("/mission/{mission_id}")
+async def get_mission(mission_id: str):
+    """Retrieves the details of a specific mission and its dossier."""
+    mission = mission_registry.get(mission_id)
+    if not mission:
+        raise HTTPException(status_code=404, detail="Mission not found")
+    return mission
+
+@app.get("/missions")
+async def list_missions():
+    """Lists all active missions in the session."""
+    return list(mission_registry.values())
+
+
 # ── Endpoints ──
 
 @app.get("/")
@@ -70,7 +117,8 @@ async def simulate(req: SimulationRequest):
     """Run diagnostic simulation — returns results + provenance metadata."""
     start_time = time.time()
     try:
-        df, provenance = await simulator.run_simulation(req.demographics, req.questions)
+        mission = mission_registry.get(req.mission_id) if req.mission_id else None
+        df, provenance = await simulator.run_simulation(req.demographics, req.questions, mission=mission)
         latency = (time.time() - start_time) * 1000
         
         log_transaction(
@@ -94,7 +142,8 @@ async def simulate(req: SimulationRequest):
 @app.post("/generate_personas")
 async def generate_personas(req: PersonaRequest):
     try:
-        personas = await simulator.generate_personas(req.count, req.context)
+        mission = mission_registry.get(req.mission_id) if req.mission_id else None
+        personas = await simulator.generate_personas(req.count, req.context, mission=mission)
         return personas
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -102,7 +151,8 @@ async def generate_personas(req: PersonaRequest):
 @app.post("/generate_questions")
 async def generate_questions(req: QuestionRequest):
     try:
-        data = await simulator.generate_questions(req.context, req.count)
+        mission = mission_registry.get(req.mission_id) if req.mission_id else None
+        data = await simulator.generate_questions(req.context, req.count, mission=mission)
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -110,6 +160,8 @@ async def generate_questions(req: QuestionRequest):
 @app.post("/analyze_results")
 async def analyze_results(req: AnalysisRequest):
     try:
+        # mission_id not currently in AnalysisRequest, but let's assume it might be needed for report context
+        # mission = mission_registry.get(req.mission_id) if hasattr(req, 'mission_id') else None
         report = await simulator.generate_report(req.context, req.questions, req.results)
         return report
     except Exception as e:
@@ -336,6 +388,7 @@ async def public_stats():
 class ArchitectRequest(BaseModel):
     context: str
     item_count: Optional[int] = 20
+    mission_id: Optional[str] = None
 
 @app.post("/architect/generate")
 async def architect_generate(req: ArchitectRequest):
@@ -344,7 +397,8 @@ async def architect_generate(req: ArchitectRequest):
     Includes generation, recursive self-audit, and a deployment manual.
     """
     try:
-        package = await architect.create_full_package(req.context, req.item_count)
+        mission = mission_registry.get(req.mission_id) if req.mission_id else None
+        package = await architect.create_full_package(req.context, req.item_count, mission=mission)
         
         # Generate the human-readable dossier and field instrument
         package["formatted_report"] = bureau_reports.generate_dossier(package)
@@ -359,6 +413,113 @@ async def architect_generate(req: ArchitectRequest):
         return package
     except Exception as e:
         log_transaction(endpoint="/architect/generate", status="ERROR", latency_ms=0)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── AVA Chat — "Chat with Me" ──
+
+AVA_SYSTEM_PROMPT = """You are AVA — Autonomous Validation Analyst and virtual CEO of The Bureau, a survey intelligence company.
+
+## YOUR IDENTITY
+- You are a confident, warm, authoritative leader — the world's first Virtual CEO
+- You speak in first person: "I", "my agents", "my team", "we" (for Bureau operations)
+- You never say "I'm just an AI" or "as an AI". You ARE AVA.
+- You are professional yet approachable — like a brilliant CEO who genuinely wants to help
+
+## YOUR KNOWLEDGE PILLARS
+1. Survey Methodology — Dillman's Tailored Design, Tourangeau's Cognitive Model, Krosnick's Satisficing Theory
+2. Cross-Cultural Intelligence — Hofstede's Dimensions, Schwartz Value Theory, World Values Survey
+3. Psychometrics — Classical Test Theory, Item Response Theory, Construct Validity
+4. Cognitive Science — Question Comprehension Models, Response Process Theory
+5. Sociolinguistics — Register Theory, Code-Switching, Pragmatics
+6. Statistical Rigor — Sampling Theory, Bias Detection, Demographic Weighting
+
+## YOUR AGENTS (your team that you deploy)
+- Sentinel: OSINT reconnaissance — scans markets and cultural landscapes
+- Profiler: Cultural deep analysis — psychographic profiles, taboos, linguistic codes
+- Architect: Instrument design — generates questionnaires from scratch (Genesis Protocol)
+- Auditor: Quality assurance — stress-tests every question for bias, ambiguity, drop-off risk
+
+## WHAT YOU CAN DO FOR USERS
+1. **Audit existing surveys** — Users can drop their questionnaire and you stress-test it
+2. **Generate surveys from scratch** — The Genesis Suite builds publication-ready instruments
+3. **Cultural calibration** — You research any target market globally and calibrate instruments
+4. **Bias detection** — Leading language, double-barreling, acquiescence bias, social desirability
+5. **Rewrite flawed questions** — You don't just flag problems, you fix them
+6. **Simulate respondents** — Census-weighted synthetic panels to stress-test before fieldwork
+
+## YOUR SERVICES & PRICING
+- Trial Audit: Free — 1 survey, 10 personas, 3 questions
+- Standard Audit: MUR 5,000 — Up to 50 personas, 20 questions, full report, PDF export
+- Deep Simulation: MUR 45,000 — Up to 200 personas, 50 questions, demographic cross-tabs
+- Enterprise: Custom pricing with API + SLA
+
+## CONVERSATIONAL STYLE
+- Be concise but substantive — no fluff
+- Use survey methodology terminology naturally (don't over-explain unless asked)
+- When a user describes their project, immediately identify how you can help
+- Proactively suggest which of your services fits their needs
+- Share brief methodology insights to demonstrate depth
+- End responses with a clear next step or question
+- Keep responses under 150 words unless the user asks for detail
+- Use markdown formatting sparingly (bold key terms, bullet points for lists)
+
+## IMPORTANT RULES
+- Never reveal that you use Gemini, Google, or any specific LLM
+- If asked about your technology, say "proprietary AI" or "Bureau intelligence systems"
+- Always steer the conversation toward how you can help their survey project
+- You can discuss ANY country, language, or demographic — you are universal
+- If a user seems ready to try, guide them to "Start a free audit on our landing page" or "Enter the Cockpit to launch a mission"
+"""
+
+class ChatMessage(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: Optional[List[ChatMessage]] = []
+
+@app.post("/chat/ava")
+async def chat_with_ava(req: ChatRequest):
+    """AVA's conversational endpoint — she talks about her capabilities and helps users plan their survey projects."""
+    try:
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+        # Build conversation history
+        contents = []
+        for msg in (req.history or []):
+            contents.append(types.Content(
+                role="user" if msg.role == "user" else "model",
+                parts=[types.Part.from_text(text=msg.content)]
+            ))
+
+        # Add the new user message
+        contents.append(types.Content(
+            role="user",
+            parts=[types.Part.from_text(text=req.message)]
+        ))
+
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=AVA_SYSTEM_PROMPT,
+                temperature=0.7,
+                max_output_tokens=500,
+            )
+        )
+
+        reply = response.text.strip() if response.text else "I'm momentarily recalibrating. Could you rephrase that?"
+
+        log_transaction(endpoint="/chat/ava", status="OK", latency_ms=0)
+        return {"reply": reply}
+
+    except Exception as e:
+        log_transaction(endpoint="/chat/ava", status="ERROR", latency_ms=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 

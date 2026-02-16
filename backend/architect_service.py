@@ -40,41 +40,33 @@ class SurveyArchitect:
     # Same AI, same evaluation — but NO auto-pass exemption.
     # The /quick_audit hero demo is completely unaffected.
     # ──────────────────────────────────────────────────────────
-    async def _genuine_audit(self, question: str) -> Dict[str, Any]:
+    async def _genuine_audit(self, question: str, mission: Optional[Any] = None) -> Dict[str, Any]:
         """
         Honest self-audit for AVA's own output.
-        
-        Key difference from /quick_audit's perform_audit():
-        - NO "Gold Standard" exemption ("DO NOT find flaws")
-        - NO Consensus Lock (auto-100)
-        - Evaluates EVERY question critically, even if it has a scale
         """
+        target = mission.config.target_country if mission else "Mauritius"
+        context_constraints = ""
+        if mission:
+            d = mission.dossier
+            context_constraints = (
+                f"\nCULTURAL CONTEXT FOR {target}:\n"
+                f"- AXIOMS: {d.cultural_axioms}\n"
+                f"- LINGUISTIC NUANCES: {d.linguistic_nuances}\n"
+                f"- TABOOS: {d.taboos}\n"
+            )
+
         prompt = f"""You are AVA, an elite survey methodologist at The Bureau.
-Perform a RIGOROUS quality audit of this survey question. Be genuinely critical.
-Having a response scale does NOT automatically make a question good.
+Perform a RIGOROUS quality audit of this survey question in the context of {target}.
+{context_constraints}
+Be genuinely critical. Having a response scale does NOT automatically make a question good.
 
 CHECK ALL OF THESE — score harshly if ANY are present:
 
 1. LEADING/BIAS: Does the phrasing push toward a particular answer?
-   BAD: "How much do you agree that climate change is a serious threat?" (presupposes threat)
-   GOOD: "How concerned are you about the potential effects of climate change? (1=Not at all, 5=Extremely)"
-
 2. DOUBLE-BARRELED: Does it ask about TWO things?
-   BAD: "How satisfied are you with our quality and price?" (two concepts)
-   GOOD: "How satisfied are you with service quality? (1=Very Dissatisfied, 5=Very Satisfied)"
-
 3. AMBIGUITY: Could respondents interpret key terms differently?
-   BAD: "How often do you engage in eco-friendly activities?" (what counts as eco-friendly?)
-   GOOD: "In the past month, how often have you recycled household waste? (Never, Rarely, Sometimes, Often, Always)"
-
 4. MISSING OPTIONS: Does the scale miss valid responses?
-   BAD: "How often do you exercise? (Daily, Weekly, Monthly)" (missing "Never")
-   GOOD: "How often do you exercise? (Never, Rarely, Monthly, Weekly, Daily)"
-
 5. VAGUE TEMPORAL FRAME: No specific time reference?
-   BAD: "How satisfied are you with our service?"
-   GOOD: "In the past 3 months, how satisfied have you been with our service?"
-
 6. SOCIAL DESIRABILITY BIAS: Would respondents feel pressured to answer a certain way?
 7. COGNITIVE BURDEN: Too complex or demanding?
 
@@ -116,13 +108,13 @@ Question: "{question}"
                 "rewrite": question
             }
 
-    async def _perfect_single_question(self, question: str) -> str:
+    async def _perfect_single_question(self, question: str, mission: Optional[Any] = None) -> str:
         """
         Runs a single question through the genuine audit.
         If it fails (<95), uses the rewrite. Re-audits up to 2 passes.
         Returns the best version.
         """
-        audit = await self._genuine_audit(question)
+        audit = await self._genuine_audit(question, mission=mission)
         score = int(audit.get("quality_score", 0))
 
         if score >= 95:
@@ -132,9 +124,10 @@ Question: "{question}"
         current = audit.get("rewrite", question) or question
         best = current
         best_score = score
+        target = mission.config.target_country if mission else "Mauritius"
 
         for _ in range(2):
-            re_audit = await self._genuine_audit(current)
+            re_audit = await self._genuine_audit(current, mission=mission)
             re_score = int(re_audit.get("quality_score", 0))
 
             if re_score > best_score:
@@ -145,7 +138,7 @@ Question: "{question}"
                 return current
 
             # Targeted rewrite addressing specific issues
-            rewrite_prompt = f"""You are a senior survey methodologist. Fix this question.
+            rewrite_prompt = f"""You are a senior survey methodologist for {target}. Fix this question.
 
 CURRENT: "{current}"
 SCORE: {re_score}/100
@@ -158,7 +151,7 @@ REWRITE RULES:
 - If MISSING OPTIONS: Add "Other" or expand the scale.
 - If NO TEMPORAL FRAME: Add "In the past [X months]..."
 - MUST end with an appropriate scale in parentheses.
-- Keep it concise and culturally neutral for Mauritius.
+- Keep it concise and culturally tailored for {target}.
 
 Output ONLY the perfected question. No quotes, no explanation."""
 
@@ -177,7 +170,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
 
         return best
 
-    async def perfect_instrument(self, questions: List[str]) -> List[str]:
+    async def perfect_instrument(self, questions: List[str], mission: Optional[Any] = None) -> List[str]:
         """
         Runs ALL 20 questions through genuine audit IN PARALLEL.
         Semaphore(5) prevents API rate limits.
@@ -186,7 +179,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
 
         async def bounded(q):
             async with sem:
-                return await self._perfect_single_question(q)
+                return await self._perfect_single_question(q, mission=mission)
 
         tasks = [bounded(q) for q in questions]
         return list(await asyncio.gather(*tasks))
@@ -194,38 +187,30 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
     # PHASE 1: Generate raw instrument
     # ──────────────────────────────────────────────────────────
-    async def generate_instrument(self, context: str, count: int = 20) -> Dict[str, Any]:
+    async def generate_instrument(self, context: str, count: int = 20, mission: Optional[Any] = None) -> Dict[str, Any]:
+        target = mission.config.target_country if mission else "Mauritius"
+        
         prompt = f"""
         [SCIENTIFIC PROTOCOL: ARCHITECT GENESIS]
         You are the Lead Research Architect at The Bureau.
-        Craft a {count}-item survey instrument for this context:
-
+        Craft a {count}-item survey instrument for {target}.
+        
         CONTEXT: {context}
+        """
 
+        if mission:
+             prompt += f"\nCULTURAL DOSSIER FOR {target}:\n{json.dumps(mission.dossier.dict(), indent=2)}\n"
+
+        prompt += f"""
         CRITICAL RULES — every question MUST:
         1. Ask about exactly ONE concept (never double-barreled)
-        2. Use neutral, unbiased language (no leading words like "serious", "important", "agree that")
+        2. Use neutral, unbiased language
         3. Include a specific temporal frame ("In the past 3 months...")
         4. End with a complete response scale in parentheses
-        5. Be culturally appropriate for diverse Mauritian audiences
-
-        ANTI-PATTERNS — these will FAIL audit:
-        ✗ "How much do you agree that X is a threat?" → LEADING (presupposes threat)
-        ✗ "How satisfied are you with quality and price?" → DOUBLE-BARRELED
-        ✗ "Do you engage in eco-friendly activities?" → AMBIGUOUS (undefined term)
-        ✗ "Are you aware of X?" → VAGUE (no temporal frame, binary)
-        
-        GOOD PATTERNS:
-        ✓ "In the past 3 months, how satisfied have you been with network speed? (1=Very Dissatisfied, 5=Very Satisfied)"
-        ✓ "How familiar are you with the topic of climate change? (Not at all familiar, Slightly familiar, Moderately familiar, Very familiar, Extremely familiar)"
-        ✓ "In the past year, how often have you recycled household waste? (Never, Rarely, Sometimes, Often, Always)"
+        5. Be culturally appropriate for {target} audiences
 
         Divide into phases: Warm-up, KPI, Behavioral, Demographic.
-
-        Return ONLY a JSON object with:
-        - questionnaire: [list of {count} strings]
-        - strategic_rationale: (string)
-        - metadata: {{ items: {count}, version: "2.0-Genesis" }}
+        ...
         """
 
         response = await self.client.aio.models.generate_content(
@@ -239,7 +224,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
     # MAIN ENTRY: Genesis Pipeline
     # ──────────────────────────────────────────────────────────
-    async def create_full_package(self, context: str, count: int = 20) -> Dict[str, Any]:
+    async def create_full_package(self, context: str, count: int = 20, mission: Optional[Any] = None) -> Dict[str, Any]:
         """
         1. Generate raw instrument
         2. Perfect via genuine audit (parallel, NO auto-pass)
@@ -247,17 +232,19 @@ Output ONLY the perfected question. No quotes, no explanation."""
         4. Package
         """
         # 1. Generate
-        initial = await self.generate_instrument(context, count)
+        initial = await self.generate_instrument(context, count, mission=mission)
         questions = initial.get("questionnaire", [])
 
-        # 2. Perfect via genuine audit (PARALLEL, NO Consensus Lock)
-        perfected = await self.perfect_instrument(questions)
+        # 2. Perfect via genuine audit
+        perfected = await self.perfect_instrument(questions, mission=mission)
 
-        # 3. Validate via simulation (VALIDATION MODE — natural responses, no Red Team)
-        personas = await self.simulator.generate_personas_validation(5, context)
-        df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation")
+        # 3. Validate via simulation
+        personas = await self.simulator.generate_personas_validation(5, context, mission=mission)
+        df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
         results_list = df_results.to_dict(orient="records")
-        simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list)
+        simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission)
+        
+        # ... rest of packaging
 
         # 4. Field Manual
         package_prompt = f"""

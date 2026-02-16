@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { MissionProvider } from "@/context/MissionContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AVA by The Bureau | AI Survey Quality Auditor",
     description:
-      "AVA deploys diagnostic AI personas to stress-test your survey questionnaire. Catch bias, confusion, drop-off risks, and structural flaws in under 5 minutes.",
+      "I deploy diagnostic AI personas to stress-test your survey questionnaire. Catch bias, confusion, drop-off risks, and structural flaws in under 5 minutes.",
     url: "https://the-bureau-ava.vercel.app",
     siteName: "AVA by The Bureau",
     images: [
@@ -96,7 +97,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <LanguageProvider>
-          {children}
+          <MissionProvider>
+            {children}
+          </MissionProvider>
         </LanguageProvider>
       </body>
     </html>

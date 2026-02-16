@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* 
+  🚨 NON-NEGOTIABLE RULE: NO ITALICS ALLOWED 🚨
+  "Italics belong in books, not on screens."
+  Do not use italic fonts or the 'italic' class anywhere in this project.
+*/
+
 :root {
   /* ─── AVA Corporate Light Palette ─── */
   --background: #FFFFFF;

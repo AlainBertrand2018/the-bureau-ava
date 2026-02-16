@@ -15,6 +15,7 @@ import {
     Hash,
     ShieldCheck,
 } from "lucide-react";
+import { useMission } from "@/context/MissionContext";
 import type { Persona, SimulationResult } from "./LabShell";
 
 interface SimulationStepProps {
@@ -50,6 +51,7 @@ export default function SimulationStep({
     setIsSimulating,
     onComplete,
 }: SimulationStepProps) {
+    const { currentMission } = useMission();
     const [liveLogs, setLiveLogs] = useState<LiveLog[]>([]);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState("");
@@ -87,6 +89,7 @@ export default function SimulationStep({
                     body: JSON.stringify({
                         demographics: [persona],
                         questions,
+                        mission_id: currentMission?.mission_id
                     }),
                 });
 
@@ -167,7 +170,7 @@ export default function SimulationStep({
                     <span className="text-slate-900 font-bold">{questions.length}</span>{" "}
                     client questions ={" "}
                     <span className="text-blue-600 font-bold">{totalCalls}</span> unique
-                    diagnostic interactions via Gemini 2.0 Flash.
+                    diagnostic interactions via Bureau AI.
                 </p>
             </div>
 
@@ -230,8 +233,7 @@ export default function SimulationStep({
                         Launch Diagnostic Dry Run
                     </button>
                     <p className="text-slate-400 text-xs font-bold mt-4 uppercase tracking-widest">
-                        This will make {totalCalls} diagnostic calls — estimated{" "}
-                        {Math.ceil(totalCalls * 1.5)}s
+                        Universalizing for {currentMission?.config.target_country || "Mauritius"} • {totalCalls} diagnostic calls • Estimated {Math.ceil(totalCalls * 1.5)}s
                     </p>
                 </motion.div>
             )}

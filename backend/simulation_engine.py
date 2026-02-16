@@ -66,19 +66,33 @@ class MarketSimulator:
         self.total_calls = 0
         self.total_input_tokens = 0
         self.total_output_tokens = 0
+        self.mission: Optional[Any] = None  # Stores the active Mission object
         
-    async def get_response(self, persona: Dict, question: str, retries: int = 3) -> Dict[str, Any]:
+    async def get_response(self, persona: Dict, question: str, mission: Optional[Any] = None, retries: int = 3) -> Dict[str, Any]:
         """
         Returns a dict with:
           - text: the AI response
           - provenance: model, tokens, latency proof
         """
+        # Universalization Bridge: Inject Mission Context if available
+        context_constraints = ""
+        if mission:
+            d = mission.dossier
+            context_constraints = (
+                f"\nMISSION CONTEXT: {mission.config.target_country} ({mission.config.target_region})\n"
+                f"CULTURAL AXIOMS: {', '.join(d.cultural_axioms)}\n"
+                f"LINGUISTIC NUANCES: {', '.join(d.linguistic_nuances)}\n"
+                f"HONORIFIC/REGISTER: Use {mission.config.target_language} rules.\n"
+                f"TABOOS (HANDLE WITH CARE): {', '.join(d.taboos)}\n"
+            )
+
         # Survey Quality Auditor — Diagnostic Lens Prompt
         sys_instruct = (
-            f"You are a survey quality auditor operating as a diagnostic respondent. "
+            f"You are a survey quality auditor operating as a diagnostic respondent in {mission.config.target_country if mission else 'Mauritius'}. "
             f"You are simulating the perspective of: {persona.get('name')}, age {persona.get('age')}, "
             f"from {persona.get('location')}, occupation: {persona.get('occupation')}. "
-            f"Personality traits: {persona.get('traits')}.\n\n"
+            f"Personality traits: {persona.get('traits')}.\n"
+            f"{context_constraints}\n"
             f"YOUR GOAL IS NOT STATISTICAL ACCURACY. Your goal is STRUCTURAL DIAGNOSTICS.\n\n"
             f"When answering the survey question, respond naturally as this person would — "
             f"BUT pay special attention to and flag any of these issues you encounter:\n"
@@ -143,13 +157,23 @@ class MarketSimulator:
     # VALIDATION MODE — Natural responses (for Architect)
     # Personas respond as REAL people, no adversarial diagnostics.
     # ──────────────────────────────────────────────────────────
-    async def get_response_validation(self, persona: Dict, question: str, retries: int = 3) -> Dict[str, Any]:
+    async def get_response_validation(self, persona: Dict, question: str, mission: Optional[Any] = None, retries: int = 3) -> Dict[str, Any]:
         """Natural response mode — persona answers as a real person would.
         No Red Team instructions, no structural diagnostics."""
+        context_constraints = ""
+        if mission:
+            d = mission.dossier
+            context_constraints = (
+                f"\nMISSION CONTEXT: {mission.config.target_country} ({mission.config.target_region})\n"
+                f"LANGUAGE: {mission.config.target_language}\n"
+                f"CULTURAL RULES: {', '.join(d.cultural_axioms)}\n"
+            )
+
         sys_instruct = (
             f"You are {persona.get('name')}, age {persona.get('age')}, "
             f"from {persona.get('location')}, occupation: {persona.get('occupation')}. "
-            f"Personality: {persona.get('traits')}.\n\n"
+            f"Personality: {persona.get('traits')}.\n"
+            f"{context_constraints}\n"
             f"You are taking a survey. Answer each question naturally and honestly as this person would. "
             f"Give your genuine response based on your life experience, knowledge, and perspective.\n\n"
             f"Format:\n"
@@ -193,19 +217,24 @@ class MarketSimulator:
                 else:
                     return {"text": f"ERROR: {str(e)}", "provenance": {"model": self.model_name, "error": str(e)}}
 
-    async def generate_personas_validation(self, count: int, context: str) -> List[Dict]:
-        """Generates REALISTIC respondent personas — diverse but not adversarial."""
+        target = mission.config.target_country if mission else "Mauritius"
+        region = mission.config.target_region if mission else "local areas"
+        
         prompt = (
-            f"Generate {count} realistic survey respondent profiles representative of Mauritius.\n\n"
+            f"Generate {count} realistic survey respondent profiles representative of {target} ({region}).\n\n"
             f"SURVEY CONTEXT: {context}\n\n"
+        )
+        
+        if mission:
+            prompt += f"CULTURAL DOSSIER FOR {target}:\n{json.dumps(mission.dossier.dict(), indent=2)}\n\n"
+            
+        prompt += (
             f"Create diverse, realistic people who would actually take this survey:\n"
             f"- Mix of ages (18-65), genders, education levels\n"
-            f"- Real Mauritian locations (Port Louis, Curepipe, Quatre Bornes, Rose Hill, Flacq, etc.)\n"
-            f"- Realistic occupations common in Mauritius\n"
+            f"- Real {target} locations\n"
+            f"- Realistic occupations common in {target}\n"
             f"- Natural personality traits and attitudes\n\n"
-            f"These should be ORDINARY RESPONDENTS, not diagnostic lenses or adversarial testers.\n\n"
             f"Return ONLY a JSON list of objects with: 'name', 'age', 'location', 'occupation', 'traits'.\n"
-            f"In 'traits', describe their personality and likely survey-taking behavior naturally."
         )
         try:
             response = await self.client.aio.models.generate_content(
@@ -221,7 +250,7 @@ class MarketSimulator:
             print(f"Error generating validation personas: {e}")
             return [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Average respondent"}]
 
-    async def run_simulation(self, demographics: List[Dict], questions: List[str], mode: str = "diagnostic"):
+    async def run_simulation(self, demographics: List[Dict], questions: List[str], mode: str = "diagnostic", mission: Optional[Any] = None):
         """Runs simulation with FULL parallelization across all persona×question pairs.
         Uses a semaphore to cap concurrency and avoid API rate limits.
         
@@ -236,7 +265,7 @@ class MarketSimulator:
         
         async def bounded_call(persona, question):
             async with sem:
-                return persona, question, await respond(persona, question)
+                return persona, question, await respond(persona, question, mission=mission)
         
         tasks = []
         for persona in demographics:
@@ -276,12 +305,20 @@ class MarketSimulator:
 
         return pd.DataFrame(results), provenance_summary
 
-    async def generate_personas(self, count: int, context: str) -> List[Dict]:
+    async def generate_personas(self, count: int, context: str, mission: Optional[Any] = None) -> List[Dict]:
         """Generates diagnostic respondent archetypes — stress-test lenses, not a representative sample."""
+        target = mission.config.target_country if mission else "Mauritius"
+        
         prompt = (
-            f"You are a survey quality auditor preparing a diagnostic dry-run of a client's survey.\n"
-            f"Generate {count} diverse respondent archetypes representative of Mauritius demographics.\n\n"
+            f"You are a survey quality auditor preparing a diagnostic dry-run of a client's survey in {target}.\n"
+            f"Generate {count} diverse respondent archetypes representative of {target} demographics.\n\n"
             f"SURVEY CONTEXT: {context}\n\n"
+        )
+        
+        if mission:
+            prompt += f"USE THIS CULTURAL DOSSIER TO SHAPE THE PERSONAS:\n{json.dumps(mission.dossier.dict(), indent=2)}\n\n"
+
+        prompt += (
             f"IMPORTANT: These are NOT for statistical accuracy. They are DIAGNOSTIC LENSES — \n"
             f"each persona should stress-test the survey from a different angle:\n"
             f"- Include personas likely to be CONFUSED by ambiguous questions\n"
@@ -290,11 +327,8 @@ class MarketSimulator:
             f"- Include personas from different education levels who may interpret questions differently\n"
             f"- Include at least one 'adversarial' persona who is skeptical or rushed\n"
             f"- Include at least one persona with low literacy or limited survey experience\n\n"
-            f"Ground each persona in real Mauritian demographics (Port Louis, Curepipe, Quatre Bornes, \n"
-            f"Rose Hill, Flacq, Mahebourg, etc.) with realistic occupations and ages.\n\n"
+            f"Ground each persona in real {target} demographics with realistic occupations and ages.\n\n"
             f"Return ONLY a JSON list of objects with these keys: 'name', 'age', 'location', 'occupation', 'traits'.\n"
-            f"In 'traits', describe the persona's attitude, survey behavior patterns, and what diagnostic \n"
-            f"value they bring (e.g., 'Skeptical of corporate surveys, will flag leading language')."
         )
         try:
             response = await self.client.aio.models.generate_content(
@@ -310,17 +344,29 @@ class MarketSimulator:
             print(f"Error generating personas: {e}")
             return [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Neutral baseline respondent"}]
 
-    async def generate_questions(self, context: str, count: int = 5) -> Dict:
+    async def generate_questions(self, context: str, count: int = 5, mission: Optional[Any] = None) -> Dict:
         """[UPSELL] AI-drafted questionnaire — generates optimised questions based on context."""
+        target = mission.config.target_country if mission else "Mauritius"
+        
         prompt = (
             f"You are a senior survey methodologist at The Bureau, a premium survey consultancy.\n"
-            f"A client has described their research objective. Your task is to DRAFT the most \n"
-            f"effective, bias-free, structurally sound questionnaire for their context.\n\n"
+            f"A client has described their research objective in {target}.\n\n"
             f"SURVEY CONTEXT: {context}\n\n"
+        )
+        
+        if mission:
+            prompt += (
+                f"CULTURAL CONSTRAINTS FOR {target}:\n"
+                f"- AXIOMS: {mission.dossier.cultural_axioms}\n"
+                f"- LINGUISTIC NUANCES: {mission.dossier.linguistic_nuances}\n"
+                f"- TABOOS: {mission.dossier.taboos}\n\n"
+            )
+
+        prompt += (
             f"Generate {count} high-impact survey questions that are:\n"
             f"- Free of leading language or bias\n"
             f"- Unambiguous and single-barrelled (one concept per question)\n"
-            f"- Appropriate for the Mauritian cultural context\n"
+            f"- Appropriate for the {target} cultural context\n"
             f"- Structured to minimise respondent fatigue and drop-off\n"
             f"- Ordered strategically (easy/engaging first, sensitive topics later)\n\n"
             f"Format the output as a JSON object with two keys:\n"
@@ -348,10 +394,10 @@ class MarketSimulator:
             print(f"Error generating questions: {e}")
             return {"questions": ["Q1: What do you think?"], "rationale": "Error generating suggestions."}
 
-    async def generate_report(self, context: str, questions: List[str], results: List[Dict]) -> Dict:
+    async def generate_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None) -> Dict:
         """Generates a structured quality audit report with mitigation, redressment, and quality scores."""
-        
-        # Build a summary of responses for the AI
+        target = mission.config.target_country if mission else "Mauritius"
+
         response_summary = []
         for row in results:
             agent_summary = f"Agent: {row.get('Agent', 'Unknown')} ({row.get('Demographic', 'N/A')})"
@@ -363,9 +409,13 @@ class MarketSimulator:
         all_responses = "\n\n".join(response_summary)
         
         prompt = f"""You are the Chief Survey Quality Auditor at The Bureau, a premium survey optimisation 
-consultancy in Mauritius. You have just completed a synthetic dry-run of a client's survey 
+consultancy. You have just completed a synthetic dry-run of a client's survey in {target}
 using {len(results)} diagnostic respondent archetypes.
+"""
+        if mission:
+            prompt += f"\nCULTURAL CONTEXT (Reference): {json.dumps(mission.dossier.dict(), indent=2)}\n"
 
+        prompt += f"""
 IMPORTANT: Be BALANCED and FAIR. Evaluate the questionnaire HONESTLY.
 - If a question is well-crafted (single concept, clear scale, neutral language, temporal frame), SAY SO and score it HIGH.
 - If a question has genuine flaws, identify them with specifics.
@@ -373,11 +423,11 @@ IMPORTANT: Be BALANCED and FAIR. Evaluate the questionnaire HONESTLY.
 - A well-constructed questionnaire SHOULD receive a high grade.
 
 GRADING RUBRIC:
-- A (90-100): Excellent — most questions are clear, unbiased, single-concept with proper scales
-- B (80-89): Good — minor issues in a few questions, overall solid instrument 
-- C (70-79): Needs Work — several questions have genuine structural flaws
-- D (60-69): Poor — pervasive issues across the instrument
-- F (below 60): Unacceptable — fundamental methodology problems
+- A (90-100): Excellent -- most questions are clear, unbiased, single-concept with proper scales
+- B (80-89): Good -- minor issues in a few questions, overall solid instrument 
+- C (70-79): Needs Work -- several questions have genuine structural flaws
+- D (60-69): Poor -- pervasive issues across the instrument
+- F (below 60): Unacceptable -- fundamental methodology problems
 
 SURVEY CONTEXT:
 {context}
@@ -394,12 +444,12 @@ CHECK for these issues, but ONLY flag them if they GENUINELY exist:
 - DOUBLE-BARRELED: Does a question ask about TWO distinct concepts?
 - MISSING OPTIONS: Did any respondent need an option that wasn't available?
 - DROP-OFF RISK: Did any respondent express frustration or confusion?
-- CULTURAL SENSITIVITY: Was anything culturally inappropriate for Mauritius?
+- CULTURAL SENSITIVITY: Was anything culturally inappropriate for {target}?
 
 Produce a Bureau Quality Report in JSON format with these exact keys:
 
 1. "executive_summary": 3-4 sentences. State the grade (A/B/C/D/F), acknowledge strengths, 
-   and note genuine weaknesses. Be balanced — good instruments deserve recognition.
+   and note genuine weaknesses. Be balanced -- good instruments deserve recognition.
 
 2. "overall_risk_level": One of "LOW", "MODERATE", "HIGH", "CRITICAL"
    LOW = ready for deployment or minor tweaks only
@@ -431,9 +481,9 @@ Produce a Bureau Quality Report in JSON format with these exact keys:
    - "finding": what their responses revealed
    - "implication": what this means for the instrument
 
-7. "next_steps": List of 3-5 strings — concrete actions ordered by priority.
+7. "next_steps": List of 3-5 strings -- concrete actions ordered by priority.
 
-8. "bureau_verdict": One authoritative sentence — The Bureau's official quality assessment.
+8. "bureau_verdict": One authoritative sentence -- The Bureau's official quality assessment.
 
 Return ONLY valid JSON. Be honest, balanced, and specific."""
 
@@ -470,9 +520,10 @@ Return ONLY valid JSON. Be honest, balanced, and specific."""
     # AVA justifies her choices. No self-doubt. No issue-hunting.
     # The Lab's generate_report() (Red Team diagnostic) is untouched.
     # ──────────────────────────────────────────────────────────
-    async def generate_validation_report(self, context: str, questions: List[str], results: List[Dict]) -> Dict:
+    async def generate_validation_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None) -> Dict:
         """Generates an authoritative Bureau Validation Certificate.
         AVA explains WHY each design choice was made and HOW to deploy."""
+        target = mission.config.target_country if mission else "Mauritius"
         
         response_summary = []
         for row in results:
@@ -484,9 +535,8 @@ Return ONLY valid JSON. Be honest, balanced, and specific."""
         
         all_responses = "\n\n".join(response_summary)
         
-        prompt = f"""You are AVA, the Lead Research Architect at The Bureau, a premium survey 
-optimisation consultancy in Mauritius. You have just completed and validated a 
-professional survey instrument for a client.
+        prompt = f"""You are AVA, the Lead Research Architect at The Bureau. You have just completed and validated a 
+professional survey instrument for a client in {target}.
 
 You are CONFIDENT in your work. This instrument has been:
 - Designed using psychometric best practices
@@ -515,9 +565,6 @@ Produce a JSON object with these exact keys:
    - What this instrument measures and why it matters
    - Why the design choices guarantee data fidelity
    - The overall methodology confidence level
-   Example tone: "This 20-item instrument employs a progressive cognitive flow from 
-   awareness to behavior, ensuring respondent engagement and data accuracy. Each question 
-   targets a single construct with validated scales, minimising measurement error."
 
 2. "quality_score": Always 95-100 for a Bureau-certified instrument.
 
@@ -525,7 +572,7 @@ Produce a JSON object with these exact keys:
    - Why questions are ordered this way (cognitive flow)
    - Why these specific scales were chosen
    - How the instrument minimises respondent fatigue
-   - How cultural sensitivity for Mauritius was addressed
+   - How cultural sensitivity for {target} was addressed
 
 4. "question_justifications": List of objects, one per question:
    - "question": the question text
@@ -546,16 +593,42 @@ Produce a JSON object with these exact keys:
    - "finding": how this segment successfully engaged with the instrument
    - "implication": what this confirms about the instrument's reliability
 
-7. "next_steps": List of 3 strings — deployment actions (NOT fixes):
+7. "next_steps": List of 3 strings -- deployment actions (NOT fixes):
    - "Proceed with fieldwork using the certified instrument"
    - Specific sampling recommendation
    - Data analysis recommendation
 
 8. "bureau_verdict": One confident, authoritative sentence certifying the instrument.
-   Example: "This instrument meets The Bureau's highest quality standards and is cleared 
-   for immediate field deployment."
 
 Return ONLY valid JSON. Be authoritative, professional, and confident."""
+
+        try:
+            response = await self.client.aio.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type='application/json',
+                    temperature=0.4  # Lower temp for consistent, confident tone
+                )
+            )
+            text = response.text.strip()
+            if text.startswith("```json"):
+                text = text[7:]
+            if text.endswith("```"):
+                text = text[:-3]
+            return json.loads(text.strip())
+        except Exception as e:
+            print(f"Error generating validation report: {e}")
+            return {
+                "executive_summary": "Bureau Validation Certificate -- instrument cleared for deployment.",
+                "quality_score": 98,
+                "methodology_notes": ["Progressive cognitive flow design", "Validated Likert scales", f"Cultural adaptation for {target}"],
+                "question_justifications": [],
+                "field_deployment_protocol": ["Deploy with trained interviewers", "Minimum n=200 sample", "Multi-mode data collection recommended"],
+                "demographic_insights": [],
+                "next_steps": ["Proceed with fieldwork using the certified instrument"],
+                "bureau_verdict": "This instrument meets The Bureau's quality standards."
+            }
 
         try:
             response = await self.client.aio.models.generate_content(

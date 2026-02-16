@@ -9,6 +9,7 @@ import {
     GraduationCap,
     Pill,
 } from "lucide-react";
+import { useMission } from "@/context/MissionContext";
 
 interface ContextStepProps {
     context: string;
@@ -43,6 +44,9 @@ const PRESETS = [
 ];
 
 export default function ContextStep({ context, setContext }: ContextStepProps) {
+    const { currentMission } = useMission();
+    const targetCountry = currentMission?.config.target_country || "Mauritius";
+
     return (
         <div className="max-w-5xl mx-auto py-10">
             {/* Section Header */}
@@ -71,13 +75,12 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
                     be.
                 </p>
             </div>
-
             {/* Main Input */}
             <div className="relative mb-12">
                 <textarea
                     value={context}
                     onChange={(e) => setContext(e.target.value)}
-                    placeholder="Example: We are launching a premium organic food subscription service targeting urban Mauritian millennials at Rs 500/month. We want to understand price sensitivity, brand perception, and channel preferences before committing to a full-scale survey..."
+                    placeholder={`Example: We are launching a premium organic delivery service targeting ${targetCountry} professionals. We want to understand price sensitivity, cultural barriers to adoption, and preferred communication channels...`}
                     rows={6}
                     className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-8 text-slate-800 placeholder:text-slate-400 font-medium leading-relaxed focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none text-base"
                 />

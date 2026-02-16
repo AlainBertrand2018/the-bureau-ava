@@ -26,6 +26,7 @@ import {
     Award,
     MessageSquareText,
 } from "lucide-react";
+import { useMission } from "@/context/MissionContext";
 import type { Persona, SimulationResult } from "./LabShell";
 
 interface ReportStepProps {
@@ -108,6 +109,7 @@ function getPriorityColor(priority: string) {
 }
 
 export default function ReportStep({ context, results, questions, personas }: ReportStepProps) {
+    const { currentMission } = useMission();
     const [report, setReport] = useState<BureauReport | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
@@ -127,7 +129,12 @@ export default function ReportStep({ context, results, questions, personas }: Re
             const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/analyze_results`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ context, questions, results }),
+                body: JSON.stringify({
+                    context,
+                    questions,
+                    results,
+                    mission_id: currentMission?.mission_id
+                }),
             });
             if (!resp.ok) throw new Error(`Server error: ${resp.status}`);
             const data = await resp.json();

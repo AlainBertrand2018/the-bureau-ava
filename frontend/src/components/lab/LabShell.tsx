@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
@@ -22,6 +22,7 @@ import SimulationStep from "./SimulationStep";
 import ResultsStep from "./ResultsStep";
 import ReportStep from "./ReportStep";
 import { useLanguage } from "@/context/LanguageContext";
+import { useMission } from "@/context/MissionContext";
 
 
 export interface Persona {
@@ -79,9 +80,16 @@ const getSteps = (t: any) => [
 
 export default function LabShell() {
     const { t } = useLanguage();
+    const { currentMission } = useMission();
     const STEPS = getSteps(t);
     const [currentStep, setCurrentStep] = useState(0);
     const [context, setContext] = useState("");
+
+    useEffect(() => {
+        if (currentMission && !context) {
+            setContext(`Target Audience: ${currentMission.config.target_audience}\nTarget Market: ${currentMission.config.target_country}\nResearch Topic: ${currentMission.config.research_topic || ''}`);
+        }
+    }, [currentMission]);
     const [questions, setQuestions] = useState<string[]>([]);
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [results, setResults] = useState<SimulationResult[]>([]);
@@ -134,9 +142,14 @@ export default function LabShell() {
                             <div>
                                 <h1 className="text-sm font-black tracking-tight">
                                     {t.lab_ui.header_title}
+                                    {currentMission && (
+                                        <span className="ml-2 text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
+                                            {currentMission.config.target_country} Research
+                                        </span>
+                                    )}
                                 </h1>
                                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                                    {t.lab_ui.header_sub}
+                                    {currentMission ? currentMission.config.target_audience : t.lab_ui.header_sub}
                                 </p>
                             </div>
                         </div>

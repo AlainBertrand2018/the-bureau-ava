@@ -20,9 +20,11 @@ import {
     ClipboardList
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useMission } from "@/context/MissionContext";
 
 export default function SurveyArchitect() {
     const { t } = useLanguage();
+    const { currentMission } = useMission();
     const [view, setView] = useState<"onboarding" | "processing" | "results">("onboarding");
     const [loadingPhase, setLoadingPhase] = useState(0);
     const [formData, setFormData] = useState({
@@ -58,7 +60,11 @@ export default function SurveyArchitect() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/architect/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ context, item_count: 20 }),
+                body: JSON.stringify({
+                    context,
+                    item_count: 20,
+                    mission_id: currentMission?.mission_id
+                }),
                 signal: controller.signal
             });
             clearTimeout(timeout);
@@ -258,7 +264,7 @@ export default function SurveyArchitect() {
                             </div>
 
                             <p className="text-[11px] text-slate-500 font-medium text-center leading-relaxed max-w-sm mx-auto mt-6">
-                                AVA is stress-testing your research instrument across 5 diagnostic personas, recursively auditing and refining each item until it meets the Bureau&apos;s Gold Standards.
+                                I am stress-testing your research instrument across 5 diagnostic personas, recursively auditing and refining each item until it meets the Bureau&apos;s Gold Standards.
                             </p>
                         </div>
 
@@ -363,7 +369,7 @@ export default function SurveyArchitect() {
                                                             {justification.validation_confirmed && (
                                                                 <div className="flex items-start gap-2 pl-5">
                                                                     <span className="text-blue-500 text-[10px] mt-0.5">↳</span>
-                                                                    <p className="text-[10px] text-slate-500 italic leading-relaxed">
+                                                                    <p className="text-[10px] text-slate-500 leading-relaxed">
                                                                         Verified: "{justification.validation_confirmed}"
                                                                     </p>
                                                                 </div>

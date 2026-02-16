@@ -1,1196 +1,619 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-import { useLanguage } from "@/context/LanguageContext";
-
-const RotatingDashboard = dynamic(() => import("@/components/RotatingDashboard"), { ssr: false });
-const SurveyArchitect = dynamic(() => import("@/components/architect/SurveyArchitect"), { ssr: false });
-import QuickAudit from "@/components/QuickAudit";
-import LanguageToggle from "@/components/LanguageToggle";
 import {
-  ArrowRight,
-  Zap,
-  ShieldCheck,
-  AlertTriangle,
-  Users,
-  BarChart3,
-  FileText,
-  CheckCircle2,
-  Sparkles,
-  Target,
-  TrendingUp,
-  Clock,
-  Globe,
-  Building2,
-  GraduationCap,
-  Briefcase,
-  Megaphone,
-  Loader2,
-  Cpu,
-  X,
-  Send,
-  ChevronRight,
-  Rocket,
+  Globe, Cpu, ArrowRight, Sparkles, Sun, Moon,
+  Shield, BarChart3, FileText, Users, Target, Microscope, X,
 } from "lucide-react";
 
+/* ─── Typewriter Hook ─── */
+function useTypewriter(text: string, speed = 45, delay = 800) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
 
-/* ─── Scroll Animation Wrapper ─── */
-function Reveal({
-  children,
-  className = "",
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  useEffect(() => {
+    let i = 0;
+    const timeout = setTimeout(() => {
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          setDisplayed(text.slice(0, i + 1));
+          i++;
+        } else {
+          clearInterval(interval);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(interval);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+
+  return { displayed, done };
+}
+
+/* ─── Floating Particles (client-only) ─── */
+function Particles({ dark }: { dark: boolean }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  const seeds = Array.from({ length: 30 }, (_, i) => ({
+    left: ((i * 37 + 13) % 100),
+    top: ((i * 53 + 7) % 100),
+    dur: 4 + (i % 7),
+    delay: (i * 0.17) % 5,
+    drift: ((i % 2 === 0 ? 1 : -1) * ((i * 11) % 30)),
+  }));
+
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: "easeOut", delay }}
-      className={className}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {seeds.map((s, i) => (
+        <motion.div
+          key={i}
+          className={`absolute w-1 h-1 rounded-full ${dark ? "bg-emerald-500/20" : "bg-emerald-500/15"}`}
+          style={{ left: `${s.left}%`, top: `${s.top}%` }}
+          animate={{
+            y: [0, -30 - (i % 6) * 10, 0],
+            x: [0, s.drift, 0],
+            opacity: [0, dark ? 0.6 : 0.4, 0],
+            scale: [0.5, 1.2, 0.5],
+          }}
+          transition={{
+            duration: s.dur,
+            repeat: Infinity,
+            delay: s.delay,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ─── Animated Grid Background ─── */
+function GridBackground({ dark }: { dark: boolean }) {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        className={`absolute inset-0 ${dark ? "opacity-[0.03]" : "opacity-[0.04]"}`}
+        style={{
+          backgroundImage: `
+            linear-gradient(${dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"} 1px, transparent 1px),
+            linear-gradient(90deg, ${dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"} 1px, transparent 1px)
+          `,
+          backgroundSize: "60px 60px",
+        }}
+      />
+      <div className={`absolute -left-[10%] top-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] ${dark ? "bg-emerald-600/8" : "bg-emerald-400/10"}`} />
+      <div className={`absolute -right-[5%] bottom-0 w-[500px] h-[500px] rounded-full blur-[100px] ${dark ? "bg-blue-600/5" : "bg-blue-400/8"}`} />
+      <div className={`absolute left-1/2 -top-[10%] w-[400px] h-[300px] rounded-full blur-[100px] ${dark ? "bg-amber-500/4" : "bg-amber-400/6"}`} />
+    </div>
+  );
+}
+
+/* ─── Theme Toggle Button ─── */
+function ThemeToggle({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
+  return (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 2.8, duration: 0.5 }}
+      onClick={onToggle}
+      className={`absolute top-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer backdrop-blur-md ${dark
+        ? "bg-white/10 border border-white/10 hover:bg-white/20 text-slate-300 hover:text-white"
+        : "bg-slate-900/5 border border-slate-200 hover:bg-slate-900/10 text-slate-500 hover:text-slate-800 shadow-sm"
+        }`}
+      aria-label="Toggle theme"
     >
-      {children}
-    </motion.div>
-  );
-}
-
-/* ─── Animated Counter ─── */
-function AnimatedCounter({
-  target,
-  suffix = "",
-  className = "",
-}: {
-  target: number;
-  suffix?: string;
-  className?: string;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!isInView) return;
-    let start = 0;
-    const duration = 1800;
-    const step = (timestamp: number) => {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      setCount(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [isInView, target]);
-
-  return (
-    <span ref={ref} className={className}>
-      {count}{suffix}
-    </span>
-  );
-}
-
-
-/* ═══════════════════════════════════════════════════════════════
-   MAIN PAGE
-   ═══════════════════════════════════════════════════════════════ */
-export default function Home() {
-  const router = useRouter();
-  const { t, language } = useLanguage();
-  const [showEntryModal, setShowEntryModal] = useState(false);
-  const [showQuickAuditModal, setShowQuickAuditModal] = useState(false);
-  const [showShieldModal, setShowShieldModal] = useState(false);
-  const [pubStats, setPubStats] = useState<any>(null);
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/stats`)
-      .then(res => res.json())
-      .then(data => setPubStats(data))
-      .catch(err => console.error(err));
-  }, []);
-
-
-
-  return (
-    <main className="min-h-screen bg-white">
-      {/* ════════════════════════════════════════════
-          NAVIGATION
-      ════════════════════════════════════════════ */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center shadow-sm">
-              <Sparkles size={14} className="text-white" />
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-slate-900 font-black text-lg tracking-tight">AVA</span>
-              <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hidden sm:inline">by The Bureau</span>
-            </div>
-          </div>
-          <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors text-[10px] font-bold uppercase tracking-widest">{t.nav.how_it_works}</a>
-            <a href="#genesis" className="hover:text-slate-900 transition-colors text-[10px] font-bold uppercase tracking-widest text-blue-600">Genesis</a>
-            <a href="#who-its-for" className="hover:text-slate-900 transition-colors text-[10px] font-bold uppercase tracking-widest">{t.nav.who_its_for}</a>
-            <a href="#pricing" className="hover:text-slate-900 transition-colors text-[10px] font-bold uppercase tracking-widest">{t.nav.pricing}</a>
-          </div>
-          <button
-            onClick={() => setShowEntryModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20"
-          >
-            <Zap size={12} />
-            {t.nav.open_lab}
-          </button>
-          <div className="ml-4 pl-4 border-l border-slate-100">
-            <LanguageToggle />
-          </div>
-        </div>
-      </nav>
-
-      {/* ════════════════════════════════════════════
-          HERO
-      ════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center hero-dot-grid hero-spotlight pt-24 overflow-hidden">
-        {/* AVA — background presence */}
-        <div className="absolute bottom-0 right-0 hidden md:block pointer-events-none select-none" style={{ zIndex: 1 }}>
-          <div className="relative">
-            {/* Soft fade on left edge only */}
-            <div
-              className="absolute inset-0 z-10"
-              style={{
-                background: 'linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 12%)',
-              }}
-            />
-            {/* Gentle fade at very top */}
-            <div
-              className="absolute inset-0 z-10"
-              style={{
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 10%)',
-              }}
-            />
-            <Image
-              src="/images/AVA.webp"
-              alt="Meet AVA — your AI survey auditor"
-              width={500}
-              height={700}
-              className="opacity-85 object-contain object-bottom"
-              style={{ maxHeight: '85vh' }}
-              priority
-            />
-          </div>
-        </div>
-        <div className="relative z-10 max-w-[90rem] mx-auto px-6 w-full">
-          <div className="max-w-6xl mx-auto text-center mb-14">
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="badge-blue inline-flex items-center gap-2 mb-8"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse-soft" />
-              {t.hero.badge}
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-              className="text-hero mb-6"
-            >
-              <span className="text-slate-900">{t.hero.title.split(' ').slice(0, -1).join(' ')}</span>
-              <br />
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                {t.hero.title.split(' ').slice(-1)}
-              </span>
-            </motion.h1>
-
-            {/* Sub */}
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="text-body-lg text-slate-500 font-medium max-w-2xl mx-auto mb-12"
-            >
-              {t.hero.description}
-            </motion.p>
-
-            {/* Meta Trust Signal */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="text-[10px] text-slate-400 font-medium mt-8 uppercase tracking-widest"
-            >
-              • {t.quick_audit.footer}
-            </motion.p>
-
-            {/* Hero CTAs */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-14"
-            >
-              <button
-                onClick={() => setShowQuickAuditModal(true)}
-                className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
-              >
-                <Target size={16} />
-                Audit My Survey Free
-              </button>
-              <a
-                href="#demo"
-                className="flex items-center gap-2 px-8 py-4 text-slate-500 border-2 border-slate-200 rounded-full text-sm font-bold uppercase tracking-widest hover:text-slate-900 hover:border-slate-300 transition-all"
-              >
-                <FileText size={16} />
-                {t.hero.cta_demo}
-              </a>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════
-          PAIN POINTS
-      ════════════════════════════════════════════ */}
-      < section className="section-full section-soft relative" >
-        <div className="max-w-5xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-16">
-            <h2 className="text-section-title text-slate-900 mb-6">
-              {t.pain_points.title_1}
-              <br />
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                {t.pain_points.title_2}
-              </span>
-            </h2>
-            <div className="max-w-3xl mx-auto">
-              <p className="text-slate-900 font-black text-xl mb-1">{t.pain_points.sub_1}</p>
-              <p className="text-slate-500 font-medium text-sm">
-                {t.pain_points.sub_2}
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {[
-              {
-                icon: <Building2 size={20} />,
-                color: "text-red-500",
-                bg: "bg-red-50",
-                title: t.pain_points.card_1_title,
-                desc: t.pain_points.card_1_desc,
-              },
-              {
-                icon: <TrendingUp size={20} />,
-                color: "text-amber-600",
-                bg: "bg-amber-50",
-                title: t.pain_points.card_2_title,
-                desc: t.pain_points.card_2_desc,
-              },
-              {
-                icon: <BarChart3 size={20} />,
-                color: "text-violet-600",
-                bg: "bg-violet-50",
-                title: t.pain_points.card_3_title,
-                desc: t.pain_points.card_3_desc,
-              },
-            ].map((item, i) => (
-              <Reveal key={i} delay={i * 0.1}>
-                <div className="card-elevated p-8 h-full">
-                  <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center ${item.color} mb-4`}>
-                    {item.icon}
-                  </div>
-                  <h3 className="text-slate-900 font-black text-base tracking-tight mb-2">{item.title}</h3>
-                  <p className="text-slate-500 text-sm font-medium leading-relaxed">{item.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.3} className="text-center">
-            <p className="text-slate-400 text-base font-semibold max-w-xl mx-auto">
-              {t.pain_points.footer.split(':')[0]}:{" "}
-              <span className="text-slate-900">{t.pain_points.footer.split(':')[1]}</span>
-            </p>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          SOLUTION
-      ════════════════════════════════════════════ */}
-      < section className="section-full section-tinted relative" >
-        <div className="max-w-6xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-16">
-            <div className="badge-blue inline-flex items-center gap-2 mb-6">
-              <ShieldCheck size={12} />
-              {t.solution.badge}
-            </div>
-            <h2 className="text-section-title text-slate-900 mb-6">
-              {t.solution.title_1}
-              <br />
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #10B981 0%, #0EA5E9 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                {t.solution.title_2}
-              </span>
-            </h2>
-            <p className="text-body-lg text-slate-500 font-medium max-w-3xl mx-auto">
-              {t.solution.description}
-            </p>
-          </Reveal>
-
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-14">
-            {[
-              { icon: <AlertTriangle size={18} />, label: t.solution.cap_1, color: "text-red-500", bg: "bg-red-50" },
-              { icon: <Target size={18} />, label: t.solution.cap_2, color: "text-amber-600", bg: "bg-amber-50" },
-              { icon: <Users size={18} />, label: t.solution.cap_3, color: "text-violet-600", bg: "bg-violet-50" },
-              { icon: <BarChart3 size={18} />, label: t.solution.cap_4, color: "text-sky-600", bg: "bg-sky-50" },
-              { icon: <CheckCircle2 size={18} />, label: t.solution.cap_5, color: "text-emerald-600", bg: "bg-emerald-50" },
-            ].map((cap, i) => (
-              <Reveal key={i} delay={i * 0.08}>
-                <div className="card p-6 text-center group cursor-default h-full">
-                  <div className={`w-10 h-10 rounded-xl ${cap.bg} ${cap.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
-                    {cap.icon}
-                  </div>
-                  <span className="text-slate-800 text-xs font-bold">{cap.label}</span>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.4} className="flex justify-center">
-            <button
-              onClick={() => setShowQuickAuditModal(true)}
-              className="group flex items-center gap-3 px-7 py-3.5 bg-slate-900 text-white rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-slate-900/10 hover:shadow-blue-600/20"
-            >
-              <Zap size={14} className="text-blue-400 group-hover:text-white transition-colors" />
-              {t.solution.cta}
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          HOW IT WORKS
-      ════════════════════════════════════════════ */}
-      < section id="how-it-works" className="section-full section-white relative" >
-        <div className="max-w-5xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-16">
-            <h2 className="text-section-title text-slate-900 mb-6">
-              {t.how_it_works.title}
-            </h2>
-            <p className="text-body-lg text-slate-500 font-medium">{t.how_it_works.sub}</p>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                title: t.how_it_works.step1_title,
-                desc: t.how_it_works.step1_desc,
-                icon: <FileText size={24} />,
-                gradient: "from-blue-600 to-blue-500",
-              },
-              {
-                step: "02",
-                title: t.how_it_works.step2_title,
-                desc: t.how_it_works.step2_desc,
-                icon: <ShieldCheck size={24} />,
-                gradient: "from-violet-600 to-blue-500",
-              },
-              {
-                step: "03",
-                title: t.how_it_works.step3_title,
-                desc: t.how_it_works.step3_desc,
-                icon: <CheckCircle2 size={24} />,
-                gradient: "from-emerald-600 to-sky-500",
-              },
-            ].map((s, i) => (
-              <Reveal key={i} delay={i * 0.15}>
-                <div className="card-elevated p-8 h-full relative group overflow-hidden">
-                  <div className="text-[80px] font-black absolute top-2 right-4 text-slate-100 group-hover:text-slate-200 transition-colors select-none leading-none">
-                    {s.step}
-                  </div>
-                  <div className={`relative z-10 w-12 h-12 rounded-2xl bg-gradient-to-br ${s.gradient} flex items-center justify-center mb-6 text-white shadow-lg`}>
-                    {s.icon}
-                  </div>
-                  <h3 className="relative z-10 text-slate-900 font-black text-xl tracking-tight mb-3">{s.title}</h3>
-                  <p className="relative z-10 text-slate-500 text-sm font-medium leading-relaxed">{s.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.5} className="text-center mt-12">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-100">
-              <Clock size={14} className="text-emerald-600" />
-              <span className="text-emerald-700 text-xs font-bold uppercase tracking-widest">
-                {t.how_it_works.footer}
-              </span>
-            </div>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          DEMO / SAMPLE REPORT
-      ════════════════════════════════════════════ */}
-      < section id="demo" className="section-full section-soft relative" >
-        <div className="max-w-6xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-12">
-            <h2 className="text-section-title text-slate-900 mb-6">
-              {t.demo.title}
-            </h2>
-            <p className="text-body-lg text-slate-500 font-medium">
-              {t.demo.sub}
-            </p>
-          </Reveal>
-
-          {/* Split: Mock Report (left) + Dashboard (right) */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-            {/* LEFT — Mock Audit Report Card */}
-            <Reveal>
-              <div className="card-elevated p-0 h-full overflow-hidden">
-                {/* Report Header */}
-                <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center">
-                      <Sparkles size={12} className="text-white" />
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-bold tracking-widest text-slate-800 uppercase">{t.demo.report_title}</h4>
-                      <p className="text-[9px] font-semibold text-slate-400">{t.demo.report_sub}</p>
-                    </div>
-                  </div>
-                  <div className="px-3 py-1 rounded-full bg-red-50 border border-red-100">
-                    <span className="text-[9px] font-bold text-red-500 uppercase tracking-wider">{t.demo.issues_found}</span>
-                  </div>
-                </div>
-
-                {/* Flagged Question */}
-                <div className="p-5 border-b border-slate-50">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                      <span className="text-lg font-black text-red-500">42</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-[9px] font-bold text-red-500 uppercase tracking-wider">{t.demo.poor_quality}</p>
-                      <p className="text-xs text-slate-500 font-medium">{t.demo.question_label}</p>
-                    </div>
-                  </div>
-                  <div className="bg-slate-50 rounded-xl p-4 mb-3">
-                    <p className="text-sm text-slate-700 font-semibold">&quot;Don&apos;t you agree that our service is excellent and worth recommending?&quot;</p>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-red-50 text-red-600 border-red-100">{t.demo.leading}</span>
-                    <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-100">{t.demo.double_barrelled}</span>
-                    <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-orange-50 text-orange-600 border-orange-100">{t.demo.acquiescence}</span>
-                  </div>
-                </div>
-
-                {/* Rewrite */}
-                <div className="p-5">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <CheckCircle2 size={12} className="text-emerald-500" />
-                    <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">AVA&apos;s Rewrite</span>
-                  </div>
-                  <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                    <p className="text-sm text-slate-800 font-semibold">&quot;How would you rate the quality of our service?&quot;</p>
-                    <p className="text-[10px] text-emerald-600 font-medium mt-2">Neutral framing · Single construct · Eliminates acquiescence bias</p>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-
-            {/* RIGHT — Live Rotating Dashboard */}
-            <Reveal delay={0.2}>
-              <div className="h-full min-h-[420px]">
-                <RotatingDashboard />
-              </div>
-            </Reveal>
-          </div>
-
-          <Reveal delay={0.4} className="text-center">
-            <Link
-              href="/lab"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
-            >
-              <Sparkles size={16} />
-              {t.demo.cta}
-            </Link>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          WHO IT'S FOR
-      ════════════════════════════════════════════ */}
-      < section id="who-its-for" className="section-full section-white relative" >
-        <div className="max-w-6xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-16">
-            <h2 className="text-section-title text-slate-900 mb-6">
-              {t.who_its_for.title_1}
-              <br />
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #10B981 0%, #2563EB 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                {t.who_its_for.title_2}
-              </span>
-            </h2>
-          </Reveal>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { icon: <BarChart3 size={20} />, title: t.who_its_for.card_1_title, desc: t.who_its_for.card_1_desc },
-              { icon: <Briefcase size={20} />, title: t.who_its_for.card_2_title, desc: t.who_its_for.card_2_desc },
-              { icon: <Building2 size={20} />, title: t.who_its_for.card_3_title, desc: t.who_its_for.card_3_desc },
-              { icon: <Globe size={20} />, title: t.who_its_for.card_4_title, desc: t.who_its_for.card_4_desc },
-              { icon: <GraduationCap size={20} />, title: t.who_its_for.card_5_title, desc: t.who_its_for.card_5_desc },
-              { icon: <Megaphone size={20} />, title: t.who_its_for.card_6_title, desc: t.who_its_for.card_6_desc },
-            ].map((item, i) => (
-              <Reveal key={i} delay={i * 0.08}>
-                <div className="card p-6 group cursor-default h-full">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    {item.icon}
-                  </div>
-                  <h4 className="text-slate-900 font-bold text-sm mb-1">{item.title}</h4>
-                  <p className="text-slate-400 text-xs font-medium leading-relaxed">{item.desc}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.5} className="text-center mt-14">
-            <p className="text-lg text-slate-500 font-semibold">
-              {t.who_its_for.footer_1}{" "}
-              <span className="text-slate-900">{t.who_its_for.footer_2}</span>
-            </p>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          EARLY PROOF
-      ════════════════════════════════════════════ */}
-      < section className="section-full section-warm relative" >
-        <div className="max-w-5xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-16">
-            <div className="badge-green inline-flex items-center gap-2 mb-6">
-              <Target size={12} />
-              {t.proof.badge}
-            </div>
-            <h2 className="text-section-title text-slate-900 mb-4">
-              {t.proof.title}
-            </h2>
-            <p className="text-base text-slate-500 font-medium max-w-lg mx-auto">
-              {t.proof.sub}
-            </p>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {[
-              { target: pubStats?.total_questions_processed || 1240, label: t.proof.stat_1, color: "text-blue-500", suffix: "+" },
-              { target: pubStats?.average_quality_score || 94, label: t.proof.stat_2, color: "text-emerald-500", suffix: "/100" },
-              { target: pubStats?.total_audits || 150, label: t.proof.stat_3, color: "text-violet-600", suffix: "+" },
-            ].map((stat, i) => (
-              <Reveal key={i} delay={i * 0.1}>
-                <div className="card-elevated p-8 text-center">
-                  <div className={`text-5xl font-black ${stat.color} mb-2`}>
-                    <AnimatedCounter target={stat.target} suffix={stat.suffix} className={stat.color} />
-                  </div>
-                  <p className="text-slate-500 text-sm font-semibold">{stat.label}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={0.3} className="text-center">
-            <p className="text-slate-400 text-sm font-semibold">
-              Most issues were fixed in minutes.{" "}
-              <span className="text-emerald-600 font-bold">Before a single respondent was contacted.</span>
-            </p>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          THE RESEARCH ICEBERG (SURVEY ECONOMICS)
-      ════════════════════════════════════════════ */}
-      <section className="section-full bg-white relative overflow-hidden border-y border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 w-full relative z-10">
-          <Reveal className="text-center mb-16">
-            <div className="badge-blue inline-flex items-center gap-2 mb-6">
-              <TrendingUp size={12} />
-              {t.survey_mechanics.badge}
-            </div>
-            <h2 className="text-section-title text-slate-900 mb-6">
-              {t.survey_mechanics.title}
-            </h2>
-            <p className="text-body-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              {t.survey_mechanics.description}
-            </p>
-          </Reveal>
-
-          <div className="relative">
-            {/* The Iceberg Silhouette */}
-            <div className="max-w-5xl mx-auto">
-              <div className="relative flex flex-col items-center">
-
-                {/* THE TIP (ABOVE WATER) */}
-                <Reveal className="w-full flex justify-center mb-0 relative z-20">
-                  <div className="w-[300px] md:w-[400px] bg-blue-50 border-x border-t border-blue-100 rounded-t-[3rem] p-10 text-center pb-20 shadow-[0_-20px_40px_-15px_rgba(59,130,246,0.05)]">
-                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">Visible Effort</span>
-                    <h3 className="text-slate-900 font-black text-lg mb-1 tracking-tight">Questionnaire Design</h3>
-                    <p className="text-blue-600 font-black text-sm tracking-tight">Rs 50,000 – 150,000</p>
-                  </div>
-                </Reveal>
-
-                {/* WATERLINE */}
-                <div className="w-full h-px bg-slate-200 relative z-30">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-6 py-1 bg-white border border-slate-200 rounded-full text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] shadow-sm">
-                    Surface Level
-                  </div>
-                </div>
-
-                {/* THE BASE (BELOW WATER) */}
-                <div className="w-full space-y-4 pt-16 pb-32 relative flex flex-col items-center">
-                  {/* Submerged Layer 1 */}
-                  <Reveal delay={0.1} className="w-full flex justify-center">
-                    <div className="w-full max-w-[550px] bg-slate-50 border border-slate-100 rounded-2xl p-6 flex justify-between items-center group hover:border-blue-200 transition-all shadow-sm">
-                      <div>
-                        <p className="text-slate-900 font-bold text-sm">{t.survey_mechanics.sample_recruitment}</p>
-                        <p className="text-slate-400 text-[9px] uppercase font-black tracking-widest mt-0.5">{t.survey_mechanics.fieldwork_logistics}</p>
-                      </div>
-                      <span className="text-slate-600 font-black text-sm tracking-tighter">Rs 100k – 400k</span>
-                    </div>
-                  </Reveal>
-
-                  {/* Submerged Layer 2 */}
-                  <Reveal delay={0.2} className="w-full flex justify-center">
-                    <div className="w-full max-w-[700px] bg-slate-50 border border-slate-100 rounded-2xl p-6 flex justify-between items-center group hover:border-blue-200 transition-all shadow-sm">
-                      <div>
-                        <p className="text-slate-900 font-bold text-sm">{t.survey_mechanics.data_collection}</p>
-                        <p className="text-slate-400 text-[9px] uppercase font-black tracking-widest mt-0.5">{t.survey_mechanics.primary_execution}</p>
-                      </div>
-                      <span className="text-slate-600 font-black text-sm tracking-tighter">Rs 20k – 50k</span>
-                    </div>
-                  </Reveal>
-
-
-                  {/* Submerged Layer 3 */}
-                  <Reveal delay={0.3} className="w-full flex justify-center">
-                    <div className="w-full max-w-[850px] bg-gradient-to-b from-slate-50 to-white border border-slate-100 rounded-2xl p-8 flex justify-between items-center group hover:border-blue-200 transition-all shadow-sm">
-                      <div>
-                        <p className="text-slate-900 font-bold text-sm">{t.survey_mechanics.analysis_reporting}</p>
-                        <p className="text-slate-400 text-[9px] uppercase font-black tracking-widest mt-0.5">{t.survey_mechanics.post_field}</p>
-                      </div>
-                      <span className="text-slate-600 font-black text-sm tracking-tighter">Rs 30k – 100k</span>
-                    </div>
-                  </Reveal>
-
-                  {/* THE VOID / RISK */}
-                  <Reveal delay={0.35} className="mt-12 flex justify-center">
-                    <div className="flex items-center gap-2 px-5 py-2.5 bg-slate-50 border border-slate-100 rounded-full shadow-sm hover:bg-slate-100 transition-colors cursor-default">
-                      <ShieldCheck size={14} className="text-emerald-500" />
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.1em]">{t.survey_mechanics.source}</span>
-                    </div>
-                  </Reveal>
-
-                  <Reveal delay={0.4} className="text-center pt-12 pb-12">
-                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mb-4 flex items-center justify-center gap-2">
-                      <AlertTriangle size={12} />
-                      {t.survey_mechanics.danger_zone}
-                    </p>
-                    <h4 className="text-3xl font-black text-slate-900 tracking-tight mb-2">{t.survey_mechanics.risk_title}</h4>
-                    <p className="text-slate-400 font-black text-3xl tracking-tighter mb-12">Rs 200,000 — 800,000</p>
-                    <button
-                      onClick={() => setShowShieldModal(true)}
-                      className="inline-flex items-center gap-3 px-10 py-5 bg-slate-900 text-white rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-600/30 transition-all transform hover:-translate-y-1 active:scale-95 group"
-                    >
-                      <ShieldCheck size={16} className="text-blue-400 group-hover:text-white transition-colors" />
-                      {t.survey_mechanics.shield_btn}
-                    </button>
-                  </Reveal>
-                </div>
-
-
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ─── NEW: SURVEY ARCHITECT (Genesis Suite) ─── */}
-      <section id="genesis" className="section-full bg-slate-950 py-24 relative overflow-hidden">
-        <div className="absolute inset-0 hero-dot-grid opacity-10 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <Reveal className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
-              <Sparkles size={12} className="text-blue-400" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">
-                {t.architect.badge}
-              </span>
-            </div>
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-6 uppercase">
-              {t.architect.title}
-            </h2>
-            <p className="text-body-lg text-slate-400 font-medium max-w-2xl mx-auto">
-              {t.architect.sub}
-            </p>
-          </Reveal>
-
-          <Reveal delay={0.2}>
-            <SurveyArchitect />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════════
-          PRICING
-      ════════════════════════════════════════════ */}
-      < section id="pricing" className="section-full section-soft relative" >
-        <div className="max-w-5xl mx-auto px-6 w-full">
-          <Reveal className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-6">
-              {t.pricing.title}
-            </h2>
-            <p className="text-lg text-slate-500 font-medium">{t.pricing.sub}</p>
-          </Reveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Free */}
-            <Reveal delay={0}>
-              <div className="card-elevated p-8 h-full">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-3">Tier 1</div>
-                <div className="text-4xl font-black text-slate-900 mb-1">MUR 0</div>
-                <p className="text-xs text-slate-400 font-medium mb-6">{t.pricing.tier1_name}</p>
-                <ul className="space-y-3 mb-8">
-                  {t.pricing.tier1_features.map((f, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                      <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/lab"
-                  className="block text-center py-3 px-6 border-2 border-slate-200 text-slate-700 rounded-full text-[11px] font-bold uppercase tracking-widest hover:border-slate-300 hover:bg-slate-50 transition-all"
-                >
-                  {t.pricing.try_free}
-                </Link>
-              </div>
-            </Reveal>
-
-            {/* Standard */}
-            <Reveal delay={0.1}>
-              <div className="card-featured p-8 h-full relative">
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-blue-600 text-white text-[9px] font-bold uppercase tracking-widest rounded-full shadow-sm">
-                  {t.pricing.most_popular}
-                </div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">Tier 2</div>
-                <div className="text-4xl font-black text-slate-900 mb-1">MUR 5,000</div>
-                <p className="text-xs text-slate-400 font-medium mb-6">{t.pricing.tier2_name}</p>
-                <ul className="space-y-3 mb-8">
-                  {t.pricing.tier2_features.map((f, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-slate-700 font-medium">
-                      <CheckCircle2 size={14} className="text-blue-600 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/lab"
-                  className="block text-center py-3 px-6 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20"
-                >
-                  {t.pricing.get_started}
-                </Link>
-              </div>
-            </Reveal>
-
-            {/* Pro */}
-            <Reveal delay={0.2}>
-              <div className="card-elevated p-8 h-full">
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 mb-3">Tier 3</div>
-                <div className="text-4xl font-black text-slate-900 mb-1">MUR 45,000</div>
-                <p className="text-xs text-slate-400 font-medium mb-6">{t.pricing.tier3_name}</p>
-                <ul className="space-y-3 mb-8">
-                  {t.pricing.tier3_features.map((f, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                      <CheckCircle2 size={14} className="text-violet-500 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/lab"
-                  className="block text-center py-3 px-6 border-2 border-violet-200 text-violet-700 rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-violet-50 transition-all"
-                >
-                  {t.pricing.contact_access}
-                </Link>
-              </div>
-            </Reveal>
-          </div>
-
-          <Reveal delay={0.3} className="text-center mt-8">
-            <p className="text-slate-400 text-xs font-bold">
-              {t.pricing.enterprise} →{" "}
-              <a href="mailto:hello@thebureau.mu" className="text-blue-600 hover:underline">
-                {t.pricing.contact_us}
-              </a>
-            </p>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          FINAL CTA
-      ════════════════════════════════════════════ */}
-      < section className="section-full section-white relative" >
-        <div className="max-w-4xl mx-auto px-6 w-full text-center">
-          <Reveal>
-            <div className="bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-100 rounded-[2rem] p-12 md:p-16 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-full hero-dot-grid opacity-40 pointer-events-none" />
-
-              <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-4">
-                  {t.final_cta.title_1}{" "}
-                  <span
-                    style={{
-                      background: "linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
-                    {t.final_cta.title_2}
-                  </span>
-                </h2>
-                <p className="text-lg text-slate-500 font-medium max-w-lg mx-auto mb-10">
-                  {t.final_cta.sub}
-                </p>
-                <button
-                  onClick={() => setShowEntryModal(true)}
-                  className="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
-                >
-                  <Zap size={18} />
-                  {t.final_cta.btn}
-                  <ArrowRight size={18} />
-                </button>
-                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-6">
-                  {t.final_cta.footer}
-                </p>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section >
-
-      {/* ════════════════════════════════════════════
-          FOOTER
-      ════════════════════════════════════════════ */}
-      < footer className="border-t border-slate-100 py-12 bg-white" >
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center shadow-sm">
-                <Sparkles size={11} className="text-white" />
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-slate-900 font-black text-sm">AVA</span>
-                <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">by The Bureau</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              <a href="#how-it-works" className="hover:text-slate-700 transition-colors uppercase tracking-widest">{t.nav.how_it_works}</a>
-              <a href="#who-its-for" className="hover:text-slate-700 transition-colors uppercase tracking-widest">{t.nav.who_its_for}</a>
-              <a href="#pricing" className="hover:text-slate-700 transition-colors uppercase tracking-widest">{t.nav.pricing}</a>
-              <button onClick={() => setShowEntryModal(true)} className="hover:text-slate-700 transition-colors uppercase tracking-widest">{t.nav.open_lab}</button>
-            </div>
-            <div className="text-[10px] text-slate-400 font-medium">
-              © {new Date().getFullYear()} The Bureau · Ebène, Mauritius
-            </div>
-          </div>
-          <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-            <p className="text-[10px] text-slate-400 font-medium max-w-lg mx-auto">
-              {t.footer.disclaimer}
-            </p>
-          </div>
-        </div>
-      </footer >
-      {/* ════════════════════════════════════════════
-          LAB ENTRY MODAL
-      ════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {
-          showEntryModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 translate-z-0">
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowEntryModal(false)}
-                className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
-              />
-
-              {/* Modal Card */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden shadow-blue-500/10 border border-white/20"
-              >
-                <button
-                  onClick={() => setShowEntryModal(false)}
-                  className="absolute top-8 right-8 text-slate-400 hover:text-slate-900 transition-colors z-10"
-                >
-                  <X size={20} />
-                </button>
-
-                <div className="flex flex-col md:flex-row h-full">
-                  {/* Left: Branding & Info */}
-                  <div className="w-full md:w-2/5 p-10 md:p-12 bg-slate-50 border-r border-slate-100 flex flex-col justify-between">
-                    <div>
-                      <div className="badge-blue mb-6 inline-flex uppercase tracking-widest">{t.lab.badge}</div>
-                      <h3 className="text-3xl font-black text-slate-900 leading-tight mb-4 uppercase tracking-tighter">
-                        {t.lab.title}
-                      </h3>
-                      <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
-                        {t.lab.desc}
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-emerald-600">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        {t.lab.engines}
-                      </div>
-                      <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        <ShieldCheck size={14} className="text-slate-400" />
-                        {t.lab.encrypted}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right: Steps & Start */}
-                  <div className="flex-1 p-10 md:p-12 relative">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">{t.lab.workflow}</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mb-12">
-                      {[
-                        { icon: <Target size={14} />, title: t.lab.step1, desc: t.lab.step1_desc },
-                        { icon: <FileText size={14} />, title: t.lab.step2, desc: t.lab.step2_desc },
-                        { icon: <Users size={14} />, title: t.lab.step3, desc: t.lab.step3_desc },
-                        { icon: <Cpu size={14} />, title: t.lab.step4, desc: t.lab.step4_desc },
-                        { icon: <BarChart3 size={14} />, title: t.lab.step5, desc: t.lab.step5_desc },
-                        { icon: <ShieldCheck size={14} />, title: t.lab.step6, desc: t.lab.step6_desc },
-                      ].map((step, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 + i * 0.05 }}
-                          className="flex items-start gap-3"
-                        >
-                          <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
-                            {step.icon}
-                          </div>
-                          <div>
-                            <div className="text-[11px] font-black text-slate-900 uppercase tracking-tighter">{step.title}</div>
-                            <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{step.desc}</div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    <div className="bg-amber-50 rounded-2xl p-5 mb-8 border border-amber-100/50">
-                      <p className="text-[10px] text-amber-800 font-bold leading-relaxed uppercase tracking-tight">
-                        {t.lab.disclaimer}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => router.push("/lab")}
-                      className="w-full py-5 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 group"
-                    >
-                      {t.lab.initiate}
-                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )
-        }
-      </AnimatePresence>
-      {/* ════════════════════════════════════════════
-          QUICK AUDIT MODAL
-      ════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {
-          showQuickAuditModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 translate-z-0">
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowQuickAuditModal(false)}
-                className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
-              />
-
-              {/* Modal Card */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden shadow-blue-500/10 border border-white/20 p-8 md:p-12"
-              >
-                <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
-                      <Zap size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Instant Audit</h3>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Stress-test a single question with AVA</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setShowQuickAuditModal(false)}
-                    className="p-3 bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-all"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-
-                <QuickAudit />
-
-                <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                    Powered by The Bureau / Scientific Intelligence
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Calculated Live</span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )
-        }
-      </AnimatePresence>
-      {/* 👑 THE SHIELD MODAL */}
-      <AnimatePresence>
-        {showShieldModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowShieldModal(false)}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-2xl bg-white rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-600/20 border border-blue-50/50"
-            >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
-
-              {/* Close Button */}
-              <button
-                onClick={() => setShowShieldModal(false)}
-                className="absolute top-8 right-8 w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-all z-50"
-              >
-                <X size={20} />
-              </button>
-
-              <div className="p-12 md:p-16 relative z-10">
-                <div className="w-16 h-16 rounded-3xl bg-blue-600 flex items-center justify-center mb-10 shadow-xl shadow-blue-600/30">
-                  <ShieldCheck size={32} className="text-white" />
-                </div>
-
-                <div className="space-y-6 mb-12">
-                  <h3 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">
-                    {t.shield_modal.title}
-                  </h3>
-                  <div className="h-1 w-20 bg-blue-600 rounded-full" />
-                  <p className="text-2xl font-medium text-slate-500 leading-relaxed">
-                    {t.shield_modal.value_prop_1} <span className="text-slate-900 font-black">{t.shield_modal.value_prop_2}</span>
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-md">
-                    {t.shield_modal.description}
-                  </p>
-                </div>
-
-                <div className="mt-12 pt-10 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-8">
-                  <div className="flex items-center gap-4">
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 overflow-hidden">
-                          <div className="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300" />
-                        </div>
-                      ))}
-                    </div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.shield_modal.trusted}</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowShieldModal(false);
-                      router.push('/lab');
-                    }}
-                    className="w-full md:w-auto px-8 py-4 bg-blue-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-                  >
-                    {t.shield_modal.cta}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+      <AnimatePresence mode="wait">
+        {dark ? (
+          <motion.div key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.3 }}>
+            <Sun className="w-4 h-4" />
+          </motion.div>
+        ) : (
+          <motion.div key="moon" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.3 }}>
+            <Moon className="w-4 h-4" />
+          </motion.div>
         )}
       </AnimatePresence>
-    </main>
+    </motion.button>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRANSITIONAL PORTAL MODAL
+   ═══════════════════════════════════════════════════════════════ */
+type PortalType = "discover" | "cockpit" | null;
+
+const PORTAL_DATA = {
+  discover: {
+    icon: Globe,
+    accentFrom: "from-blue-500",
+    accentTo: "to-sky-400",
+    accentText: "text-blue-400",
+    accentTextLight: "text-blue-600",
+    accentBg: "bg-blue-500/10",
+    accentBgLight: "bg-blue-50",
+    accentBorder: "border-blue-500/20",
+    accentBorderLight: "border-blue-200",
+    title: "Entering The Bureau",
+    subtitle: "My public-facing world",
+    description: "You're about to explore who I am, what I do, and why survey intelligence matters. This is where I present my methodology, my vision for the future of research, and how I'm reshaping global survey design.",
+    features: [
+      { icon: Shield, label: "My Methodology", desc: "How I audit and optimize surveys" },
+      { icon: BarChart3, label: "Live Proof", desc: "Real metrics from real audits" },
+      { icon: Users, label: "Who It's For", desc: "Industries I serve globally" },
+      { icon: FileText, label: "Genesis Suite", desc: "I create surveys from scratch" },
+    ],
+    cta: "Enter The Bureau",
+    href: "/landing",
+  },
+  cockpit: {
+    icon: Cpu,
+    accentFrom: "from-emerald-500",
+    accentTo: "to-teal-400",
+    accentText: "text-emerald-400",
+    accentTextLight: "text-emerald-600",
+    accentBg: "bg-emerald-500/10",
+    accentBgLight: "bg-emerald-50",
+    accentBorder: "border-emerald-500/20",
+    accentBorderLight: "border-emerald-200",
+    title: "Entering The Cockpit",
+    subtitle: "My Mission Control & AI Lab",
+    description: "This is where the work happens. I brief you through my multi-agent intelligence system — I research your target market, build cultural dossiers, and generate statistically rigorous survey instruments — all in real time.",
+    features: [
+      { icon: Target, label: "Mission Control", desc: "Configure demographics, country and language" },
+      { icon: Microscope, label: "Sentinel & Profiler", desc: "My agents researching your target market live" },
+      { icon: BarChart3, label: "Cultural Dossier", desc: "Deep-dive audience intelligence reports" },
+      { icon: FileText, label: "Field Instrument", desc: "Publication-ready questionnaires" },
+    ],
+    cta: "Launch Cockpit",
+    href: "/mission-control",
+  },
+};
+
+function TransitionalModal({
+  portal,
+  dark,
+  onClose,
+}: {
+  portal: PortalType;
+  dark: boolean;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const [entering, setEntering] = useState(false);
+
+  if (!portal) return null;
+  const data = PORTAL_DATA[portal];
+  const Icon = data.icon;
+
+  const handleEnter = () => {
+    setEntering(true);
+    setTimeout(() => {
+      router.push(data.href);
+    }, 800);
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        key="portal-backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+        className="fixed inset-0 z-[100] flex items-center justify-center"
+      >
+        {/* Backdrop */}
+        <motion.div
+          className={`absolute inset-0 ${dark ? "bg-black/70" : "bg-white/80"} backdrop-blur-xl`}
+          onClick={onClose}
+        />
+
+        {/* Entering flash overlay */}
+        <AnimatePresence>
+          {entering && (
+            <motion.div
+              key="flash"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, ease: "easeIn" }}
+              className={`absolute inset-0 z-[200] ${dark ? "bg-[#060B18]" : "bg-white"}`}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Modal Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.98 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className={`relative z-[110] w-full max-w-lg mx-4 rounded-3xl overflow-hidden transition-colors duration-700 ${dark
+            ? "bg-slate-900/95 border border-white/10 shadow-2xl shadow-black/50"
+            : "bg-white border border-slate-200 shadow-2xl shadow-slate-200/60"
+            }`}
+        >
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className={`absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${dark ? "hover:bg-white/10 text-slate-500 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-700"
+              }`}
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          {/* Header */}
+          <div className="p-8 pb-0">
+            {/* Icon + Badge */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${data.accentFrom} ${data.accentTo} flex items-center justify-center shadow-lg`}>
+                <Icon className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h2 className={`text-xl font-black tracking-tight ${dark ? "text-white" : "text-slate-900"}`}>
+                  {data.title}
+                </h2>
+                <p className={`text-xs font-bold uppercase tracking-[0.2em] ${dark ? data.accentText : data.accentTextLight}`}>
+                  {data.subtitle}
+                </p>
+              </div>
+            </div>
+
+            {/* Description */}
+            <p className={`text-sm leading-relaxed mb-6 ${dark ? "text-slate-400" : "text-slate-500"}`}>
+              {data.description}
+            </p>
+          </div>
+
+          {/* Features Grid */}
+          <div className="px-8 pb-6">
+            <div className="grid grid-cols-2 gap-3">
+              {data.features.map((f, i) => {
+                const FIcon = f.icon;
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
+                    className={`p-3.5 rounded-xl transition-all duration-300 ${dark
+                      ? `${data.accentBg} border ${data.accentBorder}`
+                      : `${data.accentBgLight} border ${data.accentBorderLight}`
+                      }`}
+                  >
+                    <FIcon className={`w-4 h-4 mb-2 ${dark ? data.accentText : data.accentTextLight}`} />
+                    <div className={`text-[11px] font-bold ${dark ? "text-white" : "text-slate-800"}`}>
+                      {f.label}
+                    </div>
+                    <div className={`text-[10px] mt-0.5 ${dark ? "text-slate-500" : "text-slate-400"}`}>
+                      {f.desc}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Footer / CTA */}
+          <div className={`px-8 py-5 border-t transition-colors duration-700 ${dark ? "border-white/5 bg-slate-950/50" : "border-slate-100 bg-slate-50/50"
+            }`}>
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              onClick={handleEnter}
+              disabled={entering}
+              className={`w-full flex items-center justify-center gap-3 py-3.5 rounded-xl text-sm font-bold uppercase tracking-[0.15em] transition-all duration-300 cursor-pointer ${entering
+                ? "opacity-50 cursor-wait"
+                : ""
+                } bg-gradient-to-r ${data.accentFrom} ${data.accentTo} text-white hover:shadow-lg hover:shadow-${portal === "discover" ? "blue" : "emerald"}-500/20 hover:-translate-y-0.5 active:translate-y-0`}
+            >
+              {entering ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Sparkles className="w-4 h-4" />
+                </motion.div>
+              ) : (
+                <>
+                  <span>{data.cta}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </motion.button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN GATEWAY COMPONENT
+   ═══════════════════════════════════════════════════════════════ */
+export default function AVAGateway() {
+  const greeting = useTypewriter("Hello. I'm AVA.", 55, 1000);
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  const [showBody, setShowBody] = useState(false);
+  const [showCTAs, setShowCTAs] = useState(false);
+  const [dark, setDark] = useState(true);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [activePortal, setActivePortal] = useState<PortalType>(null);
+
+  useEffect(() => {
+    if (greeting.done) {
+      const t1 = setTimeout(() => setShowSubtitle(true), 300);
+      const t2 = setTimeout(() => setShowBody(true), 800);
+      const t3 = setTimeout(() => setShowCTAs(true), 1300);
+      return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    }
+  }, [greeting.done]);
+
+  return (
+    <div className={`relative h-screen w-screen overflow-hidden flex items-center justify-center transition-colors duration-700 ${dark ? "bg-[#060B18] text-white" : "bg-white text-slate-900"
+      }`}>
+      <GridBackground dark={dark} />
+      <Particles dark={dark} />
+      <ThemeToggle dark={dark} onToggle={() => setDark(d => !d)} />
+
+      {/* ─── TRANSITIONAL MODAL ─── */}
+      <AnimatePresence>
+        {activePortal && (
+          <TransitionalModal
+            portal={activePortal}
+            dark={dark}
+            onClose={() => setActivePortal(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ─── CONTENT CONTAINER ─── */}
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 xl:gap-24 w-full max-w-7xl mx-auto px-6 lg:px-12">
+
+        {/* ─── LEFT: AVA PORTRAIT ─── */}
+        <motion.div
+          initial={{ opacity: 0, x: -60, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          className="relative flex-shrink-0"
+        >
+          {/* Glow ring behind AVA */}
+          <motion.div
+            className="absolute inset-0 -m-4 rounded-full"
+            style={{
+              background: dark
+                ? "radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)"
+                : "radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)",
+            }}
+            animate={{ scale: [1, 1.05, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          {/* Portrait container */}
+          <div className="relative w-[280px] h-[340px] md:w-[320px] md:h-[400px] lg:w-[380px] lg:h-[480px] xl:w-[420px] xl:h-[530px]">
+            {/* Border glow (dark only) */}
+            {dark && (
+              <div className="absolute -inset-[2px] rounded-3xl bg-gradient-to-b from-emerald-500/30 via-emerald-500/10 to-transparent opacity-60" />
+            )}
+            <div className={`relative w-full h-full rounded-3xl overflow-hidden backdrop-blur-sm transition-all duration-700 ${dark
+              ? "bg-gradient-to-b from-slate-800/50 to-slate-900/80 border border-white/5"
+              : "bg-transparent"
+              }`}>
+              <Image
+                src="/images/AVA.webp"
+                alt="AVA — Survey Intelligence Analyst"
+                fill
+                className="object-cover object-top"
+                priority
+              />
+              {/* Bottom gradient overlay */}
+              <div className={`absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t transition-colors duration-700 ${dark ? "from-[#060B18]" : "from-white"
+                } to-transparent`} />
+            </div>
+
+            {/* Status badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.8, duration: 0.5 }}
+              className={`absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full backdrop-blur-md transition-all duration-700 ${dark
+                ? "bg-slate-900/90 border border-emerald-500/30"
+                : "bg-white/90 border border-emerald-200 shadow-lg shadow-emerald-100/30"
+                }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+              <span className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-colors duration-700 ${dark ? "text-emerald-300" : "text-emerald-600"
+                }`}>Online</span>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* ─── RIGHT: GREETING + CTAs ─── */}
+        <div className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-lg lg:max-w-xl">
+
+          {/* Bureau Monogram */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="flex items-center gap-3 mb-8"
+          >
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-700 ${dark
+              ? "bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-500/20"
+              : "bg-gradient-to-br from-amber-100 to-amber-50 border border-amber-200"
+              }`}>
+              <Sparkles className={`w-4 h-4 transition-colors duration-700 ${dark ? "text-amber-400" : "text-amber-500"}`} />
+            </div>
+            <span className={`text-[11px] font-bold uppercase tracking-[0.3em] transition-colors duration-700 ${dark ? "text-amber-400/70" : "text-amber-600/70"
+              }`}>
+              The Bureau
+            </span>
+          </motion.div>
+
+          {/* Typewriter Greeting */}
+          <div className="mb-4 min-h-[56px] md:min-h-[72px]">
+            <h1 className={`text-4xl md:text-5xl lg:text-6xl font-black tracking-tight transition-colors duration-700 ${dark ? "text-white" : "text-slate-900"
+              }`}>
+              {greeting.displayed}
+              {!greeting.done && (
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.6, repeat: Infinity }}
+                  className="inline-block w-[3px] h-[0.85em] bg-emerald-400 ml-1 align-middle rounded-full"
+                />
+              )}
+            </h1>
+          </div>
+
+          {/* Subtitle */}
+          <AnimatePresence>
+            {showSubtitle && (
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className={`text-lg md:text-xl lg:text-2xl font-medium mb-5 transition-colors duration-700 ${dark ? "text-emerald-300/90" : "text-emerald-600"
+                  }`}
+              >
+                Your Survey Intelligence Analyst.
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* Body */}
+          <AnimatePresence>
+            {showBody && (
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className={`text-sm md:text-base leading-relaxed mb-10 max-w-md transition-colors duration-700 ${dark ? "text-slate-400" : "text-slate-500"
+                  }`}
+              >
+                I transform survey research through AI-powered cultural intelligence.
+                From cultural dossiers to statistically rigorous field instruments —
+                I handle the complexity so you can focus on insight.
+                Get my agents at work.
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* CTAs — Now open transitional modals */}
+          <AnimatePresence>
+            {showCTAs && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+              >
+                {/* CTA 1: Discover */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <div
+                    onClick={() => setActivePortal("discover")}
+                    onMouseEnter={() => setHoveredCard("discover")}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 ${dark
+                      ? "border border-white/10 bg-white/[0.03] hover:border-slate-500/30 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-slate-500/5"
+                      : "border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-100/40 shadow-md shadow-slate-100"
+                      }`}
+                  >
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-500 ${dark
+                      ? "bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20"
+                      : "bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200"
+                      }`}>
+                      <Globe className={`w-5 h-5 transition-transform duration-500 group-hover:scale-110 ${dark ? "text-blue-400" : "text-blue-500"}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-sm font-bold tracking-wide transition-colors duration-700 ${dark ? "text-white" : "text-slate-800"}`}>
+                        Discover The Bureau
+                      </div>
+                      <div className={`text-[11px] mt-0.5 transition-colors duration-700 ${dark ? "text-slate-500" : "text-slate-400"}`}>
+                        My methodology & vision
+                      </div>
+                    </div>
+                    <ArrowRight className={`w-4 h-4 transition-all duration-300 group-hover:translate-x-1 ${dark ? "text-slate-600 group-hover:text-blue-400" : "text-slate-300 group-hover:text-blue-500"
+                      }`} />
+                  </div>
+                </motion.div>
+
+                {/* CTA 2: Enter Cockpit */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+                >
+                  <div
+                    onClick={() => setActivePortal("cockpit")}
+                    onMouseEnter={() => setHoveredCard("cockpit")}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 ${dark
+                      ? "border border-emerald-500/20 bg-emerald-500/[0.05] hover:border-emerald-400/40 hover:bg-emerald-500/[0.1] hover:shadow-lg hover:shadow-emerald-500/10"
+                      : "border border-emerald-200 bg-emerald-50/30 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-xl hover:shadow-emerald-100/40 shadow-md shadow-emerald-50"
+                      }`}
+                  >
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-500 ${dark
+                      ? "bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/20"
+                      : "bg-gradient-to-br from-emerald-100 to-emerald-50 border border-emerald-200"
+                      }`}>
+                      <Cpu className={`w-5 h-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 ${dark ? "text-emerald-400" : "text-emerald-500"}`} />
+                    </div>
+                    <div className="flex-1">
+                      <div className={`text-sm font-bold tracking-wide transition-colors duration-700 ${dark ? "text-white" : "text-slate-800"}`}>
+                        Enter The Cockpit
+                      </div>
+                      <div className={`text-[11px] mt-0.5 transition-colors duration-700 ${dark ? "text-emerald-500/70" : "text-emerald-600/70"}`}>
+                        Mission Control & AI Lab
+                      </div>
+                    </div>
+                    <ArrowRight className={`w-4 h-4 transition-all duration-300 group-hover:translate-x-1 ${dark ? "text-emerald-600 group-hover:text-emerald-300" : "text-emerald-300 group-hover:text-emerald-500"
+                      }`} />
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Powered by line */}
+          <AnimatePresence>
+            {showCTAs && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 1 }}
+                className="mt-10 flex items-center gap-3"
+              >
+                <div className={`w-px h-4 transition-colors duration-700 ${dark ? "bg-slate-800" : "bg-slate-200"}`} />
+                <span className={`text-[10px] uppercase tracking-[0.2em] transition-colors duration-700 ${dark ? "text-slate-600" : "text-slate-400"}`}>
+                  Proprietary AI
+                </span>
+                <span className={`text-[10px] transition-colors duration-700 ${dark ? "text-slate-700" : "text-slate-300"}`}>•</span>
+                <span className={`text-[10px] uppercase tracking-[0.2em] transition-colors duration-700 ${dark ? "text-slate-600" : "text-slate-400"}`}>
+                  Bureau v2.0
+                </span>
+                <div className={`w-px h-4 transition-colors duration-700 ${dark ? "bg-slate-800" : "bg-slate-200"}`} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* ─── BOTTOM EDGE LINE ─── */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ delay: 2.5, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+        className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent transition-colors duration-700 ${dark ? "via-emerald-500/30" : "via-emerald-400/20"
+          }`}
+      />
+    </div>
   );
 }

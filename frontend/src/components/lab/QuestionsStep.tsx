@@ -18,6 +18,8 @@ import {
     ChevronUp,
 } from "lucide-react";
 
+import { useMission } from "@/context/MissionContext";
+
 interface QuestionsStepProps {
     context: string;
     questions: string[];
@@ -29,6 +31,7 @@ export default function QuestionsStep({
     questions,
     setQuestions,
 }: QuestionsStepProps) {
+    const { currentMission } = useMission();
     const [newQuestion, setNewQuestion] = useState("");
     const [editIndex, setEditIndex] = useState<number | null>(null);
     const [editValue, setEditValue] = useState("");
@@ -86,7 +89,11 @@ export default function QuestionsStep({
             const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate_questions`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ context, count: 8 }),
+                body: JSON.stringify({
+                    context,
+                    count: 8,
+                    mission_id: currentMission?.mission_id
+                }),
             });
             const data = await resp.json();
             if (data.questions) {

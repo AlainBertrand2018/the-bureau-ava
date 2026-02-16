@@ -12,6 +12,7 @@ import {
     Hash,
     Wand2,
 } from "lucide-react";
+import { useMission } from "@/context/MissionContext";
 import type { Persona } from "./LabShell";
 
 interface PersonasStepProps {
@@ -25,6 +26,7 @@ export default function PersonasStep({
     personas,
     setPersonas,
 }: PersonasStepProps) {
+    const { currentMission } = useMission();
     const [isGenerating, setIsGenerating] = useState(false);
     const [personaCount, setPersonaCount] = useState(10);
 
@@ -34,7 +36,11 @@ export default function PersonasStep({
             const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate_personas`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ count: personaCount, context }),
+                body: JSON.stringify({
+                    count: personaCount,
+                    context,
+                    mission_id: currentMission?.mission_id
+                }),
             });
             const data = await resp.json();
             if (Array.isArray(data)) {
@@ -100,7 +106,7 @@ export default function PersonasStep({
                                     Archetype Generator
                                 </h3>
                                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                    Mauritius-Grounded Diagnostic Lenses
+                                    {(currentMission?.config.target_country || "Mauritius")}-Grounded Diagnostic Lenses
                                 </p>
                             </div>
                         </div>

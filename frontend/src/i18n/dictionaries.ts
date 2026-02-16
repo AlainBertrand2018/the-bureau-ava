@@ -9,8 +9,8 @@ export const dictionaries = {
         hero: {
             badge: "The Elite Choice",
             badge_sub: "Used by Leading Mauritian Brands",
-            title: "Secure Success Before Launching Surveys",
-            description: "AVA stress-tests your research through AI simulation, ensuring your survey data is absolutely flawless.",
+            title: "I Secure Success Before Launching Surveys",
+            description: "With my AI agents, we stress-test your research through AI simulation, ensuring your survey project is data-worth.",
             cta_audit: "DROP SURVEY FOR AUDIT",
             cta_auditing: "AUDITING...",
             cta_demo: "Interactive Demo",
@@ -19,12 +19,12 @@ export const dictionaries = {
         quick_audit: {
             title: "Quick Diagnostic",
             header: "STRESS-TEST A SINGLE QUESTION",
-            footer: "AVA identifies structural flaws in seconds",
+            footer: "I identify structural flaws in seconds",
             placeholder: "Paste a survey question here...",
             btn: "Run Audit",
             btn_loading: "Analyzing...",
             results_title: "Issues Found",
-            rewrite_title: "AVA's Recommended Rewrite",
+            rewrite_title: "My Recommended Rewrite",
             dimensions: "Dimensions Analyzed: Neutrality, Clarity, Scope",
             score_good: "Good",
             score_neutral: "Needs Work",
@@ -61,7 +61,7 @@ export const dictionaries = {
             disclaimer: "DISCLAIMER: This is a high-fidelity AI simulation. Responses are diagnostic stress-tests designed to identify structural flaws, not a guarantee of market performance."
         },
         footer: {
-            disclaimer: "AVA uses bespoke AI-powered engines to generate reports and redressment documents. Your survey data is processed in real-time and never stored permanently. All audits are confidential."
+            disclaimer: "We use bespoke AI-powered engines to generate reports and redressment documents. Your survey data is processed in real-time and never stored permanently. All audits are confidential."
         },
         pain_points: {
             title_1: "The cost of a bad survey",
@@ -80,7 +80,7 @@ export const dictionaries = {
             badge: "The Solution",
             title_1: "Stress-test your questionnaire",
             title_2: "before humans ever see it.",
-            description: "Upload your survey. AVA deploys diagnostic personas calibrated to Mauritian demographics to find what your team missed.",
+            description: "Upload your survey. My agents deploy diagnostic personas calibrated to your demographics to find what your team missed.",
             cap_1: "Bias Flags",
             cap_2: "Ambiguity Detection",
             cap_3: "Drop-off Risks",
@@ -92,9 +92,9 @@ export const dictionaries = {
             title: "Three steps. Under 5 minutes.",
             sub: "Faster than scheduling a focus group.",
             step1_title: "Submit",
-            step1_desc: "Paste your questions or upload your questionnaire. AVA accepts any format.",
+            step1_desc: "Paste your questions or upload your questionnaire. I accept any format.",
             step2_title: "Audit",
-            step2_desc: "AVA deploys diagnostic personas to stress-test every question for structural flaws.",
+            step2_desc: "My agents stress-test every question for structural flaws using diagnostic personas.",
             step3_title: "Fix",
             step3_desc: "Get rewritten questions, bias flags, and a prioritised fix list — ready to implement.",
             footer: "Total time: under 5 minutes"
@@ -110,7 +110,7 @@ export const dictionaries = {
             leading: "Leading",
             double_barrelled: "Double-Barrelled",
             acquiescence: "Acquiescence Bias",
-            rewrite_label: "AVA's Rewrite",
+            rewrite_label: "My Rewrite",
             rewrite_desc: "Neutral framing · Single construct · Eliminates acquiescence bias",
             cta: "Generate Your Report Now"
         },
@@ -134,7 +134,7 @@ export const dictionaries = {
         },
         proof: {
             badge: "Internal Pilot Results",
-            title: "We tested AVA on 12 internal surveys.",
+            title: "We were tested on 12 internal surveys.",
             sub: "Across healthcare, education, public policy, and consumer research.",
             stat_1: "questions stress-tested",
             stat_2: "average accuracy score",
@@ -158,7 +158,7 @@ export const dictionaries = {
             source: "Source: Benchmarked via Perplexity AI Audit of local market research providers",
             danger_zone: "The Danger Zone",
             risk_title: "Financial Risk of Design Flaws",
-            shield_btn: "Our Shield Against a Bad Investment"
+            shield_btn: "My Shield Against a Bad Investment"
         },
         pricing: {
             title: "Start free. Scale when ready.",
@@ -179,12 +179,12 @@ export const dictionaries = {
         final_cta: {
             title_1: "Don't guess.",
             title_2: "Audit first.",
-            sub: "Leave the stress-test to AVA. Run your first survey quality audit now — completely free.",
+            sub: "Leave the stress-test to me. Run your first survey quality audit now — completely free.",
             btn: "Start Free Audit",
             footer: "No credit card · No signup required · Results in under 5 minutes"
         },
         shield_modal: {
-            title: "AVA Stress-Test Audit",
+            title: "My Stress-Test Audit",
             value_prop_1: "Protect your survey chances with at most",
             value_prop_2: "5% of your total budget.",
             description: "Large-scale research projects require extreme precision. Our validation protocol ensures that every rupee committed to fieldwork is backed by high-fidelity questionnaire design.",
@@ -215,12 +215,12 @@ export const dictionaries = {
         architect: {
             badge: "Architect Protocol",
             title: "Genesis Suite",
-            sub: "Generate high-fidelity research instruments from zero.",
+            sub: "I generate high-fidelity research instruments from zero.",
             onboarding: {
                 step1: "Strategic Objective",
                 step1_desc: "What is your primary research goal?",
                 step2: "Target Audience",
-                step2_desc: "Who are we interviewing?",
+                step2_desc: "Who am I interviewing?",
                 step3: "Decision Matrix",
                 step3_desc: "What action will this data drive?",
                 placeholder_obj: "e.g., Launching a new premium coffee brand in Port Louis...",
@@ -229,7 +229,7 @@ export const dictionaries = {
             },
             cta_generate: "Initialize Genesis Protocol",
             cta_generating: "Architecting...",
-            pulse_generating: "AVA is architecting your instrument...",
+            pulse_generating: "I'm architecting your instrument...",
             pulse_auditing: "Applying Bureau Gold Standard Audit...",
             pulse_refining: "Recursive Refinement for 100/100 Quality...",
             pulse_simulating: "Running Census-Weighted Simulation (n=20)...",
@@ -242,7 +242,7 @@ export const dictionaries = {
                 best_practices: "Deployment Best Practices",
                 outcomes: "Predicted Data Outcomes",
                 export: "Export Package",
-                certified: "AVA CERTIFIED"
+                certified: "BUREAU CERTIFIED"
             }
         }
     },
@@ -256,8 +256,8 @@ export const dictionaries = {
         hero: {
             badge: "Le Choix de l'Élite",
             badge_sub: "Utilisé par les plus grandes marques mauriciennes",
-            title: "Garantissez le Succès de Votre Sondage",
-            description: "AVA teste rigoureusement votre recherche par simulation IA, garantissant des données sondage absolument parfaites.",
+            title: "Je Garantis le Succès Avant de Lancer Vos Sondages",
+            description: "Avec mes agents IA, nous stress-testons votre recherche par simulation, garantissant que votre projet de sondage en vaut la peine.",
             cta_audit: "DÉPOSER LE SONDAGE POUR AUDIT",
             cta_auditing: "ANALYSE EN COURS...",
             cta_demo: "Démo Interactive",
@@ -266,7 +266,7 @@ export const dictionaries = {
         quick_audit: {
             title: "Diagnostic Rapide",
             header: "STRESTEZ UNE SEULE QUESTION",
-            footer: "AVA identifie les failles structurelles en quelques secondes",
+            footer: "J'identifie les failles structurelles en quelques secondes",
             placeholder: "Collez votre question ici...",
             btn: "Lancer l'Audit",
             btn_loading: "Analyse...",
@@ -308,7 +308,7 @@ export const dictionaries = {
             disclaimer: "AVERTISSEMENT : Il s'agit d'une simulation d'IA haute fidélité. Les réponses sont des tests de résistance diagnostiques conçus pour identifier les failles structurelles, et non une garantie de performance commerciale."
         },
         footer: {
-            disclaimer: "AVA utilise des moteurs d'IA sur mesure pour générer des rapports et des documents de redressement. Vos données de sondage sont traitées en temps réel et ne sont jamais stockées de manière permanente. Tous les audits sont confidentiels."
+            disclaimer: "Nous utilisons des moteurs d'IA sur mesure pour générer des rapports et des documents de redressement. Vos données de sondage sont traitées en temps réel et ne sont jamais stockées de manière permanente. Tous les audits sont confidentiels."
         },
         pain_points: {
             title_1: "Le coût d'un mauvais sondage",
@@ -327,7 +327,7 @@ export const dictionaries = {
             badge: "La Solution",
             title_1: "Testez votre questionnaire",
             title_2: "avant qu'un humain ne le voie.",
-            description: "Téléchargez votre sondage. AVA déploie des personas de diagnostic calibrés sur la démographie mauricienne pour trouver ce que votre équipe a manqué.",
+            description: "Téléchargez votre sondage. Mes agents déploient des personas de diagnostic calibrés sur la démographie mauricienne pour trouver ce que votre équipe a manqué.",
             cap_1: "Biais Détectés",
             cap_2: "Détection d'Ambiguïté",
             cap_3: "Risques d'Abandon",
@@ -339,9 +339,9 @@ export const dictionaries = {
             title: "Trois étapes. Moins de 5 minutes.",
             sub: "Plus rapide que d'organiser un focus group.",
             step1_title: "Soumettre",
-            step1_desc: "Collez vos questions ou téléchargez votre questionnaire. AVA accepte tous les formats.",
-            step2_title: "Auditer",
-            step2_desc: "AVA déploie des personas de diagnostic pour tester chaque question et détecter les failles structurelles.",
+            step1_desc: "Collez vos questions ou téléchargez votre questionnaire. J'accepte tous les formats.",
+            step2_title: "Audit",
+            step2_desc: "Mes agents déploient des personas de diagnostic pour tester chaque question et détecter les failles structurelles.",
             step3_title: "Corriger",
             step3_desc: "Obtenez des questions réécrites, les drapeaux de biais et une liste de correctifs prioritaires — prêts à l'emploi.",
             footer: "Temps total : moins de 5 minutes"
@@ -357,7 +357,7 @@ export const dictionaries = {
             leading: "Orientée",
             double_barrelled: "Double Détente",
             acquiescence: "Biais d'Acquiescement",
-            rewrite_label: "Réécriture d'AVA",
+            rewrite_label: "Ma Réécriture",
             rewrite_desc: "Formulation neutre · Concept unique · Élimine le biais d'acquiescement",
             cta: "Générez Votre Rapport Maintenant"
         },
@@ -381,7 +381,7 @@ export const dictionaries = {
         },
         proof: {
             badge: "Résultats du Pilote Interne",
-            title: "Nous avons testé AVA sur 12 sondages internes.",
+            title: "Nous avons été testés sur 12 sondages internes.",
             sub: "Santé, éducation, politiques publiques et recherche de consommation.",
             stat_1: "questions testées",
             stat_2: "score de précision moyen",
@@ -431,7 +431,7 @@ export const dictionaries = {
             footer: "Pas de carte bancaire · Sans inscription · Résultats en moins de 5 minutes"
         },
         shield_modal: {
-            title: "Audit Stress-Test AVA",
+            title: "Mon Audit de Stress-Test",
             value_prop_1: "Protégez vos chances de réussite pour un maximum de",
             value_prop_2: "5% de votre budget total.",
             description: "Les projets de recherche à grande échelle nécessitent une précision extrême. Notre protocole de validation garantit que chaque roupie investie sur le terrain est soutenue par une conception de questionnaire de haute fidélité.",
@@ -476,7 +476,7 @@ export const dictionaries = {
             },
             cta_generate: "Initialiser le Protocole Genesis",
             cta_generating: "Architecture en cours...",
-            pulse_generating: "AVA conçoit votre instrument...",
+            pulse_generating: "Je conçois votre instrument...",
             pulse_auditing: "Application de l'Audit Gold Standard du Bureau...",
             pulse_refining: "Raffinement récursif pour une qualité 100/100...",
             pulse_simulating: "Exécution d'une simulation pondérée (n=20)...",
