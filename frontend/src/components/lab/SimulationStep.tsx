@@ -93,6 +93,10 @@ export default function SimulationStep({
                     }),
                 });
 
+                if (!resp.ok) {
+                    const errorText = await resp.text().catch(() => "");
+                    throw new Error(errorText || "Simulation failed");
+                }
                 const data = await resp.json();
 
                 // Handle new response format: { results: [...], provenance: {...} }

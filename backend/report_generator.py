@@ -80,8 +80,47 @@ class BureauReportGenerator:
         # ── Scientific Disclosure ──
         disclosure = manual.get("scientific_disclosure", "Built on Psychometric Measurement Theory and Agent-Based Modeling.")
 
-        # ── Strategic Rationale ──
+        # ── Build Strategic Rationale ──
         rationale = data.get("strategic_rationale", "")
+
+        # ── Build Universalized Grounding (New Granular Stats) ──
+        dossier = data.get("mission", {}).get("dossier", {})
+        grounding_html = ""
+        if dossier:
+            econ = dossier.get("economics", {})
+            edu = dossier.get("education", {})
+            tech = dossier.get("technology", {})
+            
+            grounding_html = f"""
+            <section class="section">
+                <h2>II. Universalized Market Grounding</h2>
+                <div class="grounding-grid">
+                    <div class="grounding-card">
+                        <h3>Economics & Fiscal Landscape</h3>
+                        <p><strong>Macro Indicators:</strong> {econ.get('macro_indicators', 'N/A')}</p>
+                        <p><strong>Salary Benchmarks:</strong> {econ.get('salary_ranges', 'N/A')}</p>
+                        <p><strong>Gender Revenue Parity:</strong> {econ.get('gender_revenue_parity', 'N/A')}</p>
+                        <p><strong>Budgetary Decisions:</strong> {econ.get('budgetary_decisions', 'N/A')}</p>
+                    </div>
+                    <div class="grounding-card">
+                        <h3>Educational Fidelity</h3>
+                        <p><strong>Literacy Levels:</strong> {edu.get('literacy_levels', 'N/A')}</p>
+                        <p><strong>Attainment:</strong> {edu.get('educational_attainment', 'N/A')}</p>
+                    </div>
+                    <div class="grounding-card">
+                        <h3>Technological Adoption</h3>
+                        <p><strong>Adoption Metrics:</strong> {tech.get('adoption_metrics', 'N/A')}</p>
+                        <p><strong>Digital Literacy:</strong> {tech.get('tech_literacy', 'N/A')}</p>
+                    </div>
+                </div>
+                
+                <h3>Cultural Axioms & Taboos</h3>
+                <div class="tag-cloud">
+                    {' '.join([f'<span class="tag">{t}</span>' for t in dossier.get("cultural_axioms", [])])}
+                    {' '.join([f'<span class="tag taboo">{t}</span>' for t in dossier.get("taboos", [])])}
+                </div>
+            </section>
+            """
 
         # ── Full HTML Document ──
         html = f"""<!DOCTYPE html>
@@ -340,12 +379,72 @@ class BureauReportGenerator:
             text-transform: uppercase;
         }}
 
+        .grounding-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .grounding-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .grounding-card h3 {
+            margin-top: 0 !important;
+            color: #10b981 !important;
+            border: none !important;
+        }
+
+        .grounding-card p {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .grounding-card strong {
+            color: #e2e8f0;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tag {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .tag.taboo {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
         /* ── Print Styles ── */
         @media print {{
-            body {{
-                background: #ffffff;
-                color: #1e293b;
-            }}
+            .grounding-card {{ background: #f8fafc; border-color: #e2e8f0; }}
+            .grounding-card p {{ color: #475569; }}
+            .grounding-card strong {{ color: #0f172a; }}
+            .tag {{ background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }}
+            .tag.taboo {{ background: #fef2f2; border-color: #fecaca; color: #b91c1c; }}
+        }}
 
             .container {{
                 padding: 40px 32px;
@@ -444,8 +543,10 @@ class BureauReportGenerator:
             <p class="summary-text">{rationale}</p>
         </section>
 
+        {grounding_html}
+
         <section class="section">
-            <h2>II. Research Instrument ({len(instrument)} Items)</h2>
+            <h2>III. Research Instrument ({len(instrument)} Items)</h2>
             <table class="q-table">
                 {questions_html}
             </table>

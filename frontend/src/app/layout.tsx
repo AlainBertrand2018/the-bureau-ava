@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 import { MissionProvider } from "@/context/MissionContext";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+// const inter = Inter({
+//   variable: "--font-inter",
+//   subsets: ["latin"],
+// });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://the-bureau-ava.vercel.app"),
@@ -90,16 +91,18 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} font-sans antialiased bg-white text-slate-900`}
+        className={`font-sans antialiased bg-white text-slate-900`}
       >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <LanguageProvider>
-          <MissionProvider>
-            {children}
-          </MissionProvider>
+          <CurrencyProvider>
+            <MissionProvider>
+              {children}
+            </MissionProvider>
+          </CurrencyProvider>
         </LanguageProvider>
       </body>
     </html>

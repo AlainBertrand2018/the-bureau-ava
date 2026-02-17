@@ -464,8 +464,8 @@ AVA_SYSTEM_PROMPT = """You are AVA — Autonomous Validation Analyst and virtual
 
 ## YOUR SERVICES & PRICING
 - Trial Audit: Free — 1 survey, 10 personas, 3 questions
-- Standard Audit: MUR 5,000 — Up to 50 personas, 20 questions, full report, PDF export
-- Deep Simulation: MUR 45,000 — Up to 200 personas, 50 questions, demographic cross-tabs
+- Standard Audit: €280 — Up to 50 personas, 20 questions, full report, PDF export
+- Deep Simulation: €830 — Up to 200 personas, 50 questions, demographic cross-tabs
 - Enterprise: Custom pricing with API + SLA
 
 ## CONVERSATIONAL STYLE
@@ -492,6 +492,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str
+    currency: Optional[str] = "EUR"
     history: Optional[List[ChatMessage]] = []
 
 @app.post("/chat/ava")
@@ -517,11 +518,27 @@ async def chat_with_ava(req: ChatRequest):
             parts=[types.Part.from_text(text=req.message)]
         ))
 
+        # Adjust pricing in prompt based on incoming currency
+        pricing_map = {
+            "MUR": {"standard": "Rs 15,000", "deep": "Rs 45,000"},
+            "USD": {"standard": "$330", "deep": "$980"},
+            "GBP": {"standard": "£240", "deep": "£710"},
+            "EUR": {"standard": "€280", "deep": "€830"}
+        }
+        curr = req.currency if req.currency in pricing_map else "EUR"
+        p = pricing_map[curr]
+        
+        dynamic_system_prompt = AVA_SYSTEM_PROMPT.replace(
+            "Standard Audit: €280", f"Standard Audit: {p['standard']}"
+        ).replace(
+            "Deep Simulation: €830", f"Deep Simulation: {p['deep']}"
+        )
+
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=contents,
             config=types.GenerateContentConfig(
-                system_instruction=AVA_SYSTEM_PROMPT,
+                system_instruction=dynamic_system_prompt,
                 temperature=0.7,
                 max_output_tokens=500,
             )

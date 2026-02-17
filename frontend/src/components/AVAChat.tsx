@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface Message {
     role: "user" | "assistant";
@@ -54,6 +55,8 @@ export default function AVAChat() {
         }
     }, [isOpen]);
 
+    const { currency } = useCurrency();
+
     const sendMessage = async () => {
         if (!input.trim() || isLoading) return;
 
@@ -69,6 +72,7 @@ export default function AVAChat() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     message: userMessage,
+                    currency: currency.code, // Pass detected currency
                     history: messages.map((m) => ({
                         role: m.role,
                         content: m.content,
@@ -76,7 +80,10 @@ export default function AVAChat() {
                 }),
             });
 
-            if (!response.ok) throw new Error("Failed to get response");
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to get response");
+            }
 
             const data = await response.json();
             setMessages((prev) => [
@@ -122,7 +129,7 @@ export default function AVAChat() {
                         {/* AVA mini avatar */}
                         <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30">
                             <Image
-                                src="/images/ava-portrait.png"
+                                src="/images/ava_Avatar.webp"
                                 alt="AVA"
                                 width={40}
                                 height={40}
@@ -169,7 +176,7 @@ export default function AVAChat() {
                             <div className="relative">
                                 <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-500/40">
                                     <Image
-                                        src="/images/ava-portrait.png"
+                                        src="/images/ava_Avatar.webp"
                                         alt="AVA"
                                         width={40}
                                         height={40}
@@ -202,7 +209,7 @@ export default function AVAChat() {
                                     {msg.role === "assistant" && (
                                         <div className="w-7 h-7 rounded-full overflow-hidden border border-emerald-500/30 flex-shrink-0 mt-0.5">
                                             <Image
-                                                src="/images/ava-portrait.png"
+                                                src="/images/ava_Avatar.webp"
                                                 alt="AVA"
                                                 width={28}
                                                 height={28}
@@ -212,8 +219,8 @@ export default function AVAChat() {
                                     )}
                                     <div
                                         className={`max-w-[75%] px-3.5 py-2.5 rounded-2xl text-[13px] leading-relaxed ${msg.role === "user"
-                                                ? "bg-emerald-600/80 text-white rounded-br-md"
-                                                : "bg-white/[0.06] text-slate-300 rounded-bl-md border border-white/[0.04]"
+                                            ? "bg-emerald-600/80 text-white rounded-br-md"
+                                            : "bg-white/[0.06] text-slate-300 rounded-bl-md border border-white/[0.04]"
                                             }`}
                                     >
                                         {msg.role === "assistant" ? renderMarkdownLite(msg.content) : msg.content}
@@ -226,7 +233,7 @@ export default function AVAChat() {
                                 <div className="flex gap-2.5 justify-start">
                                     <div className="w-7 h-7 rounded-full overflow-hidden border border-emerald-500/30 flex-shrink-0 mt-0.5">
                                         <Image
-                                            src="/images/ava-portrait.png"
+                                            src="/images/ava_Avatar.webp"
                                             alt="AVA"
                                             width={28}
                                             height={28}

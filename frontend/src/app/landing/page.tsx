@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useLanguage } from "@/context/LanguageContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const RotatingDashboard = dynamic(() => import("@/components/RotatingDashboard"), { ssr: false });
 const SurveyArchitect = dynamic(() => import("@/components/architect/SurveyArchitect"), { ssr: false });
@@ -109,6 +110,7 @@ function AnimatedCounter({
 export default function Home() {
   const router = useRouter();
   const { t, language } = useLanguage();
+  const { currency } = useCurrency();
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showQuickAuditModal, setShowQuickAuditModal] = useState(false);
   const [showShieldModal, setShowShieldModal] = useState(false);
@@ -117,9 +119,12 @@ export default function Home() {
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/stats`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then(data => setPubStats(data))
-      .catch(err => console.error(err));
+      .catch(err => console.error("Failed to fetch public stats:", err));
   }, []);
 
 
@@ -891,7 +896,7 @@ export default function Home() {
                     <div className="w-[300px] md:w-[400px] bg-blue-50 border-x border-t border-blue-100 rounded-t-[3rem] p-10 text-center pb-20 shadow-[0_-20px_40px_-15px_rgba(59,130,246,0.05)]">
                       <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">Visible Effort</span>
                       <h3 className="text-slate-900 font-black text-lg mb-1 tracking-tight">Questionnaire Design</h3>
-                      <p className="text-blue-600 font-black text-sm tracking-tight">Rs 50,000 – 150,000</p>
+                      <p className="text-blue-600 font-black text-sm tracking-tight">{currency.icebergDesign}</p>
                     </div>
                   </Reveal>
 
@@ -911,7 +916,7 @@ export default function Home() {
                           <p className="text-slate-900 font-bold text-sm">{t.survey_mechanics.sample_recruitment}</p>
                           <p className="text-slate-400 text-[9px] uppercase font-black tracking-widest mt-0.5">{t.survey_mechanics.fieldwork_logistics}</p>
                         </div>
-                        <span className="text-slate-600 font-black text-sm tracking-tighter">Rs 100k – 400k</span>
+                        <span className="text-slate-600 font-black text-sm tracking-tighter">{currency.icebergRecruitment}</span>
                       </div>
                     </Reveal>
 
@@ -922,7 +927,7 @@ export default function Home() {
                           <p className="text-slate-900 font-bold text-sm">{t.survey_mechanics.data_collection}</p>
                           <p className="text-slate-400 text-[9px] uppercase font-black tracking-widest mt-0.5">{t.survey_mechanics.primary_execution}</p>
                         </div>
-                        <span className="text-slate-600 font-black text-sm tracking-tighter">Rs 20k – 50k</span>
+                        <span className="text-slate-600 font-black text-sm tracking-tighter">{currency.icebergCollection}</span>
                       </div>
                     </Reveal>
 
@@ -934,7 +939,7 @@ export default function Home() {
                           <p className="text-slate-900 font-bold text-sm">{t.survey_mechanics.analysis_reporting}</p>
                           <p className="text-slate-400 text-[9px] uppercase font-black tracking-widest mt-0.5">{t.survey_mechanics.post_field}</p>
                         </div>
-                        <span className="text-slate-600 font-black text-sm tracking-tighter">Rs 30k – 100k</span>
+                        <span className="text-slate-600 font-black text-sm tracking-tighter">{currency.icebergAnalysis}</span>
                       </div>
                     </Reveal>
 
@@ -952,7 +957,7 @@ export default function Home() {
                         {t.survey_mechanics.danger_zone}
                       </p>
                       <h4 className="text-3xl font-black text-slate-900 tracking-tight mb-2">{t.survey_mechanics.risk_title}</h4>
-                      <p className="text-slate-400 font-black text-3xl tracking-tighter mb-12">Rs 200,000 — 800,000</p>
+                      <p className="text-slate-400 font-black text-3xl tracking-tighter mb-12">{currency.riskRange}</p>
                       <button
                         onClick={() => setShowShieldModal(true)}
                         className="inline-flex items-center gap-3 px-10 py-5 bg-slate-900 text-white rounded-full text-[11px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-600/30 transition-all transform hover:-translate-y-1 active:scale-95 group"
@@ -1013,7 +1018,7 @@ export default function Home() {
               <Reveal delay={0}>
                 <div className="card-elevated p-8 h-full">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-3">Tier 1</div>
-                  <div className="text-4xl font-black text-slate-900 mb-1">MUR 0</div>
+                  <div className="text-4xl font-black text-slate-900 mb-1">{currency.symbol}{currency.tiers.tier1.price}</div>
                   <p className="text-xs text-slate-400 font-medium mb-6">{t.pricing.tier1_name}</p>
                   <ul className="space-y-3 mb-8">
                     {t.pricing.tier1_features.map((f, i) => (
@@ -1039,7 +1044,10 @@ export default function Home() {
                     {t.pricing.most_popular}
                   </div>
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">Tier 2</div>
-                  <div className="text-4xl font-black text-slate-900 mb-1">MUR 5,000</div>
+                  <div className="text-4xl font-black text-slate-900 mb-1">
+                    {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
+                    {currency.tiers.tier2.price.toLocaleString()}
+                  </div>
                   <p className="text-xs text-slate-400 font-medium mb-6">{t.pricing.tier2_name}</p>
                   <ul className="space-y-3 mb-8">
                     {t.pricing.tier2_features.map((f, i) => (
@@ -1062,7 +1070,10 @@ export default function Home() {
               <Reveal delay={0.2}>
                 <div className="card-elevated p-8 h-full">
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 mb-3">Tier 3</div>
-                  <div className="text-4xl font-black text-slate-900 mb-1">MUR 45,000</div>
+                  <div className="text-4xl font-black text-slate-900 mb-1">
+                    {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
+                    {currency.tiers.tier3.price.toLocaleString()}
+                  </div>
                   <p className="text-xs text-slate-400 font-medium mb-6">{t.pricing.tier3_name}</p>
                   <ul className="space-y-3 mb-8">
                     {t.pricing.tier3_features.map((f, i) => (

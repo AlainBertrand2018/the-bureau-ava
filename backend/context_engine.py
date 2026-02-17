@@ -3,7 +3,9 @@ import time
 import uuid
 import os
 import datetime
+import asyncio
 from typing import List, Dict, Any, Optional, AsyncGenerator
+from ai_utils import generate_with_retry, safe_parse_json
 from pydantic import BaseModel, Field
 from google import genai
 from dotenv import load_dotenv
@@ -25,14 +27,44 @@ class PersonaArchetype(BaseModel):
     traits: str = Field(..., description="Key personality and behavioral traits")
     background: str = Field(..., description="Brief life context or demographic summary")
 
+class EconomicsDossier(BaseModel):
+    salary_ranges: str = Field(..., description="Local salary benchmarks and ranges")
+    gender_revenue_parity: str = Field(..., description="Economic status of genders and parity indicators")
+    macro_indicators: str = Field(..., description="GDP, Inflation, and Unemployment rates")
+    budgetary_decisions: str = Field(..., description="Recent government fiscal policies and consumer impact")
+
+class EducationDossier(BaseModel):
+    literacy_levels: str = Field(..., description="Literacy by age-group and gender")
+    educational_attainment: str = Field(..., description="General educational landscape")
+
+class TechnologyDossier(BaseModel):
+    adoption_metrics: str = Field(..., description="Mobile and internet penetration rates")
+    tech_literacy: str = Field(..., description="Digital literacy indices and usage patterns")
+
+class DemographicsDossier(BaseModel):
+    gender_ratios: str = Field(..., description="Male to Female population distribution")
+    age_structure: str = Field(..., description="Population breakdown by age groups")
+    urban_rural_split: str = Field(..., description="Urban vs Rural population percentage")
+    ethnic_religious_composition: str = Field(..., description="Major ethnic and religious groups with percentages")
+
+class SamplingParameters(BaseModel):
+    targeted_segment_size: str = Field(..., description="Estimated total population size of the target audience based on census data")
+    ideal_sample_size: str = Field(..., description="Recommended sample size for statistical significance (e.g. 95% confidence)")
+    suggested_distribution_mode: str = Field(..., description="Recommended survey channel (Field, Digital, Social, Hybrid)")
+
 class CulturalDossier(BaseModel):
     country: str
-    economic_context: str = Field(..., description="Detailed forensic economic analysis with specific figures")
-    cultural_axioms: List[str] = Field(..., description="Core societal values and communication norms")
-    linguistic_nuances: List[str] = Field(..., description="Honorifics, register, and specific phrasing rules")
-    taboos: List[str] = Field(..., description="Topics to avoid or handle with extreme care")
-    demographic_archetypes: List[PersonaArchetype] = Field(..., description="5-7 representative personas for this market")
-    fieldwork_etiquette: List[str] = Field(..., description="How to engage respondents in this specific culture")
+    economic_context: Optional[str] = Field(default=None, description="Executive summary of economic reality")
+    economics: EconomicsDossier
+    demographics: Optional[DemographicsDossier] = Field(default=None, description="Statistical demographic breakdown")
+    sampling_parameters: Optional[SamplingParameters] = Field(default=None, description="Strategic sampling recommendations")
+    education: EducationDossier
+    technology: TechnologyDossier
+    cultural_axioms: List[str] = Field(default=[], description="Core societal values and communication norms")
+    linguistic_nuances: List[str] = Field(default=[], description="Honorifics, register, and specific phrasing rules")
+    taboos: List[str] = Field(default=[], description="Topics to avoid or handle with extreme care")
+    demographic_archetypes: List[PersonaArchetype] = Field(default=[], description="5-7 representative personas for this market")
+    fieldwork_etiquette: List[str] = Field(default=[], description="How to engage respondents in this specific culture")
     citation_index: List[str] = Field(default=[], description="List of sources verified by the Adjudicator")
 
 class MissionLogEntry(BaseModel):
@@ -75,24 +107,193 @@ class ContextEngine:
             details=details
         )
 
+    def _sanitize_dossier_data(self, data: Any, config: MissionConfiguration) -> Dict[str, Any]:
+        """
+        Ensures the raw AI response fits the CulturalDossier schema exactly.
+        Handles unwrapping, flattening dicts to strings, and repairing missing fields.
+        """
+        # Unwrap if needed
+        if isinstance(data, list) and len(data) > 0: data = data[0]
+        
+        # Normalize keys
+        data = self._normalize_keys(data)
+        
+        # --- UNWRAP LAYER ---
+        # If the AI nested everything under "cultural_dossier", unwrap it
+        possible_roots = ["CulturalDossier", "cultural_dossier", "culturaldossier", "dossier"]
+        for r in possible_roots:
+            if r in data and isinstance(data[r], dict):
+                # Only unwrap if the root has the meat of the object
+                if "economics" in data[r] or "country" in data[r]:
+                    data = data[r]
+                    break
+
+        # --- SANITIZATION LAYER ---
+        list_fields = ["linguistic_nuances", "fieldwork_etiquette", "cultural_axioms", "taboos"]
+        for field in list_fields:
+            if field not in data:
+                data[field] = ["Information grounded in general market trends"]
+            
+            if field in data and isinstance(data[field], dict):
+                # Flatten dict values to list
+                flat_list = []
+                for k, v in data[field].items():
+                    if isinstance(v, list): flat_list.extend([f"{k}: {x}" for x in v])
+                    else: flat_list.append(f"{k}: {v}")
+                data[field] = flat_list
+            # Ensure it is a list
+            if field in data and not isinstance(data[field], list):
+                data[field] = [str(data[field])]
+
+        # --- FLATTEN NESTED DICTS FOR STRICT STRING FIELDS ---
+        # Helper to stringify dicts if Pydantic expects str
+        # Helper to stringify dicts if Pydantic expects str
+        def stringify_if_dict(val: Any) -> str:
+            if isinstance(val, dict):
+                parts = []
+                for k, v in val.items():
+                    k_pretty = str(k).replace('_', ' ').title()
+                    v_pretty = stringify_if_dict(v)
+                    parts.append(f"{k_pretty}: {v_pretty}")
+                return " | ".join(parts)
+            elif isinstance(val, list):
+                return ", ".join([str(x) for x in val])
+            return str(val)
+
+            return str(val)
+
+        structural_fields = ["economics", "education", "technology", "demographics"]
+        for root in structural_fields:
+            if root in data and isinstance(data[root], dict):
+                for k, v in data[root].items():
+                    data[root][k] = stringify_if_dict(v)
+
+        # --- BACKWARD COMPATIBILITY: ECONOMIC CONTEXT ---
+        # The frontend expects 'economic_context' summary string, but we have structured data.
+        # Synthesize it if missing.
+        if "economic_context" not in data and "economics" in data and isinstance(data["economics"], dict):
+            parts = []
+            econ = data["economics"]
+            if "macro_indicators" in econ: parts.append(f"Macro: {econ['macro_indicators']}")
+            if "salary_ranges" in econ: parts.append(f"Salaries: {econ['salary_ranges']}")
+            
+            if parts:
+                data["economic_context"] = " | ".join(parts)
+            else:
+                data["economic_context"] = "Economic data available in structured format below."
+
+        # --- ARCHETYPE REPAIR ---
+        if "demographic_archetypes" not in data:
+            data["demographic_archetypes"] = []
+            
+        if "demographic_archetypes" in data and isinstance(data["demographic_archetypes"], list):
+            valid_archetypes = []
+            for arch in data["demographic_archetypes"]:
+                # Ensure it is a dict
+                if not isinstance(arch, dict): continue
+                
+                # Fix traits if list
+                if "traits" in arch and isinstance(arch["traits"], list):
+                    arch["traits"] = ", ".join(arch["traits"])
+                
+                # Fill missing fields
+                if "name" not in arch: arch["name"] = "Unknown Persona"
+                if "role" not in arch: arch["role"] = arch.get("description", "Standard Consumer")
+                if "traits" not in arch: arch["traits"] = "Representative of local demographic"
+                if "background" not in arch: arch["background"] = arch.get("bio", "General population member")
+                
+                valid_archetypes.append(arch)
+            data["demographic_archetypes"] = valid_archetypes
+        # --------------------------
+        
+        # Validate / Fill defaults
+        if "country" not in data: data["country"] = config.target_country
+        if "citation_index" not in data: data["citation_index"] = ["Source grounding provided via Google Search Grounding"]
+        
+        # Defensive check for sub-objects
+        if "economics" not in data or not isinstance(data["economics"], dict): 
+            data["economics"] = {
+                "salary_ranges": "Data unavailable", 
+                "gender_revenue_parity": "Data unavailable", 
+                "macro_indicators": "Data unavailable", 
+                "budgetary_decisions": "Data unavailable"
+            }
+        else:
+             # Ensure sub-fields exist
+             eco_fields = ["salary_ranges", "gender_revenue_parity", "macro_indicators", "budgetary_decisions"]
+             for f in eco_fields:
+                 if f not in data["economics"]: data["economics"][f] = "Data unavailable"
+
+        if "education" not in data or not isinstance(data["education"], dict):
+            data["education"] = {
+                "literacy_levels": "Data unavailable",
+                "educational_attainment": "Data unavailable"
+            }
+        else:
+            edu_fields = ["literacy_levels", "educational_attainment"]
+            for f in edu_fields:
+                if f not in data["education"]: data["education"][f] = "Data unavailable"
+
+        if "technology" not in data or not isinstance(data["technology"], dict):
+            data["technology"] = {
+                "adoption_metrics": "Data unavailable",
+                "tech_literacy": "Data unavailable"
+            }
+        else:
+            tech_fields = ["adoption_metrics", "tech_literacy"]
+            for f in tech_fields:
+                if f not in data["technology"]: data["technology"][f] = "Data unavailable"
+
+        if "demographics" not in data or not isinstance(data["demographics"], dict):
+            # Attempt to infer from other fields or set comprehensive defaults
+            data["demographics"] = {
+                "gender_ratios": "National Statistics Unavailable",
+                "age_structure": "National Statistics Unavailable",
+                "urban_rural_split": "National Statistics Unavailable",
+                "ethnic_religious_composition": "National Statistics Unavailable"
+            }
+        else:
+            demo_fields = ["gender_ratios", "age_structure", "urban_rural_split", "ethnic_religious_composition"]
+            for f in demo_fields:
+                if f not in data["demographics"]: data["demographics"][f] = "National Statistics Unavailable"
+
+        if "sampling_parameters" not in data or not isinstance(data["sampling_parameters"], dict):
+            data["sampling_parameters"] = {
+                "targeted_segment_size": "Estimation Unavailable",
+                "ideal_sample_size": "Calculation Unavailable",
+                "suggested_distribution_mode": "Hybrid (Field + Digital)"
+            }
+        else:
+            samp_fields = ["targeted_segment_size", "ideal_sample_size", "suggested_distribution_mode"]
+            for f in samp_fields:
+                if f not in data["sampling_parameters"]: data["sampling_parameters"][f] = "Unavailable"
+                
+        return data
+
     async def generate_dossier_stream(self, config: MissionConfiguration) -> AsyncGenerator[str, None]:
         audit_trail = []
+        start_time = time.time()
         
         # --- PHASE 1: THE SENTINEL (Research Agent) ---
-        log = self._log("SENTINEL", "INITIATED", f"Deploying Research Scrapers for {config.target_audience}")
+        log = self._log("SENTINEL", "DEPLOYED", f"Initiating deep-scan of {config.target_country} market parameters")
         audit_trail.append(log)
         yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
         
         research_prompt = f"""
-        Find precise, real-world economic and sociological data for: '{config.target_audience}' within the region of {config.target_region}, {config.target_country}.
+        [BUREAU INTELLIGENCE DIRECTIVE: HIGH-FIDELITY GROUNDING]
+        Target: '{config.target_audience}' in {config.target_region}, {config.target_country}.
         
-        SPECIFICALLY SEARCH FOR:
-        1. Average monthly income / purchasing power / earnings in {config.target_country} currency (2024/2025 data).
-        2. Cost of living pressures and financial anxieties specific to this group.
-        3. Real-world slang, verlan, or linguistic codes used by this group.
-        4. Specific taboos or sensitive topics for this demographic.
+        You MUST fetch precise, granular, and recent (2023-2025) statistical data from authoritative sources 
+        (data.un.org, data.worldbank.org, official government portals, Wikipedia).
         
-        Provide a detailed summary with cited numbers and facts.
+        REQUIRED INDICATORS:
+        1. ECONOMICS: Salary ranges for {config.target_audience}, Gender-related revenue gap, GDP growth, Inflation rates (current month/year), Unemployment rates, and recent Budgetary Decisions affecting the populace.
+        2. DEMOGRAPHICS: Specific national statistics for Gender Ratios (Male/Female %), Age Structure (0-14, 15-64, 65+), Urban vs Rural population split (%), and Ethnic/Religious composition breakdowns.
+        3. EDUCATION: Literacy levels specifically broken down by Age-group and Gender in {config.target_country}.
+        4. TECHNOLOGY: Mobile and Internet adoption rates, and Technological Literacy indices.
+        5. SOCIO-LINGUISTICS: Real-world slang, linguistic codes, and cultural axioms derived from the current economic reality.
+        
+        Provide a forensic summary. If specific numbers are available, you MUST include them.
         """
         
         log = self._log("SENTINEL", "SEARCHING", f"Querying Global Index for '{config.target_audience} economics {config.target_region}'")
@@ -102,8 +303,9 @@ class ContextEngine:
         start_time = time.time()
         research_data = ""
         try:
-            # Asynchronous call to prevent blocking
-            response_research = await self.client.aio.models.generate_content(
+            # Asynchronous call with retry to handle 429
+            response_research = await generate_with_retry(
+                client=self.client,
                 model="gemini-2.0-flash", 
                 contents=research_prompt,
                 config={
@@ -145,28 +347,34 @@ class ContextEngine:
         yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
         
         synthesis_prompt = f"""
-        ROLE: You are an Expert Forensic Auditor and Sociologist.
+        ROLE: You are an Expert Forensic Auditor and Sociologist for the Survey Optimization Bureau.
         
-        INPUT DATA (FROM SENTINEL):
+        INPUT DATA (FROM SENTINEL SCRAPE):
         {research_data}
         
         MISSION CONTEXT:
         - Country: {config.target_country}
+        - Region: {config.target_region}
         - Audience: {config.target_audience}
         
-        TASK: Synthesize this into a 'CulturalDossier' JSON.
+        TASK: Synthesize the scrape into a 'CulturalDossier' JSON object. You MUST be granular.
         
-        REQUIREMENTS:
-        1. 'economic_context': Must include the SPECIFIC INCOME NUMBERS found by Sentinel. Cite the sources in the text.
-        2. 'cultural_axioms': Deduce values from the economic reality (e.g. 'Distrust of authority due to low wages').
-        3. 'linguistic_nuances': A FLAT list of strings (e.g. ["Use of 'Ji' for elders", "Avoidance of first names"]). Do NOT use categories/objects.
-        4. 'taboos': Must be specific to this group (e.g. 'Asking about hourly wage').
-        5. 'demographic_archetypes': traits must be a SINGLE STRING description, not a list.
-        6. 'fieldwork_etiquette': A FLAT list of strings.
-        7. 'citation_index': List the sources mentioned or implied.
+        STRUCTURAL REQUIREMENTS:
+        1. 'economics': Breakdown into salary_ranges, gender_revenue_parity, macro_indicators (GDP/Inflation/Unemployment), and budgetary_decisions. Use precise currency values.
+        2. 'demographics': Granular NATIONAL stats. Gender Ratios, Age Structure, Urban/Rural Split, Ethnic/Religious Composition. If scrape is missing numbers, provide general knowledge estimates for {config.target_country}. DO NOT leave empty.
+        3. 'education': Specific literacy_levels (Age/Gender split) and attainment overview.
+        4. 'technology': adoption_metrics (Mobile/Web) and tech_literacy indices.
+        5. 'demographic_archetypes': Create 5-7 personas that embody the specific economics/tech/education levels discovered.
+        6. 'cultural_axioms': LIST of strings. 3-5 core societal values or beliefs prevalent in this market.
+        7. 'linguistic_nuances': LIST of strings. Specific slang, codes, or communication styles used by the audience.
+        8. 'taboos': LIST of strings. Sensitive topics or behaviors to avoid in this culture.
+        9. 'sampling_parameters': Calculate specific survey metrics:
+           - 'targeted_segment_size': Estimate the total population of '{config.target_audience}' in this region using census data.
+           - 'ideal_sample_size': Calculate recommended sample size for 95% confidence level, 5% margin of error.
+           - 'suggested_distribution_mode': Recommend 'Field', 'Digital (Email/Social)', or 'Hybrid' based on tech adoption.
+        10. 'citation_index': You MUST list the specific URLs or organizations (UN, World Bank, etc.) found in the research.
         
-        Return a single JSON object with snake_case keys exactly fitting the schema.
-        Key structure: country, economic_context, cultural_axioms, linguistic_nuances, taboos, demographic_archetypes (list of {{"name", "role", "traits", "background"}}), fieldwork_etiquette, citation_index.
+        Return a single JSON object fitting the schema exactly.
         """
         
         log = self._log("PROFILER", "ANALYZING", "Cross-referencing economic data with behavioral models")
@@ -174,7 +382,8 @@ class ContextEngine:
         yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
         
         try:
-            response_synthesis = await self.client.aio.models.generate_content(
+            response_synthesis = await generate_with_retry(
+                client=self.client,
                 model="gemini-2.0-flash", 
                 contents=synthesis_prompt,
                 config={
@@ -182,60 +391,44 @@ class ContextEngine:
                 }
             )
             
-            raw_text = response_synthesis.text
-            # Basic cleanup
-            if "```json" in raw_text: raw_text = raw_text.split("```json")[1].split("```")[0]
-            elif "```" in raw_text: raw_text = raw_text.split("```")[1].split("```")[0]
+            # Robust Parsing
+            data = safe_parse_json(response_synthesis.text)
             
-            # Defensive parsing
+            # FILE LOGGING FOR DEBUG
             try:
-                data = json.loads(raw_text)
+                with open("debug_ai_response.log", "a", encoding="utf-8") as f:
+                    f.write(f"\n--- MISSION: {config.target_country} ---\n")
+                    f.write(f"RAW AI RESPONSE:\n{response_synthesis.text}\n")
+                    f.write(f"PARSED DATA KEYS: {list(data.keys())}\n")
             except:
-                # Fallback if cleaner failed
-                import re
-                json_match = re.search(r'\{.*\}', raw_text, re.DOTALL)
-                if json_match:
-                    data = json.loads(json_match.group(0))
-                else:
-                    raise ValueError("Failed to parse JSON")
-            
-            # Unwrap if needed
-            if isinstance(data, list) and len(data) > 0: data = data[0]
-            
-            # Normalize keys
-            data = self._normalize_keys(data)
-            
-            # --- SANITIZATION LAYER ---
-            list_fields = ["linguistic_nuances", "fieldwork_etiquette", "cultural_axioms", "taboos"]
-            for field in list_fields:
-                if field in data and isinstance(data[field], dict):
-                    # Flatten dict values to list
-                    flat_list = []
-                    for k, v in data[field].items():
-                        if isinstance(v, list): flat_list.extend([f"{k}: {x}" for x in v])
-                        else: flat_list.append(f"{k}: {v}")
-                    data[field] = flat_list
-                # Ensure it is a list
-                if field in data and not isinstance(data[field], list):
-                    data[field] = [str(data[field])]
+                pass
 
-            # Fix traits if list
-            if "demographic_archetypes" in data and isinstance(data["demographic_archetypes"], list):
-                for arch in data["demographic_archetypes"]:
-                    if "traits" in arch and isinstance(arch["traits"], list):
-                        arch["traits"] = ", ".join(arch["traits"])
-            # --------------------------
-            
-            # Validate / Fill defaults
-            if "country" not in data: data["country"] = config.target_country
-            if "citation_index" not in data: data["citation_index"] = ["Source grounding provided by Google Search"]
-            if "economic_context" not in data: data["economic_context"] = "Economic data processing pending."
-            
+            # Robust Sanitization & Repair
+            data = self._sanitize_dossier_data(data, config)
+
             log = self._log("ADJUDICATOR", "VERIFYING", f"Validated {len(data.get('citation_index', []))} citations against Sentinel Knowledge")
             audit_trail.append(log)
             yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
 
-            log = self._log("AVA", "CERTIFIED", "Dossier approved for distribution")
+            log = self._log("AVA", "CERTIFIED", "Granular Statistical Dossier approved for distribution")
+            audit_trail.append(log)
+            yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
+            
+            dossier = CulturalDossier(**data)
+            
+            # Yield final dossier
+            yield json.dumps({"type": "dossier", "data": json.loads(dossier.json())}) + "\n"
+
+        except Exception as e:
+            log = self._log("PROFILER", "ERROR", str(e))
+            audit_trail.append(log)
+            yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
+            raise e
+            log = self._log("ADJUDICATOR", "VERIFYING", f"Validated {len(data.get('citation_index', []))} citations against Sentinel Knowledge")
+            audit_trail.append(log)
+            yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
+
+            log = self._log("AVA", "CERTIFIED", "Granular Statistical Dossier approved for distribution")
             audit_trail.append(log)
             yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
             

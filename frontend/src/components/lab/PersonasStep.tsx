@@ -42,6 +42,10 @@ export default function PersonasStep({
                     mission_id: currentMission?.mission_id
                 }),
             });
+            if (!resp.ok) {
+                const errorText = await resp.text().catch(() => "");
+                throw new Error(errorText || "Generation failed");
+            }
             const data = await resp.json();
             if (Array.isArray(data)) {
                 setPersonas(data);

@@ -95,6 +95,10 @@ export default function QuestionsStep({
                     mission_id: currentMission?.mission_id
                 }),
             });
+            if (!resp.ok) {
+                const errorText = await resp.text().catch(() => "");
+                throw new Error(errorText || "Generation failed");
+            }
             const data = await resp.json();
             if (data.questions) {
                 setQuestions(data.questions);

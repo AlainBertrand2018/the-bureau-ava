@@ -76,13 +76,23 @@ export default function QuickAudit() {
         setAuditError("");
         setAuditResult(null);
         try {
-            const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quick_audit`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quick_audit`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ question: auditQuestion }),
             });
-            if (!resp.ok) throw new Error("Audit failed");
-            setAuditResult(await resp.json());
+            if (!response.ok) {
+                const errorText = await response.text().catch(() => "");
+                try {
+                    const err = JSON.parse(errorText);
+                    throw new Error(err.detail || "Server error");
+                } catch (e) {
+                    throw new Error(errorText || "Server error");
+                }
+            }
+
+            const data = await response.json();
+            setAuditResult(data);
         } catch (err: any) {
             setAuditError(err.message || "Something went wrong");
         } finally {

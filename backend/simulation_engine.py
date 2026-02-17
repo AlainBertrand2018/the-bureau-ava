@@ -7,6 +7,7 @@ import asyncio
 import time
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
+from ai_utils import generate_with_retry, safe_parse_json
 
 # Load environment variables
 load_dotenv()
@@ -80,9 +81,11 @@ class MarketSimulator:
             d = mission.dossier
             context_constraints = (
                 f"\nMISSION CONTEXT: {mission.config.target_country} ({mission.config.target_region})\n"
+                f"ECONOMICS: {d.economics.macro_indicators} | Salaries: {d.economics.salary_ranges} | Policy: {d.economics.budgetary_decisions}\n"
+                f"EDUCATION: {d.education.literacy_levels}\n"
+                f"TECHNOLOGY: Adoption: {d.technology.adoption_metrics} | Literacy: {d.technology.tech_literacy}\n"
                 f"CULTURAL AXIOMS: {', '.join(d.cultural_axioms)}\n"
                 f"LINGUISTIC NUANCES: {', '.join(d.linguistic_nuances)}\n"
-                f"HONORIFIC/REGISTER: Use {mission.config.target_language} rules.\n"
                 f"TABOOS (HANDLE WITH CARE): {', '.join(d.taboos)}\n"
             )
 
@@ -108,50 +111,47 @@ class MarketSimulator:
             f"QUALITY: [Score 1-10 for question quality from this respondent's perspective]"
         )
         
-        for attempt in range(retries):
-            try:
-                start_time = time.time()
-                response = await self.client.aio.models.generate_content(
-                    model=self.model_name,
-                    contents=question,
-                    config=types.GenerateContentConfig(
-                        system_instruction=sys_instruct,
-                        temperature=0.7
-                    )
-                )
-                latency_ms = round((time.time() - start_time) * 1000)
-                
-                # Extract token usage from response metadata
-                usage = getattr(response, 'usage_metadata', None)
-                input_tokens = getattr(usage, 'prompt_token_count', 0) if usage else 0
-                output_tokens = getattr(usage, 'candidates_token_count', 0) if usage else 0
-                
-                # Track cumulative
-                self.total_calls += 1
-                self.total_input_tokens += input_tokens
-                self.total_output_tokens += output_tokens
-                
-                return {
-                    "text": response.text.strip(),
-                    "provenance": {
-                        "model": self.public_model_name,
-                        "input_tokens": input_tokens,
-                        "output_tokens": output_tokens,
-                        "latency_ms": latency_ms,
-                        "call_index": self.total_calls,
-                        "timestamp": time.time(),
-                    }
+        try:
+            start_time = time.time()
+            response = await generate_with_retry(
+                client=self.client,
+                model=self.model_name,
+                contents=question,
+                config=types.GenerateContentConfig(
+                    system_instruction=sys_instruct,
+                    temperature=0.7
+                ),
+                retries=retries
+            )
+            latency_ms = round((time.time() - start_time) * 1000)
+            
+            # Extract token usage from response metadata
+            usage = getattr(response, 'usage_metadata', None)
+            input_tokens = getattr(usage, 'prompt_token_count', 0) if usage else 0
+            output_tokens = getattr(usage, 'candidates_token_count', 0) if usage else 0
+            
+            # Track cumulative
+            self.total_calls += 1
+            self.total_input_tokens += input_tokens
+            self.total_output_tokens += output_tokens
+            
+            return {
+                "text": response.text.strip(),
+                "provenance": {
+                    "model": self.public_model_name,
+                    "input_tokens": input_tokens,
+                    "output_tokens": output_tokens,
+                    "latency_ms": latency_ms,
+                    "call_index": self.total_calls,
+                    "timestamp": time.time(),
                 }
-            except Exception as e:
-                print(f"Error on attempt {attempt + 1} for persona {persona.get('name')}: {e}")
-                if attempt < retries - 1:
-                    wait_time = (attempt + 1) * 2
-                    await asyncio.sleep(wait_time)
-                else:
-                    return {
-                        "text": f"ERROR: {str(e)}",
-                        "provenance": {"model": self.model_name, "error": str(e)}
-                    }
+            }
+        except Exception as e:
+            print(f"Error for persona {persona.get('name')}: {e}")
+            return {
+                "text": f"ERROR: {str(e)}",
+                "provenance": {"model": self.model_name, "error": str(e)}
+            }
 
     # ──────────────────────────────────────────────────────────
     # VALIDATION MODE — Natural responses (for Architect)
@@ -181,41 +181,39 @@ class MarketSimulator:
             f"COMMENT: [Optional: any brief thought about the question, or 'None']"
         )
         
-        for attempt in range(retries):
-            try:
-                start_time = time.time()
-                response = await self.client.aio.models.generate_content(
-                    model=self.model_name,
-                    contents=question,
-                    config=types.GenerateContentConfig(
-                        system_instruction=sys_instruct,
-                        temperature=0.7
-                    )
-                )
-                latency_ms = round((time.time() - start_time) * 1000)
-                usage = getattr(response, 'usage_metadata', None)
-                input_tokens = getattr(usage, 'prompt_token_count', 0) if usage else 0
-                output_tokens = getattr(usage, 'candidates_token_count', 0) if usage else 0
-                self.total_calls += 1
-                self.total_input_tokens += input_tokens
-                self.total_output_tokens += output_tokens
-                return {
-                    "text": response.text.strip(),
-                    "provenance": {
-                        "model": self.public_model_name,
-                        "input_tokens": input_tokens,
-                        "output_tokens": output_tokens,
-                        "latency_ms": latency_ms,
-                        "call_index": self.total_calls,
-                        "timestamp": time.time(),
-                    }
+        try:
+            start_time = time.time()
+            response = await generate_with_retry(
+                client=self.client,
+                model=self.model_name,
+                contents=question,
+                config=types.GenerateContentConfig(
+                    system_instruction=sys_instruct,
+                    temperature=0.7
+                ),
+                retries=retries
+            )
+            latency_ms = round((time.time() - start_time) * 1000)
+            usage = getattr(response, 'usage_metadata', None)
+            input_tokens = getattr(usage, 'prompt_token_count', 0) if usage else 0
+            output_tokens = getattr(usage, 'candidates_token_count', 0) if usage else 0
+            self.total_calls += 1
+            self.total_input_tokens += input_tokens
+            self.total_output_tokens += output_tokens
+            return {
+                "text": response.text.strip(),
+                "provenance": {
+                    "model": self.public_model_name,
+                    "input_tokens": input_tokens,
+                    "output_tokens": output_tokens,
+                    "latency_ms": latency_ms,
+                    "call_index": self.total_calls,
+                    "timestamp": time.time(),
                 }
-            except Exception as e:
-                print(f"Error on attempt {attempt + 1} for persona {persona.get('name')}: {e}")
-                if attempt < retries - 1:
-                    await asyncio.sleep((attempt + 1) * 2)
-                else:
-                    return {"text": f"ERROR: {str(e)}", "provenance": {"model": self.model_name, "error": str(e)}}
+            }
+        except Exception as e:
+            print(f"Error for persona {persona.get('name')}: {e}")
+            return {"text": f"ERROR: {str(e)}", "provenance": {"model": self.model_name, "error": str(e)}}
 
         target = mission.config.target_country if mission else "Mauritius"
         region = mission.config.target_region if mission else "local areas"
@@ -376,7 +374,8 @@ class MarketSimulator:
             f"   to answer the client's research objective."
         )
         try:
-            response = await self.client.aio.models.generate_content(
+            response = await generate_with_retry(
+                client=self.client,
                 model=self.model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
@@ -384,12 +383,7 @@ class MarketSimulator:
                     temperature=0.7
                 )
             )
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            return json.loads(text.strip())
+            return safe_parse_json(response.text)
         except Exception as e:
             print(f"Error generating questions: {e}")
             return {"questions": ["Q1: What do you think?"], "rationale": "Error generating suggestions."}
@@ -488,7 +482,8 @@ Produce a Bureau Quality Report in JSON format with these exact keys:
 Return ONLY valid JSON. Be honest, balanced, and specific."""
 
         try:
-            response = await self.client.aio.models.generate_content(
+            response = await generate_with_retry(
+                client=self.client,
                 model=self.model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
@@ -496,12 +491,7 @@ Return ONLY valid JSON. Be honest, balanced, and specific."""
                     temperature=0.6
                 )
             )
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            return json.loads(text.strip())
+            return safe_parse_json(response.text)
         except Exception as e:
             print(f"Error generating report: {e}")
             return {
@@ -603,7 +593,8 @@ Produce a JSON object with these exact keys:
 Return ONLY valid JSON. Be authoritative, professional, and confident."""
 
         try:
-            response = await self.client.aio.models.generate_content(
+            response = await generate_with_retry(
+                client=self.client,
                 model=self.model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
@@ -611,46 +602,13 @@ Return ONLY valid JSON. Be authoritative, professional, and confident."""
                     temperature=0.4  # Lower temp for consistent, confident tone
                 )
             )
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            return json.loads(text.strip())
+            return safe_parse_json(response.text)
         except Exception as e:
             print(f"Error generating validation report: {e}")
             return {
                 "executive_summary": "Bureau Validation Certificate -- instrument cleared for deployment.",
                 "quality_score": 98,
                 "methodology_notes": ["Progressive cognitive flow design", "Validated Likert scales", f"Cultural adaptation for {target}"],
-                "question_justifications": [],
-                "field_deployment_protocol": ["Deploy with trained interviewers", "Minimum n=200 sample", "Multi-mode data collection recommended"],
-                "demographic_insights": [],
-                "next_steps": ["Proceed with fieldwork using the certified instrument"],
-                "bureau_verdict": "This instrument meets The Bureau's quality standards."
-            }
-
-        try:
-            response = await self.client.aio.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type='application/json',
-                    temperature=0.4  # Lower temp for consistent, confident tone
-                )
-            )
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            return json.loads(text.strip())
-        except Exception as e:
-            print(f"Error generating validation report: {e}")
-            return {
-                "executive_summary": "Bureau Validation Certificate — instrument cleared for deployment.",
-                "quality_score": 98,
-                "methodology_notes": ["Progressive cognitive flow design", "Validated Likert scales", "Cultural adaptation for Mauritius"],
                 "question_justifications": [],
                 "field_deployment_protocol": ["Deploy with trained interviewers", "Minimum n=200 sample", "Multi-mode data collection recommended"],
                 "demographic_insights": [],

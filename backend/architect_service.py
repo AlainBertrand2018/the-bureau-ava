@@ -6,13 +6,20 @@ from typing import List, Dict, Any, Optional
 from google import genai
 from dotenv import load_dotenv
 from simulation_engine import MarketSimulator
+from ai_utils import generate_with_retry, safe_parse_json
 
 # Load environment variables (must happen before genai.Client)
 load_dotenv()
 
 # We import the core methodology statement to ensure every report is anchored
 try:
-    with open("c:/Users/USER/Desktop/SOB_SurveyOptimizationBureau/SOB/docs/scientific_foundations.md", "r") as f:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    docs_path = os.path.join(base_dir, "../docs/scientific_foundations.md")
+    if not os.path.exists(docs_path):
+        # Try absolute path fallback just in case
+        docs_path = "c:/Users/USER/Desktop/SOB_SurveyOptimizationBureau/SOB/docs/scientific_foundations.md"
+    
+    with open(docs_path, "r") as f:
         SCIENTIFIC_FOUNDATION = f.read()
 except:
     SCIENTIFIC_FOUNDATION = "AVA Core is built on Psychometric Measurement Theory and Agent-Based Modeling."
@@ -86,18 +93,12 @@ Return ONLY a JSON object:
 Question: "{question}"
 """
         try:
-            response = await self.client.aio.models.generate_content(
+            response = await generate_with_retry(
+                client=self.client,
                 model=self.model,
                 contents=prompt
             )
-
-            text = response.text.strip()
-            if text.startswith("```"):
-                text = text.split("\n", 1)[1] if "\n" in text else text[3:]
-                if text.endswith("```"):
-                    text = text[:-3].strip()
-
-            return json.loads(text)
+            return safe_parse_json(response.text)
 
         except Exception as e:
             print(f"[Architect] Audit error: {e}")
@@ -156,7 +157,8 @@ REWRITE RULES:
 Output ONLY the perfected question. No quotes, no explanation."""
 
             try:
-                resp = await self.client.aio.models.generate_content(
+                resp = await generate_with_retry(
+                    client=self.client,
                     model=self.model,
                     contents=rewrite_prompt
                 )
@@ -213,13 +215,17 @@ Output ONLY the perfected question. No quotes, no explanation."""
         ...
         """
 
-        response = await self.client.aio.models.generate_content(
-            model=self.model,
-            contents=prompt,
-            config={'response_mime_type': 'application/json'}
-        )
-
-        return json.loads(response.text)
+        try:
+            response = await generate_with_retry(
+                client=self.client,
+                model=self.model,
+                contents=prompt,
+                config={'response_mime_type': 'application/json'}
+            )
+            return safe_parse_json(response.text)
+        except Exception as e:
+            print(f"[Architect] Generation Error: {e}")
+            return {"questionnaire": ["Error generating survey. Please try again."], "strategic_rationale": "System Error"}
 
     # ──────────────────────────────────────────────────────────
     # MAIN ENTRY: Genesis Pipeline
@@ -260,12 +266,13 @@ Output ONLY the perfected question. No quotes, no explanation."""
         """
 
         try:
-            resp = await self.client.aio.models.generate_content(
+            resp = await generate_with_retry(
+                client=self.client,
                 model=self.model,
                 contents=package_prompt,
                 config={'response_mime_type': 'application/json'}
             )
-            package_details = json.loads(resp.text)
+            package_details = safe_parse_json(resp.text)
         except Exception:
             package_details = {
                 "deployment_best_practices": ["Standard field procedures", "Neutral interviewer bias", "Census-weighted sampling"],
@@ -277,6 +284,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
             package_details["deployment_best_practices"] = ["Standard field procedures", "Neutral interviewer bias", "Census-weighted sampling"]
 
         return {
+            "mission": mission.dict() if mission else None,
             "instrument": perfected,
             "strategic_rationale": initial.get("strategic_rationale", ""),
             "field_manual": package_details,

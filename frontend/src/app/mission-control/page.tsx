@@ -16,7 +16,10 @@ import {
     Languages,
     TrendingUp,
     Shield,
-    FileText
+    FileText,
+    Users,
+    MapPin,
+    Wifi
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -615,11 +618,38 @@ export default function MissionControl() {
                                         Mission Established
                                     </div>
                                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-none">
-                                        Cultural <span className="text-emerald-500">Assertions</span>
+                                        Target <span className="text-emerald-500">Snapshot</span>
                                     </h1>
                                     <p className="text-slate-400 text-sm md:text-base font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                                        I have analyzed the cultural landscape of {missionData.config.target_country}. Use these insights to build surveys that locals trust, understand, and answer honestly.
+                                        I have analyzed the cultural landscape of {missionData?.config?.target_country || 'your target market'}. Use these insights to build surveys that locals trust, understand, and answer honestly.
                                     </p>
+
+                                    {/* SAMPLING STRATEGY CARD */}
+                                    {missionData.dossier.sampling_parameters && (
+                                        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-slate-800 pt-6">
+                                            <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 flex flex-col gap-2">
+                                                <div className="flex items-center gap-2 text-slate-500">
+                                                    <Users size={14} />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">Est. Segment Size</span>
+                                                </div>
+                                                <p className="text-lg font-bold text-white">{missionData.dossier.sampling_parameters.targeted_segment_size}</p>
+                                            </div>
+                                            <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 flex flex-col gap-2">
+                                                <div className="flex items-center gap-2 text-slate-500">
+                                                    <Target size={14} />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">Ideal Sample</span>
+                                                </div>
+                                                <p className="text-lg font-bold text-emerald-400">{missionData.dossier.sampling_parameters.ideal_sample_size}</p>
+                                            </div>
+                                            <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800 flex flex-col gap-2">
+                                                <div className="flex items-center gap-2 text-slate-500">
+                                                    <Wifi size={14} />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">Distribution Mode</span>
+                                                </div>
+                                                <p className="text-lg font-bold text-blue-400">{missionData.dossier.sampling_parameters.suggested_distribution_mode}</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -644,10 +674,108 @@ export default function MissionControl() {
                                         </div>
                                     </div>
 
-                                    <div className="prose prose-invert prose-sm max-w-none">
-                                        <p className="text-slate-300 leading-relaxed text-sm md:text-base border-l-2 border-emerald-500/50 pl-4 py-1">
-                                            {missionData.dossier.economic_context || "Economic context data unavailable."}
-                                        </p>
+                                    {/* DEMOGRAPHIC CUT-OUTS (NEW) */}
+                                    {missionData.dossier.demographics && (
+                                        <div className="space-y-4 mb-8">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                <h4 className="text-xs font-black uppercase tracking-widest text-amber-400">Demographic Cut-Outs</h4>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {Object.entries(missionData.dossier.demographics).map(([key, val]: any) => (
+                                                    <div key={key} className="bg-amber-950/20 border border-amber-500/10 rounded-lg p-3">
+                                                        <span className="text-[10px] font-bold text-amber-500/70 uppercase tracking-wider block mb-1.5">{key.replace(/_/g, ' ')}</span>
+                                                        <div className="text-xs text-slate-300 font-medium space-y-1">
+                                                            {(typeof val === 'string' ? val : JSON.stringify(val)).split('|').map((part: string, i: number) => (
+                                                                <div key={i} className="flex items-start gap-2">
+                                                                    <span className="text-amber-500/50 mt-0.5">•</span>
+                                                                    <span>{part.trim()}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="h-px bg-slate-800/50 w-full" />
+                                        </div>
+                                    )}
+
+                                    {/* STRUCTURED ECONOMIC DATA */}
+                                    <div className="space-y-8">
+                                        {/* Macro Economics */}
+                                        <div className="space-y-4">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Macro-Economic Indicators</h4>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {missionData.dossier.economics && Object.entries(missionData.dossier.economics).map(([key, val]: any) => (
+                                                    <div key={key} className="bg-emerald-950/20 border border-emerald-500/10 rounded-lg p-3">
+                                                        <span className="text-[10px] font-bold text-emerald-600/80 uppercase tracking-wider block mb-1.5">{key.replace(/_/g, ' ')}</span>
+                                                        <div className="text-xs text-slate-300 font-medium space-y-1">
+                                                            {(typeof val === 'string' ? val : JSON.stringify(val)).split('|').map((part: string, i: number) => (
+                                                                <div key={i} className="flex items-start gap-2">
+                                                                    <span className="text-emerald-500/50 mt-0.5">•</span>
+                                                                    <span>{part.trim()}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Divider */}
+                                        <div className="h-px bg-slate-800/50 w-full" />
+
+                                        {/* Tech & Education Grid */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            {/* Education */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                                    <h4 className="text-xs font-black uppercase tracking-widest text-blue-400">Education Landscape</h4>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    {missionData.dossier.education && Object.entries(missionData.dossier.education).map(([key, val]: any) => (
+                                                        <div key={key} className="bg-blue-950/20 border border-blue-500/10 rounded-lg p-3">
+                                                            <span className="text-[10px] font-bold text-blue-400/70 uppercase tracking-wider block mb-1.5">{key.replace(/_/g, ' ')}</span>
+                                                            <div className="text-xs text-slate-300 font-medium space-y-1">
+                                                                {(typeof val === 'string' ? val : JSON.stringify(val)).split('|').map((part: string, i: number) => (
+                                                                    <div key={i} className="flex items-start gap-2">
+                                                                        <span className="text-blue-500/50 mt-0.5">•</span>
+                                                                        <span>{part.trim()}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Technology */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                                                    <h4 className="text-xs font-black uppercase tracking-widest text-purple-400">Technological Adoption</h4>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    {missionData.dossier.technology && Object.entries(missionData.dossier.technology).map(([key, val]: any) => (
+                                                        <div key={key} className="bg-purple-950/20 border border-purple-500/10 rounded-lg p-3">
+                                                            <span className="text-[10px] font-bold text-purple-400/70 uppercase tracking-wider block mb-1.5">{key.replace(/_/g, ' ')}</span>
+                                                            <div className="text-xs text-slate-300 font-medium space-y-1">
+                                                                {(typeof val === 'string' ? val : JSON.stringify(val)).split('|').map((part: string, i: number) => (
+                                                                    <div key={i} className="flex items-start gap-2">
+                                                                        <span className="text-purple-500/50 mt-0.5">•</span>
+                                                                        <span>{part.trim()}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Citations Snippet */}
@@ -716,6 +844,35 @@ export default function MissionControl() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Demographics Section */}
+                            {missionData.dossier.demographic_archetypes && missionData.dossier.demographic_archetypes.length > 0 && (
+                                <div className="glass-card p-8 space-y-6 mt-8">
+                                    <div className="flex items-center gap-2">
+                                        <Users size={20} className="text-amber-500" />
+                                        <h3 className="text-sm font-black uppercase tracking-widest">Demographic Archetypes (Generated Personas)</h3>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {missionData.dossier.demographic_archetypes.map((persona: any, i: number) => (
+                                            <div key={i} className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl hover:border-amber-500/30 transition-colors group">
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 font-black text-xs">
+                                                        {persona.name.charAt(0)}
+                                                    </div>
+                                                    <span className="text-[10px] uppercase font-bold text-slate-500 group-hover:text-amber-500 transition-colors">{persona.role}</span>
+                                                </div>
+                                                <h4 className="text-sm font-bold text-white mb-2">{persona.name}</h4>
+                                                <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-3">{persona.background}</p>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {persona.traits && persona.traits.split(',').slice(0, 2).map((t: string, k: number) => (
+                                                        <span key={k} className="px-1.5 py-0.5 bg-slate-800 rounded text-[9px] text-slate-500 uppercase tracking-wide">{t.trim()}</span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
                                 <button
@@ -862,6 +1019,6 @@ export default function MissionControl() {
           background-size: 24px 24px;
         }
       `}</style>
-        </div>
+        </div >
     );
 }

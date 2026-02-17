@@ -72,7 +72,7 @@ export const dictionaries = {
             card_1_desc: "Presented to cabinet. Based on data that was structurally flawed from the start.",
             card_2_title: "Product launches built on noise",
             card_2_desc: "Leading questions told you what you wanted to hear. The market told you the truth.",
-            card_3_title: "Rs 2M fieldwork budget wasted",
+            card_3_title: "€40k fieldwork budget wasted",
             card_3_desc: "6 weeks of data collection. 2 weeks of analysis. 0 usable insights.",
             footer: "It always starts with the same root cause: questions no one stress-tested."
         },
@@ -187,7 +187,7 @@ export const dictionaries = {
             title: "My Stress-Test Audit",
             value_prop_1: "Protect your survey chances with at most",
             value_prop_2: "5% of your total budget.",
-            description: "Large-scale research projects require extreme precision. Our validation protocol ensures that every rupee committed to fieldwork is backed by high-fidelity questionnaire design.",
+            description: "Large-scale research projects require extreme precision. Our validation protocol ensures that every unit of capital committed to fieldwork is backed by high-fidelity questionnaire design.",
             trusted: "Trusted by strategic researchers",
             cta: "Claim Your Shield"
         },
@@ -321,7 +321,7 @@ export const dictionaries = {
             card_1_desc: "Présentées au cabinet. Basées sur des données structurellement faussées dès le départ.",
             card_2_title: "Lancements de produits basés sur du bruit",
             card_2_desc: "Les questions orientées vous ont dit ce que vous vouliez entendre. Le marché vous a dit la vérité.",
-            card_3_title: "2M Rs de budget terrain gaspillés",
+            card_3_title: "40k € de budget terrain gaspillés",
             card_3_desc: "6 semaines de collecte. 2 semaines d'analyse. 0 insight exploitable.",
             footer: "Tout commence toujours par la même cause : des questions que personne n'a testées."
         },
@@ -436,7 +436,7 @@ export const dictionaries = {
             title: "Mon Audit de Stress-Test",
             value_prop_1: "Protégez vos chances de réussite pour un maximum de",
             value_prop_2: "5% de votre budget total.",
-            description: "Les projets de recherche à grande échelle nécessitent une précision extrême. Notre protocole de validation garantit que chaque roupie investie sur le terrain est soutenue par une conception de questionnaire de haute fidélité.",
+            description: "Les projets de recherche à grande échelle nécessitent une précision extrême. Notre protocole de validation garantit que chaque centime investi sur le terrain est soutenu par une conception de questionnaire de haute fidélité.",
             trusted: "Approuvé par des chercheurs stratégiques",
             cta: "Réclamez Votre Bouclier"
         },

@@ -70,8 +70,13 @@ export default function SurveyArchitect() {
             clearTimeout(timeout);
 
             if (!response.ok) {
-                const err = await response.json().catch(() => ({}));
-                throw new Error(err.detail || "Server error");
+                const errorText = await response.text().catch(() => "");
+                try {
+                    const err = JSON.parse(errorText);
+                    throw new Error(err.detail || "Server error");
+                } catch (e) {
+                    throw new Error(errorText || "Server error");
+                }
             }
 
             const data = await response.json();
