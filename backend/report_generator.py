@@ -17,20 +17,22 @@ class BureauReportGenerator:
 
         # ── Build instrument rows ──
         instrument = data.get("instrument", [])
-        justifications = data.get("simulation_report", {}).get("question_justifications", [])
+        simulation_report = data.get("simulation_report") or {}
+        justifications = simulation_report.get("question_justifications", [])
         
         questions_html = ""
         for i, q in enumerate(instrument):
             meta_html = ""
             if i < len(justifications):
                 j = justifications[i]
-                rel = j.get("relevance_to_objective", "N/A")
-                trust = j.get("psychometric_trustworthiness") or j.get("design_rationale", "N/A")
-                meta_html = f"""
-                <div class="q-meta">
-                    <div class="meta-item"><strong>STRATEGIC RELEVANCE:</strong> {rel}</div>
-                    <div class="meta-item"><strong>SCIENTIFIC VALIDITY:</strong> {trust}</div>
-                </div>"""
+                if isinstance(j, dict):
+                    rel = j.get("relevance_to_objective", "N/A")
+                    trust = j.get("psychometric_trustworthiness") or j.get("design_rationale", "N/A")
+                    meta_html = f"""
+                    <div class="q-meta">
+                        <div class="meta-item"><strong>STRATEGIC RELEVANCE:</strong> {rel}</div>
+                        <div class="meta-item"><strong>SCIENTIFIC VALIDITY:</strong> {trust}</div>
+                    </div>"""
 
             questions_html += f"""
             <tr>
@@ -42,26 +44,27 @@ class BureauReportGenerator:
             </tr>"""
 
         # ── Build field manual ──
-        manual = data.get("field_manual", {})
+        manual = data.get("field_manual") or {}
         bp_html = ""
         for bp in manual.get("deployment_best_practices", []):
             bp_html += f"<li>{bp}</li>"
 
         # ── Build simulation summary ──
-        sim = data.get("simulation_report", {})
+        sim = data.get("simulation_report") or {}
         sim_html = ""
-        if sim:
+        if sim and sim.get("executive_summary"):
             next_steps_html = ""
             for step in sim.get("next_steps", []):
                 next_steps_html += f"<li>{step}</li>"
 
             demo_html = ""
-            for insight in sim.get("demographic_insights", []):
-                demo_html += f"""
-                <div class="demo-item">
-                    <strong>{insight.get('segment', '')}</strong>
-                    <p>{insight.get('finding', '')}</p>
-                </div>"""
+            for insight in (sim.get("demographic_insights") or []):
+                if isinstance(insight, dict):
+                    demo_html += f"""
+                    <div class="demo-item">
+                        <strong>{insight.get('segment', 'N/A')}</strong>
+                        <p>{insight.get('finding', 'N/A')}</p>
+                    </div>"""
 
             sim_html = f"""
             <section class="section">
@@ -84,12 +87,13 @@ class BureauReportGenerator:
         rationale = data.get("strategic_rationale", "")
 
         # ── Build Universalized Grounding (New Granular Stats) ──
-        dossier = data.get("mission", {}).get("dossier", {})
+        mission_data = data.get("mission") or {}
+        dossier = mission_data.get("dossier") or {}
         grounding_html = ""
         if dossier:
-            econ = dossier.get("economics", {})
-            edu = dossier.get("education", {})
-            tech = dossier.get("technology", {})
+            econ = dossier.get("economics") or {}
+            edu = dossier.get("education") or {}
+            tech = dossier.get("technology") or {}
             
             grounding_html = f"""
             <section class="section">
@@ -116,8 +120,8 @@ class BureauReportGenerator:
                 
                 <h3>Cultural Axioms & Taboos</h3>
                 <div class="tag-cloud">
-                    {' '.join([f'<span class="tag">{t}</span>' for t in dossier.get("cultural_axioms", [])])}
-                    {' '.join([f'<span class="tag taboo">{t}</span>' for t in dossier.get("taboos", [])])}
+                    {' '.join([f'<span class="tag">{t}</span>' for t in (dossier.get("cultural_axioms") or [])])}
+                    {' '.join([f'<span class="tag taboo">{t}</span>' for t in (dossier.get("taboos") or [])])}
                 </div>
             </section>
             """
@@ -379,48 +383,48 @@ class BureauReportGenerator:
             text-transform: uppercase;
         }}
 
-        .grounding-grid {
+        .grounding-grid {{
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 24px;
-        }
+        }}
 
-        .grounding-card {
+        .grounding-card {{
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             padding: 20px;
-        }
+        }}
 
-        .grounding-card h3 {
+        .grounding-card h3 {{
             margin-top: 0 !important;
             color: #10b981 !important;
             border: none !important;
-        }
+        }}
 
-        .grounding-card p {
+        .grounding-card p {{
             font-size: 11px;
             color: #94a3b8;
             margin-bottom: 8px;
             line-height: 1.5;
-        }
+        }}
 
-        .grounding-card strong {
+        .grounding-card strong {{
             color: #e2e8f0;
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-        }
+        }}
 
-        .tag-cloud {
+        .tag-cloud {{
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 12px;
-        }
+        }}
 
-        .tag {
+        .tag {{
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid rgba(59, 130, 246, 0.2);
             color: #60a5fa;
@@ -429,13 +433,13 @@ class BureauReportGenerator:
             padding: 4px 10px;
             border-radius: 6px;
             text-transform: uppercase;
-        }
+        }}
 
-        .tag.taboo {
+        .tag.taboo {{
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.2);
             color: #f87171;
-        }
+        }}
 
         /* ── Print Styles ── */
         @media print {{

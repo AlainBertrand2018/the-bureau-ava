@@ -33,6 +33,7 @@ export default function SurveyArchitect() {
         decisions: ""
     });
     const [result, setResult] = useState<any>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const PHASES = [
         t.architect.pulse_generating,
@@ -47,6 +48,7 @@ export default function SurveyArchitect() {
 
         setView("processing");
         setLoadingPhase(0);
+        setError(null);
 
         const phaseTimer = setInterval(() => {
             setLoadingPhase(prev => (prev < 4 ? prev + 1 : prev));
@@ -69,23 +71,30 @@ export default function SurveyArchitect() {
             });
             clearTimeout(timeout);
 
+            const responseText = await response.text().catch(() => "Unknown Server Error");
+
             if (!response.ok) {
-                const errorText = await response.text().catch(() => "");
+                let detail = "Internal Server Error";
                 try {
-                    const err = JSON.parse(errorText);
-                    throw new Error(err.detail || "Server error");
-                } catch (e) {
-                    throw new Error(errorText || "Server error");
+                    const errorData = JSON.parse(responseText);
+                    detail = errorData.error || errorData.detail || errorData.message || detail;
+                } catch {
+                    detail = responseText.slice(0, 200);
                 }
+                throw new Error(detail);
             }
 
-            const data = await response.json();
-
-            clearInterval(phaseTimer);
+            const data = JSON.parse(responseText);
             setResult(data);
-            setView("results");
-        } catch (error) {
-            console.error(error);
+
+            // Stagger view transition to avoid main-thread blocking [Violation]
+            setTimeout(() => {
+                clearInterval(phaseTimer);
+                setView("results");
+            }, 10);
+        } catch (err: any) {
+            console.error("SurveyArchitect Error:", err);
+            setError(err.message || "A network or protocol error occurred during Genesis creation.");
             setView("onboarding");
             clearInterval(phaseTimer);
         }
@@ -110,6 +119,25 @@ export default function SurveyArchitect() {
                         exit={{ opacity: 0, y: -20 }}
                         className="relative z-10 p-8 md:p-12"
                     >
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3"
+                            >
+                                <Lock size={16} className="text-red-500 mt-0.5 shrink-0" />
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-red-500">Genesis Protocol Failed</p>
+                                    <p className="text-xs text-red-200/80 font-medium leading-relaxed">{error}</p>
+                                </div>
+                                <button
+                                    onClick={() => setError(null)}
+                                    className="ml-auto text-red-500/50 hover:text-red-500 transition-colors"
+                                >
+                                    <CheckCircle2 size={14} />
+                                </button>
+                            </motion.div>
+                        )}
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                             <div>
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">

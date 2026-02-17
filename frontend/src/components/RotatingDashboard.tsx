@@ -112,9 +112,10 @@ export default function RotatingDashboard() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.5 }}
-                        className="w-full h-full"
+                        style={{ minWidth: 0, minHeight: 0 }}
+                        className="absolute inset-6"
                     >
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             {activeView.id === 'bias' ? (
                                 <BarChart data={MOCK_BAR} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />

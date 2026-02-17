@@ -7,6 +7,7 @@ from google import genai
 from dotenv import load_dotenv
 from simulation_engine import MarketSimulator
 from ai_utils import generate_with_retry, safe_parse_json
+from report_generator import bureau_reports
 
 # Load environment variables (must happen before genai.Client)
 load_dotenv()
@@ -212,7 +213,10 @@ Output ONLY the perfected question. No quotes, no explanation."""
         5. Be culturally appropriate for {target} audiences
 
         Divide into phases: Warm-up, KPI, Behavioral, Demographic.
-        ...
+
+        OUTPUT FORMAT: Return a JSON object with:
+        - "questionnaire": [list of {count} strings]
+        - "strategic_rationale": "one sentence explaining the research design"
         """
 
         try:
@@ -222,7 +226,17 @@ Output ONLY the perfected question. No quotes, no explanation."""
                 contents=prompt,
                 config={'response_mime_type': 'application/json'}
             )
-            return safe_parse_json(response.text)
+            data = safe_parse_json(response.text)
+            
+            # Robustness: if AI returns a list directly, wrap it
+            if isinstance(data, list):
+                return {"questionnaire": data, "strategic_rationale": "High-fidelity instrument generated."}
+            
+            # Ensure it's a dict
+            if not isinstance(data, dict):
+                data = {"questionnaire": [], "strategic_rationale": "Invalid data format"}
+                
+            return data
         except Exception as e:
             print(f"[Architect] Generation Error: {e}")
             return {"questionnaire": ["Error generating survey. Please try again."], "strategic_rationale": "System Error"}
@@ -238,17 +252,38 @@ Output ONLY the perfected question. No quotes, no explanation."""
         4. Package
         """
         # 1. Generate
+        print(f"[Genesis] Phase 1: Generating raw instrument for context: {context[:50]}...")
         initial = await self.generate_instrument(context, count, mission=mission)
+        
+        # Robustness Check
+        if not isinstance(initial, dict):
+            print("[Genesis] WARNING: Phase 1 returned invalid format, using fallback.")
+            initial = {"questionnaire": [], "strategic_rationale": "Error"}
+            
         questions = initial.get("questionnaire", [])
+        if not isinstance(questions, list):
+            print("[Genesis] WARNING: Questionnaire is not a list, using fallback.")
+            questions = []
 
         # 2. Perfect via genuine audit
+        print(f"[Genesis] Phase 2: Perfecting {len(questions)} questions via Bureau Audit...")
         perfected = await self.perfect_instrument(questions, mission=mission)
 
         # 3. Validate via simulation
+        print(f"[Genesis] Phase 3: Running n=5 simulation for validation...")
         personas = await self.simulator.generate_personas_validation(5, context, mission=mission)
         df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
+        
+        # Sanitize NaN/Inf for JSON compliance
+        df_results = df_results.fillna("")
         results_list = df_results.to_dict(orient="records")
         simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission)
+        
+        if not isinstance(simulation_report, dict):
+            print("[Genesis] WARNING: Simulation report is invalid, using fallback.")
+            simulation_report = {"executive_summary": "Validation complete."}
+        
+        print(f"[Genesis] Phase 4: Finalizing Bureau Certification & Field Manual...")
         
         # ... rest of packaging
 
@@ -273,6 +308,8 @@ Output ONLY the perfected question. No quotes, no explanation."""
                 config={'response_mime_type': 'application/json'}
             )
             package_details = safe_parse_json(resp.text)
+            if not isinstance(package_details, dict):
+                package_details = {}
         except Exception:
             package_details = {
                 "deployment_best_practices": ["Standard field procedures", "Neutral interviewer bias", "Census-weighted sampling"],
@@ -283,7 +320,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
         if "deployment_best_practices" not in package_details:
             package_details["deployment_best_practices"] = ["Standard field procedures", "Neutral interviewer bias", "Census-weighted sampling"]
 
-        return {
+        package = {
             "mission": mission.dict() if mission else None,
             "instrument": perfected,
             "strategic_rationale": initial.get("strategic_rationale", ""),
@@ -292,3 +329,9 @@ Output ONLY the perfected question. No quotes, no explanation."""
             "certified_by": "AVA Lead Architect v2.0",
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ")
         }
+
+        # Generate HTML reports
+        package["formatted_report"] = bureau_reports.generate_dossier(package)
+        package["field_instrument_html"] = bureau_reports.generate_field_instrument(package)
+
+        return package

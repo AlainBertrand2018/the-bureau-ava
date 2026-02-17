@@ -215,6 +215,10 @@ class MarketSimulator:
             print(f"Error for persona {persona.get('name')}: {e}")
             return {"text": f"ERROR: {str(e)}", "provenance": {"model": self.model_name, "error": str(e)}}
 
+    async def generate_personas_validation(self, count: int, context: str, mission: Optional[Any] = None) -> List[Dict]:
+        """
+        Generates N realistic survey respondent profiles representative of the target audience.
+        """
         target = mission.config.target_country if mission else "Mauritius"
         region = mission.config.target_region if mission else "local areas"
         
@@ -235,7 +239,8 @@ class MarketSimulator:
             f"Return ONLY a JSON list of objects with: 'name', 'age', 'location', 'occupation', 'traits'.\n"
         )
         try:
-            response = await self.client.aio.models.generate_content(
+            response = await generate_with_retry(
+                client=self.client,
                 model=self.model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
@@ -243,7 +248,8 @@ class MarketSimulator:
                     temperature=0.8
                 )
             )
-            return json.loads(response.text)
+            data = safe_parse_json(response.text)
+            return data if isinstance(data, list) else [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Average respondent"}]
         except Exception as e:
             print(f"Error generating validation personas: {e}")
             return [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Average respondent"}]
@@ -602,7 +608,8 @@ Return ONLY valid JSON. Be authoritative, professional, and confident."""
                     temperature=0.4  # Lower temp for consistent, confident tone
                 )
             )
-            return safe_parse_json(response.text)
+            data = safe_parse_json(response.text)
+            return data if isinstance(data, dict) else {"executive_summary": "Instrument validation complete.", "error": "Invalid format from AI"}
         except Exception as e:
             print(f"Error generating validation report: {e}")
             return {

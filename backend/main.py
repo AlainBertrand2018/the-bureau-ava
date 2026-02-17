@@ -414,19 +414,16 @@ async def architect_generate(req: ArchitectRequest):
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
         package = await architect.create_full_package(req.context, req.item_count, mission=mission)
         
-        # Generate the human-readable dossier and field instrument
-        package["formatted_report"] = bureau_reports.generate_dossier(package)
-        package["field_instrument_html"] = bureau_reports.generate_field_instrument(package)
-        
         log_transaction(
             endpoint="/architect/generate",
             status="SUCCESS",
             latency_ms=0,
             item_count=req.item_count
         )
+        
         return package
     except Exception as e:
-        log_transaction(endpoint="/architect/generate", status="ERROR", latency_ms=0)
+        print(f"!!! [ARCHITECT ERROR] !!!: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
