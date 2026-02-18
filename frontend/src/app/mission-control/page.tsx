@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Globe,
@@ -149,7 +149,7 @@ const LANGUAGES = [
     { id: "Malagasy", name: "Malagasy" },
 ];
 
-export default function MissionControl() {
+function MissionControlContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { setMission, setTier } = useMission();
@@ -1128,5 +1128,17 @@ export default function MissionControl() {
 
             <Footer dark />
         </div >
+    );
+}
+
+export default function MissionControl() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            </div>
+        }>
+            <MissionControlContent />
+        </Suspense>
     );
 }
