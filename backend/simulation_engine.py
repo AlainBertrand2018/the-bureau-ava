@@ -340,7 +340,8 @@ class MarketSimulator:
             f"Return ONLY a JSON list of objects with these keys: 'name', 'age', 'location', 'occupation', 'traits'.\n"
         )
         try:
-            response = await self.client.aio.models.generate_content(
+            response = await generate_with_retry(
+                client=self.client,
                 model=self.model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(

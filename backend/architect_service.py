@@ -4,6 +4,7 @@ import time
 import os
 from typing import List, Dict, Any, Optional
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 from simulation_engine import MarketSimulator
 from ai_utils import generate_with_retry, safe_parse_json
@@ -235,7 +236,9 @@ Output ONLY the perfected question. No quotes, no explanation."""
                 client=self.client,
                 model=self.model,
                 contents=prompt,
-                config={'response_mime_type': 'application/json'}
+                config=types.GenerateContentConfig(
+                    response_mime_type='application/json'
+                )
             )
             data = safe_parse_json(response.text)
             
@@ -316,7 +319,9 @@ Output ONLY the perfected question. No quotes, no explanation."""
                 client=self.client,
                 model=self.model,
                 contents=package_prompt,
-                config={'response_mime_type': 'application/json'}
+                config=types.GenerateContentConfig(
+                    response_mime_type='application/json'
+                )
             )
             package_details = safe_parse_json(resp.text)
             if not isinstance(package_details, dict):

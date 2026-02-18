@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import LabShell from "@/components/lab/LabShell";
 
 export default function LabPage() {
-    redirect("/mission-control");
+    return <LabShell />;
 }

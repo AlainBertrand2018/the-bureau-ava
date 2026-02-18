@@ -85,15 +85,17 @@ export default function LabShell() {
     const [currentStep, setCurrentStep] = useState(0);
     const [context, setContext] = useState("");
 
-    useEffect(() => {
-        if (currentMission && !context) {
-            setContext(`Target Audience: ${currentMission.config.target_audience}\nTarget Market: ${currentMission.config.target_country}\nResearch Topic: ${currentMission.config.research_topic || ''}`);
-        }
-    }, [currentMission]);
     const [questions, setQuestions] = useState<string[]>([]);
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [results, setResults] = useState<SimulationResult[]>([]);
     const [isSimulating, setIsSimulating] = useState(false);
+
+    // DEBUG: Check if we are looping here
+    useEffect(() => {
+        console.log("LabShell mounted");
+        if (!currentMission) console.log("LabShell: No current mission");
+        else console.log("LabShell: Mission found", currentMission.mission_id);
+    }, [currentMission]);
 
     const canProceed = useCallback(() => {
         switch (currentStep) {
@@ -111,6 +113,20 @@ export default function LabShell() {
                 return true;
         }
     }, [currentStep, context, questions, personas, results]);
+
+    if (!currentMission) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Loading Mission Protocol...</h1>
+                    <p className="text-slate-400">If this persists, please return to Mission Control.</p>
+                    <Link href="/mission-control" className="mt-8 inline-block px-6 py-3 bg-emerald-600 rounded-lg">
+                        Return to Base
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const goNext = () => {
         if (currentStep < STEPS.length - 1 && canProceed()) {

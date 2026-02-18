@@ -12,8 +12,10 @@ from db_manager import log_transaction, log_audit_stat, get_admin_stats
 from architect_service import SurveyArchitect
 from report_generator import bureau_reports
 from context_engine import MissionConfiguration, Mission, context_engine, AudienceTargeting
+
 from config import settings
 from logger import bureau_logger
+from ai_utils import generate_with_retry, safe_parse_json
 
 app = FastAPI()
 
@@ -269,7 +271,6 @@ async def feedback_stats():
 
 async def perform_audit(question: str, targeting: Optional[Dict[str, Any]] = None):
     """Helper to perform a single-pass audit using Gemini with Consensus Rules."""
-    from ai_utils import generate_with_retry, safe_parse_json
     
     # SYSTEM PROMPT: Define the "Gold Standard" for consistent auditing
     prompt = f"""You are AVA, an elite survey methodologist. 

@@ -284,11 +284,8 @@ function MissionControlContent() {
     const { tier } = useMission();
 
     const handleEnterLab = () => {
-        if (tier === 'tier2' || tier === 'tier3') {
-            setIsPaywallOpen(true);
-        } else {
-            setIsTransitioning(true);
-        }
+        // Now forcing paywall for all tiers as requested
+        setIsPaywallOpen(true);
     };
 
     const handlePaywallSuccess = () => {
@@ -301,7 +298,7 @@ function MissionControlContent() {
             <LaboratoryEntryProtocol
                 isOpen={isTransitioning}
                 targetName={missionData?.config?.target_country || 'Unknown'}
-                onComplete={() => router.push("/lab")}
+                onComplete={() => window.location.href = "/lab"}
             />
             {/* Background FX */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">

@@ -73,7 +73,7 @@ interface BureauReport {
 }
 
 function getRiskIcon(level: string) {
-    const l = level.toUpperCase();
+    const l = (level || "").toUpperCase();
     if (l === "LOW") return <ShieldCheck size={16} className="text-emerald-600" />;
     if (l === "MODERATE") return <ShieldAlert size={16} className="text-amber-600" />;
     if (l === "HIGH") return <ShieldX size={16} className="text-rose-600" />;
@@ -82,7 +82,7 @@ function getRiskIcon(level: string) {
 }
 
 function getRiskColor(level: string) {
-    const l = level.toUpperCase();
+    const l = (level || "").toUpperCase();
     if (l === "LOW") return "text-emerald-600";
     if (l === "MODERATE") return "text-amber-600";
     if (l === "HIGH") return "text-rose-600";
@@ -91,7 +91,7 @@ function getRiskColor(level: string) {
 }
 
 function getRiskBg(level: string) {
-    const l = level.toUpperCase();
+    const l = (level || "").toUpperCase();
     if (l === "LOW") return "bg-emerald-50 border-emerald-100";
     if (l === "MODERATE") return "bg-amber-50 border-amber-100";
     if (l === "HIGH") return "bg-rose-50 border-rose-100";
@@ -100,7 +100,7 @@ function getRiskBg(level: string) {
 }
 
 function getPriorityColor(priority: string) {
-    const p = priority.toUpperCase();
+    const p = (priority || "").toUpperCase();
     if (p === "IMMEDIATE") return "text-red-600 bg-red-50 border-red-100";
     if (p === "HIGH") return "text-rose-600 bg-rose-50 border-rose-100";
     if (p === "MEDIUM") return "text-amber-600 bg-amber-50 border-amber-100";

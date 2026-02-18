@@ -233,7 +233,7 @@ function TransitionalModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.98 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className={`relative z-[110] w-full max-w-lg mx-4 flex flex-col max-h-[90vh] rounded-3xl overflow-hidden transition-colors duration-700 ${dark
+          className={`relative z-[110] w-full max-w-lg mx-4 flex flex-col max-h-[80vh] rounded-3xl overflow-hidden transition-colors duration-700 ${dark
             ? "bg-slate-900/95 border border-white/10 shadow-2xl shadow-black/50"
             : "bg-white border border-slate-200 shadow-2xl shadow-slate-200/60"
             }`}

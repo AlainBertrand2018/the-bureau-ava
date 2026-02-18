@@ -8,6 +8,7 @@ from typing import List, Dict, Any, Optional, AsyncGenerator
 from ai_utils import generate_with_retry, safe_parse_json
 from pydantic import BaseModel, Field
 from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 from logger import bureau_logger
 
@@ -324,9 +325,9 @@ class ContextEngine:
                 client=self.client,
                 model="gemini-2.0-flash", 
                 contents=research_prompt,
-                config={
-                    "tools": [{"google_search": {}}]
-                }
+                config=types.GenerateContentConfig(
+                    tools=[types.Tool(google_search=types.GoogleSearch())]
+                )
             )
             research_data = response_research.text
             
@@ -408,9 +409,9 @@ class ContextEngine:
                 client=self.client,
                 model="gemini-2.0-flash", 
                 contents=synthesis_prompt,
-                config={
-                    "response_mime_type": "application/json"
-                }
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                )
             )
             
             # Robust Parsing
