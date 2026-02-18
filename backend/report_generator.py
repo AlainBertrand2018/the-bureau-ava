@@ -144,8 +144,8 @@ class BureauReportGenerator:
 
         body {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            background: #ffffff;
+            color: #1e293b;
             line-height: 1.7;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -160,7 +160,7 @@ class BureauReportGenerator:
         /* ── Header ── */
         .header {{
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 3px solid #10b981;
             padding-bottom: 40px;
             margin-bottom: 48px;
         }}
@@ -170,7 +170,7 @@ class BureauReportGenerator:
             font-weight: 900;
             letter-spacing: 0.35em;
             text-transform: uppercase;
-            color: #3b82f6;
+            color: #10b981;
             margin-bottom: 8px;
         }}
 
@@ -178,7 +178,7 @@ class BureauReportGenerator:
             font-size: 28px;
             font-weight: 900;
             letter-spacing: -0.02em;
-            color: #ffffff;
+            color: #0f172a;
             margin-bottom: 24px;
         }}
 
@@ -207,10 +207,10 @@ class BureauReportGenerator:
             font-weight: 900;
             letter-spacing: 0.25em;
             text-transform: uppercase;
-            color: #3b82f6;
+            color: #10b981;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(59,130,246,0.15);
+            border-bottom: 1px solid #e2e8f0;
         }}
 
         .section h3 {{
@@ -226,7 +226,7 @@ class BureauReportGenerator:
         .summary-text {{
             font-size: 14px;
             font-weight: 400;
-            color: #cbd5e1;
+            color: #334155;
             line-height: 1.8;
             margin-bottom: 16px;
         }}
@@ -239,11 +239,11 @@ class BureauReportGenerator:
         }}
 
         .q-table tr {{
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid #f1f5f9;
         }}
 
         .q-table tr:hover {{
-            background: rgba(255,255,255,0.02);
+            background: #f8fafc;
         }}
 
         .q-num {{
@@ -251,7 +251,7 @@ class BureauReportGenerator:
             padding: 14px 12px;
             font-size: 10px;
             font-weight: 900;
-            color: rgba(59,130,246,0.4);
+            color: #10b981;
             vertical-align: top;
             text-align: right;
         }}
@@ -260,7 +260,7 @@ class BureauReportGenerator:
             padding: 14px 16px;
             font-size: 13px;
             font-weight: 500;
-            color: #e2e8f0;
+            color: #1e293b;
             line-height: 1.6;
         }}
 
@@ -274,13 +274,13 @@ class BureauReportGenerator:
             padding: 10px 0;
             font-size: 13px;
             font-weight: 500;
-            color: #cbd5e1;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
         }}
 
         .bp-list li::before {{
             content: "\2022";
-            color: #3b82f6;
+            color: #10b981;
             font-weight: 900;
             margin-right: 12px;
         }}
@@ -321,8 +321,8 @@ class BureauReportGenerator:
         }}
 
         .demo-item {{
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 16px;
         }}
@@ -344,7 +344,7 @@ class BureauReportGenerator:
         /* ── Footer ── */
         .footer {{
             text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            border-top: 1px solid #e2e8f0;
             padding-top: 32px;
             margin-top: 48px;
         }}
@@ -391,8 +391,8 @@ class BureauReportGenerator:
         }}
 
         .grounding-card {{
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 20px;
         }}
@@ -411,7 +411,7 @@ class BureauReportGenerator:
         }}
 
         .grounding-card strong {{
-            color: #e2e8f0;
+            color: #1e293b;
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -425,9 +425,9 @@ class BureauReportGenerator:
         }}
 
         .tag {{
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #059669;
             font-size: 9px;
             font-weight: 700;
             padding: 4px 10px;

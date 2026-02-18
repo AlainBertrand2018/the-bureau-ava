@@ -175,8 +175,8 @@ export default function ResultsStep({
             <div className="mb-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                            <BarChart3 size={18} className="text-blue-600" />
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                            <BarChart3 size={18} className="text-emerald-600" />
                         </div>
                         <div>
                             <h2 className="text-2xl font-black tracking-tight text-slate-900">
@@ -196,7 +196,7 @@ export default function ResultsStep({
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                 {[
-                    { label: "Overall Score", value: analysis.overallAvg + "/10", color: "text-blue-600" },
+                    { label: "Overall Score", value: analysis.overallAvg + "/10", color: "text-emerald-600" },
                     { label: "Positive", value: analysis.distribution.positive, color: "text-emerald-600" },
                     { label: "Neutral", value: analysis.distribution.neutral, color: "text-amber-600" },
                     { label: "Negative", value: analysis.distribution.negative, color: "text-rose-600" },
@@ -231,7 +231,7 @@ export default function ResultsStep({
                                 key={v.id}
                                 onClick={() => setChartView(v.id)}
                                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase transition-all ${chartView === v.id
-                                    ? "bg-blue-600 text-white shadow-sm"
+                                    ? "bg-emerald-600 text-white shadow-sm"
                                     : "text-slate-500 hover:text-slate-900"
                                     }`}
                             >
@@ -294,8 +294,8 @@ export default function ResultsStep({
                                 <PolarGrid stroke="#f1f5f9" />
                                 <PolarAngleAxis dataKey="subject"
                                     tick={{ fontSize: 9, fontWeight: "bold", fill: "#64748b" }} />
-                                <Radar name="Score" dataKey="A" stroke="#0046FF"
-                                    fill="#0046FF" fillOpacity={0.3} />
+                                <Radar name="Score" dataKey="A" stroke="#10B981"
+                                    fill="#10B981" fillOpacity={0.3} />
                             </RadarChart>
                         </ResponsiveContainer>
                     )}
@@ -353,7 +353,7 @@ export default function ResultsStep({
                             classification based on {results.length} synthetic responses.
                         </p>
                     </div>
-                    <button className="mt-6 flex items-center justify-center gap-2 bg-blue-600 text-white w-full py-4 rounded-full font-black text-[10px] tracking-widest uppercase transition-all hover:bg-blue-700 shadow-lg shadow-blue-500/20">
+                    <button className="mt-6 flex items-center justify-center gap-2 bg-emerald-600 text-white w-full py-4 rounded-full font-black text-[10px] tracking-widest uppercase transition-all hover:bg-emerald-700 shadow-lg shadow-emerald-500/20">
                         <FileDown size={14} />
                         Export Report PDF
                     </button>
@@ -377,8 +377,8 @@ export default function ResultsStep({
                                     className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors text-left"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
-                                            <User size={14} className="text-blue-600" />
+                                        <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center">
+                                            <User size={14} className="text-emerald-600" />
                                         </div>
                                         <div>
                                             <span className="text-slate-900 font-bold text-sm">{agent.name}</span>

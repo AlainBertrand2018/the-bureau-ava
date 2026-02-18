@@ -64,7 +64,7 @@ export default function PersonasStep({
         if (t.includes("optimist") || t.includes("enthusi") || t.includes("open"))
             return "text-emerald-600 bg-emerald-50 border-emerald-100";
         if (t.includes("pragmat") || t.includes("analytic") || t.includes("detail"))
-            return "text-blue-600 bg-blue-50 border-blue-100";
+            return "text-emerald-600 bg-emerald-50 border-emerald-100";
         return "text-amber-600 bg-amber-50 border-amber-100";
     };
 
@@ -73,8 +73,8 @@ export default function PersonasStep({
             {/* Section Header */}
             <div className="mb-10">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                        <Users size={18} className="text-blue-600" />
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                        <Users size={18} className="text-emerald-600" />
                     </div>
                     <div>
                         <h2 className="text-2xl font-black tracking-tight text-slate-900">
@@ -90,7 +90,7 @@ export default function PersonasStep({
                     <span className="text-slate-900 font-bold">diagnostic lens</span>{" "}
                     — engineered to stress-test your questionnaire from a different angle.
                     They will expose{" "}
-                    <span className="text-blue-600">
+                    <span className="text-emerald-600">
                         ambiguity, bias, missing options, and drop-off risks
                     </span>{" "}
                     that different demographic groups uniquely reveal.
@@ -102,8 +102,8 @@ export default function PersonasStep({
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
-                                <Sparkles size={20} className="text-blue-600" />
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                                <Sparkles size={20} className="text-emerald-600" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-black tracking-tight text-slate-900">
@@ -137,7 +137,7 @@ export default function PersonasStep({
                             disabled={isGenerating}
                             className={`flex items-center gap-2 px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${isGenerating
                                 ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                                : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30"
+                                : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/30"
                                 }`}
                         >
                             {isGenerating ? (
@@ -175,7 +175,7 @@ export default function PersonasStep({
                             {
                                 label: "Respondents",
                                 value: personas.length,
-                                color: "text-blue-600",
+                                color: "text-emerald-600",
                             },
                             {
                                 label: "Avg Age",
@@ -193,7 +193,7 @@ export default function PersonasStep({
                             {
                                 label: "Occupations",
                                 value: new Set(personas.map((p) => p.occupation)).size,
-                                color: "text-indigo-600",
+                                color: "text-emerald-600",
                             },
                         ].map((stat, i) => (
                             <div
@@ -221,11 +221,11 @@ export default function PersonasStep({
                                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     transition={{ delay: i * 0.05 }}
-                                    className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-blue-200 transition-all group shadow-sm hover:shadow-md"
+                                    className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-emerald-200 transition-all group shadow-sm hover:shadow-md"
                                 >
                                     <div className="flex items-start gap-4 mb-4">
-                                        <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                                            <User size={16} className="text-blue-600" />
+                                        <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                                            <User size={16} className="text-emerald-600" />
                                         </div>
                                         <div className="min-w-0">
                                             <h4 className="text-slate-900 font-black tracking-tight truncate">

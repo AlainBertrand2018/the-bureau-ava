@@ -26,7 +26,6 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
-import Footer from "@/components/Footer";
 import AudienceConfigurator from "@/components/shared/AudienceConfigurator";
 import LaboratoryEntryProtocol from "@/components/shared/LaboratoryEntryProtocol";
 
@@ -298,7 +297,7 @@ function MissionControlContent() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30 flex flex-col">
+        <div className="min-h-screen bg-slate-950 text-white selection:bg-emerald-500/30 flex flex-col">
             <LaboratoryEntryProtocol
                 isOpen={isTransitioning}
                 targetName={missionData?.config?.target_country || 'Unknown'}
@@ -306,8 +305,8 @@ function MissionControlContent() {
             />
             {/* Background FX */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-sky-600/10 blur-[120px] rounded-full" />
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-600/10 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-600/10 blur-[120px] rounded-full" />
                 <div className="absolute inset-0 hero-dot-grid opacity-20" />
             </div>
 
@@ -368,13 +367,13 @@ function MissionControlContent() {
                                     <motion.div
                                         initial={{ scale: 0.8, opacity: 0 }}
                                         animate={{ scale: 1, opacity: 1 }}
-                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4"
+                                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4"
                                     >
                                         <Cpu size={12} />
                                         Mission Control Gateway
                                     </motion.div>
                                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-tight">
-                                        Welcome to My <span className="text-blue-500">Universal Bureau</span>
+                                        Welcome to My <span className="text-emerald-500">Universal Bureau</span>
                                     </h1>
                                     <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
                                         Where I <span className="text-slate-300">simulate the world</span> to stress-test your research against global reality.
@@ -392,7 +391,7 @@ function MissionControlContent() {
                                                 <select
                                                     value={config.target_country}
                                                     onChange={(e) => setConfig({ ...config, target_country: e.target.value })}
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-blue-500 transition-colors outline-none appearance-none"
+                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none appearance-none"
                                                 >
                                                     {COUNTRIES.map(c => <option key={c.id} value={c.id}>{c.flag} {c.name}</option>)}
                                                 </select>
@@ -402,7 +401,7 @@ function MissionControlContent() {
                                                 <select
                                                     value={config.target_region}
                                                     onChange={(e) => setConfig({ ...config, target_region: e.target.value })}
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-blue-500 transition-colors outline-none appearance-none"
+                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none appearance-none"
                                                 >
                                                     {COUNTRIES.find(c => c.id === config.target_country)?.regions.map(r => (
                                                         <option key={r} value={r}>{r}</option>
@@ -419,7 +418,7 @@ function MissionControlContent() {
                                                     value={config.research_topic}
                                                     onChange={(e) => setConfig({ ...config, research_topic: e.target.value })}
                                                     placeholder="e.g. FMCG, Fintech, Healthcare"
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-blue-500 transition-colors outline-none"
+                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -427,7 +426,7 @@ function MissionControlContent() {
                                                 <select
                                                     value={config.target_language}
                                                     onChange={(e) => setConfig({ ...config, target_language: e.target.value })}
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-blue-500 transition-colors outline-none appearance-none"
+                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none appearance-none"
                                                 >
                                                     {LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                                                 </select>
@@ -441,13 +440,13 @@ function MissionControlContent() {
                                                 onChange={(e) => setConfig({ ...config, target_audience: e.target.value })}
                                                 placeholder="Who are you targeting? (e.g. Gen Z gamers in urban areas, SME owners...)"
                                                 rows={3}
-                                                className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-4 text-sm font-bold focus:border-blue-500 transition-colors outline-none resize-none"
+                                                className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-4 text-sm font-bold focus:border-emerald-500 transition-colors outline-none resize-none"
                                             />
                                         </div>
 
                                         <div className="pt-6 border-t border-slate-800/50">
                                             <div className="flex items-center gap-2 mb-6">
-                                                <Fingerprint size={16} className="text-blue-500" />
+                                                <Fingerprint size={16} className="text-emerald-500" />
                                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Demographic Precision Calibrator</h4>
                                             </div>
                                             <AudienceConfigurator
@@ -461,8 +460,8 @@ function MissionControlContent() {
 
                                 {/* Right: Summary / CTA */}
                                 <div className="space-y-6">
-                                    <div className="glass-card p-6 border-blue-500/20 bg-blue-500/5 space-y-6">
-                                        <h3 className="text-xs font-black uppercase tracking-widest text-blue-400">Mission Setup</h3>
+                                    <div className="glass-card p-6 border-emerald-500/20 bg-emerald-500/5 space-y-6">
+                                        <h3 className="text-xs font-black uppercase tracking-widest text-emerald-400">Mission Setup</h3>
                                         <div className="space-y-4">
                                             <div className="flex items-start gap-3">
                                                 <Globe size={16} className="text-slate-500 mt-0.5" />
@@ -496,7 +495,7 @@ function MissionControlContent() {
 
                                         <button
                                             onClick={handleInitialize}
-                                            className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group shadow-xl shadow-blue-600/20"
+                                            className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group shadow-xl shadow-emerald-600/20"
                                         >
                                             Initialize Mission
                                             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -521,12 +520,12 @@ function MissionControlContent() {
                             className="flex flex-col items-center justify-center min-h-[50vh] space-y-8"
                         >
                             <div className="relative">
-                                <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full animate-pulse" />
-                                <Loader2 size={64} className="text-blue-500 animate-spin relative z-10" />
+                                <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full animate-pulse" />
+                                <Loader2 size={64} className="text-emerald-500 animate-spin relative z-10" />
                             </div>
                             <div className="text-center space-y-4">
                                 <h2 className="text-2xl font-black uppercase tracking-[0.3em] animate-pulse">
-                                    Calibrating <span className="text-blue-500">Physics</span>
+                                    Calibrating <span className="text-emerald-500">Physics</span>
                                 </h2>
                                 <p className="text-slate-400 font-mono text-sm tracking-tighter">
                                     {calibText}
@@ -538,7 +537,7 @@ function MissionControlContent() {
                                     initial={{ width: "0%" }}
                                     animate={{ width: "100%" }}
                                     transition={{ duration: 10, ease: "linear" }}
-                                    className="h-full bg-gradient-to-r from-blue-600 to-sky-400"
+                                    className="h-full bg-gradient-to-r from-emerald-600 to-teal-400"
                                 />
                             </div>
 
@@ -552,18 +551,18 @@ function MissionControlContent() {
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: -10 }}
-                                                className="flex flex-col md:flex-row items-center gap-2 md:gap-4 px-6 py-3 rounded-full bg-slate-900/90 border border-slate-700 backdrop-blur shadow-2xl shadow-blue-500/10 max-w-2xl w-full justify-center"
+                                                className="flex flex-col md:flex-row items-center gap-2 md:gap-4 px-6 py-3 rounded-full bg-slate-900/90 border border-slate-700 backdrop-blur shadow-2xl shadow-emerald-500/10 max-w-2xl w-full justify-center"
                                             >
                                                 <div className="flex items-center gap-2 flex-shrink-0">
                                                     <div className={`w-2 h-2 rounded-full animate-pulse shadow-[0_0_10px] ${log.agent === 'SENTINEL' ? 'bg-amber-500 shadow-amber-500/50' :
                                                         log.agent === 'PROFILER' ? 'bg-purple-500 shadow-purple-500/50' :
                                                             log.agent === 'ADJUDICATOR' ? 'bg-emerald-500 shadow-emerald-500/50' :
-                                                                'bg-blue-500 shadow-blue-500/50'
+                                                                'bg-teal-500 shadow-teal-500/50'
                                                         }`} />
                                                     <span className={`text-[10px] font-black uppercase tracking-widest ${log.agent === 'SENTINEL' ? 'text-amber-400' :
                                                         log.agent === 'PROFILER' ? 'text-purple-400' :
                                                             log.agent === 'ADJUDICATOR' ? 'text-emerald-400' :
-                                                                'text-blue-400'
+                                                                'text-teal-400'
                                                         }`}>
                                                         {log.agent}
                                                     </span>
@@ -576,7 +575,7 @@ function MissionControlContent() {
                                                         {log.action}
                                                     </span>
                                                     <span className="hidden sm:inline text-slate-600">»</span>
-                                                    <span className="font-mono text-xs text-blue-100 truncate w-full md:w-auto">
+                                                    <span className="font-mono text-xs text-emerald-100 truncate w-full md:w-auto">
                                                         {log.details || "Processing..."}
                                                     </span>
                                                 </div>
@@ -663,9 +662,9 @@ function MissionControlContent() {
                                     {/* Precision Refinement display */}
                                     {missionData.config.targeting_refinement && (
                                         <div className="flex flex-wrap gap-2 mt-4">
-                                            <div className="px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center gap-2">
-                                                <Fingerprint size={12} className="text-blue-400" />
-                                                <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+                                            <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
+                                                <Fingerprint size={12} className="text-emerald-400" />
+                                                <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
                                                     {missionData.config.targeting_refinement.gender} · {missionData.config.targeting_refinement.age_range[0]}-{missionData.config.targeting_refinement.age_range[1]} Years · {missionData.config.targeting_refinement.marital_status}
                                                 </span>
                                             </div>
@@ -694,7 +693,7 @@ function MissionControlContent() {
                                                     <Wifi size={14} />
                                                     <span className="text-[10px] font-black uppercase tracking-widest">Distribution Mode</span>
                                                 </div>
-                                                <p className="text-lg font-bold text-blue-400">{missionData.dossier.sampling_parameters.suggested_distribution_mode}</p>
+                                                <p className="text-lg font-bold text-emerald-400">{missionData.dossier.sampling_parameters.suggested_distribution_mode}</p>
                                             </div>
                                         </div>
                                     )}
@@ -714,9 +713,9 @@ function MissionControlContent() {
                                             </div>
                                             <h3 className="text-xl font-black uppercase tracking-widest">Economic Reality</h3>
                                         </div>
-                                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
-                                            <Shield size={12} className="text-blue-400" />
-                                            <span className="text-[10px] font-black uppercase tracking-wider text-blue-300">
+                                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                            <Shield size={12} className="text-emerald-400" />
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300">
                                                 Bureau Verifiable
                                             </span>
                                         </div>
@@ -781,17 +780,17 @@ function MissionControlContent() {
                                             {/* Education */}
                                             <div className="space-y-4">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                                    <h4 className="text-xs font-black uppercase tracking-widest text-blue-400">Education Landscape</h4>
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                    <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400">Education Landscape</h4>
                                                 </div>
                                                 <div className="space-y-3">
                                                     {missionData.dossier.education && Object.entries(missionData.dossier.education).map(([key, val]: any) => (
-                                                        <div key={key} className="bg-blue-950/20 border border-blue-500/10 rounded-lg p-3">
-                                                            <span className="text-[10px] font-bold text-blue-400/70 uppercase tracking-wider block mb-1.5">{key.replace(/_/g, ' ')}</span>
+                                                        <div key={key} className="bg-emerald-950/20 border border-emerald-500/10 rounded-lg p-3">
+                                                            <span className="text-[10px] font-bold text-emerald-400/70 uppercase tracking-wider block mb-1.5">{key.replace(/_/g, ' ')}</span>
                                                             <div className="text-xs text-slate-300 font-medium space-y-1">
                                                                 {(typeof val === 'string' ? val : JSON.stringify(val)).split('|').map((part: string, i: number) => (
                                                                     <div key={i} className="flex items-start gap-2">
-                                                                        <span className="text-blue-500/50 mt-0.5">•</span>
+                                                                        <span className="text-emerald-500/50 mt-0.5">•</span>
                                                                         <span>{part.trim()}</span>
                                                                     </div>
                                                                 ))}
@@ -851,13 +850,13 @@ function MissionControlContent() {
                                 {/* Cultural Axioms */}
                                 <div className="glass-card p-8 space-y-6">
                                     <div className="flex items-center gap-2">
-                                        <ShieldCheck size={20} className="text-blue-500" />
+                                        <ShieldCheck size={20} className="text-emerald-500" />
                                         <h3 className="text-sm font-black uppercase tracking-widest">Cultural Axioms</h3>
                                     </div>
                                     <div className="space-y-3">
                                         {missionData.dossier.cultural_axioms.map((axiom: string, i: number) => (
                                             <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-slate-900/50 border border-slate-800">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5" />
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5" />
                                                 <p className="text-xs text-slate-300 font-medium leading-relaxed">{axiom}</p>
                                             </div>
                                         ))}
@@ -867,13 +866,13 @@ function MissionControlContent() {
                                 {/* Linguistic Nuances */}
                                 <div className="glass-card p-8 space-y-6">
                                     <div className="flex items-center gap-2">
-                                        <Languages size={20} className="text-sky-500" />
+                                        <Languages size={20} className="text-teal-500" />
                                         <h3 className="text-sm font-black uppercase tracking-widest">Linguistic Context</h3>
                                     </div>
                                     <div className="space-y-4">
                                         <div className="flex flex-wrap gap-2">
                                             {missionData.dossier.linguistic_nuances.map((nuance: string, i: number) => (
-                                                <span key={i} className="px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-[10px] font-bold text-sky-400 uppercase tracking-wider">
+                                                <span key={i} className="px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-[10px] font-bold text-teal-400 uppercase tracking-wider">
                                                     {nuance}
                                                 </span>
                                             ))}
@@ -942,7 +941,7 @@ function MissionControlContent() {
                             <div className="flex justify-center pt-4">
                                 <button
                                     onClick={() => setShowAuditLog(true)}
-                                    className="text-[10px] font-mono text-slate-500 hover:text-blue-400 uppercase tracking-widest flex items-center gap-2 transition-colors"
+                                    className="text-[10px] font-mono text-slate-500 hover:text-emerald-400 uppercase tracking-widest flex items-center gap-2 transition-colors"
                                 >
                                     <FileText size={12} />
                                     View Agency Trace
@@ -961,7 +960,7 @@ function MissionControlContent() {
                             exit={{ opacity: 0 }}
                             className="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center"
                         >
-                            <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
+                            <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.05)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
 
                             <motion.div
                                 initial={{ scale: 0.9, opacity: 0 }}
@@ -969,10 +968,10 @@ function MissionControlContent() {
                                 className="relative z-10 text-center space-y-8"
                             >
                                 <div className="relative w-24 h-24 mx-auto">
-                                    <div className="absolute inset-0 border-4 border-blue-500/30 rounded-full animate-ping" />
-                                    <div className="absolute inset-0 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin" />
-                                    <div className="absolute inset-4 bg-blue-500/20 rounded-full backdrop-blur-md flex items-center justify-center">
-                                        <Cpu size={32} className="text-blue-400" />
+                                    <div className="absolute inset-0 border-4 border-emerald-500/30 rounded-full animate-ping" />
+                                    <div className="absolute inset-0 border-4 border-t-emerald-500 border-r-transparent border-b-emerald-500 border-l-transparent rounded-full animate-spin" />
+                                    <div className="absolute inset-4 bg-emerald-500/20 rounded-full backdrop-blur-md flex items-center justify-center">
+                                        <Cpu size={32} className="text-emerald-400" />
                                     </div>
                                 </div>
 
@@ -980,8 +979,8 @@ function MissionControlContent() {
                                     <h2 className="text-3xl font-black text-white uppercase tracking-[0.2em] animate-pulse">
                                         Bureau Airlock
                                     </h2>
-                                    <div className="h-px w-32 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto" />
-                                    <p className="text-blue-400 font-mono text-sm tracking-widest uppercase">
+                                    <div className="h-px w-32 bg-gradient-to-r from-transparent via-emerald-500 to-transparent mx-auto" />
+                                    <p className="text-emerald-400 font-mono text-sm tracking-widest uppercase">
                                         {transitionText}
                                     </p>
                                 </div>
@@ -1015,7 +1014,7 @@ function MissionControlContent() {
                             >
                                 <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
                                     <div className="flex items-center gap-3">
-                                        <FileText size={20} className="text-blue-400" />
+                                        <FileText size={20} className="text-emerald-400" />
                                         <h3 className="text-lg font-black uppercase tracking-widest text-white">Agency Trace</h3>
                                     </div>
                                     <button onClick={() => setShowAuditLog(false)} className="text-slate-400 hover:text-white">
@@ -1032,7 +1031,7 @@ function MissionControlContent() {
                                                     <span className={`text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${log.agent === 'SENTINEL' ? 'bg-amber-500/10 text-amber-500' :
                                                         log.agent === 'PROFILER' ? 'bg-purple-500/10 text-purple-500' :
                                                             log.agent === 'ADJUDICATOR' ? 'bg-emerald-500/10 text-emerald-500' :
-                                                                'bg-blue-500/10 text-blue-500'
+                                                                'bg-teal-500/10 text-teal-500'
                                                         }`}>
                                                         {log.agent}
                                                     </span>
@@ -1082,7 +1081,7 @@ function MissionControlContent() {
                             exit={{ scale: 0.9, y: 20 }}
                             className="bg-white text-slate-900 rounded-[2rem] p-10 max-w-lg w-full shadow-2xl relative overflow-hidden"
                         >
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-violet-600" />
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-600 to-teal-600" />
 
                             <div className="flex flex-col items-center text-center space-y-6">
                                 <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center">
@@ -1090,7 +1089,7 @@ function MissionControlContent() {
                                 </div>
 
                                 <div>
-                                    <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3">
+                                    <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3">
                                         {tier === 'tier3' ? 'Deep Simulation' : 'Standard Audit'}
                                     </div>
                                     <h3 className="text-3xl font-black text-slate-900 mb-2">Unlock Mission Access</h3>
@@ -1126,7 +1125,6 @@ function MissionControlContent() {
                 )}
             </AnimatePresence>
 
-            <Footer dark />
         </div >
     );
 }
@@ -1135,7 +1133,7 @@ export default function MissionControl() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
             </div>
         }>
             <MissionControlContent />

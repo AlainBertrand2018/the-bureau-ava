@@ -133,10 +133,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
 
     return (
-        <div className="min-h-[600px] w-full max-w-5xl mx-auto rounded-[2.5rem] bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden relative">
+        <div className={`min-h-[600px] w-full max-w-5xl mx-auto rounded-[2.5rem] border shadow-2xl overflow-hidden relative transition-colors duration-500 ${view === 'results' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
             {/* Ambient Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/10 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/10 rounded-full blur-[120px]" />
             </div>
 
@@ -165,7 +165,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl mb-12">
                             {[
-                                { title: "Define", desc: "Set your objective & audience context", icon: Target, color: "text-blue-400", border: "border-blue-500/20", bg: "bg-blue-500/5" },
+                                { title: "Define", desc: "Set your objective & audience context", icon: Target, color: "text-teal-400", border: "border-teal-500/20", bg: "bg-teal-500/5" },
                                 { title: "Generate", desc: "Automated questionnaire drafting", icon: Cpu, color: "text-purple-400", border: "border-purple-500/20", bg: "bg-purple-500/5" },
                                 { title: "Audit", desc: "Stress-test against 5 digital personas", icon: ShieldCheck, color: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/5" },
                                 { title: "Deliver", desc: "Receive a certified field manual", icon: FileText, color: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/5" }
@@ -189,7 +189,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                             <div className="w-px h-12 bg-white/10 hidden md:block" />
                             <button
                                 onClick={() => window.open('/genesis', '_blank')}
-                                className="group flex items-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-xl font-black uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg active:scale-95"
+                                className="group flex items-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-xl font-black uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-lg active:scale-95"
                             >
                                 Activate Architect
                                 <ArrowRight size={18} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
@@ -227,9 +227,9 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         )}
                         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                             <div>
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">
-                                    <Sparkles size={12} className="text-blue-400" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 mb-4">
+                                    <Sparkles size={12} className="text-teal-400" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-400">
                                         {t.architect.badge}
                                     </span>
                                 </div>
@@ -250,7 +250,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                             {/* Step 1: Objective */}
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-blue-400 border border-white/5 shadow-inner">
+                                    <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-teal-400 border border-white/5 shadow-inner">
                                         <Target size={16} />
                                     </div>
                                     <div>
@@ -262,7 +262,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                     value={formData.objective}
                                     onChange={(e) => setFormData({ ...formData, objective: e.target.value })}
                                     placeholder={t.architect.onboarding.placeholder_obj}
-                                    className="w-full h-32 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all resize-none font-medium"
+                                    className="w-full h-32 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition-all resize-none font-medium"
                                 />
                             </div>
 
@@ -352,7 +352,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                     rotate: { duration: 10, repeat: Infinity, ease: "linear" },
                                     scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
                                 }}
-                                className="w-32 h-32 rounded-full border-t-2 border-r-2 border-blue-500 opacity-20"
+                                className="w-32 h-32 rounded-full border-t-2 border-r-2 border-teal-500 opacity-20"
                             />
                             <motion.div
                                 animate={{
@@ -371,7 +371,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         </div>
 
                         <div className="space-y-6 max-w-md">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-500">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">
                                 {t.architect.cta_generating}
                             </h3>
                             <AnimatePresence mode="wait">
@@ -390,7 +390,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 {[0, 1, 2, 3, 4].map((i) => (
                                     <div
                                         key={i}
-                                        className={`h-1.5 rounded-full transition-all duration-1000 ${i <= loadingPhase ? "w-8 bg-blue-500" : "w-2 bg-slate-800"
+                                        className={`h-1.5 rounded-full transition-all duration-1000 ${i <= loadingPhase ? "w-8 bg-teal-500" : "w-2 bg-slate-800"
                                             }`}
                                     />
                                 ))}
@@ -417,7 +417,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                     <CheckCircle2 size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black text-white tracking-tight">{t.architect.result.title}</h2>
+                                    <h2 className={`text-2xl font-black tracking-tight ${view === 'results' ? 'text-slate-900' : 'text-white'}`}>{t.architect.result.title}</h2>
                                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
                                         <Activity size={10} className="text-emerald-500" />
                                         {t.architect.result.certified} • {result.certified_by}
@@ -433,7 +433,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                             win.document.close();
                                         }
                                     }}
-                                    className="flex items-center gap-2 px-4 py-3 rounded-full bg-slate-800 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 transition-colors border border-blue-500/20 active:scale-95"
+                                    className="flex items-center gap-2 px-4 py-3 rounded-full bg-slate-800 text-emerald-400 text-[10px] font-black uppercase tracking-widest hover:bg-slate-700 transition-colors border border-emerald-500/20 active:scale-95"
                                     title="View Full Certificate"
                                 >
                                     <Eye size={14} /> View
@@ -447,7 +447,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                             setTimeout(() => win.print(), 800);
                                         }
                                     }}
-                                    className="flex items-center gap-2 px-4 py-3 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-colors border border-white/5 active:scale-95 shadow-lg shadow-blue-500/20"
+                                    className="flex items-center gap-2 px-4 py-3 rounded-full bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 transition-colors border border-white/5 active:scale-95 shadow-lg shadow-emerald-500/20"
                                     title="Download as PDF"
                                 >
                                     <Printer size={14} /> PDF
@@ -480,28 +480,28 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: i * 0.05 }}
-                                            className="group p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all"
+                                            className="group p-5 bg-slate-50 border border-slate-200 rounded-2xl hover:bg-slate-100 transition-all"
                                         >
                                             <div className="flex gap-4">
-                                                <span className="text-[10px] font-black text-blue-500/50 pt-1">
+                                                <span className="text-[10px] font-black text-emerald-500/50 pt-1">
                                                     {String(i + 1).padStart(2, '0')}
                                                 </span>
                                                 <div className="space-y-3 w-full">
-                                                    <p className="text-sm font-bold text-slate-200 leading-relaxed">
+                                                    <p className="text-sm font-bold text-slate-800 leading-relaxed">
                                                         {q}
                                                     </p>
                                                     {justification && (
-                                                        <div className="pt-3 border-t border-white/5 space-y-2">
+                                                        <div className="pt-3 border-t border-slate-200 space-y-2">
                                                             <div className="flex items-start gap-2">
                                                                 <ShieldCheck size={12} className="text-emerald-500 mt-0.5 shrink-0" />
-                                                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                                                                <p className="text-[10px] text-slate-600 font-medium leading-relaxed">
                                                                     <span className="text-emerald-500 font-black uppercase tracking-wider mr-1">Methodology:</span>
                                                                     {justification.design_rationale}
                                                                 </p>
                                                             </div>
                                                             {justification.validation_confirmed && (
                                                                 <div className="flex items-start gap-2 pl-5">
-                                                                    <span className="text-blue-500 text-[10px] mt-0.5">↳</span>
+                                                                    <span className="text-emerald-500 text-[10px] mt-0.5">↳</span>
                                                                     <p className="text-[10px] text-slate-500 leading-relaxed">
                                                                         Verified: "{justification.validation_confirmed}"
                                                                     </p>
@@ -518,18 +518,18 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                             {/* Right: Rationale & Manual */}
                             <div className="lg:col-span-5 space-y-6">
-                                <div className="p-6 rounded-3xl bg-blue-500/5 border border-blue-500/10">
-                                    <div className="flex items-center gap-2 mb-4 text-blue-400">
+                                <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100">
+                                    <div className="flex items-center gap-2 mb-4 text-emerald-400">
                                         <FlaskConical size={14} />
                                         <h4 className="text-[10px] font-black uppercase tracking-widest">{t.architect.result.rationale_title}</h4>
                                     </div>
-                                    <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                                    <p className="text-xs text-slate-600 font-medium leading-relaxed">
                                         "{result?.strategic_rationale || "Strategic synthesis complete."}"
                                     </p>
                                 </div>
 
-                                <div className="p-6 rounded-3xl bg-slate-800/30 border border-white/5">
-                                    <div className="flex items-center gap-2 mb-6 text-slate-400">
+                                <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-6 text-slate-500">
                                         <FileText size={14} />
                                         <h4 className="text-[10px] font-black uppercase tracking-widest">{t.architect.result.manual_title}</h4>
                                     </div>
@@ -539,17 +539,17 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                             <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">{t.architect.result.best_practices}</p>
                                             <ul className="space-y-2">
                                                 {(result?.field_manual?.deployment_best_practices || []).map((bp: string, i: number) => (
-                                                    <li key={i} className="flex gap-2 text-[11px] text-slate-300 font-medium">
-                                                        <span className="text-blue-500">•</span>
+                                                    <li key={i} className="flex gap-2 text-[11px] text-slate-500 font-medium">
+                                                        <span className="text-emerald-600">•</span>
                                                         {bp}
                                                     </li>
                                                 ))}
                                             </ul>
                                         </div>
 
-                                        <div className="pt-4 border-t border-white/5">
+                                        <div className="pt-4 border-t border-slate-200">
                                             <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">{t.architect.result.outcomes}</p>
-                                            <p className="text-[11px] text-slate-300 font-medium leading-relaxed">
+                                            <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
                                                 {result?.field_manual?.potential_outcomes || "High-fidelity research data anticipated."}
                                             </p>
                                         </div>
@@ -557,7 +557,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 </div>
 
                                 {/* Scientific Disclosure Footer Card */}
-                                <div className="p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/10">
+                                <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100">
                                     <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-[0.2em] leading-relaxed">
                                         {result?.field_manual?.scientific_disclosure || "Bureau Certified Methodology Statement"}
                                     </p>
@@ -567,25 +567,25 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                         {/* NEW: Simulation Report Strip */}
                         {result?.simulation_report && (
-                            <div className="mt-8 pt-8 border-t border-white/5">
+                            <div className="mt-8 pt-8 border-t border-slate-200">
                                 <div className="flex items-center gap-2 mb-6">
-                                    <Activity size={16} className="text-blue-500" />
-                                    <h3 className="text-[11px] font-black uppercase tracking-[0.22em] text-white">
+                                    <Activity size={16} className="text-emerald-600" />
+                                    <h3 className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-900">
                                         {t.architect.result.prediction_title}
                                     </h3>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                    <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
                                         <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Executive Summary</p>
-                                        <p className="text-xs text-slate-300 leading-relaxed">
+                                        <p className="text-xs text-slate-600 leading-relaxed">
                                             {result.simulation_report.executive_summary}
                                         </p>
                                     </div>
-                                    <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                                    <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
                                         <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Field Deployment Protocol</p>
                                         <ul className="space-y-2">
                                             {(result.simulation_report.field_deployment_protocol || result.simulation_report.next_steps || []).slice(0, 3).map((step: any, i: number) => (
-                                                <li key={i} className="flex gap-2 text-[10px] text-slate-400 font-medium">
+                                                <li key={i} className="flex gap-2 text-[10px] text-slate-600 font-medium">
                                                     <span className="text-emerald-500">→</span>
                                                     {typeof step === "string" ? step : step?.step || step?.recommendation || JSON.stringify(step)}
                                                 </li>
@@ -597,7 +597,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         <div className="space-y-3">
                                             {(result.simulation_report.demographic_insights || []).slice(0, 2).map((insight: any, i: number) => (
                                                 <div key={i}>
-                                                    <p className="text-[10px] font-bold text-blue-400">{insight.segment}</p>
+                                                    <p className="text-[10px] font-bold text-teal-600">{insight.segment}</p>
                                                     <p className="text-[9px] text-slate-500 mt-0.5">{insight.finding}</p>
                                                 </div>
                                             ))}
@@ -652,7 +652,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                             exit={{ scale: 0.9, y: 20 }}
                             className="bg-white text-slate-900 rounded-[2rem] p-10 max-w-lg w-full shadow-2xl relative overflow-hidden"
                         >
-                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-emerald-500" />
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-600 to-teal-500" />
 
                             <div className="flex flex-col items-center text-center space-y-6">
                                 <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center">
@@ -660,7 +660,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 </div>
 
                                 <div>
-                                    <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3">
+                                    <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3">
                                         Creation Module
                                     </div>
                                     <h3 className="text-3xl font-black text-slate-900 mb-2">Unlock Genesis Access</h3>
@@ -680,7 +680,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                                 <button
                                     onClick={handlePaywallSuccess}
-                                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-[0.2em] hover:bg-blue-600 transition-colors shadow-lg shadow-slate-900/20"
+                                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-[0.2em] hover:bg-emerald-600 transition-colors shadow-lg shadow-slate-900/20"
                                 >
                                     Proceed to Payment
                                 </button>

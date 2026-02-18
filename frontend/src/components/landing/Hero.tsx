@@ -86,15 +86,7 @@ export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
                         {t.hero.description}
                     </motion.p>
 
-                    {/* Meta Trust Signal */}
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.8 }}
-                        className="text-[10px] text-slate-400 font-medium mt-8 uppercase tracking-widest"
-                    >
-                        {t.quick_audit.footer}
-                    </motion.p>
+
 
                     {/* Hero CTAs */}
                     <motion.div

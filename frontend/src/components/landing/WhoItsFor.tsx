@@ -58,12 +58,7 @@ export default function WhoItsFor({ t }: WhoItsForProps) {
                     ))}
                 </div>
 
-                <Reveal delay={0.5} className="text-center mt-14">
-                    <p className="text-lg text-slate-500 font-semibold">
-                        {t.who_its_for.footer_1}{" "}
-                        <span className="text-white">{t.who_its_for.footer_2}</span>
-                    </p>
-                </Reveal>
+
             </div>
         </section>
     );

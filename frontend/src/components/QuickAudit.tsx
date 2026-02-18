@@ -138,7 +138,7 @@ export default function QuickAudit() {
         if (t.includes("MISSING")) return "bg-violet-50 text-violet-600 border-violet-100";
         if (t.includes("CULTURAL")) return "bg-cyan-50 text-cyan-700 border-cyan-100";
         if (t.includes("DROP")) return "bg-yellow-50 text-yellow-700 border-yellow-100";
-        return "bg-blue-50 text-blue-600 border-blue-100";
+        return "bg-slate-50 text-slate-600 border-slate-100";
     }
 
     return (
@@ -147,7 +147,7 @@ export default function QuickAudit() {
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3 text-center">
                     {t.quick_audit.header}
                 </p>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white border-2 border-slate-200 rounded-3xl p-2 shadow-lg shadow-slate-200/60 focus-within:border-blue-400 focus-within:shadow-blue-100/60 transition-all">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white border-2 border-slate-200 rounded-3xl p-2 shadow-lg shadow-slate-200/60 focus-within:border-emerald-400 focus-within:shadow-emerald-100/60 transition-all">
                     <input
                         ref={inputRef}
                         value={auditQuestion}
@@ -159,7 +159,7 @@ export default function QuickAudit() {
                     <button
                         onClick={runQuickAudit}
                         disabled={auditLoading}
-                        className="flex items-center justify-center gap-2 px-6 py-4 sm:py-3 bg-blue-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 shrink-0 shadow-sm"
+                        className="flex items-center justify-center gap-2 px-6 py-4 sm:py-3 bg-emerald-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-emerald-700 transition-all disabled:opacity-50 shrink-0 shadow-sm"
                     >
                         {auditLoading ? (
                             <Loader2 size={14} className="animate-spin" />
@@ -178,7 +178,7 @@ export default function QuickAudit() {
                         onClick={() => setShowTargeting(!showTargeting)}
                         className="flex items-center gap-2 mx-auto px-4 py-2 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-all"
                     >
-                        <Fingerprint size={12} className="text-blue-500" />
+                        <Fingerprint size={12} className="text-emerald-500" />
                         Refine Your Audience
                         {showTargeting ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                     </button>
@@ -193,7 +193,7 @@ export default function QuickAudit() {
                             >
                                 <div className="p-6 mt-4 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Users size={14} className="text-blue-500" />
+                                        <Users size={14} className="text-emerald-500" />
                                         <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Target Demographic Archetype</span>
                                     </div>
                                     <AudienceConfigurator

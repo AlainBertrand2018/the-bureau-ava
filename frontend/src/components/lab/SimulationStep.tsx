@@ -155,8 +155,8 @@ export default function SimulationStep({
             {/* Section Header */}
             <div className="mb-10">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                        <Zap size={18} className="text-blue-600" />
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                        <Zap size={18} className="text-emerald-600" />
                     </div>
                     <div>
                         <h2 className="text-2xl font-black tracking-tight text-slate-900">
@@ -173,7 +173,7 @@ export default function SimulationStep({
                     diagnostic respondents against{" "}
                     <span className="text-slate-900 font-bold">{questions.length}</span>{" "}
                     client questions ={" "}
-                    <span className="text-blue-600 font-bold">{totalCalls}</span> unique
+                    <span className="text-emerald-600 font-bold">{totalCalls}</span> unique
                     diagnostic interactions via Bureau AI.
                 </p>
             </div>
@@ -184,20 +184,20 @@ export default function SimulationStep({
                     {
                         label: "Respondents",
                         value: personas.length,
-                        color: "text-blue-600",
-                        bg: "from-blue-50",
+                        color: "text-emerald-600",
+                        bg: "from-emerald-50",
                     },
                     {
                         label: "Questions",
                         value: questions.length,
-                        color: "text-indigo-600",
-                        bg: "from-indigo-50",
+                        color: "text-emerald-600",
+                        bg: "from-emerald-50",
                     },
                     {
                         label: "Total Calls",
                         value: totalCalls,
-                        color: "text-amber-600",
-                        bg: "from-amber-50",
+                        color: "text-emerald-600",
+                        bg: "from-emerald-50",
                     },
                     {
                         label: "Completion",
@@ -231,7 +231,7 @@ export default function SimulationStep({
                 >
                     <button
                         onClick={runSimulation}
-                        className="inline-flex items-center gap-3 px-12 py-5 bg-blue-600 text-white rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                        className="inline-flex items-center gap-3 px-12 py-5 bg-emerald-600 text-white rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all active:scale-[0.98]"
                     >
                         <Rocket size={18} />
                         Launch Diagnostic Dry Run
@@ -254,7 +254,7 @@ export default function SimulationStep({
                                 ? "Diagnostic Dry Run In Progress"
                                 : "Diagnostic Dry Run Complete"}
                         </span>
-                        <span className="text-sm font-black text-blue-600">{progress}%</span>
+                        <span className="text-sm font-black text-emerald-600">{progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <motion.div
@@ -263,7 +263,7 @@ export default function SimulationStep({
                             transition={{ duration: 0.5 }}
                             className={`h-full rounded-full ${progress === 100
                                 ? "bg-emerald-500"
-                                : "bg-blue-600"
+                                : "bg-emerald-600"
                                 }`}
                         />
                     </div>
@@ -276,7 +276,7 @@ export default function SimulationStep({
                     <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <MessageSquare size={14} className="text-blue-600" />
+                                <MessageSquare size={14} className="text-emerald-600" />
                                 {isSimulating && (
                                     <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                                 )}
@@ -299,8 +299,8 @@ export default function SimulationStep({
                                     animate={{ opacity: 1, x: 0, height: "auto" }}
                                     className="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100/50"
                                 >
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                                        <User size={12} className="text-blue-600" />
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                                        <User size={12} className="text-emerald-600" />
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 mb-1">
@@ -354,8 +354,8 @@ export default function SimulationStep({
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         {[
-                            { label: "Engine Status", value: "Verified Active", color: "text-blue-600" },
-                            { label: "Audit Capacity", value: provenance.total_api_calls, color: "text-amber-600" },
+                            { label: "Engine Status", value: "Verified Active", color: "text-emerald-600" },
+                            { label: "Audit Capacity", value: provenance.total_api_calls, color: "text-emerald-600" },
                             { label: "Avg Latency", value: `${provenance.avg_latency_ms}ms`, color: "text-emerald-600" },
                         ].map((item, i) => (
                             <div key={i} className="text-center">
@@ -393,7 +393,7 @@ export default function SimulationStep({
                     <br />
                     <button
                         onClick={onComplete}
-                        className="inline-flex items-center gap-3 px-10 py-4 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all mt-4"
+                        className="inline-flex items-center gap-3 px-10 py-4 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 hover:bg-emerald-700 transition-all mt-4"
                     >
                         View Diagnostic Results
                     </button>

@@ -63,14 +63,7 @@ export default function HowItWorks({ t }: HowItWorksProps) {
                     ))}
                 </div>
 
-                <Reveal delay={0.5} className="text-center mt-12">
-                    <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 border border-emerald-100">
-                        <Clock size={14} className="text-emerald-600" />
-                        <span className="text-emerald-700 text-xs font-bold uppercase tracking-widest">
-                            {t.how_it_works.footer}
-                        </span>
-                    </div>
-                </Reveal>
+
             </div>
         </section>
     );

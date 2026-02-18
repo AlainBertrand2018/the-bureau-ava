@@ -62,14 +62,14 @@ export default function LaboratoryEntryProtocol({ isOpen, targetName = "Unknown"
                         <motion.div
                             initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            className="w-20 h-20 mx-auto border border-blue-500/30 bg-blue-500/10 rounded-full flex items-center justify-center relative"
+                            className="w-20 h-20 mx-auto border border-emerald-500/30 bg-emerald-500/10 rounded-full flex items-center justify-center relative"
                         >
-                            <div className="absolute inset-0 border border-blue-400/50 rounded-full animate-ping opacity-20" />
-                            <Cpu size={32} className="text-blue-400 animate-pulse" />
+                            <div className="absolute inset-0 border border-emerald-400/50 rounded-full animate-ping opacity-20" />
+                            <Cpu size={32} className="text-emerald-400 animate-pulse" />
                         </motion.div>
 
                         <div className="space-y-4">
-                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-blue-500">
+                            <h2 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-500">
                                 Bureau Laboratory Protocol
                             </h2>
                             <div className="h-12 flex items-center justify-center">
@@ -91,7 +91,7 @@ export default function LaboratoryEntryProtocol({ isOpen, targetName = "Unknown"
                                 initial={{ width: "0%" }}
                                 animate={{ width: "100%" }}
                                 transition={{ duration: 4.5, ease: "linear" }}
-                                className="h-full bg-gradient-to-r from-blue-600 to-emerald-400"
+                                className="h-full bg-gradient-to-r from-emerald-600 to-teal-400"
                             />
                         </div>
 

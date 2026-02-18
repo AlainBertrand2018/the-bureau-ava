@@ -26,7 +26,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
     };
 
     const inputBg = dark ? "bg-slate-800/50 border-slate-700/50" : "bg-slate-50 border-slate-200";
-    const labelColor = dark ? "text-indigo-100" : "text-slate-900";
+    const labelColor = dark ? "text-emerald-50" : "text-slate-900";
     const subLabelColor = dark ? "text-slate-500" : "text-slate-400";
     const textColor = dark ? "text-slate-200" : "text-slate-800";
 
@@ -35,14 +35,14 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Country Selection */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Globe size={14} className="text-indigo-500" />
+                    <Globe size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Target Country</span>
                 </div>
                 <div className="relative">
                     <select
                         value={value.country || 'Mauritius'}
                         onChange={(e) => handleChange('country', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-indigo-500/40`}
+                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
                     >
                         <option value="Mauritius">Mauritius</option>
                         <option value="France">France</option>
@@ -59,7 +59,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Gender Selection */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Users size={14} className="text-blue-500" />
+                    <Users size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Gender (Mandatory)</span>
                 </div>
                 <div className={`flex p-1 rounded-xl ${inputBg} border`}>
@@ -68,7 +68,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
                             key={g}
                             onClick={() => handleChange('gender', g)}
                             className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${value.gender === g
-                                ? "bg-blue-600 text-white shadow-lg"
+                                ? "bg-emerald-600 text-white shadow-lg"
                                 : `text-slate-500 hover:${textColor}`
                                 }`}
                         >
@@ -109,14 +109,14 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Marital Status */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Heart size={14} className="text-pink-500" />
+                    <Heart size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Marital Status</span>
                 </div>
                 <div className="relative">
                     <select
                         value={value.marital_status}
                         onChange={(e) => handleChange('marital_status', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-pink-500/40`}
+                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
                     >
                         <option value="Any">Any Status</option>
                         <option value="Single">Single</option>
@@ -131,7 +131,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Revenue Range */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Banknote size={14} className="text-amber-500" />
+                    <Banknote size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Revenue (Annual Tier)</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -141,7 +141,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
                             type="number"
                             value={value.revenue_range[0]}
                             onChange={(e) => handleChange('revenue_range', [parseInt(e.target.value) || 0, value.revenue_range[1]])}
-                            className={`w-full pl-7 pr-3 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-amber-500/40`}
+                            className={`w-full pl-7 pr-3 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
                             placeholder="Min"
                         />
                     </div>
@@ -151,7 +151,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
                             type="number"
                             value={value.revenue_range[1]}
                             onChange={(e) => handleChange('revenue_range', [value.revenue_range[0], parseInt(e.target.value) || 0])}
-                            className={`w-full pl-7 pr-3 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-amber-500/40`}
+                            className={`w-full pl-7 pr-3 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
                             placeholder="Max"
                         />
                     </div>
@@ -161,14 +161,14 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Education Level (Refinement) */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <GraduationCap size={14} className="text-purple-500" />
+                    <GraduationCap size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Education level</span>
                 </div>
                 <div className="relative">
                     <select
                         value={value.education_level}
                         onChange={(e) => handleChange('education_level', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-purple-500/40`}
+                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
                     >
                         <option value="Any">Any Level</option>
                         <option value="Primary">Primary</option>
@@ -183,14 +183,14 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Employment Sector (Refinement) */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Briefcase size={14} className="text-cyan-500" />
+                    <Briefcase size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Employment Sector</span>
                 </div>
                 <div className="relative">
                     <select
                         value={value.employment_sector}
                         onChange={(e) => handleChange('employment_sector', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-cyan-500/40`}
+                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
                     >
                         <option value="Any">Any Sector</option>
                         <option value="Private">Private Sector</option>
@@ -206,7 +206,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             {/* Urbanization (Refinement) */}
             <div className="space-y-3 lg:col-span-2">
                 <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-red-500" />
+                    <MapPin size={14} className="text-emerald-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Urbanization Density</span>
                 </div>
                 <div className={`flex p-1 rounded-xl ${inputBg} border`}>
@@ -215,7 +215,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
                             key={u}
                             onClick={() => handleChange('urbanization', u)}
                             className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all ${value.urbanization === u
-                                ? "bg-red-600 text-white shadow-lg"
+                                ? "bg-emerald-600 text-white shadow-lg"
                                 : `text-slate-500 hover:${textColor}`
                                 }`}
                         >

@@ -19,6 +19,7 @@ import QuickAudit from "@/components/QuickAudit";
 import LanguageToggle from "@/components/LanguageToggle";
 import Preloader from "@/components/Preloader";
 import GDPRConsent from "@/components/GDPRConsent";
+import Footer from "@/components/Footer";
 
 import Hero from "@/components/landing/Hero";
 import WhoItsFor from "@/components/landing/WhoItsFor";
@@ -33,7 +34,6 @@ import GenesisSection from "@/components/landing/GenesisSection";
 import PricingSection from "@/components/landing/PricingSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import Navbar from "@/components/landing/Navbar";
-import LandingFooter from "@/components/landing/LandingFooter";
 
 import {
   ArrowRight,
@@ -190,9 +190,8 @@ export default function Home() {
         />
 
         {/* ════════════════════════════════════════════
-          FOOTER
+          LAB ENTRY MODAL
       ════════════════════════════════════════════ */}
-        <LandingFooter />
         {/* ════════════════════════════════════════════
           LAB ENTRY MODAL
       ════════════════════════════════════════════ */}
@@ -489,6 +488,7 @@ export default function Home() {
       <FreeLabModal isOpen={isFreeLabOpen} onClose={() => setIsFreeLabOpen(false)} />
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
       <AVAChat />
+      <Footer dark={false} />
       <GDPRConsent />
     </main>
   );

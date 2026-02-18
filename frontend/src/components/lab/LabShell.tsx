@@ -23,7 +23,6 @@ import ResultsStep from "./ResultsStep";
 import ReportStep from "./ReportStep";
 import { useLanguage } from "@/context/LanguageContext";
 import { useMission } from "@/context/MissionContext";
-import Footer from "@/components/Footer";
 
 
 export interface Persona {
@@ -137,14 +136,14 @@ export default function LabShell() {
                         </Link>
                         <div className="w-px h-6 bg-slate-200" />
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                <FlaskConical size={14} className="text-blue-600" />
+                            <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                                <FlaskConical size={14} className="text-emerald-600" />
                             </div>
                             <div>
                                 <h1 className="text-sm font-black tracking-tight">
                                     {t.lab_ui.header_title}
                                     {currentMission && (
-                                        <span className="ml-2 text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
+                                        <span className="ml-2 text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded text-[9px] uppercase tracking-tighter">
                                             {currentMission.config.target_country} Research
                                         </span>
                                     )}
@@ -174,7 +173,7 @@ export default function LabShell() {
                                 }}
                                 disabled={i > currentStep}
                                 className={`flex items-center gap-2.5 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${i === currentStep
-                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
+                                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30"
                                     : i < currentStep
                                         ? "bg-emerald-50 text-emerald-600 border border-emerald-100 cursor-pointer hover:bg-emerald-100"
                                         : "bg-slate-50 text-slate-400 border border-slate-100 cursor-not-allowed"
@@ -288,7 +287,7 @@ export default function LabShell() {
                             onClick={goNext}
                             disabled={!canProceed()}
                             className={`flex items-center gap-2 px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${canProceed()
-                                ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30 hover:shadow-xl"
+                                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 hover:shadow-xl"
                                 : "bg-slate-50 text-slate-200 border border-slate-100 cursor-not-allowed"
                                 }`}
                         >
@@ -296,7 +295,7 @@ export default function LabShell() {
                             <ChevronRight size={14} />
                         </button>
                     ) : currentStep === 3 ? (
-                        <div className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                        <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
                             {isSimulating
                                 ? t.lab_ui.sim_in_progress
                                 : results.length > 0
@@ -313,7 +312,6 @@ export default function LabShell() {
                     )}
                 </div>
             </div>
-            <Footer dark={false} />
         </div>
     );
 }

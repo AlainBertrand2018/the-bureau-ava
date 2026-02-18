@@ -207,7 +207,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                         value={audience.country}
                                         onChange={(e) => setAudience({ ...audience, country: e.target.value })}
                                         placeholder="e.g., United Kingdom, Mauritius, USA..."
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                                     />
                                     <MapPin size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                                 </div>
@@ -243,8 +243,8 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                             </div>
                         </div>
 
-                        <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100 flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shrink-0">
+                        <div className="bg-emerald-50/50 rounded-2xl p-5 border border-emerald-100 flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
                                 <Fingerprint size={18} className="text-white" />
                             </div>
                             <div>
@@ -259,7 +259,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                             onClick={() => setStep(1)}
                             disabled={!audience.country.trim()}
                             className={`w-full py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${audience.country.trim()
-                                ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20 hover:bg-blue-700"
+                                ? "bg-emerald-600 text-white shadow-xl shadow-emerald-600/20 hover:bg-emerald-700"
                                 : "bg-slate-100 text-slate-400 cursor-not-allowed"
                                 }`}
                         >
@@ -280,9 +280,9 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                 value={context}
                                 onChange={(e) => setContext(e.target.value)}
                                 placeholder="e.g., We are testing a new sustainability message for a beverage brand targeting young professionals..."
-                                className="w-full h-40 bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-900 font-medium placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all resize-none"
+                                className="w-full h-40 bg-slate-50 border border-slate-200 rounded-2xl p-6 text-slate-900 font-medium placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all resize-none"
                             />
-                            <div className="absolute top-4 right-4 text-blue-600">
+                            <div className="absolute top-4 right-4 text-emerald-600">
                                 <Target size={20} />
                             </div>
                         </div>
@@ -297,7 +297,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                 onClick={() => setStep(2)}
                                 disabled={context.trim().length < 10}
                                 className={`flex-1 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${context.trim().length >= 10
-                                    ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20 hover:bg-blue-700"
+                                    ? "bg-emerald-600 text-white shadow-xl shadow-emerald-600/20 hover:bg-emerald-700"
                                     : "bg-slate-100 text-slate-400 cursor-not-allowed"
                                     }`}
                             >
@@ -313,7 +313,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         <div>
                             <div className="flex items-center justify-between mb-2">
                                 <h3 className="text-xl font-black text-slate-900">Your Survey Questions</h3>
-                                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded">TIER 1: MAX 3</span>
+                                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">TIER 1: MAX 3</span>
                             </div>
                             <p className="text-sm text-slate-500 font-medium italic">Input up to 3 questions for a structural audit.</p>
                         </div>
@@ -324,7 +324,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                         value={q}
                                         onChange={(e) => handleQuestionChange(i, e.target.value)}
                                         placeholder={`Question ${i + 1}...`}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-12 py-4 text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-12 py-4 text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition-all"
                                     />
                                     <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300">
                                         <FileQuestion size={18} />
@@ -342,7 +342,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                             {questions.length < 3 && (
                                 <button
                                     onClick={handleAddQuestion}
-                                    className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 font-bold text-xs uppercase hover:border-blue-400 hover:text-blue-500 transition-all flex items-center justify-center gap-2"
+                                    className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 font-bold text-xs uppercase hover:border-emerald-400 hover:text-emerald-500 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Plus size={14} /> Add Question
                                 </button>
@@ -359,7 +359,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                 onClick={generatePersonas}
                                 disabled={questions.some(q => !q.trim()) || isGeneratingPersonas}
                                 className={`flex-1 py-4 rounded-full font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 ${questions.every(q => q.trim())
-                                    ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20 hover:bg-blue-700"
+                                    ? "bg-emerald-600 text-white shadow-xl shadow-emerald-600/20 hover:bg-emerald-700"
                                     : "bg-slate-100 text-slate-400 cursor-not-allowed"
                                     }`}
                             >
@@ -374,7 +374,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         <motion.div
                             animate={{ scale: [1, 1.05, 1] }}
                             transition={{ duration: 4, repeat: Infinity }}
-                            className="w-24 h-24 mx-auto bg-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-600/40 relative mb-8"
+                            className="w-24 h-24 mx-auto bg-emerald-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-emerald-600/40 relative mb-8"
                         >
                             <Zap size={40} className="text-white" />
                         </motion.div>
@@ -387,14 +387,14 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         <div className="max-w-xs mx-auto space-y-2 pt-4">
                             <div className="flex items-center justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                 <span>Agent Calibration</span>
-                                <span className="text-blue-600">{isSimulating ? "deploying..." : "100%"}</span>
+                                <span className="text-emerald-600">{isSimulating ? "deploying..." : "100%"}</span>
                             </div>
                             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: "100%" }}
                                     transition={{ duration: 3 }}
-                                    className="h-full bg-blue-600 rounded-full"
+                                    className="h-full bg-emerald-600 rounded-full"
                                 />
                             </div>
                         </div>
@@ -402,7 +402,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         {!isSimulating && results.length === 0 && (
                             <button
                                 onClick={runSimulation}
-                                className="mt-8 px-12 py-4 bg-blue-600 text-white rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-600/30 hover:bg-blue-700 transition-all"
+                                className="mt-8 px-12 py-4 bg-emerald-600 text-white rounded-full font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-emerald-600/30 hover:bg-emerald-700 transition-all"
                             >
                                 Start Simulation
                             </button>
@@ -411,7 +411,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         {(isSimulating || isGeneratingReport) && (
                             <div className="flex flex-col items-center gap-3 mt-8">
                                 <div className="flex items-center gap-3">
-                                    <Loader2 size={16} className="text-blue-600 animate-spin" />
+                                    <Loader2 size={16} className="text-emerald-600 animate-spin" />
                                     <span className="text-xs font-bold text-slate-500 italic">Processing high-fidelity responses...</span>
                                 </div>
                                 <div className="flex flex-wrap justify-center gap-1.5 max-w-sm">
@@ -431,21 +431,21 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         <div className="flex items-center justify-between border-b border-slate-100 pb-5">
                             <div>
                                 <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                                    <ShieldCheck size={20} className="text-blue-600" />
+                                    <ShieldCheck size={20} className="text-emerald-600" />
                                     Intelligence Report
                                 </h3>
                                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">n=10 Respondents • {audience.country}</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Bureau Score</div>
-                                <div className="text-2xl font-black text-blue-600">{report?.quality_score}/100</div>
+                                <div className="text-2xl font-black text-emerald-600">{report?.quality_score}/100</div>
                             </div>
                         </div>
 
                         <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
                             <div className="flex items-center gap-2 mb-3">
-                                <TrendingUp size={14} className="text-blue-600" />
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-600">Executive Summary</h4>
+                                <TrendingUp size={14} className="text-emerald-600" />
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Executive Summary</h4>
                             </div>
                             <p className="text-sm font-medium text-slate-700 leading-relaxed italic">
                                 &quot;{report?.executive_summary}&quot;
@@ -493,16 +493,16 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
 
                         <div className="bg-slate-900 text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
                             <div className="relative z-10">
-                                <h4 className="text-xs font-black uppercase tracking-widest text-blue-400 mb-1">Bureau Verdict</h4>
+                                <h4 className="text-xs font-black uppercase tracking-widest text-emerald-400 mb-1">Bureau Verdict</h4>
                                 <p className="text-sm font-bold text-slate-300">&quot;{report?.bureau_verdict}&quot;</p>
                             </div>
                             <button
                                 onClick={() => window.location.href = '#pricing'}
-                                className="relative z-10 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20"
+                                className="relative z-10 px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-emerald-600/20"
                             >
                                 Upgrade for PDF Export
                             </button>
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/10 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2" />
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-600/10 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2" />
                         </div>
                     </div>
                 );
@@ -534,7 +534,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                         {/* Header */}
                         <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between shrink-0">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/20">
                                     <FlaskConical size={20} className="text-white" />
                                 </div>
                                 <div>
@@ -559,7 +559,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                 {[0, 1, 2, 3, 4].map((i) => (
                                     <div
                                         key={i}
-                                        className={`flex-1 h-1 rounded-full transition-all duration-500 ${step >= i ? "bg-blue-600" : "bg-slate-100"
+                                        className={`flex-1 h-1 rounded-full transition-all duration-500 ${step >= i ? "bg-emerald-600" : "bg-slate-100"
                                             }`}
                                     />
                                 ))}
@@ -590,7 +590,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                     <span className="text-[9px] font-bold text-slate-400">Live Diagnostics</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
                                     <span className="text-[9px] font-bold text-slate-400">AVA Grounded</span>
                                 </div>
                             </div>

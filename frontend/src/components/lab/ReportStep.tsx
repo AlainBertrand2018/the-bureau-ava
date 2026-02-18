@@ -201,13 +201,13 @@ export default function ReportStep({ context, results, questions, personas }: Re
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { font-family: 'Inter', -apple-system, system-ui, sans-serif; color: #1e293b; padding: 40px; max-width: 900px; margin: 0 auto; line-height: 1.6; }
-          .header { border-bottom: 3px solid #0046FF; padding-bottom: 20px; margin-bottom: 30px; }
+          .header { border-bottom: 3px solid #10B981; padding-bottom: 20px; margin-bottom: 30px; }
           .header h1 { font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
           .header p { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-top: 4px; }
           .meta { display: flex; gap: 20px; margin-top: 12px; font-size: 11px; color: #94a3b8; }
           .section { margin-bottom: 32px; }
-          .section-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #0046FF; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
-          .summary { font-size: 15px; line-height: 1.8; color: #334155; background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #0046FF; }
+          .section-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #10B981; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+          .summary { font-size: 15px; line-height: 1.8; color: #334155; background: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #10B981; }
           .risk-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
           .risk-low { background: #dcfce7; color: #166534; }
           .risk-moderate { background: #fef9c3; color: #854d0e; }
@@ -216,14 +216,14 @@ export default function ReportStep({ context, results, questions, personas }: Re
           .question-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; page-break-inside: avoid; }
           .question-card h4 { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
           .rewrite { background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 6px; margin-top: 8px; }
-          .rewrite-label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: #0046FF; margin-bottom: 4px; }
-          .rewrite p { font-size: 13px; font-weight: 600; color: #1e40af; }
+          .rewrite-label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: #10B981; margin-bottom: 4px; }
+          .rewrite p { font-size: 13px; font-weight: 600; color: #064e3b; }
           .issues li { font-size: 12px; color: #ef4444; margin: 2px 0; padding-left: 4px; }
-          .recommendation { border-left: 3px solid #0046FF; padding: 12px 16px; margin-bottom: 12px; background: #f8fafc; }
+          .recommendation { border-left: 3px solid #10B981; padding: 12px 16px; margin-bottom: 12px; background: #f8fafc; }
           .recommendation h4 { font-size: 14px; font-weight: 800; color: #0f172a; }
           .recommendation p { font-size: 12px; color: #475569; margin-top: 4px; }
           .verdict { background: #0f172a; color: white; padding: 24px; border-radius: 8px; text-align: center; font-size: 16px; font-weight: 700; margin-top: 40px; }
-          .footer { margin-top: 40px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+
           @media print { body { padding: 20px; } .question-card { page-break-inside: avoid; } }
         </style>
       </head>
@@ -271,7 +271,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
             <div class="recommendation">
               <h4>${rec.title} <span class="risk-badge risk-${rec.priority === "IMMEDIATE" ? "critical" : rec.priority.toLowerCase()}">${rec.priority}</span></h4>
               <p>${rec.description}</p>
-              <p style="font-size: 11px; color: #0046FF; margin-top: 4px; font-weight: 700;">Impact: ${rec.expected_impact}</p>
+              <p style="font-size: 11px; color: #10B981; margin-top: 4px; font-weight: 700;">Impact: ${rec.expected_impact}</p>
             </div>
           `).join("")}
         </div>
@@ -296,10 +296,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
 
         <div class="verdict">"${report.bureau_verdict}"</div>
 
-        <div class="footer">
-          © ${new Date().getFullYear()} The Bureau • Confidential — Pre-Flight Validation Report<br />
-          Powered by The Bureau Diagnostic Quality Audit Engine v2.0
-        </div>
+
       </body>
       </html>
     `);
@@ -316,9 +313,9 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                        className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center"
+                        className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center"
                     >
-                        <Sparkles size={24} className="text-blue-600" />
+                        <Sparkles size={24} className="text-emerald-600" />
                     </motion.div>
                     <h3 className="text-xl font-black text-slate-900 tracking-tight mb-2">
                         Generating Bureau Report
@@ -328,7 +325,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                         across {questions.length} questions to produce a structural quality audit...
                     </p>
                     <div className="flex items-center justify-center gap-2 mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        <Loader2 size={12} className="animate-spin text-blue-600" />
+                        <Loader2 size={12} className="animate-spin text-emerald-600" />
                         Detecting bias, ambiguity, leading language, missing options, drop-off risks...
                     </div>
                 </div>
@@ -346,7 +343,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     <p className="text-sm text-slate-500 font-medium mb-6">{error}</p>
                     <button
                         onClick={generateReport}
-                        className="px-8 py-3 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all"
+                        className="px-8 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all"
                     >
                         Retry
                     </button>
@@ -363,8 +360,8 @@ export default function ReportStep({ context, results, questions, personas }: Re
             <div className="mb-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
                 <div>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                            <FileText size={18} className="text-blue-600" />
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                            <FileText size={18} className="text-emerald-600" />
                         </div>
                         <div>
                             <h2 className="text-2xl font-black tracking-tight text-slate-900">Bureau Report</h2>
@@ -380,7 +377,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     </span>
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                        className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
                     >
                         <FileDown size={14} />
                         Export Report
@@ -395,8 +392,8 @@ export default function ReportStep({ context, results, questions, personas }: Re
                 className="bg-slate-50 border border-slate-100 rounded-3xl p-8 md:p-10 mb-8 shadow-sm"
             >
                 <div className="flex items-center gap-2 mb-4">
-                    <Gavel size={14} className="text-blue-600" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Executive Summary</h3>
+                    <Gavel size={14} className="text-emerald-600" />
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Executive Summary</h3>
                 </div>
                 <p className="text-slate-900 font-medium leading-relaxed text-base md:text-lg mb-6">
                     {report.executive_summary}
@@ -408,9 +405,9 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             {report.overall_risk_level} Risk
                         </span>
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-blue-50 border-blue-100">
-                        <Target size={14} className="text-blue-600" />
-                        <span className="text-xs font-black text-blue-600">{report.quality_score}/100 Quality Score</span>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-emerald-50 border-emerald-100">
+                        <Target size={14} className="text-emerald-600" />
+                        <span className="text-xs font-black text-emerald-600">{report.quality_score}/100 Quality Score</span>
                     </div>
                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-white border-slate-100">
                         <Users size={14} className="text-slate-400" />
@@ -457,14 +454,14 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-blue-50 border border-blue-100 rounded-2xl p-6"
+                    className="bg-teal-50 border border-teal-100 rounded-2xl p-6"
                 >
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center">
-                            <MessageSquareText size={18} className="text-blue-600" />
+                        <div className="w-10 h-10 rounded-xl bg-teal-100 border border-teal-200 flex items-center justify-center">
+                            <MessageSquareText size={18} className="text-teal-600" />
                         </div>
                         <div>
-                            <h4 className="text-xs font-black uppercase tracking-widest text-blue-600">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">
                                 Client Validation Rate
                             </h4>
                             <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
@@ -474,7 +471,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                     </div>
                     {agreementRate !== null ? (
                         <div className="flex items-end gap-3">
-                            <span className="text-4xl font-black text-blue-600">{agreementRate}%</span>
+                            <span className="text-4xl font-black text-teal-600">{agreementRate}%</span>
                             <span className="text-sm font-bold text-slate-500 mb-1">client agreement</span>
                         </div>
                     ) : (
@@ -515,7 +512,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                     className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors text-left"
                                 >
                                     <div className="flex items-start gap-4 flex-1 min-w-0">
-                                        <span className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                                        <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
                                             Q{i + 1}
                                         </span>
                                         <div className="min-w-0 flex-1">
@@ -658,7 +655,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.08 }}
-                            className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-blue-200 transition-all group shadow-sm"
+                            className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-emerald-200 transition-all group shadow-sm"
                         >
                             <div className="flex items-start justify-between gap-3 mb-3">
                                 <h4 className="text-slate-900 font-black text-sm tracking-tight">{rec.title}</h4>
@@ -667,7 +664,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                 </span>
                             </div>
                             <p className="text-sm text-slate-500 font-medium leading-relaxed mb-4">{rec.description}</p>
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-blue-600">
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600">
                                 <TrendingUp size={12} />
                                 <span>{rec.expected_impact}</span>
                             </div>
@@ -713,7 +710,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
             {/* Next Steps */}
             <div className="mb-8">
                 <div className="flex items-center gap-3 mb-6">
-                    <Clock size={16} className="text-blue-600" />
+                    <Clock size={16} className="text-emerald-600" />
                     <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recommended Next Steps</h3>
                 </div>
                 <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
@@ -725,7 +722,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             transition={{ delay: i * 0.1 }}
                             className={`flex items-start gap-4 p-5 ${i < (report.next_steps || []).length - 1 ? "border-b border-slate-100" : ""}`}
                         >
-                            <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center shrink-0">
+                            <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center shrink-0">
                                 {i + 1}
                             </span>
                             <p className="text-slate-900 font-medium text-sm leading-relaxed pt-0.5">
@@ -744,8 +741,8 @@ export default function ReportStep({ context, results, questions, personas }: Re
                 className="bg-slate-50 border border-slate-100 rounded-3xl p-10 text-center shadow-sm"
             >
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <Gavel size={16} className="text-blue-600" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">Bureau Verdict</span>
+                    <Gavel size={16} className="text-emerald-600" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Bureau Verdict</span>
                 </div>
                 <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
                     &quot;{report.bureau_verdict}&quot;
@@ -753,7 +750,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                 <div className="mt-8 flex items-center justify-center gap-4">
                     <button
                         onClick={handleExport}
-                        className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                        className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
                     >
                         <FileDown size={14} />
                         Export Full Report

@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
+import Footer from "@/components/Footer";
 
 export default function PlaceholderPage({ title = "Coming Soon" }) {
     return (
@@ -28,9 +29,7 @@ export default function PlaceholderPage({ title = "Coming Soon" }) {
                     </Link>
                 </div>
             </div>
-            <footer className="py-12 border-t border-slate-100 text-center">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">© 2026 The Bureau · Internal Dev Environment</span>
-            </footer>
+            <Footer dark={false} />
         </main>
     );
 }

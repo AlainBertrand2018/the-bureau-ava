@@ -77,12 +77,7 @@ export default function PainPoints({ t }: PainPointsProps) {
                     ))}
                 </div>
 
-                <Reveal delay={0.3} className="text-center">
-                    <p className="text-slate-400 text-base font-semibold max-w-xl mx-auto">
-                        {t.pain_points.footer.split(':')[0]}:{" "}
-                        <span className="text-slate-900">{t.pain_points.footer.split(':')[1]}</span>
-                    </p>
-                </Reveal>
+
             </div>
         </section>
     );

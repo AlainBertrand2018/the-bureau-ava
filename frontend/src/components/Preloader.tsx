@@ -102,7 +102,7 @@ export default function Preloader({ onComplete }: { onComplete: () => void }) {
 
             {/* ─── FOOTER SEAL ─── */}
             <div className="absolute bottom-12 text-[10px] text-slate-600 font-mono tracking-[0.3em] uppercase opacity-50">
-                The Bureau · EST. 2024
+                Survey Optimization Bureau V 2.4.1 • EST 2026
             </div>
 
         </motion.div>

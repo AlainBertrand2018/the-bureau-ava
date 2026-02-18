@@ -8,7 +8,6 @@ import {
   Shield, BarChart3, FileText, Users, Target, Microscope, X,
 } from "lucide-react";
 import Preloader from "@/components/Preloader";
-import Footer from "@/components/Footer";
 
 /* ─── Typewriter Hook ─── */
 function useTypewriter(text: string, speed = 45, delay = 800) {
@@ -603,11 +602,15 @@ export default function AVAGateway() {
               >
                 <div className={`w-px h-4 transition-colors duration-700 ${dark ? "bg-slate-800" : "bg-slate-200"}`} />
                 <span className={`text-[10px] uppercase tracking-[0.2em] transition-colors duration-700 ${dark ? "text-slate-600" : "text-slate-400"}`}>
-                  Proprietary AI
+                  PROPRIETARY AI ENGINE
                 </span>
                 <span className={`text-[10px] transition-colors duration-700 ${dark ? "text-slate-700" : "text-slate-300"}`}>•</span>
                 <span className={`text-[10px] uppercase tracking-[0.2em] transition-colors duration-700 ${dark ? "text-slate-600" : "text-slate-400"}`}>
-                  Bureau v2.0
+                  THE BUREAU V 2.4.1
+                </span>
+                <span className={`text-[10px] transition-colors duration-700 ${dark ? "text-slate-700" : "text-slate-300"}`}>•</span>
+                <span className={`text-[10px] uppercase tracking-[0.2em] transition-colors duration-700 ${dark ? "text-slate-600" : "text-slate-400"}`}>
+                  © 2026
                 </span>
                 <div className={`w-px h-4 transition-colors duration-700 ${dark ? "bg-slate-800" : "bg-slate-200"}`} />
               </motion.div>
@@ -624,10 +627,6 @@ export default function AVAGateway() {
         className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent transition-colors duration-700 ${dark ? "via-emerald-500/30" : "via-emerald-400/20"
           }`}
       />
-
-      <div className="absolute bottom-0 left-0 right-0 z-50">
-        <Footer dark={dark} />
-      </div>
     </div>
   );
 }

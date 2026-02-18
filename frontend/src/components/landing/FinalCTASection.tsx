@@ -48,9 +48,6 @@ export default function FinalCTASection({ t, onEntryOpen }: FinalCTASectionProps
                                 {t.final_cta.btn}
                                 <ArrowRight size={18} />
                             </button>
-                            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-6">
-                                {t.final_cta.footer}
-                            </p>
                         </div>
                     </div>
                 </Reveal>

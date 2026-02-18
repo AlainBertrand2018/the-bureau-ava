@@ -46,8 +46,8 @@ export default function Navbar() {
                         <Sparkles size={14} className="text-white" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-slate-900 font-black text-lg tracking-tight">AVA</span>
-                        <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hidden sm:inline">by The Bureau</span>
+                        <span className="text-slate-900 font-black text-lg tracking-tight uppercase">The Bureau</span>
+                        <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hidden sm:inline">WITH AVA</span>
                     </div>
                 </Link>
 

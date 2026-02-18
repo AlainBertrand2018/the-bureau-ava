@@ -116,8 +116,8 @@ export default function QuestionsStep({
             {/* Section Header */}
             <div className="mb-10">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                        <FileQuestion size={18} className="text-blue-600" />
+                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                        <FileQuestion size={18} className="text-emerald-600" />
                     </div>
                     <div>
                         <h2 className="text-2xl font-black tracking-tight text-slate-900">
@@ -133,7 +133,7 @@ export default function QuestionsStep({
                     <span className="text-slate-900 font-bold">you've already drafted</span>.
                     Our diagnostic lab will run each one against synthetic respondents to
                     detect{" "}
-                    <span className="text-blue-600">
+                    <span className="text-emerald-600">
                         bias, ambiguity, leading language, missing options
                     </span>
                     , and other structural flaws — before you deploy in the field.
@@ -145,7 +145,7 @@ export default function QuestionsStep({
                 <button
                     onClick={() => setBulkMode(false)}
                     className={`px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${!bulkMode
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                        ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
                         : "bg-slate-100 text-slate-500 border border-slate-200 hover:text-slate-900"
                         }`}
                 >
@@ -154,7 +154,7 @@ export default function QuestionsStep({
                 <button
                     onClick={() => setBulkMode(true)}
                     className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${bulkMode
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                        ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/20"
                         : "bg-slate-100 text-slate-500 border border-slate-200 hover:text-slate-900"
                         }`}
                 >
@@ -176,7 +176,7 @@ export default function QuestionsStep({
                         onChange={(e) => setBulkText(e.target.value)}
                         placeholder={`Paste your questions here — one per line. Line numbers and bullets will be stripped automatically.\n\nExample:\n1. On a scale of 1-10, how likely are you to use our service?\n2. What factors most influence your purchasing decisions?\n3. How would you rate the value for money of this product?`}
                         rows={8}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-8 text-slate-800 placeholder:text-slate-400 font-medium leading-relaxed focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none text-sm mb-4"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-8 text-slate-800 placeholder:text-slate-400 font-medium leading-relaxed focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all resize-none text-sm mb-4"
                     />
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
@@ -191,7 +191,7 @@ export default function QuestionsStep({
                             }
                             className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${bulkText.split("\n").filter((l) => l.trim().length > 5).length >
                                 0
-                                ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+                                ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-600/20"
                                 : "bg-slate-100 text-slate-400 cursor-not-allowed"
                                 }`}
                         >
@@ -210,13 +210,13 @@ export default function QuestionsStep({
                         onChange={(e) => setNewQuestion(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && addQuestion()}
                         placeholder="Type a survey question and press Enter..."
-                        className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-800 placeholder:text-slate-400 font-medium text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+                        className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-slate-800 placeholder:text-slate-400 font-medium text-sm focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all"
                     />
                     <button
                         onClick={addQuestion}
                         disabled={!newQuestion.trim()}
                         className={`px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${newQuestion.trim()
-                            ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20"
+                            ? "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
                             : "bg-slate-100 text-slate-400 cursor-not-allowed"
                             }`}
                     >
@@ -257,7 +257,7 @@ export default function QuestionsStep({
                                         size={14}
                                         className="text-slate-300 group-hover:text-slate-400 transition-colors"
                                     />
-                                    <span className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 text-[10px] font-black flex items-center justify-center">
+                                    <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center">
                                         Q{i + 1}
                                     </span>
                                 </div>
@@ -269,12 +269,12 @@ export default function QuestionsStep({
                                             value={editValue}
                                             onChange={(e) => setEditValue(e.target.value)}
                                             onKeyDown={(e) => e.key === "Enter" && saveEdit()}
-                                            className="flex-1 bg-white border border-blue-400 rounded-xl px-4 py-2 text-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-100"
+                                            className="flex-1 bg-white border border-emerald-400 rounded-xl px-4 py-2 text-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-100"
                                             autoFocus
                                         />
                                         <button
                                             onClick={saveEdit}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest"
+                                            className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest"
                                         >
                                             Save
                                         </button>
@@ -382,7 +382,7 @@ export default function QuestionsStep({
                                     disabled={isGenerating}
                                     className={`flex items-center gap-2 px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${isGenerating
                                         ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                                        : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20"
+                                        : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-500/20"
                                         }`}
                                 >
                                     {isGenerating ? (
@@ -402,9 +402,9 @@ export default function QuestionsStep({
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
-                                        className="mt-6 p-5 bg-blue-50 border border-blue-100 rounded-2xl"
+                                        className="mt-6 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl"
                                     >
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-2">
                                             Methodologist's Strategy
                                         </p>
                                         <p className="text-sm text-slate-600 font-medium leading-relaxed">
