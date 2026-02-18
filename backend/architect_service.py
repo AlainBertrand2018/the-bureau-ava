@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from simulation_engine import MarketSimulator
 from ai_utils import generate_with_retry, safe_parse_json
 from report_generator import bureau_reports
+from config import settings
+from logger import bureau_logger
 
 # Load environment variables (must happen before genai.Client)
 load_dotenv()
@@ -38,10 +40,10 @@ class SurveyArchitect:
     """
 
     def __init__(self):
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = settings.GOOGLE_API_KEY or os.getenv("GOOGLE_API_KEY")
         self.client = genai.Client(api_key=api_key)
         self.simulator = MarketSimulator()
-        self.model = "gemini-2.0-flash"
+        self.model = settings.DEFAULT_MODEL
 
     # ──────────────────────────────────────────────────────────
     # GENUINE INTERNAL AUDIT
@@ -152,6 +154,8 @@ REWRITE RULES:
 - If AMBIGUOUS: Define vague terms or replace with specific ones.
 - If MISSING OPTIONS: Add "Other" or expand the scale.
 - If NO TEMPORAL FRAME: Add "In the past [X months]..."
+- MEASUREMENT LOGIC: If asking for a QUANTITY (money, price, frequency), the scale MUST be specific categorical ranges (e.g., "$1-$10, $11-$20") or numerical units. 
+- NEVER use generic 1-5 Likert scales for monetary or quantitative questions.
 - MUST end with an appropriate scale in parentheses.
 - Keep it concise and culturally tailored for {target}.
 
@@ -169,7 +173,10 @@ Output ONLY the perfected question. No quotes, no explanation."""
 
         # Safety: ensure scale present
         if "(" not in best:
-            best += " (1=Very Dissatisfied, 5=Very Satisfied)"
+            if any(word in best.lower() for word in ["price", "cost", "how much", "pay"]):
+                best += " (e.g., Under $10, $10-$50, Over $50)"
+            else:
+                best += " (1=Not at all, 5=Extremely)"
 
         return best
 
@@ -190,7 +197,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
     # PHASE 1: Generate raw instrument
     # ──────────────────────────────────────────────────────────
-    async def generate_instrument(self, context: str, count: int = 20, mission: Optional[Any] = None) -> Dict[str, Any]:
+    async def generate_instrument(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         target = mission.config.target_country if mission else "Mauritius"
         
         prompt = f"""
@@ -200,6 +207,10 @@ Output ONLY the perfected question. No quotes, no explanation."""
         
         CONTEXT: {context}
         """
+
+        if targeting:
+            prompt += f"\nPRECISION AUDIENCE TARGETING:\n{json.dumps(targeting, indent=2)}\n"
+            prompt += "Calibrate the linguistic register, complexity, and cultural framing to this SPECIFIC group.\n"
 
         if mission:
              prompt += f"\nCULTURAL DOSSIER FOR {target}:\n{json.dumps(mission.dossier.dict(), indent=2)}\n"
@@ -244,7 +255,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
     # MAIN ENTRY: Genesis Pipeline
     # ──────────────────────────────────────────────────────────
-    async def create_full_package(self, context: str, count: int = 20, mission: Optional[Any] = None) -> Dict[str, Any]:
+    async def create_full_package(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         1. Generate raw instrument
         2. Perfect via genuine audit (parallel, NO auto-pass)
@@ -253,7 +264,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
         """
         # 1. Generate
         print(f"[Genesis] Phase 1: Generating raw instrument for context: {context[:50]}...")
-        initial = await self.generate_instrument(context, count, mission=mission)
+        initial = await self.generate_instrument(context, count, mission=mission, targeting=targeting)
         
         # Robustness Check
         if not isinstance(initial, dict):

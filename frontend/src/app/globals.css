@@ -80,22 +80,22 @@ body {
 
 /* ─── Fluid Typography ─── */
 .text-hero {
-  font-size: clamp(4rem, 7vw, 7rem);
-  /* 64px → 112px */
+  font-size: clamp(2.5rem, 8vw, 7rem);
+  /* 40px (mobile) → 112px (desktop) */
   line-height: 0.9;
   letter-spacing: -0.03em;
 }
 
 .text-section-title {
-  font-size: clamp(2.5rem, 5vw, 5rem);
-  /* 40px → 80px */
+  font-size: clamp(1.75rem, 5vw, 5rem);
+  /* 28px (mobile) → 80px (desktop) */
   line-height: 0.95;
   letter-spacing: -0.025em;
 }
 
 .text-body-lg {
-  font-size: clamp(1.125rem, 1.5vw, 1.5rem);
-  /* 18px → 24px */
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
+  /* 16px → 24px */
   line-height: 1.6;
 }
 

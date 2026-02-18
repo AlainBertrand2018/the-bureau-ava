@@ -8,6 +8,8 @@ import time
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from ai_utils import generate_with_retry, safe_parse_json
+from config import settings
+from logger import bureau_logger
 
 # Load environment variables
 load_dotenv()
@@ -53,14 +55,17 @@ BENCHMARK_QUESTIONS = [
 
 
 class MarketSimulator:
-    def __init__(self, api_key: str = None, model_name: str = "gemini-2.0-flash"):
-        self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
+    def __init__(self, api_key: str = None, model_name: str = None):
+        self.api_key = api_key or settings.GOOGLE_API_KEY
+        if not self.api_key:
+            self.api_key = os.getenv("GOOGLE_API_KEY")
+            
         if not self.api_key:
             raise ValueError("GOOGLE_API_KEY not found. Please set it in your environment or .env file.")
         
         # Initialize the modern SDK client with async support
         self.client = genai.Client(api_key=self.api_key)
-        self.model_name = model_name
+        self.model_name = model_name or settings.DEFAULT_MODEL
         self.public_model_name = "AVA Internal Intelligence v2.0"
         
         # Provenance tracking — cumulative stats
@@ -372,7 +377,8 @@ class MarketSimulator:
             f"- Unambiguous and single-barrelled (one concept per question)\n"
             f"- Appropriate for the {target} cultural context\n"
             f"- Structured to minimise respondent fatigue and drop-off\n"
-            f"- Ordered strategically (easy/engaging first, sensitive topics later)\n\n"
+            f"- Ordered strategically (easy/engaging first, sensitive topics later)\n"
+            f"- MEASUREMENT LOGIC: For quantitative questions (e.g. 'How much', 'Price'), use specific ranges or units. NEVER use generic 1-5 scales for monetary data.\n\n"
             f"Format the output as a JSON object with two keys:\n"
             f"1. 'questions': A list of strings (the questions).\n"
             f"2. 'rationale': Explain the overall questionnaire strategy — why these questions \n"
@@ -444,7 +450,12 @@ CHECK for these issues, but ONLY flag them if they GENUINELY exist:
 - DOUBLE-BARRELED: Does a question ask about TWO distinct concepts?
 - MISSING OPTIONS: Did any respondent need an option that wasn't available?
 - DROP-OFF RISK: Did any respondent express frustration or confusion?
+- LOGICAL SCALE MISMATCH: Does the question ask for a quantity (e.g., "How much", "Price", "Frequency") but provide a generic agreement scale (1-5)? This is a critical flaw.
 - CULTURAL SENSITIVITY: Was anything culturally inappropriate for {target}?
+
+REWRITE LOGIC:
+- If a question asks for a QUANTITY (money, time, volume), the rewrite MUST use specific categorical ranges (e.g., "$1-$10, $11-$20") or numerical units. 
+- NEVER use generic 1-5 scales for monetary or frequency questions.
 
 Produce a Bureau Quality Report in JSON format with these exact keys:
 

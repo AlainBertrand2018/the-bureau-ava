@@ -3,10 +3,14 @@ import time
 import os
 import json
 from datetime import datetime
+from logger import bureau_logger
 
-DB_PATH = "the_bureau.db"
+from config import settings
+
+DB_PATH = settings.DATABASE_PATH
 
 def init_db():
+    bureau_logger.info(f"Initializing database at {DB_PATH}")
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     

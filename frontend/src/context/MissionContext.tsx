@@ -19,11 +19,22 @@ export interface CulturalDossier {
     citation_index: string[];
 }
 
+export interface AudienceTargeting {
+    gender: 'Male' | 'Female' | 'All';
+    age_range: [number, number];
+    marital_status: 'Single' | 'Married' | 'Divorced' | 'Widowed' | 'Any';
+    revenue_range: [number, number];
+    education_level?: 'Primary' | 'Secondary' | 'University' | 'Postgraduate' | 'Any';
+    employment_sector?: 'Private' | 'Public' | 'Self-Employed' | 'Student' | 'Unemployed' | 'Any';
+    urbanization?: 'Urban' | 'Suburban' | 'Rural' | 'Any';
+}
+
 export interface MissionConfiguration {
     target_country: string;
     target_region: string;
     target_language: string;
     target_audience: string;
+    targeting_refinement?: AudienceTargeting;
     research_topic?: string;
 }
 
@@ -47,6 +58,8 @@ interface MissionContextType {
     setMission: (mission: Mission | null) => void;
     isLoading: boolean;
     setIsLoading: (loading: boolean) => void;
+    error: string | null;
+    setError: (error: string | null) => void;
 }
 
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
@@ -54,6 +67,7 @@ const MissionContext = createContext<MissionContextType | undefined>(undefined);
 export function MissionProvider({ children }: { children: React.ReactNode }) {
     const [currentMission, setCurrentMission] = useState<Mission | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     // Persistence logic
     useEffect(() => {
@@ -77,7 +91,7 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <MissionContext.Provider value={{ currentMission, setMission: handleSetMission, isLoading, setIsLoading }}>
+        <MissionContext.Provider value={{ currentMission, setMission: handleSetMission, isLoading, setIsLoading, error, setError }}>
             {children}
         </MissionContext.Provider>
     );

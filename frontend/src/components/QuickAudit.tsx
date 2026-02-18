@@ -7,9 +7,25 @@ import {
     X,
     AlertTriangle,
     CheckCircle2,
-    ArrowRight
+    ArrowRight,
+    Users,
+    ChevronDown,
+    ChevronUp,
+    Fingerprint
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { AudienceTargeting } from "@/context/MissionContext";
+import AudienceConfigurator from "./shared/AudienceConfigurator";
+
+const DEFAULT_TARGETING: AudienceTargeting = {
+    gender: 'All',
+    age_range: [18, 65],
+    marital_status: 'Any',
+    revenue_range: [15000, 100000],
+    education_level: 'Any',
+    employment_sector: 'Any',
+    urbanization: 'Any'
+};
 
 interface AuditIssue {
     type: string;
@@ -30,6 +46,8 @@ export default function QuickAudit() {
     const [auditResult, setAuditResult] = useState<QuickAuditResult | null>(null);
     const [auditLoading, setAuditLoading] = useState(false);
     const [auditError, setAuditError] = useState("");
+    const [showTargeting, setShowTargeting] = useState(false);
+    const [targeting, setTargeting] = useState<AudienceTargeting>(DEFAULT_TARGETING);
     const inputRef = useRef<HTMLInputElement>(null);
 
     /* Typing placeholder animation */
@@ -79,7 +97,10 @@ export default function QuickAudit() {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/quick_audit`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question: auditQuestion }),
+                body: JSON.stringify({
+                    question: auditQuestion,
+                    targeting_refinement: targeting
+                }),
             });
             if (!response.ok) {
                 const errorText = await response.text().catch(() => "");
@@ -125,19 +146,19 @@ export default function QuickAudit() {
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3 text-center">
                     {t.quick_audit.header}
                 </p>
-                <div className="flex items-center gap-2 bg-white border-2 border-slate-200 rounded-2xl p-2 shadow-lg shadow-slate-200/60 focus-within:border-blue-400 focus-within:shadow-blue-100/60 transition-all">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white border-2 border-slate-200 rounded-3xl p-2 shadow-lg shadow-slate-200/60 focus-within:border-blue-400 focus-within:shadow-blue-100/60 transition-all">
                     <input
                         ref={inputRef}
                         value={auditQuestion}
                         onChange={(e) => setAuditQuestion(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && runQuickAudit()}
                         placeholder={typed}
-                        className="flex-1 bg-transparent text-slate-900 text-sm font-medium px-4 py-3 outline-none placeholder-slate-300"
+                        className="flex-1 bg-transparent text-slate-900 text-sm font-medium px-4 py-4 sm:py-3 outline-none placeholder-slate-300 min-w-0"
                     />
                     <button
                         onClick={runQuickAudit}
                         disabled={auditLoading}
-                        className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 shrink-0 shadow-sm"
+                        className="flex items-center justify-center gap-2 px-6 py-4 sm:py-3 bg-blue-600 text-white rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50 shrink-0 shadow-sm"
                     >
                         {auditLoading ? (
                             <Loader2 size={14} className="animate-spin" />
@@ -150,6 +171,39 @@ export default function QuickAudit() {
                 <p className="text-[10px] text-slate-400 font-medium mt-3 text-center">
                     {t.quick_audit.footer}
                 </p>
+
+                <div className="mt-6">
+                    <button
+                        onClick={() => setShowTargeting(!showTargeting)}
+                        className="flex items-center gap-2 mx-auto px-4 py-2 rounded-full bg-slate-50 border border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-100 transition-all"
+                    >
+                        <Fingerprint size={12} className="text-blue-500" />
+                        Refine Your Audience
+                        {showTargeting ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                    </button>
+
+                    <AnimatePresence>
+                        {showTargeting && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden"
+                            >
+                                <div className="p-6 mt-4 rounded-3xl bg-slate-50 border border-slate-100 space-y-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Users size={14} className="text-blue-500" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Target Demographic Archetype</span>
+                                    </div>
+                                    <AudienceConfigurator
+                                        value={targeting}
+                                        onChange={setTargeting}
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
 
             <AnimatePresence>

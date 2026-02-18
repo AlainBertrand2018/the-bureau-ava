@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import os
 import time
 from simulation_engine import MarketSimulator
@@ -11,7 +11,9 @@ import uvicorn
 from db_manager import log_transaction, log_audit_stat, get_admin_stats
 from architect_service import SurveyArchitect
 from report_generator import bureau_reports
-from context_engine import MissionConfiguration, Mission, context_engine
+from context_engine import MissionConfiguration, Mission, context_engine, AudienceTargeting
+from config import settings
+from logger import bureau_logger
 
 app = FastAPI()
 
@@ -29,6 +31,24 @@ architect = SurveyArchitect()
 # ── In-memory stores (replace with DB in production) ──
 feedback_store: List[Dict] = []
 mission_registry: Dict[str, Mission] = {}
+bureau_logger.info("Service Scaffolding Loaded. AVA is operational.")
+
+@app.get("/health")
+async def health_check():
+    """System health monitor for Render/Vercel deployment."""
+    try:
+        # Check DB
+        stats = get_admin_stats()
+        return {
+            "status": "HEALTHY",
+            "version": "2.0.0",
+            "database": "CONNECTED",
+            "ai_engine": "READY",
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        bureau_logger.critical(f"HEALTH_CHECK_FAILED: {str(e)}")
+        return {"status": "DEGRADED", "error": str(e)}, 500
 
 
 # ── Request Models ──
@@ -55,6 +75,7 @@ class AnalysisRequest(BaseModel):
 
 class QuickAuditRequest(BaseModel):
     question: str
+    targeting_refinement: Optional[AudienceTargeting] = None
 
 class FeedbackItem(BaseModel):
     question_index: int
@@ -246,10 +267,9 @@ async def feedback_stats():
 
 # ── Quick Audit (Hero Section Live Demo) ──
 
-async def perform_audit(question: str):
+async def perform_audit(question: str, targeting: Optional[Dict[str, Any]] = None):
     """Helper to perform a single-pass audit using Gemini with Consensus Rules."""
-    import json as _json
-    from google import genai
+    from ai_utils import generate_with_retry, safe_parse_json
     
     # SYSTEM PROMPT: Define the "Gold Standard" for consistent auditing
     prompt = f"""You are AVA, an elite survey methodologist. 
@@ -267,19 +287,20 @@ Audit and return ONLY a JSON object with:
 
 Question: "{question}"
 """
-    client = genai.Client()
-    response = await client.aio.models.generate_content(
+
+    if targeting:
+        prompt += f"\nTARGET AUDIENCE ARCHETYPE:\n{json.dumps(targeting, indent=2)}\n"
+        prompt += "Evaluate if the language, complexity, and framing are appropriate for THIS specific group.\n"
+
+    prompt += "\nJSON Output:\n"
+    
+    response = await generate_with_retry(
+        client=simulator.client,
         model="gemini-2.0-flash",
         contents=prompt
     )
     
-    text = response.text.strip()
-    if text.startswith("```"):
-        text = text.split("\n", 1)[1] if "\n" in text else text[3:]
-        if text.endswith("```"):
-            text = text[:-3].strip()
-    
-    result = _json.loads(text)
+    result = safe_parse_json(response.text)
     
     # ── HARD CONSENSUS LOCK (UPDATED) ──
     # If the score is high (>=90), we LOCK it at 100 to prevent AI "hallucinating" tiny flaws in perfect questions.
@@ -305,7 +326,8 @@ async def quick_audit(req: QuickAuditRequest):
     """
     try:
         # 1. First Pass
-        original_audit = await perform_audit(req.question)
+        targeting_dict = req.targeting_refinement.dict() if req.targeting_refinement else None
+        original_audit = await perform_audit(req.question, targeting=targeting_dict)
         
         # ── IMMEDIATE 100 LOCK ──
         # If it's already excellent, force a 100 to prevent "downgrading"
@@ -349,19 +371,27 @@ async def quick_audit(req: QuickAuditRequest):
 
             TASK: Produce a 100/100 version.
             STRUCTURE: You MUST end the question with an explicit scale in parentheses.
-            EXAMPLE: "Thinking of the last 6 months, how satisfied are you with the bank's speed in resolving your query? (1=Very Dissatisfied, 5=Very Satisfied)"
+            MEASUREMENT LOGIC: If the question asks for a quantity (money, frequency, etc.), the scale MUST be specific ranges (e.g., "$1-$10, $11-$50") or numerical units. DO NOT use generic 1-5 scales for non-intensity questions.
+            EXAMPLE: "Thinking of the last 6 months, how much would you be willing to pay for this subscription? ($0, $1-$5, $6-$10, Over $10)"
 
             Output ONLY the perfected string. No quotes.
             """
-            ref_resp = await client.aio.models.generate_content(
+            ref_resp = await generate_with_retry(
+                client=simulator.client,
                 model="gemini-2.0-flash",
                 contents=refinement_prompt
             )
             current_candidate = ref_resp.text.strip().strip('"').strip("'")
 
         # 3. Final Signature: Ensure the chosen rewrite meets the Lock criteria
+        # 3. Final Signature: If the model failed to provide a scale, we don't just append a satisfaction one.
+        # Instead, we ensure the prompt above is strong enough, or we use a more neutral fallback if absolutely necessary.
         if "(" not in best_rewrite:
-             best_rewrite += " (1=Very Dissatisfied, 5=Very Satisfied)"
+             # Neutral fallback if prompt failed, but ideally prompt should handle it.
+             if any(word in best_rewrite.lower() for word in ["price", "cost", "how much", "pay"]):
+                 best_rewrite += " (e.g., Under $10, $10-$50, Over $50)"
+             else:
+                 best_rewrite += " (1=Not at all, 5=Extremely)"
 
         original_audit["rewrite"] = best_rewrite
         
@@ -399,10 +429,13 @@ async def public_stats():
 
 # ── NEW: ARCHITECT PROTOCOL (Survey Genesis) ──
 
+
+
 class ArchitectRequest(BaseModel):
     context: str
     item_count: Optional[int] = 20
     mission_id: Optional[str] = None
+    targeting_refinement: Optional[AudienceTargeting] = None
 
 @app.post("/architect/generate")
 async def architect_generate(req: ArchitectRequest):
@@ -412,7 +445,12 @@ async def architect_generate(req: ArchitectRequest):
     """
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        package = await architect.create_full_package(req.context, req.item_count, mission=mission)
+        package = await architect.create_full_package(
+            req.context, 
+            req.item_count, 
+            mission=mission, 
+            targeting=req.targeting_refinement.dict() if req.targeting_refinement else None
+        )
         
         log_transaction(
             endpoint="/architect/generate",

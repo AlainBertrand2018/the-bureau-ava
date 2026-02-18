@@ -10,16 +10,16 @@ export const dictionaries = {
             badge: "The Elite Choice",
             badge_sub: "Used by Leading Mauritian Brands",
             title: "I Secure Success Before Launching Surveys",
-            description: "My AI agents and me rigorously stress-test your market research across global markets, ensuring your survey delivers meaningful, reliable data within each unique cultural, economic, and social context.",
-            cta_audit: "Get a glimpse of what I can do",
+            description: "My AI agents and I, we rigorously stress-test your market research instruments across any target markets, ensuring your survey delivers meaningful, reliable data within each unique cultural, economic, and social context.",
+            cta_audit: "Catch A Glimpse of What We Can Do",
             cta_auditing: "AUDITING...",
-            cta_demo: "Start from Scratch",
+            cta_demo: "Build Your Questionnaire from Scratch",
             scientific_link: "See Why Scientific Simulation Beats Panels"
         },
         quick_audit: {
             title: "Quick Diagnostic",
             header: "STRESS-TEST A SINGLE QUESTION",
-            footer: "We Value Privacy • No signup required • Results in under 5 minutes",
+            footer: "We Value Privacy • No signup required (on Trial) • Results in under 5 minutes",
             placeholder: "Paste a survey question here...",
             btn: "Run Audit",
             btn_loading: "Analyzing...",
@@ -115,8 +115,8 @@ export const dictionaries = {
             cta: "Audit Your Survey For Free"
         },
         who_its_for: {
-            title_1: "Why Choose ME...",
-            title_2: "Why AVA?",
+            title_1: "Thought for Professionals...",
+            title_2: "Built for Decision Makers",
             card_1_title: "Research Agencies",
             card_1_desc: "Ensure questionnaire quality before sending to field",
             card_2_title: "Consultants",
@@ -181,7 +181,7 @@ export const dictionaries = {
             title_2: "Audit first.",
             sub: "Leave the stress-test to me. Run your first survey quality audit now — completely free.",
             btn: "Start Free Audit",
-            footer: "We Value Privacy • No signup required • Results in under 5 minutes"
+            footer: "We Value Privacy • No signup required (on Trial) • Results in under 5 minutes"
         },
         shield_modal: {
             title: "My Stress-Test Audit",

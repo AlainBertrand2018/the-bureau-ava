@@ -6,3 +6,4 @@ plotly
 fastapi
 uvicorn
 python-multipart
+pydantic-settings

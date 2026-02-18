@@ -234,72 +234,74 @@ function TransitionalModal({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.98 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className={`relative z-[110] w-full max-w-lg mx-4 rounded-3xl overflow-hidden transition-colors duration-700 ${dark
+          className={`relative z-[110] w-full max-w-lg mx-4 flex flex-col max-h-[90vh] rounded-3xl overflow-hidden transition-colors duration-700 ${dark
             ? "bg-slate-900/95 border border-white/10 shadow-2xl shadow-black/50"
             : "bg-white border border-slate-200 shadow-2xl shadow-slate-200/60"
             }`}
         >
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className={`absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${dark ? "hover:bg-white/10 text-slate-500 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-700"
-              }`}
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="overflow-y-auto flex-1 custom-scrollbar">
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className={`absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer ${dark ? "hover:bg-white/10 text-slate-500 hover:text-white" : "hover:bg-slate-100 text-slate-400 hover:text-slate-700"
+                }`}
+            >
+              <X className="w-4 h-4" />
+            </button>
 
-          {/* Header */}
-          <div className="p-8 pb-0">
-            {/* Icon + Badge */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${data.accentFrom} ${data.accentTo} flex items-center justify-center shadow-lg`}>
-                <Icon className="w-7 h-7 text-white" />
+            {/* Header */}
+            <div className="p-8 pb-0">
+              {/* Icon + Badge */}
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${data.accentFrom} ${data.accentTo} flex items-center justify-center shadow-lg`}>
+                  <Icon className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h2 className={`text-xl font-black tracking-tight ${dark ? "text-white" : "text-slate-900"}`}>
+                    {data.title}
+                  </h2>
+                  <p className={`text-xs font-bold uppercase tracking-[0.2em] ${dark ? data.accentText : data.accentTextLight}`}>
+                    {data.subtitle}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className={`text-xl font-black tracking-tight ${dark ? "text-white" : "text-slate-900"}`}>
-                  {data.title}
-                </h2>
-                <p className={`text-xs font-bold uppercase tracking-[0.2em] ${dark ? data.accentText : data.accentTextLight}`}>
-                  {data.subtitle}
-                </p>
+
+              {/* Description */}
+              <p className={`text-sm leading-relaxed mb-6 ${dark ? "text-slate-400" : "text-slate-500"}`}>
+                {data.description}
+              </p>
+            </div>
+
+            {/* Features Grid */}
+            <div className="px-8 pb-6">
+              <div className="grid grid-cols-2 gap-3">
+                {data.features.map((f, i) => {
+                  const FIcon = f.icon;
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
+                      className={`p-3.5 rounded-xl transition-all duration-300 ${dark
+                        ? `${data.accentBg} border ${data.accentBorder}`
+                        : `${data.accentBgLight} border ${data.accentBorderLight}`
+                        }`}
+                    >
+                      <FIcon className={`w-4 h-4 mb-2 ${dark ? data.accentText : data.accentTextLight}`} />
+                      <div className={`text-[11px] font-bold ${dark ? "text-white" : "text-slate-800"}`}>
+                        {f.label}
+                      </div>
+                      <div className={`text-[10px] mt-0.5 ${dark ? "text-slate-500" : "text-slate-400"}`}>
+                        {f.desc}
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Description */}
-            <p className={`text-sm leading-relaxed mb-6 ${dark ? "text-slate-400" : "text-slate-500"}`}>
-              {data.description}
-            </p>
           </div>
-
-          {/* Features Grid */}
-          <div className="px-8 pb-6">
-            <div className="grid grid-cols-2 gap-3">
-              {data.features.map((f, i) => {
-                const FIcon = f.icon;
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
-                    className={`p-3.5 rounded-xl transition-all duration-300 ${dark
-                      ? `${data.accentBg} border ${data.accentBorder}`
-                      : `${data.accentBgLight} border ${data.accentBorderLight}`
-                      }`}
-                  >
-                    <FIcon className={`w-4 h-4 mb-2 ${dark ? data.accentText : data.accentTextLight}`} />
-                    <div className={`text-[11px] font-bold ${dark ? "text-white" : "text-slate-800"}`}>
-                      {f.label}
-                    </div>
-                    <div className={`text-[10px] mt-0.5 ${dark ? "text-slate-500" : "text-slate-400"}`}>
-                      {f.desc}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-
           {/* Footer / CTA */}
           <div className={`px-8 py-5 border-t transition-colors duration-700 ${dark ? "border-white/5 bg-slate-950/50" : "border-slate-100 bg-slate-50/50"
             }`}>
@@ -363,7 +365,7 @@ export default function AVAGateway() {
   }
 
   return (
-    <div className={`relative h-screen w-screen overflow-hidden flex items-center justify-center transition-colors duration-700 ${dark ? "bg-[#060B18] text-white" : "bg-white text-slate-900"
+    <div className={`relative min-h-screen w-full overflow-x-hidden flex items-center justify-center transition-colors duration-700 py-12 md:py-20 ${dark ? "bg-[#060B18] text-white" : "bg-white text-slate-900"
       }`}>
       <GridBackground dark={dark} />
       <Particles dark={dark} />

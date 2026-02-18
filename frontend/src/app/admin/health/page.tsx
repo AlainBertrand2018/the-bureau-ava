@@ -36,10 +36,21 @@ export default function HealthPage() {
     const [stats, setStats] = useState<any>(null);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard`)
-            .then(res => res.json())
-            .then(data => setStats(data))
-            .catch(err => console.error(err));
+        const fetchHealth = async () => {
+            try {
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+                if (!apiUrl) return;
+
+                const res = await fetch(`${apiUrl}/admin/dashboard`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+                setStats(data);
+            } catch (err) {
+                // Silent catch for dev stability
+            }
+        };
+
+        fetchHealth();
     }, []);
 
     return (

@@ -20,7 +20,18 @@ import {
     ClipboardList
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-import { useMission } from "@/context/MissionContext";
+import { useMission, AudienceTargeting } from "@/context/MissionContext";
+import AudienceConfigurator from "../shared/AudienceConfigurator";
+
+const DEFAULT_TARGETING: AudienceTargeting = {
+    gender: 'All',
+    age_range: [18, 65],
+    marital_status: 'Any',
+    revenue_range: [15000, 100000],
+    education_level: 'Any',
+    employment_sector: 'Any',
+    urbanization: 'Any'
+};
 
 export default function SurveyArchitect() {
     const { t } = useLanguage();
@@ -30,7 +41,8 @@ export default function SurveyArchitect() {
     const [formData, setFormData] = useState({
         objective: "",
         audience: "",
-        decisions: ""
+        decisions: "",
+        targeting: DEFAULT_TARGETING
     });
     const [result, setResult] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
@@ -63,9 +75,10 @@ export default function SurveyArchitect() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    context,
+                    context: `Objective: ${formData.objective} | Audience: ${formData.audience} | Decisions: ${formData.decisions}`,
                     item_count: 20,
-                    mission_id: currentMission?.mission_id
+                    mission_id: currentMission?.mission_id,
+                    targeting_refinement: formData.targeting
                 }),
                 signal: controller.signal
             });
@@ -216,6 +229,19 @@ export default function SurveyArchitect() {
                                     className="w-full h-32 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all resize-none font-medium"
                                 />
                             </div>
+                        </div>
+
+                        {/* Demographic Refinement Layer */}
+                        <div className="mt-8 pt-8 border-t border-white/5">
+                            <div className="mb-6">
+                                <h4 className="text-indigo-100 font-bold text-sm tracking-tight">Demographic Refinement</h4>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase">Calibrate AVA's predictive lens with precision archetypes</p>
+                            </div>
+                            <AudienceConfigurator
+                                value={formData.targeting}
+                                onChange={(val) => setFormData({ ...formData, targeting: val })}
+                                dark
+                            />
                         </div>
 
                         <div className="mt-12 flex justify-center">
@@ -536,6 +562,6 @@ export default function SurveyArchitect() {
                     background: rgba(255, 255, 255, 0.2);
                 }
             `}</style>
-        </div>
+        </div >
     );
 }

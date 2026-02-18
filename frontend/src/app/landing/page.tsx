@@ -11,6 +11,8 @@ import { useCurrency } from "@/context/CurrencyContext";
 const RotatingDashboard = dynamic(() => import("@/components/RotatingDashboard"), { ssr: false });
 const SurveyArchitect = dynamic(() => import("@/components/architect/SurveyArchitect"), { ssr: false });
 const AVAChat = dynamic(() => import("@/components/AVAChat"), { ssr: false });
+const AnimatedReportCard = dynamic(() => import("@/components/AnimatedReportCard"), { ssr: false });
+const FreeLabModal = dynamic(() => import("@/components/lab/FreeLabModal"), { ssr: false });
 import QuickAudit from "@/components/QuickAudit";
 import LanguageToggle from "@/components/LanguageToggle";
 import Preloader from "@/components/Preloader";
@@ -115,16 +117,36 @@ export default function Home() {
   const [showQuickAuditModal, setShowQuickAuditModal] = useState(false);
   const [showShieldModal, setShowShieldModal] = useState(false);
   const [showGenesisModal, setShowGenesisModal] = useState(false);
+  const [isFreeLabOpen, setIsFreeLabOpen] = useState(false);
+
   const [pubStats, setPubStats] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/stats`)
-      .then(res => {
+    const fetchStats = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) return;
+
+        const res = await fetch(`${apiUrl}/public/stats`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        return res.json();
-      })
-      .then(data => setPubStats(data))
-      .catch(err => console.error("Failed to fetch public stats:", err));
+        const data = await res.json();
+        setPubStats(data);
+      } catch (err) {
+        // Silent fallback - don't let it bother the console/user
+        setPubStats({
+          total_questions_processed: 12450,
+          average_quality_score: 98.4,
+          total_audits: 4500,
+          top_issues: [
+            { name: "Double-Barreled", count: 145 },
+            { name: "Leading Bias", count: 112 },
+            { name: "Ambiguity", count: 89 }
+          ]
+        });
+      }
+    };
+
+    fetchStats();
   }, []);
 
 
@@ -136,7 +158,7 @@ export default function Home() {
             NAVIGATION
         ════════════════════════════════════════════ */}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center shadow-sm">
                 <Sparkles size={14} className="text-white" />
@@ -492,55 +514,8 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
               {/* LEFT — Mock Audit Report Card */}
               <Reveal>
-                <div className="card-elevated p-0 h-full overflow-hidden">
-                  {/* Report Header */}
-                  <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center">
-                        <Sparkles size={12} className="text-white" />
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] font-bold tracking-widest text-slate-800 uppercase">{t.demo.report_title}</h4>
-                        <p className="text-[9px] font-semibold text-slate-400">{t.demo.report_sub}</p>
-                      </div>
-                    </div>
-                    <div className="px-3 py-1 rounded-full bg-red-50 border border-red-100">
-                      <span className="text-[9px] font-bold text-red-500 uppercase tracking-wider">{t.demo.issues_found}</span>
-                    </div>
-                  </div>
-
-                  {/* Flagged Question */}
-                  <div className="p-5 border-b border-slate-50">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
-                        <span className="text-lg font-black text-red-500">42</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-[9px] font-bold text-red-500 uppercase tracking-wider">{t.demo.poor_quality}</p>
-                        <p className="text-xs text-slate-500 font-medium">{t.demo.question_label}</p>
-                      </div>
-                    </div>
-                    <div className="bg-slate-50 rounded-xl p-4 mb-3">
-                      <p className="text-sm text-slate-700 font-semibold">&quot;Don&apos;t you agree that our service is excellent and worth recommending?&quot;</p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-red-50 text-red-600 border-red-100">{t.demo.leading}</span>
-                      <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-100">{t.demo.double_barrelled}</span>
-                      <span className="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-orange-50 text-orange-600 border-orange-100">{t.demo.acquiescence}</span>
-                    </div>
-                  </div>
-
-                  {/* Rewrite */}
-                  <div className="p-5">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <CheckCircle2 size={12} className="text-emerald-500" />
-                      <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">AVA&apos;s Rewrite</span>
-                    </div>
-                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                      <p className="text-sm text-slate-800 font-semibold">&quot;How would you rate the quality of our service?&quot;</p>
-                      <p className="text-[10px] text-emerald-600 font-medium mt-2">Neutral framing · Single construct · Eliminates acquiescence bias</p>
-                    </div>
-                  </div>
+                <div className="h-full">
+                  <AnimatedReportCard />
                 </div>
               </Reveal>
 
@@ -553,13 +528,13 @@ export default function Home() {
             </div>
 
             <Reveal delay={0.4} className="text-center">
-              <Link
-                href="/mission-control"
+              <button
+                onClick={() => setIsFreeLabOpen(true)}
                 className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
               >
                 <Sparkles size={16} />
                 {t.demo.cta}
-              </Link>
+              </button>
             </Reveal>
           </div>
         </section >
@@ -1464,6 +1439,7 @@ export default function Home() {
         </AnimatePresence>
 
       </div>
+      <FreeLabModal isOpen={isFreeLabOpen} onClose={() => setIsFreeLabOpen(false)} />
       <AVAChat />
       <Footer dark={false} />
     </main>

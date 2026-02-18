@@ -31,9 +31,9 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full ${maxWidthClass} bg-white rounded-3xl shadow-2xl z-[101] overflow-hidden`}
+                        className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full ${maxWidthClass} bg-white rounded-3xl shadow-2xl z-[101] overflow-hidden flex flex-col max-h-[80vh]`}
                     >
-                        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+                        <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
                             <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tighter">{title}</h3>
                             <button
                                 onClick={onClose}
@@ -42,10 +42,10 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md', s
                                 <X size={18} className="text-slate-500" />
                             </button>
                         </div>
-                        <div className="p-6 max-h-[70vh] overflow-y-auto">
+                        <div className="p-6 overflow-y-auto flex-1">
                             {children}
                         </div>
-                        <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 shrink-0">
                             <button
                                 onClick={onClose}
                                 className="px-6 py-2 rounded-full text-[10px] font-black tracking-widest text-slate-500 hover:text-slate-700 transition-colors uppercase"

@@ -16,15 +16,27 @@ import {
     Languages,
     TrendingUp,
     Shield,
-    FileText,
     Users,
     MapPin,
-    Wifi
+    Wifi,
+    Fingerprint,
+    FileText,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useMission } from "@/context/MissionContext";
+import { useMission, AudienceTargeting } from "@/context/MissionContext";
 import Footer from "@/components/Footer";
+import AudienceConfigurator from "@/components/shared/AudienceConfigurator";
+
+const DEFAULT_TARGETING: AudienceTargeting = {
+    gender: 'All',
+    age_range: [18, 65],
+    marital_status: 'Any',
+    revenue_range: [15000, 100 * 1000],
+    education_level: 'Any',
+    employment_sector: 'Any',
+    urbanization: 'Any'
+};
 
 const COUNTRIES = [
     // ── AFRICA ──
@@ -144,7 +156,8 @@ export default function MissionControl() {
         target_region: "Islandwide",
         target_language: "English",
         target_audience: "",
-        research_topic: "Consumer Behavior"
+        research_topic: "Consumer Behavior",
+        targeting_refinement: DEFAULT_TARGETING
     });
 
     const [error, setError] = useState<string | null>(null);
@@ -287,7 +300,7 @@ export default function MissionControl() {
                 <div className="absolute inset-0 hero-dot-grid opacity-20" />
             </div>
 
-            <main className="relative z-10 max-w-5xl mx-auto px-6 pt-24 pb-32 flex-grow w-full">
+            <main className="relative z-10 max-w-5xl mx-auto px-6 pt-12 md:pt-24 pb-20 md:pb-32 flex-grow w-full">
                 <AnimatePresence mode="wait">
                     {/* STEP 1: CONFIGURE */}
                     {step === "configure" && (
@@ -296,9 +309,9 @@ export default function MissionControl() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            className="space-y-12"
+                            className="space-y-8 md:space-y-12"
                         >
-                            <div className="flex flex-col lg:flex-row items-center gap-12 mb-12">
+                            <div className="flex flex-col lg:flex-row items-center gap-6 md:gap-12 mb-8 md:mb-12">
                                 {/* AVA PORTRAIT (Identical to Hero) */}
                                 <motion.div
                                     initial={{ opacity: 0, x: -40, scale: 0.98 }}
@@ -418,6 +431,18 @@ export default function MissionControl() {
                                                 placeholder="Who are you targeting? (e.g. Gen Z gamers in urban areas, SME owners...)"
                                                 rows={3}
                                                 className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-4 text-sm font-bold focus:border-blue-500 transition-colors outline-none resize-none"
+                                            />
+                                        </div>
+
+                                        <div className="pt-6 border-t border-slate-800/50">
+                                            <div className="flex items-center gap-2 mb-6">
+                                                <Fingerprint size={16} className="text-blue-500" />
+                                                <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Demographic Precision Calibrator</h4>
+                                            </div>
+                                            <AudienceConfigurator
+                                                value={config.targeting_refinement}
+                                                onChange={(val) => setConfig({ ...config, targeting_refinement: val })}
+                                                dark
                                             />
                                         </div>
                                     </div>
@@ -568,9 +593,9 @@ export default function MissionControl() {
                             key="ready"
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="space-y-12"
+                            className="space-y-8 md:space-y-12"
                         >
-                            <div className="flex flex-col lg:flex-row items-center gap-12 mb-16">
+                            <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-12 mb-8 md:mb-16">
                                 {/* AVA PORTRAIT (Identical to Hero) */}
                                 <motion.div
                                     initial={{ opacity: 0, x: -40, scale: 0.98 }}
@@ -623,6 +648,18 @@ export default function MissionControl() {
                                     <p className="text-slate-400 text-sm md:text-base font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                                         I have analyzed the cultural landscape of {missionData?.config?.target_country || 'your target market'}. Use these insights to build surveys that locals trust, understand, and answer honestly.
                                     </p>
+
+                                    {/* Precision Refinement display */}
+                                    {missionData.config.targeting_refinement && (
+                                        <div className="flex flex-wrap gap-2 mt-4">
+                                            <div className="px-3 py-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center gap-2">
+                                                <Fingerprint size={12} className="text-blue-400" />
+                                                <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+                                                    {missionData.config.targeting_refinement.gender} · {missionData.config.targeting_refinement.age_range[0]}-{missionData.config.targeting_refinement.age_range[1]} Years · {missionData.config.targeting_refinement.marital_status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* SAMPLING STRATEGY CARD */}
                                     {missionData.dossier.sampling_parameters && (

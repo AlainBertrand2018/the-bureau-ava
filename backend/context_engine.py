@@ -9,16 +9,27 @@ from ai_utils import generate_with_retry, safe_parse_json
 from pydantic import BaseModel, Field
 from google import genai
 from dotenv import load_dotenv
+from logger import bureau_logger
 
 load_dotenv()
 
 # ── Models ──
+
+class AudienceTargeting(BaseModel):
+    gender: str
+    age_range: List[int]
+    marital_status: str
+    revenue_range: List[int]
+    education_level: Optional[str] = "Any"
+    employment_sector: Optional[str] = "Any"
+    urbanization: Optional[str] = "Any"
 
 class MissionConfiguration(BaseModel):
     target_country: str
     target_region: str
     target_language: str
     target_audience: str
+    targeting_refinement: Optional[AudienceTargeting] = None
     research_topic: Optional[str] = "General Market Research"
 
 class PersonaArchetype(BaseModel):
@@ -292,9 +303,14 @@ class ContextEngine:
         3. EDUCATION: Literacy levels specifically broken down by Age-group and Gender in {config.target_country}.
         4. TECHNOLOGY: Mobile and Internet adoption rates, and Technological Literacy indices.
         5. SOCIO-LINGUISTICS: Real-world slang, linguistic codes, and cultural axioms derived from the current economic reality.
-        
-        Provide a forensic summary. If specific numbers are available, you MUST include them.
         """
+
+        if config.targeting_refinement:
+            targeting = config.targeting_refinement.dict()
+            research_prompt += f"\nPRECISION TARGETING ARCHETYPE:\n{json.dumps(targeting, indent=2)}\n"
+            research_prompt += "Focus specifically on data and behaviors relevant to THIS group.\n"
+
+        research_prompt += f"\nProvide a forensic summary. If specific numbers are available, you MUST include them."
         
         log = self._log("SENTINEL", "SEARCHING", f"Querying Global Index for '{config.target_audience} economics {config.target_region}'")
         audit_trail.append(log)
@@ -356,7 +372,13 @@ class ContextEngine:
         - Country: {config.target_country}
         - Region: {config.target_region}
         - Audience: {config.target_audience}
-        
+        """
+
+        if config.targeting_refinement:
+             synthesis_prompt += f"\nPRECISION TARGETING ARCHETYPE:\n{json.dumps(config.targeting_refinement.dict(), indent=2)}\n"
+             synthesis_prompt += "Calibrate all stats and archetypes to THIS specific group.\n"
+
+        synthesis_prompt += f"""
         TASK: Synthesize the scrape into a 'CulturalDossier' JSON object. You MUST be granular.
         
         STRUCTURAL REQUIREMENTS:
@@ -420,13 +442,12 @@ class ContextEngine:
             yield json.dumps({"type": "dossier", "data": json.loads(dossier.json())}) + "\n"
 
         except Exception as e:
-            log = self._log("PROFILER", "ERROR", str(e))
+            msg = f"Dossier Generation Failed: {str(e)}"
+            bureau_logger.error(msg)
+            log = self._log("PROFILER", "ERROR", msg)
             audit_trail.append(log)
             yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
             raise e
-            log = self._log("ADJUDICATOR", "VERIFYING", f"Validated {len(data.get('citation_index', []))} citations against Sentinel Knowledge")
-            audit_trail.append(log)
-            yield json.dumps({"type": "log", "data": json.loads(log.json())}) + "\n"
 
             log = self._log("AVA", "CERTIFIED", "Granular Statistical Dossier approved for distribution")
             audit_trail.append(log)

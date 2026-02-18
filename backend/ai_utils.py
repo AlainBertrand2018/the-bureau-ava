@@ -3,17 +3,19 @@ import json
 import re
 from typing import Any, Dict, Optional, Union
 from google import genai
+import random
+from logger import bureau_logger
 
 async def generate_with_retry(
     client: genai.Client,
     model: str,
     contents: Any,
     config: Any = None,
-    retries: int = 3,
+    retries: int = 5,
     log_func: Optional[callable] = None
 ) -> Any:
     """
-    Robust wrapper for Google GenAI generation with exponential backoff for 429 errors.
+    Robust wrapper for Google GenAI generation with exponential backoff and jitter.
     """
     for attempt in range(retries):
         try:
@@ -24,15 +26,26 @@ async def generate_with_retry(
             )
         except Exception as e:
             err_str = str(e).upper()
-            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+            # 429 = Rate Limit, 500/503 = Server Overloaded
+            if any(code in err_str for code in ["429", "RESOURCE_EXHAUSTED", "503", "SERVICE_UNAVAILABLE"]):
                 if attempt < retries - 1:
-                    wait_time = (2 ** attempt) + 1
+                    # Exponential backoff: 2, 4, 8, 16... + jitter
+                    base_wait = (2 ** (attempt + 1))
+                    jitter = random.uniform(0, 1.0)
+                    wait_time = base_wait + jitter
+                    
+                    msg = f"AI API Overloaded ({err_str[:20]}...). Retrying in {wait_time:.2f}s... (Attempt {attempt+1}/{retries})"
                     if log_func:
-                        log_func(f"API Rate Limit (429). Retrying in {wait_time}s... (Attempt {attempt+1}/{retries})")
-                    else:
-                        print(f"API Rate Limit (429). Retrying in {wait_time}s... (Attempt {attempt+1}/{retries})")
+                        log_func(msg)
+                    bureau_logger.warning(f"AI_RETRY: {msg}")
+                        
                     await asyncio.sleep(wait_time)
                     continue
+            
+            # Log specific error before raising
+            if log_func:
+                log_func(f"AI FATAL ERROR: {str(e)}")
+            bureau_logger.error(f"AI_FATAL: {str(e)}")
             raise e
     return None
 
