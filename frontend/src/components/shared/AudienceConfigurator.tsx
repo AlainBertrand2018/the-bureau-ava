@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import {
     Users,
     Calendar,
+    Globe,
     Heart,
     Banknote,
     GraduationCap,
@@ -31,6 +32,30 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Country Selection */}
+            <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                    <Globe size={14} className="text-indigo-500" />
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Target Country</span>
+                </div>
+                <div className="relative">
+                    <select
+                        value={value.country || 'Mauritius'}
+                        onChange={(e) => handleChange('country', e.target.value)}
+                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-indigo-500/40`}
+                    >
+                        <option value="Mauritius">Mauritius</option>
+                        <option value="France">France</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="United States">United States</option>
+                        <option value="India">India</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="Australia">Australia</option>
+                    </select>
+                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
+            </div>
+
             {/* Gender Selection */}
             <div className="space-y-3">
                 <div className="flex items-center gap-2">
@@ -43,8 +68,8 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
                             key={g}
                             onClick={() => handleChange('gender', g)}
                             className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${value.gender === g
-                                    ? "bg-blue-600 text-white shadow-lg"
-                                    : `text-slate-500 hover:${textColor}`
+                                ? "bg-blue-600 text-white shadow-lg"
+                                : `text-slate-500 hover:${textColor}`
                                 }`}
                         >
                             {g}
@@ -179,7 +204,7 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
             </div>
 
             {/* Urbanization (Refinement) */}
-            <div className="space-y-3 lg:col-span-3">
+            <div className="space-y-3 lg:col-span-2">
                 <div className="flex items-center gap-2">
                     <MapPin size={14} className="text-red-500" />
                     <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Urbanization Density</span>
@@ -190,8 +215,8 @@ export default function AudienceConfigurator({ value, onChange, dark = false }: 
                             key={u}
                             onClick={() => handleChange('urbanization', u)}
                             className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all ${value.urbanization === u
-                                    ? "bg-red-600 text-white shadow-lg"
-                                    : `text-slate-500 hover:${textColor}`
+                                ? "bg-red-600 text-white shadow-lg"
+                                : `text-slate-500 hover:${textColor}`
                                 }`}
                         >
                             {u}

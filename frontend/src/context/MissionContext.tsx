@@ -24,9 +24,10 @@ export interface AudienceTargeting {
     age_range: [number, number];
     marital_status: 'Single' | 'Married' | 'Divorced' | 'Widowed' | 'Any';
     revenue_range: [number, number];
-    education_level?: 'Primary' | 'Secondary' | 'University' | 'Postgraduate' | 'Any';
-    employment_sector?: 'Private' | 'Public' | 'Self-Employed' | 'Student' | 'Unemployed' | 'Any';
-    urbanization?: 'Urban' | 'Suburban' | 'Rural' | 'Any';
+    education_level: 'Primary' | 'Secondary' | 'University' | 'Postgraduate' | 'Any';
+    employment_sector: string;
+    urbanization: 'Urban' | 'Suburban' | 'Rural' | 'Any';
+    country: string;
 }
 
 export interface MissionConfiguration {
@@ -60,6 +61,9 @@ interface MissionContextType {
     setIsLoading: (loading: boolean) => void;
     error: string | null;
     setError: (error: string | null) => void;
+    tier: 'tier1' | 'tier2' | 'tier3';
+    setTier: (tier: 'tier1' | 'tier2' | 'tier3') => void;
+    limits: { maxPersonas: number; maxQuestions: number };
 }
 
 const MissionContext = createContext<MissionContextType | undefined>(undefined);
@@ -68,6 +72,13 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
     const [currentMission, setCurrentMission] = useState<Mission | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [tier, setTier] = useState<'tier1' | 'tier2' | 'tier3'>('tier1');
+
+    const limits = {
+        tier1: { maxPersonas: 10, maxQuestions: 3 },
+        tier2: { maxPersonas: 50, maxQuestions: 20 },
+        tier3: { maxPersonas: 200, maxQuestions: 50 }
+    }[tier];
 
     // Persistence logic
     useEffect(() => {
@@ -91,7 +102,17 @@ export function MissionProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <MissionContext.Provider value={{ currentMission, setMission: handleSetMission, isLoading, setIsLoading, error, setError }}>
+        <MissionContext.Provider value={{
+            currentMission,
+            setMission: handleSetMission,
+            isLoading,
+            setIsLoading,
+            error,
+            setError,
+            tier,
+            setTier,
+            limits
+        }}>
             {children}
         </MissionContext.Provider>
     );

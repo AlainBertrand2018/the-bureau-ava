@@ -15,6 +15,7 @@ interface CurrencyConfig {
         tier1: PricingTier;
         tier2: PricingTier;
         tier3: PricingTier;
+        genesis: PricingTier;
     };
     riskRange: string;
     icebergDesign: string;
@@ -26,7 +27,8 @@ interface CurrencyConfig {
 const BASE_EUR_CONFIG = {
     tier1: 0,
     tier2: 280,
-    tier3: 830,
+    tier3: 420,
+    genesis: 350,
     riskRange: [4000, 16000],
     icebergDesign: [1000, 3000],
     icebergRecruitment: [2000, 8000],
@@ -61,6 +63,7 @@ const generateConfig = (code: CurrencyCode, currentRates: Record<string, number>
     const t1 = formatPrice(BASE_EUR_CONFIG.tier1 * rate, code);
     const t2 = formatPrice(BASE_EUR_CONFIG.tier2 * rate, code);
     const t3 = formatPrice(BASE_EUR_CONFIG.tier3 * rate, code);
+    const tg = formatPrice(BASE_EUR_CONFIG.genesis * rate, code);
 
     const convRange = (range: number[]) => {
         const low = formatPrice(range[0] * rate, code);
@@ -86,6 +89,7 @@ const generateConfig = (code: CurrencyCode, currentRates: Record<string, number>
             tier1: { price: t1, symbol },
             tier2: { price: t2, symbol },
             tier3: { price: t3, symbol },
+            genesis: { price: tg, symbol },
         },
         riskRange: convRange(BASE_EUR_CONFIG.riskRange),
         icebergDesign: convRangeSimple(BASE_EUR_CONFIG.icebergDesign),
@@ -127,6 +131,11 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
                     setRates(activeRates);
                 }
 
+            } catch (error) {
+                console.warn("Using fallback rates:", error);
+            }
+
+            try {
                 const ipRes = await fetch('https://ipapi.co/json/');
                 if (ipRes.ok) {
                     const ipData = await ipRes.json();
@@ -135,7 +144,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
                     else if (['US', 'CA', 'AU'].includes(ipData.country_code)) detectedCode = 'USD';
                 }
             } catch (error) {
-                console.error("Initialization failed:", error);
+                console.warn("Location detection failed, defaulting to EUR:", error);
             } finally {
                 setCurrency(generateConfig(detectedCode, activeRates));
                 setIsLoading(false);

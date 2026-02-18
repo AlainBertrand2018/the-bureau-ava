@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Globe,
@@ -21,12 +21,14 @@ import {
     Wifi,
     Fingerprint,
     FileText,
+    Lock,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
 import Footer from "@/components/Footer";
 import AudienceConfigurator from "@/components/shared/AudienceConfigurator";
+import LaboratoryEntryProtocol from "@/components/shared/LaboratoryEntryProtocol";
 
 const DEFAULT_TARGETING: AudienceTargeting = {
     gender: 'All',
@@ -35,7 +37,8 @@ const DEFAULT_TARGETING: AudienceTargeting = {
     revenue_range: [15000, 100 * 1000],
     education_level: 'Any',
     employment_sector: 'Any',
-    urbanization: 'Any'
+    urbanization: 'Any',
+    country: 'Mauritius'
 };
 
 const COUNTRIES = [
@@ -148,7 +151,17 @@ const LANGUAGES = [
 
 export default function MissionControl() {
     const router = useRouter();
-    const { setMission } = useMission();
+    const searchParams = useSearchParams();
+    const { setMission, setTier } = useMission();
+
+    useEffect(() => {
+        const tierParam = searchParams.get('tier');
+        if (tierParam === 'tier2' || tierParam === 'tier3') {
+            setTier(tierParam);
+        } else {
+            setTier('tier1');
+        }
+    }, [searchParams, setTier]);
 
     const [step, setStep] = useState<"configure" | "calibrating" | "ready">("configure");
     const [config, setConfig] = useState({
@@ -268,31 +281,29 @@ export default function MissionControl() {
         }
     };
 
+    const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+    const { tier } = useMission();
+
     const handleEnterLab = () => {
+        if (tier === 'tier2' || tier === 'tier3') {
+            setIsPaywallOpen(true);
+        } else {
+            setIsTransitioning(true);
+        }
+    };
+
+    const handlePaywallSuccess = () => {
+        setIsPaywallOpen(false);
         setIsTransitioning(true);
-        const steps = [
-            "Authenticating Clearance...",
-            `Loading Parameters: ${missionData?.config.target_country || 'Unknown'}...`,
-            "Calibrating Simulation Layer...",
-            "Access Granted."
-        ];
-
-        let i = 0;
-        setTransitionText(steps[0]);
-
-        const interval = setInterval(() => {
-            i++;
-            if (i < steps.length) {
-                setTransitionText(steps[i]);
-            } else {
-                clearInterval(interval);
-                setTimeout(() => router.push("/lab"), 500);
-            }
-        }, 800);
     };
 
     return (
         <div className="min-h-screen bg-slate-950 text-white selection:bg-blue-500/30 flex flex-col">
+            <LaboratoryEntryProtocol
+                isOpen={isTransitioning}
+                targetName={missionData?.config?.target_country || 'Unknown'}
+                onComplete={() => router.push("/lab")}
+            />
             {/* Background FX */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
@@ -1056,6 +1067,66 @@ export default function MissionControl() {
           background-size: 24px 24px;
         }
       `}</style>
+            {/* PAYWALL OVERLAY */}
+            <AnimatePresence>
+                {isPaywallOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white text-slate-900 rounded-[2rem] p-10 max-w-lg w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-violet-600" />
+
+                            <div className="flex flex-col items-center text-center space-y-6">
+                                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center">
+                                    <Lock size={32} className="text-slate-400" />
+                                </div>
+
+                                <div>
+                                    <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3">
+                                        {tier === 'tier3' ? 'Deep Simulation' : 'Standard Audit'}
+                                    </div>
+                                    <h3 className="text-3xl font-black text-slate-900 mb-2">Unlock Mission Access</h3>
+                                    <p className="text-slate-500 font-medium">Finalize your mission configuration to enter the Lab environment with {tier === 'tier3' ? '200' : '50'} active personas.</p>
+                                </div>
+
+                                <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-sm font-bold text-slate-600">Total</span>
+                                        <span className="text-2xl font-black text-slate-900">
+                                            {tier === 'tier3' ? 'Rs 23,940' : 'Rs 15,960'}
+                                        </span>
+                                    </div>
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">One-time payment</div>
+                                </div>
+
+                                <button
+                                    onClick={handlePaywallSuccess}
+                                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-[0.2em] hover:bg-emerald-600 transition-colors shadow-lg shadow-slate-900/20"
+                                >
+                                    Proceed to Payment
+                                </button>
+
+                                <button
+                                    onClick={() => setIsPaywallOpen(false)}
+                                    className="text-slate-400 text-xs font-bold hover:text-slate-600"
+                                >
+                                    Cancel & Return to Config
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <Footer dark />
         </div >
     );
 }

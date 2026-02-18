@@ -24,7 +24,8 @@ const DEFAULT_TARGETING: AudienceTargeting = {
     revenue_range: [15000, 100000],
     education_level: 'Any',
     employment_sector: 'Any',
-    urbanization: 'Any'
+    urbanization: 'Any',
+    country: 'Mauritius'
 };
 
 interface AuditIssue {

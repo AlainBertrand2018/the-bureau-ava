@@ -4,7 +4,18 @@ export const dictionaries = {
             how_it_works: "How it Works",
             who_its_for: "Who it's for",
             pricing: "Pricing",
-            open_lab: "Open Lab"
+            open_lab: "Open Lab",
+            optimization_bureau: "Survey Optimization Bureau",
+            meet_ava: "Meet AVA",
+            create_scratch: "Create Your Survey From Scratch",
+            contact_us: "Contact Us",
+            blog: "Blog",
+            for_whom: "For Whom",
+            why_ava: "Why Choose AVA",
+            what_we_do: "What We Do",
+            how_we_do: "How We Do",
+            early_adopters: "Early Adopters",
+            investors: "Investors"
         },
         hero: {
             badge: "The Elite Choice",
@@ -158,11 +169,11 @@ export const dictionaries = {
             source: "Source: Benchmarked via Perplexity AI Audit of local market research providers",
             danger_zone: "The Danger Zone",
             risk_title: "Financial Risk of Design Flaws",
-            shield_btn: "My Shield Against a Bad Investment"
+            shield_btn: "My Stress-Test Audit"
         },
         pricing: {
             title: "Start free. Scale when ready.",
-            sub: "Simple, predictable per-audit pricing.",
+            sub: "Stress-test your next questionnaire • Simple, predictable per-audit pricing.",
             tier1_name: "Trial Audit",
             tier1_features: ["1 survey audit", "10 diagnostic personas", "3 questions max", "Structural flags"],
             tier2_name: "Standard Audit",
@@ -246,6 +257,22 @@ export const dictionaries = {
                 export: "Export Package",
                 certified: "BUREAU CERTIFIED"
             }
+        },
+        gdpr: {
+            title: "Privacy Preference Center",
+            description: "We use essential cookies to make our site work. We'd also like to use analytics cookies to help us improve your experience. These will only be set if you accept.",
+            accept: "Accept All",
+            decline: "Necessary Only",
+            customize: "Manage Preferences",
+            save: "Save & Close",
+            essential: {
+                title: "Strictly Necessary Cookies",
+                desc: "Required for basic site functionality and security. Cannot be switched off."
+            },
+            analytics: {
+                title: "Performance & Analytics",
+                desc: "Helps us understand how you interact with our site to improve performance."
+            }
         }
     },
     fr: {
@@ -253,7 +280,18 @@ export const dictionaries = {
             how_it_works: "Comment ça marche",
             who_its_for: "Pour qui ?",
             pricing: "Tarification",
-            open_lab: "Accéder au Lab"
+            open_lab: "Accéder au Lab",
+            optimization_bureau: "Bureau d'Optimisation",
+            meet_ava: "Rencontrez AVA",
+            create_scratch: "Créer de zéro",
+            contact_us: "Contactez-nous",
+            blog: "Blog",
+            for_whom: "Pour qui ?",
+            why_ava: "Pourquoi AVA ?",
+            what_we_do: "Ce que nous faisons",
+            how_we_do: "Comment nous faisons",
+            early_adopters: "Early Adopters",
+            investors: "Investisseurs"
         },
         hero: {
             badge: "Le Choix de l'Élite",
@@ -494,6 +532,22 @@ export const dictionaries = {
                 outcomes: "Résultats de Données Prévus",
                 export: "Exporter le Pack",
                 certified: "CERTIFIÉ BUREAU"
+            }
+        },
+        gdpr: {
+            title: "Préférences de Confidentialité",
+            description: "Nous utilisons des cookies essentiels pour faire fonctionner notre site. Nous aimerions également utiliser des cookies d'analyse pour nous aider à améliorer votre expérience.",
+            accept: "Tout Accepter",
+            decline: "Essentiels Uniquement",
+            customize: "Personnaliser",
+            save: "Enregistrer & Fermer",
+            essential: {
+                title: "Cookies Strictement Nécessaires",
+                desc: "Requis pour le fonctionnement de base et la sécurité. Ne peuvent pas être désactivés."
+            },
+            analytics: {
+                title: "Performance & Analyse",
+                desc: "Nous aident à comprendre comment vous interagissez avec le site pour l'améliorer."
             }
         }
     }

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
+import { useCurrency } from "@/context/CurrencyContext";
 import AudienceConfigurator from "../shared/AudienceConfigurator";
 
 const DEFAULT_TARGETING: AudienceTargeting = {
@@ -30,13 +31,20 @@ const DEFAULT_TARGETING: AudienceTargeting = {
     revenue_range: [15000, 100000],
     education_level: 'Any',
     employment_sector: 'Any',
-    urbanization: 'Any'
+    urbanization: 'Any',
+    country: 'Mauritius'
 };
 
-export default function SurveyArchitect() {
+interface SurveyArchitectProps {
+    mode?: "explainer" | "app";
+}
+
+export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectProps) {
     const { t } = useLanguage();
     const { currentMission } = useMission();
-    const [view, setView] = useState<"onboarding" | "processing" | "results">("onboarding");
+    const { currency } = useCurrency();
+    const [view, setView] = useState<"explainer" | "onboarding" | "processing" | "results">(mode === "app" ? "onboarding" : "explainer");
+    const [isPaywallOpen, setIsPaywallOpen] = useState(false);
     const [loadingPhase, setLoadingPhase] = useState(0);
     const [formData, setFormData] = useState({
         objective: "",
@@ -55,7 +63,16 @@ export default function SurveyArchitect() {
         t.architect.pulse_finalizing
     ];
 
-    const handleGenerate = async () => {
+    const handlePaywallSuccess = () => {
+        setIsPaywallOpen(false);
+        startGeneration();
+    };
+
+    const handleGenerate = () => {
+        setIsPaywallOpen(true);
+    };
+
+    const startGeneration = async () => {
         if (!formData.objective || !formData.audience || !formData.decisions) return;
 
         setView("processing");
@@ -124,6 +141,63 @@ export default function SurveyArchitect() {
             </div>
 
             <AnimatePresence mode="wait">
+                {view === "explainer" && (
+                    <motion.div
+                        key="explainer"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="relative z-10 p-8 md:p-12 flex flex-col items-center text-center h-full justify-center min-h-[600px]"
+                    >
+
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-6">
+                            Genesis Suite
+                        </h2>
+
+                        <div className="max-w-2xl mx-auto space-y-4 mb-12">
+                            <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed">
+                                Don't have questions yet? Let our AI Architect build a stress-tested 20-item instrument for you.
+                            </p>
+                            <p className="text-emerald-400 text-sm font-black uppercase tracking-[0.2em] animate-pulse">
+                                The heavylifting is on us.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-4xl mb-12">
+                            {[
+                                { title: "Define", desc: "Set your objective & audience context", icon: Target, color: "text-blue-400", border: "border-blue-500/20", bg: "bg-blue-500/5" },
+                                { title: "Generate", desc: "Automated questionnaire drafting", icon: Cpu, color: "text-purple-400", border: "border-purple-500/20", bg: "bg-purple-500/5" },
+                                { title: "Audit", desc: "Stress-test against 5 digital personas", icon: ShieldCheck, color: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/5" },
+                                { title: "Deliver", desc: "Receive a certified field manual", icon: FileText, color: "text-amber-400", border: "border-amber-500/20", bg: "bg-amber-500/5" }
+                            ].map((step, i) => (
+                                <div key={i} className={`p-6 rounded-2xl border ${step.border} ${step.bg} flex flex-col items-center gap-3 text-center transition-all hover:scale-105`}>
+                                    <step.icon size={24} className={step.color} />
+                                    <h3 className="text-sm font-bold text-white uppercase tracking-wide">{step.title}</h3>
+                                    <p className="text-[10px] text-slate-400 font-medium leading-relaxed">{step.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex flex-col md:flex-row items-center gap-8 bg-slate-800/50 p-6 rounded-3xl border border-white/5">
+                            <div className="text-left">
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">One-Time Access Fee</p>
+                                <div className="text-3xl font-black text-white">
+                                    {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
+                                    {currency.tiers.genesis.price.toLocaleString()}
+                                </div>
+                            </div>
+                            <div className="w-px h-12 bg-white/10 hidden md:block" />
+                            <button
+                                onClick={() => window.open('/genesis', '_blank')}
+                                className="group flex items-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-xl font-black uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg active:scale-95"
+                            >
+                                Activate Architect
+                                <ArrowRight size={18} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
                 {view === "onboarding" && (
                     <motion.div
                         key="onboarding"
@@ -562,6 +636,66 @@ export default function SurveyArchitect() {
                     background: rgba(255, 255, 255, 0.2);
                 }
             `}</style>
+
+            {/* PAYWALL OVERLAY */}
+            <AnimatePresence>
+                {isPaywallOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white text-slate-900 rounded-[2rem] p-10 max-w-lg w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-emerald-500" />
+
+                            <div className="flex flex-col items-center text-center space-y-6">
+                                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center">
+                                    <Lock size={32} className="text-slate-400" />
+                                </div>
+
+                                <div>
+                                    <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3">
+                                        Creation Module
+                                    </div>
+                                    <h3 className="text-3xl font-black text-slate-900 mb-2">Unlock Genesis Access</h3>
+                                    <p className="text-slate-500 font-medium">Initialize the AI Architect to build your stress-tested 20-item instrument.</p>
+                                </div>
+
+                                <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-sm font-bold text-slate-600">One-time Access</span>
+                                        <span className="text-2xl font-black text-slate-900">
+                                            {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
+                                            {currency.tiers.genesis.price.toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Instant Delivery</div>
+                                </div>
+
+                                <button
+                                    onClick={handlePaywallSuccess}
+                                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-[0.2em] hover:bg-blue-600 transition-colors shadow-lg shadow-slate-900/20"
+                                >
+                                    Proceed to Payment
+                                </button>
+
+                                <button
+                                    onClick={() => setIsPaywallOpen(false)}
+                                    className="text-slate-400 text-xs font-bold hover:text-slate-600"
+                                >
+                                    Cancel & Return to Config
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div >
     );
 }
