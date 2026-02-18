@@ -1053,7 +1053,7 @@ function MissionControlContent() {
                 </AnimatePresence>
             </main>
 
-            <Footer dark={true} />
+
 
             <style jsx global>{`
         .glass-card {
