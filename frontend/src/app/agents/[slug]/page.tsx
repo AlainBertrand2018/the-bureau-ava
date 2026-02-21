@@ -60,7 +60,7 @@ export default function AgentDossierPage({ params }: Props) {
                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                         <Link href="/" className="hover:text-blue-600 transition-colors">The Bureau</Link>
                         <ChevronRight size={10} />
-                        <Link href="/agents" className="hover:text-blue-600 transition-colors">Agents</Link>
+                        <Link href="/agents" className="hover:text-blue-600 transition-colors">Agentic Roster</Link>
                         <ChevronRight size={10} />
                         <span className="text-blue-600">{agent.name}</span>
                     </div>

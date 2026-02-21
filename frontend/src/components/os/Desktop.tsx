@@ -122,7 +122,7 @@ const Desktop: React.FC = () => {
                             <Users className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-blue-400 transition-colors" />
                         </div>
                         <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
-                            Agent Roster
+                            Agentic Roster
                         </span>
                     </motion.a>
                 </div>

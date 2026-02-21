@@ -7,7 +7,7 @@ import { ArrowRight, Cpu, ShieldCheck, Activity } from "lucide-react";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'AVA Agents | Autonomous Research Workforce',
+    title: 'Agentic Roster | Autonomous Research Workforce',
     description: 'Meet the specialized AI agents driving the AVA OS. Explore the roles of Sentinel, Genesis, The Lab, and Field Interpreter in ensuring data integrity.',
 };
 
@@ -46,7 +46,7 @@ export default function AgentsIndexPage() {
                         <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
                             <Cpu size={20} className="text-white" />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Personnel Roster</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Agentic Roster</span>
                     </div>
                     <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
                         Meet the <span className="text-blue-600">Agents.</span>
