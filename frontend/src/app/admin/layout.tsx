@@ -8,7 +8,8 @@ import {
     BarChart3,
     ShieldCheck,
     Settings,
-    ArrowLeft
+    ArrowLeft,
+    PenTool
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -33,6 +34,7 @@ export default function AdminLayout({
                         { icon: <Activity size={18} />, label: "System Health", href: "/admin/health" },
                         { icon: <ShieldCheck size={18} />, label: "Token Usage", href: "/admin/tokens" },
                         { icon: <DollarSign size={18} />, label: "Commercial", href: "/admin/commercial" },
+                        { icon: <PenTool size={18} />, label: "Create Content", href: "/studio" },
                         { icon: <BarChart3 size={18} />, label: "Audit Stats", href: "/admin/stats" },
                     ].map((item) => (
                         <Link
