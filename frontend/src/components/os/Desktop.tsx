@@ -5,7 +5,7 @@ import Window from './Window';
 import Dock from './Dock';
 import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget } from './Widgets';
 import Onboarding from './Onboarding';
-import { HelpCircle, Book } from 'lucide-react';
+import { HelpCircle, Book, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Desktop: React.FC = () => {
@@ -106,6 +106,23 @@ const Desktop: React.FC = () => {
                         </div>
                         <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
                             Intelligence Glossary
+                        </span>
+                    </motion.a>
+
+                    <motion.a
+                        href="/agents"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.4 }}
+                        className="group flex flex-col items-center gap-2 w-16 md:w-20"
+                    >
+                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
+                            <Users className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-blue-400 transition-colors" />
+                        </div>
+                        <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
+                            Agent Roster
                         </span>
                     </motion.a>
                 </div>
