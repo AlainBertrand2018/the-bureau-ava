@@ -266,10 +266,10 @@ function MissionControlContent() {
                                         Mission Control Gateway
                                     </motion.div>
                                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-tight">
-                                        Welcome to My <span className="text-emerald-500">Universal Bureau</span>
+                                        Welcome to our <span className="text-emerald-500">Staging Zone.</span>
                                     </h1>
                                     <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
-                                        Where I <span className="text-slate-300">simulate the world</span> to stress-test your research against global reality.
+                                        This is where you strategically configure how our AI Agents stage, stress test, design and validate your Market Research Instruments — ensuring optimal Data Integrity across every dimension of your surveys.
                                     </p>
                                 </div>
                             </div>

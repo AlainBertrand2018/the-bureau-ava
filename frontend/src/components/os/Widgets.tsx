@@ -6,8 +6,10 @@ import { useOS } from '@/context/OSContext';
 import { Clock, Globe, Users, TrendingUp, BookOpen, Linkedin, Twitter, MessageSquare } from 'lucide-react';
 
 export const WidgetContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <div className="fixed top-12 left-6 bottom-24 w-72 flex flex-col gap-6 pointer-events-none z-10">
-        {children}
+    <div className="fixed top-12 left-0 right-0 md:right-auto md:left-6 md:bottom-24 md:w-72 flex flex-col md:gap-6 pointer-events-none z-10 px-4 md:px-0 overflow-y-auto md:overflow-visible max-h-[calc(100vh-140px)] md:max-h-none scrollbar-none">
+        <div className="flex flex-col gap-4 md:gap-6 py-4 md:py-0">
+            {children}
+        </div>
     </div>
 );
 
@@ -20,18 +22,18 @@ const WidgetWrapper: React.FC<{ children: React.ReactNode; delay?: number; id: s
 
     return (
         <motion.div
-            drag
+            drag={typeof window !== 'undefined' && window.innerWidth > 768}
             dragMomentum={false}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
             whileDrag={{ scale: 1.05, rotate: 2, zIndex: 100 }}
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay, ease: [0.19, 1, 0.22, 1] }}
-            className={`pointer-events-auto p-5 rounded-[2rem] border overflow-hidden transition-colors duration-500 cursor-grab active:cursor-grabbing relative ${isLight ? lightClasses : darkClasses}`}
+            className={`pointer-events-auto p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border overflow-hidden transition-colors duration-500 md:cursor-grab active:cursor-grabbing relative ${isLight ? lightClasses : darkClasses}`}
             id={id}
         >
-            {/* Drag Handle Dot (iOS style) */}
-            <div className={`absolute top-4 right-4 w-1.5 h-1.5 rounded-full transition-colors ${isLight ? 'bg-slate-300 group-hover:bg-slate-400' : 'bg-white/10 group-hover:bg-white/30'}`} />
+            {/* Drag Handle Dot (iOS style) - Only visible on Desktop */}
+            <div className={`hidden md:block absolute top-4 right-4 w-1.5 h-1.5 rounded-full transition-colors ${isLight ? 'bg-slate-300 group-hover:bg-slate-400' : 'bg-white/10 group-hover:bg-white/30'}`} />
             {children}
         </motion.div>
     );
@@ -42,8 +44,10 @@ export const TimeWidget = () => {
     const { wallpaper } = useOS();
     const isLight = wallpaper === 'clinical-white';
     const [time, setTime] = useState(new Date());
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         const timer = setInterval(() => setTime(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
@@ -55,9 +59,10 @@ export const TimeWidget = () => {
     const minutes = time.getMinutes();
     const hours = time.getHours();
 
-    const secondDegrees = (seconds / 60) * 360;
-    const minuteDegrees = ((minutes + seconds / 60) / 60) * 360;
-    const hourDegrees = ((hours + minutes / 60) / 12) * 360;
+    // Use zero as static value during SSR to avoid mismatch
+    const secondDegrees = mounted ? (seconds / 60) * 360 : 0;
+    const minuteDegrees = mounted ? ((minutes + seconds / 60) / 60) * 360 : 0;
+    const hourDegrees = mounted ? ((hours + minutes / 60) / 12) * 360 : 0;
 
     return (
         <WidgetWrapper delay={0.2} id="time">
@@ -234,8 +239,8 @@ export const CountryWidget = () => {
                             onChange={(e) => setManualInput(e.target.value)}
                             placeholder="e.g., Mauritius, France..."
                             className={`border rounded-lg px-3 py-2 text-xs placeholder-opacity-50 focus:outline-none focus:border-emerald-500/50 transition-colors ${isLight
-                                    ? 'bg-white border-slate-200 text-slate-800 placeholder-slate-400'
-                                    : 'bg-black/40 border-white/10 text-white placeholder-white/20'
+                                ? 'bg-white border-slate-200 text-slate-800 placeholder-slate-400'
+                                : 'bg-black/40 border-white/10 text-white placeholder-white/20'
                                 }`}
                             autoFocus
                         />

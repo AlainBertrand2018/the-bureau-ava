@@ -28,8 +28,8 @@ const Dock: React.FC = () => {
     };
 
     return (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1000]">
-            <div className="flex items-center gap-4 px-5 py-3 rounded-[2.5rem] bg-black/30 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[95%] md:w-auto">
+            <div className="flex items-center justify-center gap-2 md:gap-4 px-3 md:px-5 py-2 md:py-3 rounded-[2rem] md:rounded-[2.5rem] bg-black/30 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                 {DOCK_ITEMS.map((app) => {
                     const isOpen = openWindows.some(w => w.id === app.id);
                     const isActive = activeApp === app.id;
@@ -41,24 +41,24 @@ const Dock: React.FC = () => {
                                 whileHover={{ scale: 1.25, y: -12 }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => launchApp(app.id)}
-                                className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 relative
+                                className={`w-11 h-11 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-500 relative
                   ${isActive ? 'shadow-[0_0_25px_rgba(255,255,255,0.15)] ring-1 ring-white/20' : ''}
                 `}
                             >
                                 {/* Modern Icon Base */}
-                                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${getIconGradient(app.color)} opacity-10 group-hover:opacity-20 transition-opacity`} />
-                                <div className="absolute inset-0 rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm" />
+                                <div className={`absolute inset-0 rounded-xl md:rounded-2xl bg-gradient-to-br ${getIconGradient(app.color)} opacity-10 group-hover:opacity-20 transition-opacity`} />
+                                <div className="absolute inset-0 rounded-xl md:rounded-2xl border border-white/5 bg-white/5 backdrop-blur-sm" />
 
                                 {/* Glowing Core */}
                                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-40 bg-gradient-to-br ${getIconGradient(app.color)} blur-xl transition-opacity`} />
 
-                                <Icon className={`w-7 h-7 relative z-10 transition-all duration-500
+                                <Icon className={`w-5 h-5 md:w-7 md:h-7 relative z-10 transition-all duration-500
                   ${isActive ? 'text-white scale-110' : 'text-white/60 group-hover:text-white group-hover:scale-110'}
                 `} strokeWidth={1.5} />
                             </motion.button>
 
-                            {/* Detailed Tooltip */}
-                            <div className="absolute -top-24 left-1/2 -translate-x-1/2 px-4 py-3 min-w-[200px] max-w-[250px] rounded-xl bg-black/80 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none shadow-xl flex flex-col items-center text-center">
+                            {/* Detailed Tooltip - Hidden on mobile */}
+                            <div className="hidden md:flex absolute -top-24 left-1/2 -translate-x-1/2 px-4 py-3 min-w-[200px] max-w-[250px] rounded-xl bg-black/80 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none shadow-xl flex flex-col items-center text-center">
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-1">
                                     {app.label}
                                 </span>
@@ -71,7 +71,7 @@ const Dock: React.FC = () => {
                             {isOpen && (
                                 <motion.div
                                     layoutId={`active-${app.id}`}
-                                    className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white shadow-[0_0_10px_white,0_0_20px_white]"
+                                    className="absolute -bottom-1.5 md:-bottom-2.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white shadow-[0_0_10px_white,0_0_20px_white]"
                                 />
                             )}
                         </div>

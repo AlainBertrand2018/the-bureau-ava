@@ -262,10 +262,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                     </span>
                                 </div>
                                 <h2 className="text-4xl font-black text-white tracking-tight mb-2 uppercase">
-                                    Let me Guide You
+                                    Let's Create Your Survey Questionnaire
                                 </h2>
-                                <p className="text-slate-400 font-medium max-w-md">
-                                    Your blank page should never stop your market researches
+                                <p className="text-slate-400 font-medium max-w-2xl">
+                                    Not sure where to begin? Simply define your research objective, specify your target market, refine your audience profile — and our AI Agents will handle the heavy lifting to engineer your precision-built Market Research Instrument.
                                 </p>
                             </div>
                             <div className="hidden md:flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-800/50 px-4 py-2 rounded-full border border-white/5">

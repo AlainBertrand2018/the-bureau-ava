@@ -12,6 +12,16 @@ const Desktop: React.FC = () => {
     const { openWindows, wallpaper, triggerHandover } = useOS();
     const hasMaximizedWindow = openWindows.some(w => w.isMaximized && !w.isMinimized);
 
+    const [time, setTime] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        const timer = setInterval(() => {
+            setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }, 60000);
+        return () => clearInterval(timer);
+    }, []);
+
     const getWallpaperStyles = () => {
         switch (wallpaper) {
             case 'sentient-emerald':
@@ -34,11 +44,12 @@ const Desktop: React.FC = () => {
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full" />
 
             {/* Taskbar/Top Bar */}
-            <div className="fixed top-0 left-0 right-0 h-8 flex items-center justify-between px-6 z-[1001] bg-black/10 backdrop-blur-md border-b border-white/5">
+            <div className="fixed top-0 left-0 right-0 h-8 flex items-center justify-between px-4 md:px-6 z-[1001] bg-black/10 backdrop-blur-md border-b border-white/5">
                 <div className="flex items-center gap-6">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">AVA OS v2.4.1</span>
+                    <span className="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-white/40">AVA OS v2.4.1</span>
+                    <span className="md:hidden text-[10px] font-black uppercase tracking-[0.2em] text-white/60">AVA OS</span>
                 </div>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4 md:gap-6">
                     <button
                         onClick={() => triggerHandover()}
                         className="flex items-center gap-2 group cursor-pointer"
@@ -46,8 +57,8 @@ const Desktop: React.FC = () => {
                     >
                         <HelpCircle className="w-3.5 h-3.5 text-white/40 group-hover:text-emerald-400 transition-colors" />
                     </button>
-                    <span className="text-[10px] font-bold text-white/60">
-                        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <span className="text-[10px] font-bold text-white/60 min-w-[45px] md:min-w-[50px] text-right">
+                        {time || "--:--"}
                     </span>
                 </div>
             </div>

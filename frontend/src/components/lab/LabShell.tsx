@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
     ArrowLeft,
     FlaskConical,
@@ -113,15 +114,41 @@ export default function LabShell() {
         }
     }, [currentStep, context, questions, personas, results]);
 
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!currentMission && typeof window !== 'undefined') {
+            const timer = setTimeout(() => {
+                router.push("/mission-control");
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [currentMission, router]);
+
+    const getAudienceSummary = useCallback(() => {
+        if (!currentMission) return "Simulation Environment";
+        const ref = currentMission.config.targeting_refinement;
+        if (!ref) return currentMission.config.target_audience;
+
+        const tags = [
+            ref.gender,
+            ref.age_group,
+            ref.urbanization,
+            ref.revenue_group
+        ].filter(t => t && t !== 'Any' && t !== 'Regardless' && t !== 'Mixed');
+
+        return tags.length > 0 ? tags.join(' · ').toUpperCase() : currentMission.config.target_audience;
+    }, [currentMission]);
+
     if (!currentMission) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Loading Mission Protocol...</h1>
-                    <p className="text-slate-400">If this persists, please return to Mission Control.</p>
-                    <Link href="/mission-control" className="mt-8 inline-block px-6 py-3 bg-emerald-600 rounded-lg">
-                        Return to Base
-                    </Link>
+            <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
+                <div className="flex flex-col items-center gap-6">
+                    <Activity className="w-12 h-12 text-emerald-500 animate-pulse" />
+                    <div className="text-center">
+                        <h1 className="text-xl font-black uppercase tracking-[0.3em] mb-2">Protocol Interrupted</h1>
+                        <p className="text-slate-500 text-sm font-medium">No active Mission Sentinel detected. Redirecting to initialization...</p>
+                    </div>
                 </div>
             </div>
         );
@@ -150,11 +177,11 @@ export default function LabShell() {
                 <div className="max-w-[1600px] mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-6">
                         <Link
-                            href="/mission-control"
+                            href="/os"
                             className="flex items-center gap-2 text-slate-400 hover:text-white transition-all text-[10px] font-black uppercase tracking-[0.2em] group"
                         >
                             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-                            Back to Bureau
+                            Back to SURVEY OS
                         </Link>
                         <div className="w-px h-8 bg-white/10" />
                         <div className="flex items-center gap-4">
@@ -164,7 +191,7 @@ export default function LabShell() {
                             <div>
                                 <div className="flex items-center gap-3">
                                     <h1 className="text-lg font-black tracking-tight text-white uppercase italic">
-                                        AVA Genesis Lab
+                                        Survey Stress Test Lab
                                     </h1>
                                     {currentMission && (
                                         <div className="flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full shadow-[0_0_15px_rgba(20,184,166,0.1)]">
@@ -184,7 +211,7 @@ export default function LabShell() {
                                     )}
                                 </div>
                                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-0.5">
-                                    {currentMission ? currentMission.config.target_audience : "Simulation Environment"}
+                                    {currentMission ? getAudienceSummary() : "Simulation Environment"}
                                 </p>
                             </div>
                         </div>
