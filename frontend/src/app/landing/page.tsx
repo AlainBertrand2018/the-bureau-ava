@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { useLanguage } from "@/context/LanguageContext";
 import { useCurrency } from "@/context/CurrencyContext";
 
 const RotatingDashboard = dynamic(() => import("@/components/RotatingDashboard"), { ssr: false });
@@ -16,8 +15,6 @@ const FreeLabModal = dynamic(() => import("@/components/lab/FreeLabModal"), { ss
 const ContactModal = dynamic(() => import("@/components/ContactModal"), { ssr: false });
 const LaboratoryEntryProtocol = dynamic(() => import("@/components/shared/LaboratoryEntryProtocol"), { ssr: false });
 import QuickAudit from "@/components/QuickAudit";
-import LanguageToggle from "@/components/LanguageToggle";
-import Preloader from "@/components/Preloader";
 import GDPRConsent from "@/components/GDPRConsent";
 import Footer from "@/components/Footer";
 
@@ -70,7 +67,6 @@ import {
    ═══════════════════════════════════════════════════════════════ */
 export default function Home() {
   const router = useRouter();
-  const { t, language } = useLanguage();
   const { currency } = useCurrency();
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showQuickAuditModal, setShowQuickAuditModal] = useState(false);
@@ -111,8 +107,6 @@ export default function Home() {
     fetchStats();
   }, []);
 
-
-
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <div className="flex-grow">
@@ -123,54 +117,48 @@ export default function Home() {
 
         {/* 1. Hero >> Hook & value prop */}
         <Hero
-          t={t}
           onAuditClick={() => setShowQuickAuditModal(true)}
           onGenesisClick={() => setShowGenesisModal(true)}
         />
 
         {/* 2. "Built for Decision Makers" >>> Qualify the audience immediately */}
-        <WhoItsFor t={t} />
+        <WhoItsFor />
 
         {/* 3. Cost of a bad survey >>> Agitate the pain */}
-        <PainPoints t={t} />
+        <PainPoints />
 
         {/* 4. Stress-test solution intro >>> Pivot from pain to solution */}
         <Solution
-          t={t}
           onAuditClick={() => setShowQuickAuditModal(true)}
         />
 
         {/* 5. "I was challenged on 12 surveys" + stats >>> Credibility before showing product */}
         <Proof
-          t={t}
           pubStats={pubStats}
         />
 
         {/* 6. Meet Your Analyst >>> Build personal trust & likability */}
-        <MeetAva t={t} />
+        <MeetAva />
 
         {/* 7. Three steps. Under 5 minutes >>> Now they trust you — show it's easy */}
-        <HowItWorks t={t} />
+        <HowItWorks />
 
         {/* 8. See what you'll get >>> Feature demo after trust is earned */}
         <Demo
-          t={t}
           onProtocolOpen={() => setShowProtocol(true)}
         />
 
         {/* 9. Mechanics of a Survey >>> Place it as a first article of our blog grid */}
         <SurveyMechanics
-          t={t}
           currency={currency}
           onShieldClick={() => setShowShieldModal(true)}
         />
 
         {/* 10. Genesis Suite >>> Introduce the offer */}
-        <GenesisSection t={t} />
+        <GenesisSection />
 
         {/* 11. Pricing >>> Close the sale */}
         <PricingSection
-          t={t}
           currency={currency}
           onProtocolOpen={() => {
             setProtocolTarget("Tier 1: Trial Audit");
@@ -182,16 +170,12 @@ export default function Home() {
 
         {/* 12. Final CTA >>> Last push */}
         <FinalCTASection
-          t={t}
           onEntryOpen={() => {
             setProtocolTarget("Tier 1: Trial Audit");
             setShowProtocol(true);
           }}
         />
 
-        {/* ════════════════════════════════════════════
-          LAB ENTRY MODAL
-      ════════════════════════════════════════════ */}
         {/* ════════════════════════════════════════════
           LAB ENTRY MODAL
       ════════════════════════════════════════════ */}
@@ -226,38 +210,38 @@ export default function Home() {
                     {/* Left: Branding & Info */}
                     <div className="w-full md:w-2/5 p-10 md:p-12 bg-slate-50 border-r border-slate-100 flex flex-col justify-between">
                       <div>
-                        <div className="badge-blue mb-6 inline-flex uppercase tracking-widest">{t.lab.badge}</div>
+                        <div className="badge-blue mb-6 inline-flex uppercase tracking-widest">Advanced Simulation</div>
                         <h3 className="text-3xl font-black text-slate-900 leading-tight mb-4 uppercase tracking-tighter">
-                          {t.lab.title}
+                          Laboratory Entry
                         </h3>
                         <p className="text-slate-500 text-sm font-medium leading-relaxed mb-8">
-                          {t.lab.desc}
+                          You are about to enter a high-fidelity market simulation environment. AVA will guide the protocol.
                         </p>
                       </div>
 
                       <div className="space-y-4">
                         <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-emerald-600">
                           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                          {t.lab.engines}
+                          Simulation Engines Active
                         </div>
                         <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
                           <ShieldCheck size={14} className="text-slate-400" />
-                          {t.lab.encrypted}
+                          End-to-End Encryption
                         </div>
                       </div>
                     </div>
 
                     {/* Right: Steps & Start */}
                     <div className="flex-1 p-10 md:p-12 relative">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">{t.lab.workflow}</h4>
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Protocol Workflow</h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 mb-12">
                         {[
-                          { icon: <Target size={14} />, title: t.lab.step1, desc: t.lab.step1_desc },
-                          { icon: <FileText size={14} />, title: t.lab.step2, desc: t.lab.step2_desc },
-                          { icon: <Users size={14} />, title: t.lab.step3, desc: t.lab.step3_desc },
-                          { icon: <Cpu size={14} />, title: t.lab.step4, desc: t.lab.step4_desc },
-                          { icon: <BarChart3 size={14} />, title: t.lab.step5, desc: t.lab.step5_desc },
-                          { icon: <ShieldCheck size={14} />, title: t.lab.step6, desc: t.lab.step6_desc },
+                          { icon: <Target size={14} />, title: "Context Synthesis", desc: "Market definition and objective alignment" },
+                          { icon: <FileText size={14} />, title: "Instrument Analysis", desc: "Question structure and logic evaluation" },
+                          { icon: <Users size={14} />, title: "Persona Generation", desc: "Target demographic synthesis (n=Simulation Size)" },
+                          { icon: <Cpu size={14} />, title: "Agent Orchestration", desc: "Behavioral engine execution" },
+                          { icon: <BarChart3 size={14} />, title: "Result Tabulation", desc: "Diagnostic data aggregation" },
+                          { icon: <ShieldCheck size={14} />, title: "Judgment", desc: "Final audit and recommendations" },
                         ].map((step, i) => (
                           <motion.div
                             key={i}
@@ -279,7 +263,7 @@ export default function Home() {
 
                       <div className="bg-amber-50 rounded-2xl p-5 mb-8 border border-amber-100/50">
                         <p className="text-[10px] text-amber-800 font-bold leading-relaxed uppercase tracking-tight">
-                          {t.lab.disclaimer}
+                          {"Disclaimer: Simulation outputs are diagnostic projections based on current LLM behavioral models. They should be used to improve instruments, not as a replacement for live human pilot tests."}
                         </p>
                       </div>
 
@@ -287,7 +271,7 @@ export default function Home() {
                         onClick={() => router.push("/lab")}
                         className="w-full py-5 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 group"
                       >
-                        {t.lab.initiate}
+                        Initiate Protocol
                         <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
@@ -389,17 +373,17 @@ export default function Home() {
 
                   <div className="space-y-6 mb-12">
                     <h3 className="text-4xl font-black text-slate-900 tracking-tight leading-tight">
-                      {t.shield_modal.title}
+                      The Bureau Shield
                     </h3>
                     <div className="h-1 w-20 bg-blue-600 rounded-full" />
                     <p className="text-2xl font-medium text-slate-500 leading-relaxed">
-                      {t.shield_modal.value_prop_1} <span className="text-slate-900 font-black">{t.shield_modal.value_prop_2}</span>
+                      I am your <span className="text-slate-900 font-black">Insurrection Against Bias.</span>
                     </p>
                   </div>
 
                   <div className="flex flex-col gap-4">
                     <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-md">
-                      {t.shield_modal.description}
+                      By shielding your survey with my agents, you ensure that every question is a precision tool, not a liability. I identify leading bias, ambiguity, and structural flaws before they contaminate your data.
                     </p>
                   </div>
 
@@ -412,7 +396,7 @@ export default function Home() {
                           </div>
                         ))}
                       </div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.shield_modal.trusted}</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Trusted by elite research teams</span>
                     </div>
                     <button
                       onClick={() => {
@@ -421,7 +405,7 @@ export default function Home() {
                       }}
                       className="w-full md:w-auto px-8 py-4 bg-blue-600 text-white rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 active:scale-95"
                     >
-                      {t.shield_modal.cta}
+                      Upgrade My Shield
                     </button>
                   </div>
                 </div>
@@ -452,11 +436,11 @@ export default function Home() {
                       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
                         <Sparkles size={12} className="text-blue-400" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">
-                          {t.architect.badge}
+                          Architect Protocol
                         </span>
                       </div>
                       <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase">
-                        {t.architect.title}
+                        This is Our Genesis Suite
                       </h2>
                     </div>
                     <button
@@ -493,3 +477,4 @@ export default function Home() {
     </main>
   );
 }
+

@@ -19,20 +19,21 @@ import {
     Printer,
     ClipboardList
 } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
 import { useCurrency } from "@/context/CurrencyContext";
 import AudienceConfigurator from "../shared/AudienceConfigurator";
 
 const DEFAULT_TARGETING: AudienceTargeting = {
-    gender: 'All',
-    age_range: [18, 65],
-    marital_status: 'Any',
-    revenue_range: [15000, 100000],
-    education_level: 'Any',
-    employment_sector: 'Any',
-    urbanization: 'Any',
-    country: 'Mauritius'
+    country: '',
+    region: '',
+    language: '',
+    gender: 'Mixed',
+    age_group: 'Any',
+    marital_status: 'Regardless',
+    revenue_group: 'Regardless',
+    education_level: 'Regardless',
+    employment_status: 'Regardless',
+    urbanization: 'Regardless'
 };
 
 interface SurveyArchitectProps {
@@ -40,7 +41,6 @@ interface SurveyArchitectProps {
 }
 
 export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectProps) {
-    const { t } = useLanguage();
     const { currentMission } = useMission();
     const { currency } = useCurrency();
     const [view, setView] = useState<"explainer" | "onboarding" | "processing" | "results">(mode === "app" ? "onboarding" : "explainer");
@@ -53,14 +53,23 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         targeting: DEFAULT_TARGETING
     });
     const [result, setResult] = useState<any>(null);
+    const [logs, setLogs] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
 
+    // Auto-scroll terminal
+    useEffect(() => {
+        const terminal = document.getElementById('terminal-bottom');
+        if (terminal) {
+            terminal.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [logs]);
+
     const PHASES = [
-        t.architect.pulse_generating,
-        t.architect.pulse_auditing,
-        t.architect.pulse_refining,
-        t.architect.pulse_simulating,
-        t.architect.pulse_finalizing
+        "I'm architecting your instrument...",
+        "Applying Bureau Gold Standard Audit...",
+        "Recursive Refinement for 100/100 Quality...",
+        "Running Census-Weighted Simulation (n=20)...",
+        "Generating Field Manual & Methodology..."
     ];
 
     const handlePaywallSuccess = () => {
@@ -78,16 +87,13 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         setView("processing");
         setLoadingPhase(0);
         setError(null);
+        setLogs([]);
 
         const phaseTimer = setInterval(() => {
             setLoadingPhase(prev => (prev < 4 ? prev + 1 : prev));
-        }, 6000);
+        }, 8000);
 
         try {
-            const context = `Objective: ${formData.objective} | Audience: ${formData.audience} | Decisions: ${formData.decisions}`;
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 300000); // 5 min timeout
-
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/architect/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -96,32 +102,54 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                     item_count: 20,
                     mission_id: currentMission?.mission_id,
                     targeting_refinement: formData.targeting
-                }),
-                signal: controller.signal
+                })
             });
-            clearTimeout(timeout);
-
-            const responseText = await response.text().catch(() => "Unknown Server Error");
 
             if (!response.ok) {
+                const responseText = await response.text();
                 let detail = "Internal Server Error";
                 try {
                     const errorData = JSON.parse(responseText);
-                    detail = errorData.error || errorData.detail || errorData.message || detail;
+                    const rawDetail = errorData.error || errorData.detail || errorData.message || detail;
+                    detail = typeof rawDetail === 'object' ? JSON.stringify(rawDetail) : String(rawDetail);
                 } catch {
                     detail = responseText.slice(0, 200);
                 }
                 throw new Error(detail);
             }
 
-            const data = JSON.parse(responseText);
-            setResult(data);
+            const reader = response.body?.getReader();
+            if (!reader) throw new Error("Connection failed: Stream not available.");
 
-            // Stagger view transition to avoid main-thread blocking [Violation]
-            setTimeout(() => {
-                clearInterval(phaseTimer);
-                setView("results");
-            }, 10);
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const chunk = JSON.parse(line);
+                        if (chunk.type === "log") {
+                            setLogs(prev => [...prev.slice(-100), chunk]);
+                        } else if (chunk.type === "package") {
+                            setResult(chunk.data);
+                            clearInterval(phaseTimer);
+                            setTimeout(() => setView("results"), 800);
+                        } else if (chunk.type === "error") {
+                            throw new Error(chunk.detail);
+                        }
+                    } catch (e: any) {
+                        console.error("Critical Stream Parsing Error:", e);
+                    }
+                }
+            }
         } catch (err: any) {
             console.error("SurveyArchitect Error:", err);
             setError(err.message || "A network or protocol error occurred during Genesis creation.");
@@ -230,19 +258,19 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 mb-4">
                                     <Sparkles size={12} className="text-teal-400" />
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-400">
-                                        {t.architect.badge}
+                                        Architect Protocol
                                     </span>
                                 </div>
                                 <h2 className="text-4xl font-black text-white tracking-tight mb-2 uppercase">
-                                    {t.architect.card_title}
+                                    Let me Guide You
                                 </h2>
                                 <p className="text-slate-400 font-medium max-w-md">
-                                    {t.architect.card_sub}
+                                    Your blank page should never stop your market researches
                                 </p>
                             </div>
                             <div className="hidden md:flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-800/50 px-4 py-2 rounded-full border border-white/5">
                                 <Lock size={12} className="text-emerald-500" />
-                                {t.lab_ui.header_shield}
+                                Zero PII • Synthetic Only • Census-Weighted
                             </div>
                         </div>
 
@@ -254,14 +282,14 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         <Target size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-indigo-100 font-bold text-sm tracking-tight">{t.architect.onboarding.step1}</h4>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase">{t.architect.onboarding.step1_desc}</p>
+                                        <h4 className="text-indigo-100 font-bold text-sm tracking-tight">Strategic Objective</h4>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase">What is your primary research goal?</p>
                                     </div>
                                 </div>
                                 <textarea
                                     value={formData.objective}
                                     onChange={(e) => setFormData({ ...formData, objective: e.target.value })}
-                                    placeholder={t.architect.onboarding.placeholder_obj}
+                                    placeholder="e.g., Launching a new premium coffee brand in Port Louis..."
                                     className="w-full h-32 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40 transition-all resize-none font-medium"
                                 />
                             </div>
@@ -273,14 +301,14 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         <Users size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-indigo-100 font-bold text-sm tracking-tight">{t.architect.onboarding.step2}</h4>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase">{t.architect.onboarding.step2_desc}</p>
+                                        <h4 className="text-indigo-100 font-bold text-sm tracking-tight">Target Audience</h4>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase">Who am I interviewing?</p>
                                     </div>
                                 </div>
                                 <textarea
                                     value={formData.audience}
                                     onChange={(e) => setFormData({ ...formData, audience: e.target.value })}
-                                    placeholder={t.architect.onboarding.placeholder_aud}
+                                    placeholder="e.g., Urban professionals, age 25-45, interested in sustainability..."
                                     className="w-full h-32 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all resize-none font-medium"
                                 />
                             </div>
@@ -292,14 +320,14 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         <Compass size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-indigo-100 font-bold text-sm tracking-tight">{t.architect.onboarding.step3}</h4>
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase">{t.architect.onboarding.step3_desc}</p>
+                                        <h4 className="text-indigo-100 font-bold text-sm tracking-tight">Decision Matrix</h4>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase">What action will this data drive?</p>
                                     </div>
                                 </div>
                                 <textarea
                                     value={formData.decisions}
                                     onChange={(e) => setFormData({ ...formData, decisions: e.target.value })}
-                                    placeholder={t.architect.onboarding.placeholder_dec}
+                                    placeholder="e.g., Deciding on the final retail price and packaging color..."
                                     className="w-full h-32 bg-slate-800/50 border border-slate-700/50 rounded-2xl p-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500/40 transition-all resize-none font-medium"
                                 />
                             </div>
@@ -327,7 +355,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                     : "bg-slate-800 text-slate-600 border border-slate-700 cursor-not-allowed opacity-50"
                                     }`}
                             >
-                                {t.architect.cta_generate}
+                                Initialize Genesis Protocol
                                 <ArrowRight size={18} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
                             </button>
                         </div>
@@ -340,67 +368,147 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="relative z-10 flex flex-col items-center justify-center min-h-[600px] p-12 text-center"
+                        className="relative z-10 flex flex-col items-center justify-center min-h-[600px] p-6 text-center"
                     >
-                        <div className="relative mb-12">
-                            <motion.div
-                                animate={{
-                                    rotate: 360,
-                                    scale: [1, 1.1, 1]
-                                }}
-                                transition={{
-                                    rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-                                    scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                                }}
-                                className="w-32 h-32 rounded-full border-t-2 border-r-2 border-teal-500 opacity-20"
-                            />
-                            <motion.div
-                                animate={{
-                                    rotate: -360,
-                                    scale: [1, 1.05, 1]
-                                }}
-                                transition={{
-                                    rotate: { duration: 15, repeat: Infinity, ease: "linear" },
-                                    scale: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-                                }}
-                                className="absolute inset-2 rounded-full border-b-2 border-emerald-500 opacity-20"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <Cpu size={40} className="text-white opacity-80" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-6 max-w-md">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">
-                                {t.architect.cta_generating}
-                            </h3>
-                            <AnimatePresence mode="wait">
-                                <motion.p
-                                    key={loadingPhase}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="text-xl font-bold text-slate-200"
-                                >
-                                    {PHASES[loadingPhase]}
-                                </motion.p>
-                            </AnimatePresence>
-
-                            <div className="flex items-center justify-center gap-1.5 pt-4">
-                                {[0, 1, 2, 3, 4].map((i) => (
-                                    <div
-                                        key={i}
-                                        className={`h-1.5 rounded-full transition-all duration-1000 ${i <= loadingPhase ? "w-8 bg-teal-500" : "w-2 bg-slate-800"
-                                            }`}
+                        <div className="flex flex-col lg:flex-row items-center gap-12 w-full max-w-5xl">
+                            {/* Left: Loading Core */}
+                            <div className="flex flex-col items-center lg:items-start lg:w-1/3">
+                                <div className="relative mb-8">
+                                    <motion.div
+                                        animate={{
+                                            rotate: 360,
+                                            scale: [1, 1.1, 1]
+                                        }}
+                                        transition={{
+                                            rotate: { duration: 10, repeat: Infinity, ease: "linear" },
+                                            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                                        }}
+                                        className="w-32 h-32 rounded-full border-t-2 border-r-2 border-teal-500 opacity-20"
                                     />
-                                ))}
+                                    <motion.div
+                                        animate={{
+                                            rotate: -360,
+                                            scale: [1, 1.05, 1]
+                                        }}
+                                        transition={{
+                                            rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+                                            scale: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+                                        }}
+                                        className="absolute inset-2 rounded-full border-b-2 border-emerald-500 opacity-20"
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <Cpu size={40} className="text-white opacity-80" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 text-center lg:text-left">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">
+                                        Architecting...
+                                    </h3>
+                                    <AnimatePresence mode="wait">
+                                        <motion.p
+                                            key={loadingPhase}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            className="text-xl font-bold text-slate-200"
+                                        >
+                                            {PHASES[loadingPhase]}
+                                        </motion.p>
+                                    </AnimatePresence>
+
+                                    <div className="flex items-center justify-center lg:justify-start gap-1.5 pt-2">
+                                        {[0, 1, 2, 3, 4].map((i) => (
+                                            <div
+                                                key={i}
+                                                className={`h-1.5 rounded-full transition-all duration-1000 ${i <= loadingPhase ? "w-8 bg-teal-500" : "w-2 bg-slate-800"
+                                                    }`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
 
-                            <p className="text-[11px] text-slate-500 font-medium text-center leading-relaxed max-w-sm mx-auto mt-6">
-                                I am stress-testing your research instrument across 5 diagnostic personas, recursively auditing and refining each item until it meets the Bureau&apos;s Gold Standards.
-                            </p>
-                        </div>
+                            {/* Right: Agent Terminal (The Glass Box) */}
+                            <div className="flex-1 w-full relative">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 rounded-2xl blur-xl opacity-50" />
+                                <div className="relative bg-slate-950/80 border border-white/5 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl">
+                                    {/* Terminal Header */}
+                                    <div className="flex items-center justify-between px-4 py-3 bg-white/5 border-b border-white/5">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex gap-1.5">
+                                                <div className="w-2 h-2 rounded-full bg-red-400/50" />
+                                                <div className="w-2 h-2 rounded-full bg-amber-400/50" />
+                                                <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
+                                            </div>
+                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-4">
+                                                Genesis Protocol — Deployment Logs
+                                            </span>
+                                        </div>
+                                        {logs.length > 0 && (
+                                            <div className="flex items-center gap-2">
+                                                <Activity size={10} className="text-teal-500 animate-pulse" />
+                                                <span className="text-[8px] font-bold text-teal-500 uppercase tracking-tighter">Live Stream</span>
+                                            </div>
+                                        )}
+                                    </div>
 
+                                    {/* Terminal Body */}
+                                    <div className="h-[360px] overflow-y-auto p-4 font-mono text-left scroll-smooth custom-scrollbar">
+                                        {logs.length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center h-full text-slate-600 space-y-4">
+                                                <Activity size={24} className="opacity-20" />
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-center animate-pulse">
+                                                    Waiting for agent telemetry...
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {logs.map((log, idx) => (
+                                                    <motion.div
+                                                        key={idx}
+                                                        initial={{ opacity: 0, x: -5 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        className="flex gap-3 text-[11px] leading-relaxed group"
+                                                    >
+                                                        <span className="text-slate-600 shrink-0 font-bold opacity-50">
+                                                            [{log.timestamp}]
+                                                        </span>
+                                                        <div className="flex gap-2">
+                                                            <span className={`font-black uppercase tracking-tighter shrink-0 ${log.agent === 'SENTINEL' ? 'text-blue-400' :
+                                                                log.agent === 'AUDITOR' ? 'text-amber-400' :
+                                                                    log.agent === 'ADJUDICATOR' ? 'text-emerald-400' :
+                                                                        'text-teal-400'
+                                                                }`}>
+                                                                {log.agent}
+                                                            </span>
+                                                            <span className="text-slate-400 shrink-0">::</span>
+                                                            <span className="text-slate-500 font-bold uppercase shrink-0">
+                                                                {log.action}
+                                                            </span>
+                                                            <span className="text-slate-200">
+                                                                {log.details}
+                                                            </span>
+                                                        </div>
+                                                    </motion.div>
+                                                ))}
+                                                <div id="terminal-bottom" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Terminal Footer */}
+                                    <div className="px-4 py-2 bg-slate-900/50 flex items-center justify-between">
+                                        <p className="text-[8px] font-bold text-slate-600 uppercase">
+                                            Buffer: {logs.length} Chunks
+                                        </p>
+                                        <p className="text-[8px] font-bold text-slate-600 uppercase">
+                                            Status: {view === 'processing' ? 'Active Generation' : 'Halted'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </motion.div>
                 )}
 
@@ -417,10 +525,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                     <CheckCircle2 size={24} />
                                 </div>
                                 <div>
-                                    <h2 className={`text-2xl font-black tracking-tight ${view === 'results' ? 'text-slate-900' : 'text-white'}`}>{t.architect.result.title}</h2>
+                                    <h2 className={`text-2xl font-black tracking-tight ${view === 'results' ? 'text-slate-900' : 'text-white'}`}>Bureau-Certified Research Instrument</h2>
                                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
                                         <Activity size={10} className="text-emerald-500" />
-                                        {t.architect.result.certified} • {result.certified_by}
+                                        BUREAU CERTIFIED • {result.certified_by}
                                     </div>
                                 </div>
                             </div>
@@ -521,7 +629,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100">
                                     <div className="flex items-center gap-2 mb-4 text-emerald-400">
                                         <FlaskConical size={14} />
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest">{t.architect.result.rationale_title}</h4>
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest">STRATEGIC RATIONALE</h4>
                                     </div>
                                     <p className="text-xs text-slate-600 font-medium leading-relaxed">
                                         "{result?.strategic_rationale || "Strategic synthesis complete."}"
@@ -531,12 +639,12 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm">
                                     <div className="flex items-center gap-2 mb-6 text-slate-500">
                                         <FileText size={14} />
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest">{t.architect.result.manual_title}</h4>
+                                        <h4 className="text-[10px] font-black uppercase tracking-widest">METHODOLOGY & PROTOCOLS</h4>
                                     </div>
 
                                     <div className="space-y-6">
                                         <div>
-                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">{t.architect.result.best_practices}</p>
+                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">Deployment Best Practices</p>
                                             <ul className="space-y-2">
                                                 {(result?.field_manual?.deployment_best_practices || []).map((bp: string, i: number) => (
                                                     <li key={i} className="flex gap-2 text-[11px] text-slate-500 font-medium">
@@ -548,7 +656,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         </div>
 
                                         <div className="pt-4 border-t border-slate-200">
-                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">{t.architect.result.outcomes}</p>
+                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Predicted Data Outcomes</p>
                                             <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
                                                 {result?.field_manual?.potential_outcomes || "High-fidelity research data anticipated."}
                                             </p>
@@ -571,7 +679,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 <div className="flex items-center gap-2 mb-6">
                                     <Activity size={16} className="text-emerald-600" />
                                     <h3 className="text-[11px] font-black uppercase tracking-[0.22em] text-slate-900">
-                                        {t.architect.result.prediction_title}
+                                        BUREAU VALIDATION CERTIFICATE
                                     </h3>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -6,12 +6,11 @@ import { Target, FileText } from "lucide-react";
 import { Reveal } from "./LandingUtils";
 
 interface HeroProps {
-    t: any;
     onAuditClick: () => void;
     onGenesisClick: () => void;
 }
 
-export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
+export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
     return (
         <section id="hero" className="relative min-h-screen flex items-center hero-dot-grid hero-spotlight pt-24 overflow-hidden">
             {/* AVA — background presence */}
@@ -52,7 +51,7 @@ export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
                         className="badge-blue inline-flex items-center gap-2 mb-8"
                     >
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse-soft" />
-                        {t.hero.badge}
+                        The Elite Choice
                     </motion.div>
 
                     {/* Headline */}
@@ -62,7 +61,7 @@ export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
                         transition={{ delay: 0.35 }}
                         className="text-hero mb-6"
                     >
-                        <span className="text-slate-900">{t.hero.title.split(' ').slice(0, -1).join(' ')}</span>
+                        <span className="text-slate-900">I Secure Success Before Launching</span>
                         <br />
                         <span
                             style={{
@@ -72,7 +71,7 @@ export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
                                 backgroundClip: "text",
                             }}
                         >
-                            {t.hero.title.split(' ').slice(-1)}
+                            Surveys
                         </span>
                     </motion.h1>
 
@@ -83,10 +82,8 @@ export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
                         transition={{ delay: 0.5 }}
                         className="text-sm md:text-base text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed"
                     >
-                        {t.hero.description}
+                        My AI agents and I, we rigorously stress-test your market research instruments across any target markets, ensuring your survey delivers meaningful, reliable data within each unique cultural, economic, and social context.
                     </motion.p>
-
-
 
                     {/* Hero CTAs */}
                     <motion.div
@@ -100,14 +97,14 @@ export default function Hero({ t, onAuditClick, onGenesisClick }: HeroProps) {
                             className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
                         >
                             <Target size={16} />
-                            {t.hero.cta_audit}
+                            Catch A Glimpse of What We Can Do
                         </button>
                         <button
                             onClick={onGenesisClick}
                             className="flex items-center gap-2 px-8 py-4 text-slate-500 border-2 border-slate-200 rounded-full text-sm font-bold uppercase tracking-widest hover:text-slate-900 hover:border-slate-300 transition-all"
                         >
                             <FileText size={16} />
-                            {t.hero.cta_demo}
+                            Build Your Questionnaire from Scratch
                         </button>
                     </motion.div>
                 </div>

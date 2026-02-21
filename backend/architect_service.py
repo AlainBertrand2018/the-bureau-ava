@@ -7,7 +7,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from simulation_engine import MarketSimulator
-from ai_utils import generate_with_retry, safe_parse_json
+from ai_utils import generate_with_retry, safe_parse_json, extract_country
 from report_generator import bureau_reports
 from config import settings
 from logger import bureau_logger
@@ -55,7 +55,7 @@ class SurveyArchitect:
         """
         Honest self-audit for AVA's own output.
         """
-        target = mission.config.target_country if mission else "Mauritius"
+        target = mission.config.target_country if mission else ""
         context_constraints = ""
         if mission:
             d = mission.dossier
@@ -113,7 +113,7 @@ Question: "{question}"
                 "rewrite": question
             }
 
-    async def _perfect_single_question(self, question: str, mission: Optional[Any] = None) -> str:
+    async def _perfect_single_question(self, question: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> str:
         """
         Runs a single question through the genuine audit.
         If it fails (<95), uses the rewrite. Re-audits up to 2 passes.
@@ -129,7 +129,14 @@ Question: "{question}"
         current = audit.get("rewrite", question) or question
         best = current
         best_score = score
-        target = mission.config.target_country if mission else "Mauritius"
+        
+        # Determine target country for the rewrite logic
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(question) or "Target Country"
 
         for _ in range(2):
             re_audit = await self._genuine_audit(current, mission=mission)
@@ -181,7 +188,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
 
         return best
 
-    async def perfect_instrument(self, questions: List[str], mission: Optional[Any] = None) -> List[str]:
+    async def perfect_instrument(self, questions: List[str], mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> List[str]:
         """
         Runs ALL 20 questions through genuine audit IN PARALLEL.
         Semaphore(5) prevents API rate limits.
@@ -190,7 +197,7 @@ Output ONLY the perfected question. No quotes, no explanation."""
 
         async def bounded(q):
             async with sem:
-                return await self._perfect_single_question(q, mission=mission)
+                return await self._perfect_single_question(q, mission=mission, targeting=targeting)
 
         tasks = [bounded(q) for q in questions]
         return list(await asyncio.gather(*tasks))
@@ -198,38 +205,84 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
     # PHASE 1: Generate raw instrument
     # ──────────────────────────────────────────────────────────
+
     async def generate_instrument(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        target = mission.config.target_country if mission else "Mauritius"
+        # ── COUNTRY RESOLUTION ──
+        # Priority: Mission config > Context extraction > Targeting > None
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(context)
         
         prompt = f"""
-        [SCIENTIFIC PROTOCOL: ARCHITECT GENESIS]
-        You are the Lead Research Architect at The Bureau.
-        Craft a {count}-item survey instrument for {target}.
-        
-        CONTEXT: {context}
-        """
+[BUREAU GENESIS PROTOCOL — ARCHITECT INSTRUMENT GENERATION]
+You are the Lead Research Architect at The Bureau.
+
+TARGET COUNTRY: {target}
+You MUST design ALL questions specifically for {target}. Use {target}'s local currency, cultural norms, and socioeconomic context.
+Do NOT reference any other country.
+
+RESEARCH CONTEXT: {context}
+
+REQUIRED ITEM COUNT: Exactly {count} questions. Not fewer. Not more.
+"""
 
         if targeting:
             prompt += f"\nPRECISION AUDIENCE TARGETING:\n{json.dumps(targeting, indent=2)}\n"
-            prompt += "Calibrate the linguistic register, complexity, and cultural framing to this SPECIFIC group.\n"
+            prompt += "Calibrate linguistic register, complexity, and cultural framing to THIS SPECIFIC group.\n"
 
         if mission:
              prompt += f"\nCULTURAL DOSSIER FOR {target}:\n{json.dumps(mission.dossier.dict(), indent=2)}\n"
 
         prompt += f"""
-        CRITICAL RULES — every question MUST:
-        1. Ask about exactly ONE concept (never double-barreled)
-        2. Use neutral, unbiased language
-        3. Include a specific temporal frame ("In the past 3 months...")
-        4. End with a complete response scale in parentheses
-        5. Be culturally appropriate for {target} audiences
+══════════════════════════════════════════
+MANDATORY RULES — EVERY question MUST:
+══════════════════════════════════════════
 
-        Divide into phases: Warm-up, KPI, Behavioral, Demographic.
+1. SINGLE CONCEPT ONLY (never double-barreled)
+   ❌ WRONG: "How satisfied are you with the price and quality of the product?"
+   ✅ RIGHT: "In the past 3 months, how satisfied have you been with the price of this product? (1=Very dissatisfied, 5=Very satisfied)"
 
-        OUTPUT FORMAT: Return a JSON object with:
-        - "questionnaire": [list of {count} strings]
-        - "strategic_rationale": "one sentence explaining the research design"
-        """
+2. NEUTRAL, UNBIASED LANGUAGE (no leading or loaded words)
+   ❌ WRONG: "Don't you agree that this product is excellent?"
+   ✅ RIGHT: "How would you rate this product overall? (1=Very poor, 5=Excellent)"
+
+3. SPECIFIC TEMPORAL FRAME — Every question MUST anchor to a time period
+   ❌ WRONG: "How often do you exercise?"
+   ✅ RIGHT: "In the past 4 weeks, how often did you exercise? (Never, 1-2 times, 3-4 times, 5+ times)"
+
+4. COMPLETE RESPONSE SCALE in parentheses at the end
+   - INTENSITY/SATISFACTION questions: Use Likert scales (1=Low, 5=High)
+   - FREQUENCY questions: Use specific frequency bands (Never, 1-2 times/week, etc.)
+   - MONETARY/QUANTITY questions: Use category ranges with {target} local currency
+     ❌ WRONG: "How much do you spend on groceries? (1=Not much, 5=A lot)"
+     ✅ RIGHT: "In a typical month, how much do you spend on groceries? (Under ₹5,000, ₹5,001-₹10,000, ₹10,001-₹20,000, Over ₹20,000)"
+   - YES/NO questions: Use (Yes / No / Unsure)
+
+5. CULTURALLY APPROPRIATE for {target}
+   - Use {target}'s local currency in monetary scales
+   - Respect cultural sensitivities
+   - Avoid assumptions about lifestyle or values
+
+6. EVERY question must be DIRECTLY relevant to the research context above.
+   Do NOT include generic template questions, placeholder text like "[Project Name]", or questions about unrelated topics.
+
+══════════════════════════════════════════
+INSTRUMENT STRUCTURE ({count} items total)
+══════════════════════════════════════════
+- Phase 1: Warm-up (2-3 easy, non-threatening questions)
+- Phase 2: KPI / Core Metrics (5-7 questions on the main research topic)
+- Phase 3: Behavioral (5-7 questions on actions and habits)
+- Phase 4: Demographic Classification (3-5 questions)
+
+CRITICAL: The "questionnaire" array MUST contain EXACTLY {count} question strings. Delivering fewer is a protocol violation.
+
+OUTPUT FORMAT: Return a JSON object with:
+- "questionnaire": [list of EXACTLY {count} question strings]
+- "strategic_rationale": "one sentence explaining the research design logic for {target}"
+"""
 
         try:
             response = await generate_with_retry(
@@ -244,11 +297,36 @@ Output ONLY the perfected question. No quotes, no explanation."""
             
             # Robustness: if AI returns a list directly, wrap it
             if isinstance(data, list):
-                return {"questionnaire": data, "strategic_rationale": "High-fidelity instrument generated."}
+                data = {"questionnaire": data, "strategic_rationale": f"High-fidelity {target} instrument generated."}
             
             # Ensure it's a dict
             if not isinstance(data, dict):
                 data = {"questionnaire": [], "strategic_rationale": "Invalid data format"}
+
+            # ── COUNT ENFORCEMENT ──
+            questions = data.get("questionnaire", [])
+            if len(questions) < count:
+                print(f"[Architect] Under-delivery: got {len(questions)}/{count}. Retrying...")
+                # Retry with a more forceful prompt
+                retry_prompt = f"""Generate EXACTLY {count - len(questions)} MORE survey questions for {target}.
+Topic: {context}
+These questions must follow the same rules as above (single concept, temporal frame, scale in parentheses, {target} local currency).
+Return a JSON array of strings only."""
+                try:
+                    retry_resp = await generate_with_retry(
+                        client=self.client,
+                        model=self.model,
+                        contents=retry_prompt,
+                        config=types.GenerateContentConfig(response_mime_type='application/json')
+                    )
+                    extra = safe_parse_json(retry_resp.text)
+                    if isinstance(extra, list):
+                        questions.extend(extra)
+                    elif isinstance(extra, dict) and "questionnaire" in extra:
+                        questions.extend(extra["questionnaire"])
+                    data["questionnaire"] = questions[:count]  # Cap at requested count
+                except Exception:
+                    pass  # Keep what we have
                 
             return data
         except Exception as e:
@@ -258,6 +336,88 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
     # MAIN ENTRY: Genesis Pipeline
     # ──────────────────────────────────────────────────────────
+    async def create_full_package_stream(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None):
+        """
+        Streaming version of the Genesis Pipeline for the Glass Box UX.
+        Yields NDJSON logs of agent activity.
+        """
+        def log(agent: str, action: str, details: str):
+            return json.dumps({
+                "type": "log",
+                "agent": agent,
+                "action": action,
+                "details": details,
+                "timestamp": time.strftime("%H:%M:%S")
+            }) + "\n"
+
+        try:
+            # 1. Generate
+            yield log("ARCHITECT", "INITIALIZING", "Synthesizing research objectives into structural anchors.")
+            initial = await self.generate_instrument(context, count, mission=mission, targeting=targeting)
+            questions = initial.get("questionnaire", [])
+            yield log("ARCHITECT", "DRAFT_COMPLETE", f"Core instrument drafted with {len(questions)} high-fidelity items.")
+
+            # 2. Perfect via genuine audit
+            yield log("SENTINEL", "SCANNING", "Scanning draft for cognitive bias and linguistic ambiguity.")
+            
+            perfected = []
+            for i, q in enumerate(questions):
+                yield log("AUDITOR", "STRESS_TEST", f"Auditing item {i+1}/{len(questions)} against cultural axioms...")
+                res = await self._perfect_single_question(q, mission=mission, targeting=targeting)
+                perfected.append(res)
+                if (i+1) % 5 == 0 or i == len(questions) - 1:
+                    yield log("ADJUDICATOR", "SYNC", f"Batch check complete. Progress: {round((i+1)/len(questions)*100)}%")
+
+            yield log("ADJUDICATOR", "VERIFICATION", "All protocol violations resolved. Instrument integrity verified.")
+
+            # 3. Validate via simulation
+            yield log("PROFILER", "RECONNAISSANCE", "Extracting cultural personas for stress-test simulation.")
+            personas = await self.simulator.generate_personas_validation(5, context, mission=mission, targeting=targeting)
+            
+            yield log("SENTINEL", "DEPLOYING", "Deploying n=5 synthetic agent panel for field simulation.")
+            df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
+            
+            df_results = df_results.fillna("")
+            results_list = df_results.to_dict(orient="records")
+            
+            yield log("AUDITOR", "ANALYZING", "Processing simulation telemetry and behavioral signals.")
+            simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission, targeting=targeting)
+
+            # 4. Packaging
+            yield log("ARCHITECT", "FINALIZING", "Synthesizing field manual and scientific disclosures.")
+            
+            package_prompt = f"""
+            Given these survey questions: {json.dumps(perfected)}
+            Insights: {json.dumps(simulation_report.get('executive_summary', ''))}
+            Generate JSON with: deployment_best_practices (list), potential_outcomes (str), scientific_disclosure (str).
+            """
+            
+            resp = await generate_with_retry(
+                client=self.client,
+                model=self.model,
+                contents=package_prompt,
+                config=types.GenerateContentConfig(response_mime_type='application/json')
+            )
+            package_details = safe_parse_json(resp.text)
+
+            package = {
+                "mission": mission.dict() if mission else None,
+                "instrument": perfected,
+                "strategic_rationale": initial.get("strategic_rationale", ""),
+                "field_manual": package_details,
+                "simulation_report": simulation_report,
+                "certified_by": "AVA Lead Architect v2.0",
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ")
+            }
+            package["formatted_report"] = bureau_reports.generate_dossier(package)
+            package["field_instrument_html"] = bureau_reports.generate_field_instrument(package)
+
+            yield log("ADJUDICATOR", "COMPLETE", "Genesis Suite successfully compiled. Delivering package.")
+            yield json.dumps({"type": "package", "data": package}) + "\n"
+
+        except Exception as e:
+            yield json.dumps({"type": "error", "detail": str(e)}) + "\n"
+
     async def create_full_package(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         1. Generate raw instrument
@@ -281,17 +441,17 @@ Output ONLY the perfected question. No quotes, no explanation."""
 
         # 2. Perfect via genuine audit
         print(f"[Genesis] Phase 2: Perfecting {len(questions)} questions via Bureau Audit...")
-        perfected = await self.perfect_instrument(questions, mission=mission)
+        perfected = await self.perfect_instrument(questions, mission=mission, targeting=targeting)
 
         # 3. Validate via simulation
         print(f"[Genesis] Phase 3: Running n=5 simulation for validation...")
-        personas = await self.simulator.generate_personas_validation(5, context, mission=mission)
+        personas = await self.simulator.generate_personas_validation(5, context, mission=mission, targeting=targeting)
         df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
         
         # Sanitize NaN/Inf for JSON compliance
         df_results = df_results.fillna("")
         results_list = df_results.to_dict(orient="records")
-        simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission)
+        simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission, targeting=targeting)
         
         if not isinstance(simulation_report, dict):
             print("[Genesis] WARNING: Simulation report is invalid, using fallback.")

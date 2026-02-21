@@ -6,13 +6,12 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart3, PieChart as PieIcon, TrendingUp, Target, Activity } from 'lucide-react';
-import { useLanguage } from "@/context/LanguageContext";
 
-const getViews = (t: any) => [
-    { id: 'bias', label: t.rotating_dashboard.bias, icon: <BarChart3 size={14} /> },
-    { id: 'distribution', label: t.rotating_dashboard.distribution, icon: <PieIcon size={14} /> },
-    { id: 'dropoff', label: t.rotating_dashboard.dropoff, icon: <TrendingUp size={14} /> },
-    { id: 'quality', label: t.rotating_dashboard.quality, icon: <Target size={14} /> }
+const VIEWS = [
+    { id: 'bias', label: "Bias Detection", icon: <BarChart3 size={14} /> },
+    { id: 'distribution', label: "Response Distribution", icon: <PieIcon size={14} /> },
+    { id: 'dropoff', label: "Drop-off Risk Curve", icon: <TrendingUp size={14} /> },
+    { id: 'quality', label: "Quality Dimensions", icon: <Target size={14} /> }
 ];
 
 const MOCK_BAR = [
@@ -48,8 +47,6 @@ const MOCK_RADAR = [
 ];
 
 export default function RotatingDashboard() {
-    const { t } = useLanguage();
-    const VIEWS = getViews(t);
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -57,7 +54,7 @@ export default function RotatingDashboard() {
             setCurrentIndex((prev) => (prev + 1) % VIEWS.length);
         }, 4000);
         return () => clearInterval(timer);
-    }, [VIEWS.length]);
+    }, []);
 
     const activeView = VIEWS[currentIndex];
 
@@ -183,9 +180,9 @@ export default function RotatingDashboard() {
             <div className="px-5 pb-4 flex items-center justify-between text-[9px] font-bold tracking-widest text-slate-400 uppercase">
                 <span className="flex items-center gap-1.5">
                     <Activity size={10} className="text-emerald-500" />
-                    <span className="text-emerald-600">{t.rotating_dashboard.live_analysis.split(' ')[0]}</span> {t.rotating_dashboard.live_analysis.split(' ')[1]}
+                    <span className="text-emerald-600">Live</span> Analysis
                 </span>
-                <span>{t.rotating_dashboard.personas}</span>
+                <span>50 Diagnostic Personas</span>
             </div>
         </div>
     );

@@ -8,6 +8,7 @@ import {
     Landmark,
     GraduationCap,
     Pill,
+    Activity,
 } from "lucide-react";
 import { useMission } from "@/context/MissionContext";
 
@@ -21,19 +22,19 @@ const PRESETS = [
         icon: <ShoppingCart size={18} />,
         label: "FMCG Product Launch",
         context:
-            "We are launching a premium organic delivery service in Mauritius, targeting young professionals aged 22-35 in urban areas. The subscription costs Rs 500/month. We want to understand price sensitivity, brand perception of 'organic' vs 'local', and willingness to switch from traditional markets.",
+            "We are launching a premium organic delivery service, targeting young professionals aged 22-35 in urban areas. We want to understand price sensitivity, brand perception of 'organic' vs 'local', and willingness to switch from traditional markets.",
     },
     {
         icon: <Landmark size={18} />,
         label: "Government Policy",
         context:
-            "The Ministry of Education is proposing mandatory digital literacy courses for secondary school students. We need to gauge public opinion across age groups, socioeconomic backgrounds, and regions — particularly understanding resistance from traditional educators and parents in rural areas.",
+            "The Department of Education is proposing mandatory digital literacy courses for secondary school students. We need to gauge public opinion across age groups, socioeconomic backgrounds, and regions — particularly understanding resistance from traditional educators and parents in rural areas.",
     },
     {
         icon: <GraduationCap size={18} />,
         label: "Academic Research",
         context:
-            "PhD research on consumer trust in fintech applications among Mauritian adults aged 25-50. We're investigating whether factors like local brand ownership, regulatory oversight visibility, and peer recommendations influence adoption rates differently across ethnic communities.",
+            "PhD research on consumer trust in fintech applications among adults aged 25-50. We're investigating whether factors like local brand ownership, regulatory oversight visibility, and peer recommendations influence adoption rates differently across communities.",
     },
     {
         icon: <Pill size={18} />,
@@ -45,104 +46,123 @@ const PRESETS = [
 
 export default function ContextStep({ context, setContext }: ContextStepProps) {
     const { currentMission } = useMission();
-    const targetCountry = currentMission?.config.target_country || "Mauritius";
+    const targetCountry = currentMission?.config.target_country || "Target Market";
 
     return (
-        <div className="max-w-5xl mx-auto py-10">
+        <div className="max-w-5xl mx-auto py-10 pb-20">
             {/* Section Header */}
             <div className="mb-12">
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                        <Crosshair size={18} className="text-emerald-600" />
+                <div className="flex items-center gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.15)]">
+                        <Crosshair size={22} className="text-teal-400" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black tracking-tight text-slate-900">
+                        <h2 className="text-3xl font-black tracking-tight text-white uppercase italic">
                             Mission Brief
                         </h2>
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                            Define The Simulation Parameters
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <div className="h-0.5 w-8 bg-teal-500 rounded-full" />
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                                Define Research Parameters
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <p className="text-slate-500 font-medium leading-relaxed max-w-2xl">
+                <p className="text-slate-400 font-medium leading-relaxed max-w-2xl text-sm">
                     Describe the survey you're planning. Include your{" "}
-                    <span className="text-slate-900 font-bold">target audience</span>,{" "}
-                    <span className="text-slate-900 font-bold">industry</span>, and{" "}
-                    <span className="text-slate-900 font-bold">
-                        what you're trying to find out
+                    <span className="text-teal-400 font-bold">target audience</span>,{" "}
+                    <span className="text-teal-400 font-bold">industry</span>, and{" "}
+                    <span className="text-white font-bold px-2 py-0.5 bg-white/5 rounded mx-1">
+                        intended outcomes
                     </span>
                     . The more detail you provide, the sharper our synthetic agents will
                     be.
                 </p>
             </div>
-            {/* Main Input */}
-            <div className="relative mb-12">
+
+            {/* Main Input - Glass Box Style */}
+            <div className="relative mb-16 px-1">
+                <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 rounded-[2.5rem] blur-xl opacity-30 pointer-events-none" />
                 <textarea
                     value={context}
                     onChange={(e) => setContext(e.target.value)}
                     placeholder={`Example: We are launching a premium organic delivery service targeting ${targetCountry} professionals. We want to understand price sensitivity, cultural barriers to adoption, and preferred communication channels...`}
                     rows={6}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-8 text-slate-800 placeholder:text-slate-400 font-medium leading-relaxed focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all resize-none text-base"
+                    className="w-full bg-slate-950/80 border border-white/10 rounded-[2rem] p-8 text-white placeholder:text-slate-600 font-medium leading-relaxed focus:outline-none focus:border-teal-500/50 focus:ring-4 focus:ring-teal-500/5 transition-all resize-none text-base shadow-2xl backdrop-blur-md"
                 />
-                <div className="absolute bottom-4 right-6 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest">
+                <div className="absolute bottom-6 right-8 flex items-center gap-6 text-[10px] font-black uppercase tracking-[0.2em]">
                     <span
-                        className={`${context.length > 10 ? "text-emerald-600" : "text-slate-400"
+                        className={`${context.length > 10 ? "text-teal-400" : "text-slate-600"
                             }`}
                     >
-                        {context.length} chars
+                        {context.length} / 1000 Tokens
                     </span>
                     {context.length > 10 && (
-                        <motion.span
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="text-emerald-600 flex items-center gap-1"
+                        <motion.div
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="text-teal-400 flex items-center gap-2 bg-teal-500/10 px-3 py-1 rounded-full border border-teal-500/20"
                         >
-                            ✓ Valid
-                        </motion.span>
+                            <Activity size={10} className="animate-pulse" />
+                            <span>Signal Verified</span>
+                        </motion.div>
                     )}
                 </div>
             </div>
 
             {/* Quick Presets */}
-            <div>
-                <div className="flex items-center gap-2 mb-6">
-                    <Lightbulb size={14} className="text-amber-400" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                        Quick-Load Scenarios
-                    </span>
+            <div className="relative">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                    <div className="flex items-center gap-3 px-4 py-1.5 bg-slate-900/50 rounded-full border border-white/5">
+                        <Lightbulb size={12} className="text-amber-400" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">
+                            Pre-Configured Streams
+                        </span>
+                    </div>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {PRESETS.map((preset, i) => (
                         <motion.button
                             key={i}
                             onClick={() => setContext(preset.context)}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
-                            className={`text-left p-6 rounded-2xl border transition-all duration-300 group ${context === preset.context
-                                ? "bg-emerald-50 border-emerald-200 shadow-sm"
-                                : "bg-white border-slate-100 hover:border-slate-200"
+                            whileHover={{ y: -4, scale: 1.01 }}
+                            whileTap={{ scale: 0.98 }}
+                            className={`text-left p-6 rounded-[1.5rem] border transition-all duration-500 group relative overflow-hidden ${context === preset.context
+                                ? "bg-teal-500/10 border-teal-500/30 shadow-[0_20px_40px_rgba(20,184,166,0.1)]"
+                                : "bg-slate-950/40 border-white/5 hover:border-white/10 hover:bg-slate-900/40"
                                 }`}
                         >
-                            <div className="flex items-center gap-3 mb-3">
+                            {context === preset.context && (
+                                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent pointer-events-none" />
+                            )}
+
+                            <div className="flex items-center gap-4 mb-4 relative z-10">
                                 <div
-                                    className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${context === preset.context
-                                        ? "bg-emerald-100 text-emerald-600"
-                                        : "bg-slate-50 text-slate-400 group-hover:text-slate-600"
+                                    className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-500 ${context === preset.context
+                                        ? "bg-teal-400 text-slate-950 shadow-[0_0_20px_rgba(20,184,166,0.4)]"
+                                        : "bg-slate-800 text-slate-400 group-hover:text-teal-400 group-hover:bg-teal-400/10"
                                         }`}
                                 >
                                     {preset.icon}
                                 </div>
-                                <span
-                                    className={`text-xs font-black uppercase tracking-widest ${context === preset.context
-                                        ? "text-emerald-600"
-                                        : "text-slate-600"
-                                        }`}
-                                >
-                                    {preset.label}
-                                </span>
+                                <div>
+                                    <span
+                                        className={`text-[11px] font-black uppercase tracking-[0.2em] transition-colors ${context === preset.context
+                                            ? "text-teal-400"
+                                            : "text-slate-400 group-hover:text-white"
+                                            }`}
+                                    >
+                                        {preset.label}
+                                    </span>
+                                    <div className={`h-0.5 mt-1 transition-all duration-500 ${context === preset.context ? "w-full bg-teal-500" : "w-4 bg-slate-700 group-hover:w-8 group-hover:bg-slate-500"}`} />
+                                </div>
                             </div>
-                            <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">
-                                {preset.context.slice(0, 120)}...
+                            <p className={`text-[11px] font-medium leading-[1.8] transition-colors relative z-10 line-clamp-2 ${context === preset.context ? "text-slate-300" : "text-slate-500 group-hover:text-slate-400"
+                                }`}>
+                                {preset.context}
                             </p>
                         </motion.button>
                     ))}

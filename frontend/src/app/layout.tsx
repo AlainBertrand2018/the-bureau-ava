@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 // import { Inter } from "next/font/google";
 import "./globals.css";
-import { LanguageProvider } from "@/context/LanguageContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { MissionProvider } from "@/context/MissionContext";
 
@@ -39,16 +38,16 @@ export const metadata: Metadata = {
       "Stress-test your survey with AI. Catch bias, ambiguity, and drop-off risks before fieldwork.",
     images: ["/og-image.webp"],
   },
-  icons: {
-    icon: [
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
-  manifest: "/manifest.json",
+  // icons: {
+  //   icon: [
+  //     { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+  //     { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+  //   ],
+  //   apple: [
+  //     { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+  //   ],
+  // },
+  // manifest: "/manifest.json",
 };
 
 const jsonLd = {
@@ -97,13 +96,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <LanguageProvider>
-          <CurrencyProvider>
-            <MissionProvider>
-              {children}
-            </MissionProvider>
-          </CurrencyProvider>
-        </LanguageProvider>
+        <CurrencyProvider>
+          <MissionProvider>
+            {children}
+          </MissionProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

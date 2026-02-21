@@ -7,7 +7,7 @@ import asyncio
 import time
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
-from ai_utils import generate_with_retry, safe_parse_json
+from ai_utils import generate_with_retry, safe_parse_json, extract_country
 from config import settings
 from logger import bureau_logger
 
@@ -74,7 +74,7 @@ class MarketSimulator:
         self.total_output_tokens = 0
         self.mission: Optional[Any] = None  # Stores the active Mission object
         
-    async def get_response(self, persona: Dict, question: str, mission: Optional[Any] = None, retries: int = 3) -> Dict[str, Any]:
+    async def get_response(self, persona: Dict, question: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None, retries: int = 3) -> Dict[str, Any]:
         """
         Returns a dict with:
           - text: the AI response
@@ -95,8 +95,15 @@ class MarketSimulator:
             )
 
         # Survey Quality Auditor — Diagnostic Lens Prompt
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(question) or "Target Country"
+
         sys_instruct = (
-            f"You are a survey quality auditor operating as a diagnostic respondent in {mission.config.target_country if mission else 'Mauritius'}. "
+            f"You are a survey quality auditor operating as a diagnostic respondent in {target}. "
             f"You are simulating the perspective of: {persona.get('name')}, age {persona.get('age')}, "
             f"from {persona.get('location')}, occupation: {persona.get('occupation')}. "
             f"Personality traits: {persona.get('traits')}.\n"
@@ -162,7 +169,7 @@ class MarketSimulator:
     # VALIDATION MODE — Natural responses (for Architect)
     # Personas respond as REAL people, no adversarial diagnostics.
     # ──────────────────────────────────────────────────────────
-    async def get_response_validation(self, persona: Dict, question: str, mission: Optional[Any] = None, retries: int = 3) -> Dict[str, Any]:
+    async def get_response_validation(self, persona: Dict, question: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None, retries: int = 3) -> Dict[str, Any]:
         """Natural response mode — persona answers as a real person would.
         No Red Team instructions, no structural diagnostics."""
         context_constraints = ""
@@ -174,10 +181,13 @@ class MarketSimulator:
                 f"CULTURAL RULES: {', '.join(d.cultural_axioms)}\n"
             )
 
+        target = mission.config.target_country if mission else (targeting.get("country") if targeting else extract_country(question) or "Target Country")
+
         sys_instruct = (
             f"You are {persona.get('name')}, age {persona.get('age')}, "
             f"from {persona.get('location')}, occupation: {persona.get('occupation')}. "
             f"Personality: {persona.get('traits')}.\n"
+            f"LOCATION CONTEXT: {target}\n"
             f"{context_constraints}\n"
             f"You are taking a survey. Answer each question naturally and honestly as this person would. "
             f"Give your genuine response based on your life experience, knowledge, and perspective.\n\n"
@@ -220,12 +230,19 @@ class MarketSimulator:
             print(f"Error for persona {persona.get('name')}: {e}")
             return {"text": f"ERROR: {str(e)}", "provenance": {"model": self.model_name, "error": str(e)}}
 
-    async def generate_personas_validation(self, count: int, context: str, mission: Optional[Any] = None) -> List[Dict]:
+    async def generate_personas_validation(self, count: int, context: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> List[Dict]:
         """
         Generates N realistic survey respondent profiles representative of the target audience.
         """
-        target = mission.config.target_country if mission else "Mauritius"
-        region = mission.config.target_region if mission else "local areas"
+        if mission:
+            target = mission.config.target_country
+            region = mission.config.target_region
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+            region = targeting.get("region", "local areas")
+        else:
+            target = extract_country(context) or "Target Country"
+            region = "local areas"
         
         prompt = (
             f"Generate {count} realistic survey respondent profiles representative of {target} ({region}).\n\n"
@@ -254,12 +271,12 @@ class MarketSimulator:
                 )
             )
             data = safe_parse_json(response.text)
-            return data if isinstance(data, list) else [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Average respondent"}]
+            return data if isinstance(data, list) else [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}]
         except Exception as e:
             print(f"Error generating validation personas: {e}")
-            return [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Average respondent"}]
+            return [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}]
 
-    async def run_simulation(self, demographics: List[Dict], questions: List[str], mode: str = "diagnostic", mission: Optional[Any] = None):
+    async def run_simulation(self, demographics: List[Dict], questions: List[str], mode: str = "diagnostic", mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None):
         """Runs simulation with FULL parallelization across all persona×question pairs.
         Uses a semaphore to cap concurrency and avoid API rate limits.
         
@@ -274,7 +291,7 @@ class MarketSimulator:
         
         async def bounded_call(persona, question):
             async with sem:
-                return persona, question, await respond(persona, question, mission=mission)
+                return persona, question, await respond(persona, question, mission=mission, targeting=targeting)
         
         tasks = []
         for persona in demographics:
@@ -314,9 +331,14 @@ class MarketSimulator:
 
         return pd.DataFrame(results), provenance_summary
 
-    async def generate_personas(self, count: int, context: str, mission: Optional[Any] = None) -> List[Dict]:
+    async def generate_personas(self, count: int, context: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> List[Dict]:
         """Generates diagnostic respondent archetypes — stress-test lenses, not a representative sample."""
-        target = mission.config.target_country if mission else "Mauritius"
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(context) or "Target Country"
         
         prompt = (
             f"You are a survey quality auditor preparing a diagnostic dry-run of a client's survey in {target}.\n"
@@ -352,11 +374,16 @@ class MarketSimulator:
             return json.loads(response.text)
         except Exception as e:
             print(f"Error generating personas: {e}")
-            return [{"name": "Generic User", "age": 30, "location": "Port Louis", "occupation": "Professional", "traits": "Neutral baseline respondent"}]
+            return [{"name": "Generic User", "age": 30, "location": "Urban Area", "occupation": "Professional", "traits": "Neutral baseline respondent"}]
 
-    async def generate_questions(self, context: str, count: int = 5, mission: Optional[Any] = None) -> Dict:
+    async def generate_questions(self, context: str, count: int = 5, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict:
         """[UPSELL] AI-drafted questionnaire — generates optimised questions based on context."""
-        target = mission.config.target_country if mission else "Mauritius"
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(context) or "Target Country"
         
         prompt = (
             f"You are a senior survey methodologist at The Bureau, a premium survey consultancy.\n"
@@ -401,9 +428,14 @@ class MarketSimulator:
             print(f"Error generating questions: {e}")
             return {"questions": ["Q1: What do you think?"], "rationale": "Error generating suggestions."}
 
-    async def generate_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None) -> Dict:
+    async def generate_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict:
         """Generates a structured quality audit report with mitigation, redressment, and quality scores."""
-        target = mission.config.target_country if mission else "Mauritius"
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(context) or "Target Country"
 
         response_summary = []
         for row in results:
@@ -528,10 +560,15 @@ Return ONLY valid JSON. Be honest, balanced, and specific."""
     # AVA justifies her choices. No self-doubt. No issue-hunting.
     # The Lab's generate_report() (Red Team diagnostic) is untouched.
     # ──────────────────────────────────────────────────────────
-    async def generate_validation_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None) -> Dict:
+    async def generate_validation_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict:
         """Generates an authoritative Bureau Validation Certificate.
         AVA explains WHY each design choice was made and HOW to deploy."""
-        target = mission.config.target_country if mission else "Mauritius"
+        if mission:
+            target = mission.config.target_country
+        elif targeting and targeting.get("country"):
+            target = targeting["country"]
+        else:
+            target = extract_country(context) or "Target Country"
         
         response_summary = []
         for row in results:
@@ -648,7 +685,7 @@ Return ONLY valid JSON. Be authoritative, professional, and confident."""
         benchmark_persona = {
             "name": "Benchmark Validator",
             "age": 35,
-            "location": "Port Louis",
+            "location": "Regional Hub",
             "occupation": "Office Worker",
             "traits": "Average respondent, moderate education, no strong opinions. "
                       "Will respond honestly and flag anything confusing or problematic."

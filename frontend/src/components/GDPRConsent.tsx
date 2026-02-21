@@ -2,10 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Settings, Check, X } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
-
 export default function GDPRConsent() {
-    const { t } = useLanguage();
     const [isVisible, setIsVisible] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [preferences, setPreferences] = useState({
@@ -59,10 +56,10 @@ export default function GDPRConsent() {
 
                             <div className="flex-grow text-center md:text-left">
                                 <h3 className="text-slate-900 font-black text-lg mb-2 uppercase tracking-tight">
-                                    {t.gdpr.title}
+                                    Precision Ethics & Privacy
                                 </h3>
                                 <p className="text-slate-500 text-sm leading-relaxed max-w-2xl">
-                                    {t.gdpr.description}
+                                    Bureau protocols use session-level telemetry to ensure diagnostic integrity. Your data remains your own, processed under state-of-the-art security.
                                 </p>
                             </div>
 
@@ -72,19 +69,19 @@ export default function GDPRConsent() {
                                     className="w-full sm:w-auto px-6 py-3 text-slate-500 hover:text-slate-900 text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Settings size={14} />
-                                    {t.gdpr.customize}
+                                    Customize
                                 </button>
                                 <button
                                     onClick={handleDecline}
                                     className="w-full sm:w-auto px-6 py-3 border border-slate-200 text-slate-900 hover:bg-slate-50 rounded-full text-xs font-black uppercase tracking-widest transition-all"
                                 >
-                                    {t.gdpr.decline}
+                                    Essential Only
                                 </button>
                                 <button
                                     onClick={handleAcceptAll}
                                     className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white hover:bg-blue-700 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20"
                                 >
-                                    {t.gdpr.accept}
+                                    Authorize Full Stack
                                 </button>
                             </div>
                         </div>
@@ -100,7 +97,7 @@ export default function GDPRConsent() {
                                 >
                                     <div className="flex items-center justify-between mb-8">
                                         <h4 className="text-slate-900 font-black text-xl uppercase tracking-tight">
-                                            {t.gdpr.customize}
+                                            Customize
                                         </h4>
                                         <button
                                             onClick={() => setShowSettings(false)}
@@ -114,8 +111,8 @@ export default function GDPRConsent() {
                                         {/* Essential */}
                                         <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                                             <div className="flex-grow">
-                                                <p className="text-slate-900 font-bold text-sm mb-1">{t.gdpr.essential.title}</p>
-                                                <p className="text-slate-500 text-xs leading-relaxed">{t.gdpr.essential.desc}</p>
+                                                <p className="text-slate-900 font-bold text-sm mb-1">Mission Critical</p>
+                                                <p className="text-slate-500 text-xs leading-relaxed">Necessary for session state and core application architecture.</p>
                                             </div>
                                             <div className="w-12 h-6 bg-slate-200 rounded-full flex items-center px-1 opacity-50 cursor-not-allowed">
                                                 <div className="w-4 h-4 bg-white rounded-full shadow-sm translate-x-6" />
@@ -131,8 +128,8 @@ export default function GDPRConsent() {
                                                 }`}
                                         >
                                             <div className="flex-grow">
-                                                <p className="text-slate-900 font-bold text-sm mb-1">{t.gdpr.analytics.title}</p>
-                                                <p className="text-slate-500 text-xs leading-relaxed">{t.gdpr.analytics.desc}</p>
+                                                <p className="text-slate-900 font-bold text-sm mb-1">Uplink Diagnostics</p>
+                                                <p className="text-slate-500 text-xs leading-relaxed">Help the Bureau improve its auditing algorithms via anonymous telemetry.</p>
                                             </div>
                                             <div className={`w-12 h-6 rounded-full flex items-center px-1 transition-colors ${preferences.analytics ? "bg-blue-600" : "bg-slate-200"
                                                 }`}>
@@ -148,7 +145,7 @@ export default function GDPRConsent() {
                                         onClick={handleSavePreferences}
                                         className="w-full mt-8 py-4 bg-slate-900 text-white hover:bg-slate-800 rounded-full text-xs font-black uppercase tracking-widest transition-all"
                                     >
-                                        {t.gdpr.save}
+                                        Commit Preferences
                                     </button>
                                 </motion.div>
                             )}

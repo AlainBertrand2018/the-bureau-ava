@@ -26,7 +26,6 @@ import {
     UserCircle,
     Fingerprint
 } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface Persona {
     name: string;
@@ -67,7 +66,6 @@ interface FreeLabModalProps {
 }
 
 export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
-    const { t } = useLanguage();
     const [step, setStep] = useState(0);
     const [context, setContext] = useState("");
     const [questions, setQuestions] = useState<string[]>([""]);

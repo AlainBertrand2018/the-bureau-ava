@@ -4,11 +4,10 @@ import { Zap, ArrowRight } from "lucide-react";
 import { Reveal } from "./LandingUtils";
 
 interface FinalCTASectionProps {
-    t: any;
     onEntryOpen: () => void;
 }
 
-export default function FinalCTASection({ t, onEntryOpen }: FinalCTASectionProps) {
+export default function FinalCTASection({ onEntryOpen }: FinalCTASectionProps) {
     return (
         <section id="contact" className="section-full relative overflow-hidden bg-white">
             <div className="absolute inset-0 bg-gradient-to-t from-blue-50 to-white pointer-events-none" />
@@ -25,7 +24,7 @@ export default function FinalCTASection({ t, onEntryOpen }: FinalCTASectionProps
 
                         <div className="relative z-10">
                             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-4">
-                                {t.final_cta.title_1}{" "}
+                                Don't guess.{" "}
                                 <span
                                     style={{
                                         background: "linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%)",
@@ -34,18 +33,18 @@ export default function FinalCTASection({ t, onEntryOpen }: FinalCTASectionProps
                                         backgroundClip: "text",
                                     }}
                                 >
-                                    {t.final_cta.title_2}
+                                    Audit first.
                                 </span>
                             </h2>
                             <p className="text-lg text-slate-500 font-medium max-w-lg mx-auto mb-10">
-                                {t.final_cta.sub}
+                                Leave the stress-test to me. Run your first survey quality audit now — completely free.
                             </p>
                             <button
                                 onClick={onEntryOpen}
                                 className="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
                             >
                                 <Zap size={18} />
-                                {t.final_cta.btn}
+                                Start Free Audit
                                 <ArrowRight size={18} />
                             </button>
                         </div>

@@ -28,125 +28,21 @@ import Image from "next/image";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
 import AudienceConfigurator from "@/components/shared/AudienceConfigurator";
 import LaboratoryEntryProtocol from "@/components/shared/LaboratoryEntryProtocol";
+import { COUNTRIES } from "@/constants/marketData";
 
 const DEFAULT_TARGETING: AudienceTargeting = {
-    gender: 'All',
-    age_range: [18, 65],
-    marital_status: 'Any',
-    revenue_range: [15000, 100 * 1000],
-    education_level: 'Any',
-    employment_sector: 'Any',
-    urbanization: 'Any',
-    country: 'Mauritius'
+    country: "",
+    region: "",
+    language: "",
+    gender: 'Mixed',
+    age_group: 'Any',
+    marital_status: 'Regardless',
+    revenue_group: 'Regardless',
+    education_level: 'Regardless',
+    employment_status: 'Regardless',
+    urbanization: 'Regardless'
 };
 
-const COUNTRIES = [
-    // ── AFRICA ──
-    { id: "Mauritius", name: "🇲🇺 Mauritius", regions: ["Islandwide", "Plaines Wilhems", "Port Louis", "North", "South", "East", "West"], flag: "🇲🇺" },
-    { id: "South Africa", name: "🇿🇦 South Africa", regions: ["National", "Gauteng", "Western Cape", "KwaZulu-Natal", "Eastern Cape", "Free State"], flag: "🇿🇦" },
-    { id: "Kenya", name: "🇰🇪 Kenya", regions: ["National", "Nairobi", "Mombasa", "Central", "Coast", "Rift Valley"], flag: "🇰🇪" },
-    { id: "Nigeria", name: "🇳🇬 Nigeria", regions: ["National", "Lagos", "Abuja", "Rivers", "Kano", "Oyo"], flag: "🇳🇬" },
-    { id: "Ghana", name: "🇬🇭 Ghana", regions: ["National", "Greater Accra", "Ashanti", "Northern"], flag: "🇬🇭" },
-    { id: "Tanzania", name: "🇹🇿 Tanzania", regions: ["National", "Dar es Salaam", "Arusha", "Zanzibar"], flag: "🇹🇿" },
-    { id: "Ethiopia", name: "🇪🇹 Ethiopia", regions: ["National", "Addis Ababa", "Oromia", "Amhara"], flag: "🇪🇹" },
-    { id: "Egypt", name: "🇪🇬 Egypt", regions: ["National", "Cairo", "Alexandria", "Giza", "Upper Egypt"], flag: "🇪🇬" },
-    { id: "Morocco", name: "🇲🇦 Morocco", regions: ["National", "Casablanca", "Rabat", "Marrakech", "Fez"], flag: "🇲🇦" },
-    { id: "Rwanda", name: "🇷🇼 Rwanda", regions: ["National", "Kigali", "Eastern", "Western"], flag: "🇷🇼" },
-    { id: "Senegal", name: "🇸🇳 Senegal", regions: ["National", "Dakar", "Thiès", "Saint-Louis"], flag: "🇸🇳" },
-    { id: "Ivory Coast", name: "🇨🇮 Ivory Coast", regions: ["National", "Abidjan", "Yamoussoukro", "Bouaké"], flag: "🇨🇮" },
-    { id: "Uganda", name: "🇺🇬 Uganda", regions: ["National", "Kampala", "Central", "Western"], flag: "🇺🇬" },
-    { id: "Madagascar", name: "🇲🇬 Madagascar", regions: ["National", "Antananarivo", "Toamasina", "Mahajanga"], flag: "🇲🇬" },
-    { id: "Reunion", name: "🇷🇪 Réunion", regions: ["Islandwide", "Saint-Denis", "Saint-Pierre", "Saint-Paul"], flag: "🇷🇪" },
-    // ── EUROPE ──
-    { id: "United Kingdom", name: "🇬🇧 United Kingdom", regions: ["National", "London", "Manchester", "Birmingham", "Scotland", "Wales", "Northern Ireland"], flag: "🇬🇧" },
-    { id: "France", name: "🇫🇷 France", regions: ["National", "Île-de-France", "Lyon", "Marseille", "Toulouse", "Bordeaux", "Nice"], flag: "🇫🇷" },
-    { id: "Germany", name: "🇩🇪 Germany", regions: ["National", "Berlin", "Munich", "Hamburg", "Frankfurt", "Cologne"], flag: "🇩🇪" },
-    { id: "Italy", name: "🇮🇹 Italy", regions: ["National", "Rome", "Milan", "Naples", "Turin", "Florence"], flag: "🇮🇹" },
-    { id: "Spain", name: "🇪🇸 Spain", regions: ["National", "Madrid", "Barcelona", "Valencia", "Seville", "Basque Country"], flag: "🇪🇸" },
-    { id: "Netherlands", name: "🇳🇱 Netherlands", regions: ["National", "Amsterdam", "Rotterdam", "The Hague", "Utrecht"], flag: "🇳🇱" },
-    { id: "Switzerland", name: "🇨🇭 Switzerland", regions: ["National", "Zurich", "Geneva", "Basel", "Bern"], flag: "🇨🇭" },
-    { id: "Belgium", name: "🇧🇪 Belgium", regions: ["National", "Brussels", "Flanders", "Wallonia"], flag: "🇧🇪" },
-    { id: "Portugal", name: "🇵🇹 Portugal", regions: ["National", "Lisbon", "Porto", "Algarve"], flag: "🇵🇹" },
-    { id: "Sweden", name: "🇸🇪 Sweden", regions: ["National", "Stockholm", "Gothenburg", "Malmö"], flag: "🇸🇪" },
-    { id: "Norway", name: "🇳🇴 Norway", regions: ["National", "Oslo", "Bergen", "Trondheim"], flag: "🇳🇴" },
-    { id: "Poland", name: "🇵🇱 Poland", regions: ["National", "Warsaw", "Kraków", "Gdańsk", "Wrocław"], flag: "🇵🇱" },
-    { id: "Ireland", name: "🇮🇪 Ireland", regions: ["National", "Dublin", "Cork", "Galway"], flag: "🇮🇪" },
-    { id: "Greece", name: "🇬🇷 Greece", regions: ["National", "Athens", "Thessaloniki", "Crete"], flag: "🇬🇷" },
-    { id: "Turkey", name: "🇹🇷 Turkey", regions: ["National", "Istanbul", "Ankara", "Izmir", "Antalya"], flag: "🇹🇷" },
-    // ── MIDDLE EAST ──
-    { id: "United Arab Emirates", name: "🇦🇪 United Arab Emirates", regions: ["National", "Dubai", "Abu Dhabi", "Sharjah"], flag: "🇦🇪" },
-    { id: "Saudi Arabia", name: "🇸🇦 Saudi Arabia", regions: ["National", "Riyadh", "Jeddah", "Mecca", "NEOM"], flag: "🇸🇦" },
-    { id: "Qatar", name: "🇶🇦 Qatar", regions: ["National", "Doha", "Al Wakrah"], flag: "🇶🇦" },
-    { id: "Israel", name: "🇮🇱 Israel", regions: ["National", "Tel Aviv", "Jerusalem", "Haifa"], flag: "🇮🇱" },
-    { id: "Jordan", name: "🇯🇴 Jordan", regions: ["National", "Amman", "Aqaba", "Irbid"], flag: "🇯🇴" },
-    // ── ASIA PACIFIC ──
-    { id: "India", name: "🇮🇳 India", regions: ["National", "Mumbai", "Delhi", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune"], flag: "🇮🇳" },
-    { id: "China", name: "🇨🇳 China", regions: ["National", "Beijing", "Shanghai", "Shenzhen", "Guangzhou", "Chengdu", "Hangzhou"], flag: "🇨🇳" },
-    { id: "Japan", name: "🇯🇵 Japan", regions: ["National", "Tokyo", "Osaka", "Kyoto", "Nagoya", "Fukuoka"], flag: "🇯🇵" },
-    { id: "South Korea", name: "🇰🇷 South Korea", regions: ["National", "Seoul", "Busan", "Incheon", "Daegu"], flag: "🇰🇷" },
-    { id: "Singapore", name: "🇸🇬 Singapore", regions: ["National", "Central", "East", "West"], flag: "🇸🇬" },
-    { id: "Indonesia", name: "🇮🇩 Indonesia", regions: ["National", "Jakarta", "Bali", "Surabaya", "Bandung"], flag: "🇮🇩" },
-    { id: "Malaysia", name: "🇲🇾 Malaysia", regions: ["National", "Kuala Lumpur", "Penang", "Johor Bahru", "Sabah"], flag: "🇲🇾" },
-    { id: "Thailand", name: "🇹🇭 Thailand", regions: ["National", "Bangkok", "Chiang Mai", "Phuket", "Pattaya"], flag: "🇹🇭" },
-    { id: "Philippines", name: "🇵🇭 Philippines", regions: ["National", "Metro Manila", "Cebu", "Davao"], flag: "🇵🇭" },
-    { id: "Vietnam", name: "🇻🇳 Vietnam", regions: ["National", "Ho Chi Minh City", "Hanoi", "Da Nang"], flag: "🇻🇳" },
-    { id: "Pakistan", name: "🇵🇰 Pakistan", regions: ["National", "Karachi", "Lahore", "Islamabad", "Rawalpindi"], flag: "🇵🇰" },
-    { id: "Bangladesh", name: "🇧🇩 Bangladesh", regions: ["National", "Dhaka", "Chittagong", "Sylhet"], flag: "🇧🇩" },
-    { id: "Sri Lanka", name: "🇱🇰 Sri Lanka", regions: ["National", "Colombo", "Kandy", "Galle"], flag: "🇱🇰" },
-    // ── OCEANIA ──
-    { id: "Australia", name: "🇦🇺 Australia", regions: ["National", "Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide"], flag: "🇦🇺" },
-    { id: "New Zealand", name: "🇳🇿 New Zealand", regions: ["National", "Auckland", "Wellington", "Christchurch"], flag: "🇳🇿" },
-    // ── AMERICAS ──
-    { id: "United States", name: "🇺🇸 United States", regions: ["National", "New York", "California", "Texas", "Florida", "Illinois", "Midwest", "Southeast", "Pacific Northwest"], flag: "🇺🇸" },
-    { id: "Canada", name: "🇨🇦 Canada", regions: ["National", "Ontario", "Quebec", "British Columbia", "Alberta"], flag: "🇨🇦" },
-    { id: "Mexico", name: "🇲🇽 Mexico", regions: ["National", "Mexico City", "Guadalajara", "Monterrey", "Cancún"], flag: "🇲🇽" },
-    { id: "Brazil", name: "🇧🇷 Brazil", regions: ["National", "São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Manaus"], flag: "🇧🇷" },
-    { id: "Argentina", name: "🇦🇷 Argentina", regions: ["National", "Buenos Aires", "Córdoba", "Rosario", "Mendoza"], flag: "🇦🇷" },
-    { id: "Colombia", name: "🇨🇴 Colombia", regions: ["National", "Bogotá", "Medellín", "Cali", "Barranquilla"], flag: "🇨🇴" },
-    { id: "Chile", name: "🇨🇱 Chile", regions: ["National", "Santiago", "Valparaíso", "Concepción"], flag: "🇨🇱" },
-    { id: "Peru", name: "🇵🇪 Peru", regions: ["National", "Lima", "Cusco", "Arequipa"], flag: "🇵🇪" },
-    // ── CARIBBEAN & ISLANDS ──
-    { id: "Jamaica", name: "🇯🇲 Jamaica", regions: ["National", "Kingston", "Montego Bay"], flag: "🇯🇲" },
-    { id: "Trinidad and Tobago", name: "🇹🇹 Trinidad & Tobago", regions: ["National", "Port of Spain", "San Fernando"], flag: "🇹🇹" },
-    { id: "Seychelles", name: "🇸🇨 Seychelles", regions: ["Islandwide", "Mahé", "Praslin", "La Digue"], flag: "🇸🇨" },
-    { id: "Maldives", name: "🇲🇻 Maldives", regions: ["National", "Malé", "Ari Atoll"], flag: "🇲🇻" },
-];
-
-const LANGUAGES = [
-    { id: "English", name: "English" },
-    { id: "French", name: "French" },
-    { id: "Spanish", name: "Spanish" },
-    { id: "Portuguese", name: "Portuguese" },
-    { id: "German", name: "German" },
-    { id: "Italian", name: "Italian" },
-    { id: "Dutch", name: "Dutch" },
-    { id: "Swedish", name: "Swedish" },
-    { id: "Norwegian", name: "Norwegian" },
-    { id: "Polish", name: "Polish" },
-    { id: "Greek", name: "Greek" },
-    { id: "Turkish", name: "Turkish" },
-    { id: "Arabic", name: "Arabic" },
-    { id: "Hebrew", name: "Hebrew" },
-    { id: "Hindi", name: "Hindi" },
-    { id: "Urdu", name: "Urdu" },
-    { id: "Bengali", name: "Bengali" },
-    { id: "Tamil", name: "Tamil" },
-    { id: "Sinhala", name: "Sinhala" },
-    { id: "Mandarin", name: "Mandarin Chinese" },
-    { id: "Japanese", name: "Japanese" },
-    { id: "Korean", name: "Korean" },
-    { id: "Bahasa", name: "Bahasa (Malay/Indonesian)" },
-    { id: "Thai", name: "Thai" },
-    { id: "Vietnamese", name: "Vietnamese" },
-    { id: "Filipino", name: "Filipino (Tagalog)" },
-    { id: "Swahili", name: "Swahili" },
-    { id: "Amharic", name: "Amharic" },
-    { id: "Yoruba", name: "Yoruba" },
-    { id: "Pidgin", name: "Nigerian Pidgin" },
-    { id: "Creole", name: "Mauritian Creole" },
-    { id: "Kinyarwanda", name: "Kinyarwanda" },
-    { id: "Malagasy", name: "Malagasy" },
-];
 
 function MissionControlContent() {
     const router = useRouter();
@@ -164,9 +60,9 @@ function MissionControlContent() {
 
     const [step, setStep] = useState<"configure" | "calibrating" | "ready">("configure");
     const [config, setConfig] = useState({
-        target_country: "Mauritius",
-        target_region: "Islandwide",
-        target_language: "English",
+        target_country: "",
+        target_region: "",
+        target_language: "",
         target_audience: "",
         research_topic: "Consumer Behavior",
         targeting_refinement: DEFAULT_TARGETING
@@ -382,32 +278,7 @@ function MissionControlContent() {
                                 {/* Left: General Settings */}
                                 <div className="lg:col-span-2 space-y-6">
                                     <div className="glass-card p-8 space-y-8">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Target Market</label>
-                                                <select
-                                                    value={config.target_country}
-                                                    onChange={(e) => setConfig({ ...config, target_country: e.target.value })}
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none appearance-none"
-                                                >
-                                                    {COUNTRIES.map(c => <option key={c.id} value={c.id}>{c.flag} {c.name}</option>)}
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Region / Province</label>
-                                                <select
-                                                    value={config.target_region}
-                                                    onChange={(e) => setConfig({ ...config, target_region: e.target.value })}
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none appearance-none"
-                                                >
-                                                    {COUNTRIES.find(c => c.id === config.target_country)?.regions.map(r => (
-                                                        <option key={r} value={r}>{r}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="grid grid-cols-1 gap-6">
                                             <div className="space-y-2">
                                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Research Topic</label>
                                                 <input
@@ -417,16 +288,6 @@ function MissionControlContent() {
                                                     placeholder="e.g. FMCG, Fintech, Healthcare"
                                                     className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none"
                                                 />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Language Register</label>
-                                                <select
-                                                    value={config.target_language}
-                                                    onChange={(e) => setConfig({ ...config, target_language: e.target.value })}
-                                                    className="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-emerald-500 transition-colors outline-none appearance-none"
-                                                >
-                                                    {LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                                                </select>
                                             </div>
                                         </div>
 
@@ -448,7 +309,13 @@ function MissionControlContent() {
                                             </div>
                                             <AudienceConfigurator
                                                 value={config.targeting_refinement}
-                                                onChange={(val) => setConfig({ ...config, targeting_refinement: val })}
+                                                onChange={(val) => setConfig({
+                                                    ...config,
+                                                    targeting_refinement: val,
+                                                    target_country: val.country || "",
+                                                    target_region: val.region || "",
+                                                    target_language: val.language || ""
+                                                })}
                                                 dark
                                             />
                                         </div>
@@ -464,14 +331,21 @@ function MissionControlContent() {
                                                 <Globe size={16} className="text-slate-500 mt-0.5" />
                                                 <div>
                                                     <p className="text-[10px] font-bold text-slate-500 uppercase">Target Market</p>
-                                                    <p className="text-sm font-black">{config.target_country}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <img
+                                                            src={`https://flagcdn.com/w20/${COUNTRIES.find(c => c.id === config.targeting_refinement.country)?.code || 'mu'}.png`}
+                                                            alt=""
+                                                            className="w-4 h-3 rounded-sm object-cover"
+                                                        />
+                                                        <p className="text-sm font-black">{config.targeting_refinement.country} ({config.targeting_refinement.region})</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
                                                 <Languages size={16} className="text-slate-500 mt-0.5" />
                                                 <div>
                                                     <p className="text-[10px] font-bold text-slate-500 uppercase">Local Linguistic Context</p>
-                                                    <p className="text-sm font-black">{config.target_language}</p>
+                                                    <p className="text-sm font-black">{config.targeting_refinement.language}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-start gap-3">
@@ -649,9 +523,16 @@ function MissionControlContent() {
                                         <CheckCircle2 size={14} />
                                         Mission Established
                                     </div>
-                                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-none">
-                                        Target <span className="text-emerald-500">Snapshot</span>
-                                    </h1>
+                                    <div className="flex items-center gap-4 mb-2">
+                                        <img
+                                            src={`https://flagcdn.com/w80/${COUNTRIES.find(c => c.id === missionData?.config?.target_country)?.code || 'mu'}.png`}
+                                            alt=""
+                                            className="w-10 h-7 rounded-md object-cover shadow-lg border border-white/10"
+                                        />
+                                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-none">
+                                            Target <span className="text-emerald-500">Snapshot</span>
+                                        </h1>
+                                    </div>
                                     <p className="text-slate-400 text-sm md:text-base font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                                         I have analyzed the cultural landscape of {missionData?.config?.target_country || 'your target market'}. Use these insights to build surveys that locals trust, understand, and answer honestly.
                                     </p>
@@ -662,7 +543,13 @@ function MissionControlContent() {
                                             <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
                                                 <Fingerprint size={12} className="text-emerald-400" />
                                                 <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
-                                                    {missionData.config.targeting_refinement.gender} · {missionData.config.targeting_refinement.age_range[0]}-{missionData.config.targeting_refinement.age_range[1]} Years · {missionData.config.targeting_refinement.marital_status}
+                                                    {missionData.config.targeting_refinement.gender} · {missionData.config.targeting_refinement.age_group} · {missionData.config.targeting_refinement.marital_status}
+                                                </span>
+                                            </div>
+                                            <div className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
+                                                <Globe size={12} className="text-emerald-400" />
+                                                <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
+                                                    {missionData.config.targeting_refinement.region} · {missionData.config.targeting_refinement.language}
                                                 </span>
                                             </div>
                                         </div>

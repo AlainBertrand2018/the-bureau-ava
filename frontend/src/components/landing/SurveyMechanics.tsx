@@ -4,12 +4,11 @@ import { TrendingUp, AlertTriangle, ShieldCheck } from "lucide-react";
 import { Reveal } from "./LandingUtils";
 
 interface SurveyMechanicsProps {
-    t: any;
     currency: any;
     onShieldClick: () => void;
 }
 
-export default function SurveyMechanics({ t, currency, onShieldClick }: SurveyMechanicsProps) {
+export default function SurveyMechanics({ currency, onShieldClick }: SurveyMechanicsProps) {
     return (
         <section id="mechanics" className="section-full bg-slate-50 relative overflow-hidden border-y border-slate-100">
             <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
@@ -34,9 +33,9 @@ export default function SurveyMechanics({ t, currency, onShieldClick }: SurveyMe
                         <Reveal className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm h-full flex flex-col">
                             <div className="p-8 md:p-12 border-b border-slate-50 pb-6">
                                 <span className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Featured Analysis</span>
-                                <h3 className="text-3xl font-black text-slate-900 mb-4">{t.survey_mechanics.title}</h3>
+                                <h3 className="text-3xl font-black text-slate-900 mb-4">The Iceberg of Research Costs</h3>
                                 <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-xl">
-                                    {t.survey_mechanics.description}
+                                    Most researchers only see the visible cost of design. The real risk lies beneath the surface — in fieldwork, collection, and the catastrophic cost of bad data.
                                 </p>
                             </div>
 
@@ -75,7 +74,7 @@ export default function SurveyMechanics({ t, currency, onShieldClick }: SurveyMe
                                         <div className="pt-8 text-center">
                                             <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-2 flex items-center justify-center gap-2">
                                                 <AlertTriangle size={10} />
-                                                {t.survey_mechanics.danger_zone}
+                                                Danger Zone
                                             </p>
                                             <h4 className="text-xl font-black text-slate-900 tracking-tight mb-2">Total Risk Exposure</h4>
                                             <p className="text-slate-400 font-black text-xl tracking-tighter mb-8">{currency.riskRange}</p>

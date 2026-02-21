@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
     Users,
@@ -10,198 +10,225 @@ import {
     GraduationCap,
     Briefcase,
     MapPin,
-    ChevronDown
+    ChevronDown,
+    Flag,
+    Type
 } from 'lucide-react';
 import { AudienceTargeting } from '@/context/MissionContext';
+import {
+    COUNTRIES,
+    AGE_GROUPS,
+    MARITAL_STATUSES,
+    REVENUE_GROUPS,
+    EDUCATION_LEVELS,
+    EMPLOYMENT_STATUSES,
+    URBANIZATION_LEVELS
+} from '@/constants/marketData';
 
-interface AudienceConfiguratorProps {
+interface DemographicCalibratorProps {
     value: AudienceTargeting;
     onChange: (value: AudienceTargeting) => void;
     dark?: boolean;
 }
 
-export default function AudienceConfigurator({ value, onChange, dark = false }: AudienceConfiguratorProps) {
+export default function DemographicCalibrator({ value, onChange, dark = false }: DemographicCalibratorProps) {
     const handleChange = (key: keyof AudienceTargeting, val: any) => {
-        onChange({ ...value, [key]: val });
+        const updated = { ...value, [key]: val };
+
+        // Dynamic resets when country changes
+        if (key === 'country') {
+            const countryData = COUNTRIES.find(c => c.id === val);
+            if (val === "" || !countryData) {
+                updated.region = "";
+                updated.language = "";
+            } else {
+                updated.region = countryData.regions[0] || 'Nationwide';
+                updated.language = countryData.languages[0] || 'Regardless';
+            }
+        }
+
+        onChange(updated);
     };
 
-    const inputBg = dark ? "bg-slate-800/50 border-slate-700/50" : "bg-slate-50 border-slate-200";
-    const labelColor = dark ? "text-emerald-50" : "text-slate-900";
+    const selectedCountry = useMemo(() => {
+        const found = COUNTRIES.find(c => c.id === value.country);
+        // If not found or empty, return the "SELECT TARGET MARKET" placeholder at index 0
+        return found || COUNTRIES[0];
+    }, [value.country]);
+
+    const hasSelection = value.country !== "";
+
+    const inputBg = dark ? "bg-slate-900/50 border-slate-800" : "bg-white border-slate-200";
     const subLabelColor = dark ? "text-slate-500" : "text-slate-400";
     const textColor = dark ? "text-slate-200" : "text-slate-800";
+    const accentColor = "text-emerald-500";
+
+    const SelectWrapper = ({ label, icon: Icon, children, className = "" }: any) => (
+        <div className={`space-y-2 ${className}`}>
+            <div className="flex items-center gap-2">
+                <Icon size={12} className={accentColor} />
+                <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${subLabelColor}`}>{label}</span>
+            </div>
+            <div className="relative group">
+                {children}
+                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-emerald-500 transition-colors pointer-events-none" />
+            </div>
+        </div>
+    );
+
+    const RadioWrapper = ({ label, icon: Icon, options, current, onChangeKey, className = "" }: any) => (
+        <div className={`space-y-2 ${className}`}>
+            <div className="flex items-center gap-2">
+                <Icon size={12} className={accentColor} />
+                <span className={`text-[10px] font-black uppercase tracking-[0.15em] ${subLabelColor}`}>{label}</span>
+            </div>
+            <div className={`flex p-1 rounded-xl ${inputBg} border shadow-sm`}>
+                {options.map((opt: string) => (
+                    <button
+                        key={opt}
+                        onClick={() => handleChange(onChangeKey, opt)}
+                        className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all ${current === opt
+                            ? "bg-emerald-600 text-white shadow-md"
+                            : `text-slate-500 hover:${textColor}`
+                            }`}
+                    >
+                        {opt}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Country Selection */}
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* ROW 1: Market Anchors */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <SelectWrapper label="Market Country" icon={Flag}>
+                    <select
+                        value={value.country}
+                        onChange={(e) => handleChange('country', e.target.value)}
+                        className={`w-full pl-10 pr-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+                    >
+                        {COUNTRIES.map(c => (
+                            <option key={c.id} value={c.id}>{c.flag} {c.name}</option>
+                        ))}
+                    </select>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg pointer-events-none">
+                        {selectedCountry.flag}
+                    </span>
+                </SelectWrapper>
 
+                <SelectWrapper label="Regional Focus" icon={MapPin} className={!hasSelection ? "opacity-40 pointer-events-none grayscale" : ""}>
+                    <select
+                        disabled={!hasSelection}
+                        value={value.region}
+                        onChange={(e) => handleChange('region', e.target.value)}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+                    >
+                        {selectedCountry.regions.map(r => (
+                            <option key={r} value={r}>{r}</option>
+                        ))}
+                    </select>
+                </SelectWrapper>
 
-            {/* Gender Selection */}
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <Users size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Gender (Mandatory)</span>
-                </div>
-                <div className={`flex p-1 rounded-xl ${inputBg} border`}>
-                    {['Male', 'Female', 'All'].map((g) => (
-                        <button
-                            key={g}
-                            onClick={() => handleChange('gender', g)}
-                            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${value.gender === g
-                                ? "bg-emerald-600 text-white shadow-lg"
-                                : `text-slate-500 hover:${textColor}`
-                                }`}
-                        >
-                            {g}
-                        </button>
-                    ))}
-                </div>
+                <SelectWrapper label="Local Linguistic Context" icon={Type} className={!hasSelection ? "opacity-40 pointer-events-none grayscale" : ""}>
+                    <select
+                        disabled={!hasSelection}
+                        value={value.language}
+                        onChange={(e) => handleChange('language', e.target.value)}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+                    >
+                        {selectedCountry.languages.map(l => (
+                            <option key={l} value={l}>{l}</option>
+                        ))}
+                    </select>
+                </SelectWrapper>
             </div>
 
-            {/* Age Range */}
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Age Group (Min: {value.age_range[0]} - Max: {value.age_range[1]})</span>
-                </div>
-                <div className="flex gap-3">
-                    <input
-                        type="number"
-                        value={value.age_range[0]}
-                        onChange={(e) => handleChange('age_range', [parseInt(e.target.value) || 0, value.age_range[1]])}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
-                        placeholder="Min"
-                        min={0}
-                        max={100}
-                    />
-                    <input
-                        type="number"
-                        value={value.age_range[1]}
-                        onChange={(e) => handleChange('age_range', [value.age_range[0], parseInt(e.target.value) || 100])}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
-                        placeholder="Max"
-                        min={0}
-                        max={100}
-                    />
-                </div>
-            </div>
+            {/* ROW 2: Identity */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <RadioWrapper
+                    label="Gender"
+                    icon={Users}
+                    options={['Male', 'Female', 'Mixed']}
+                    current={value.gender}
+                    onChangeKey="gender"
+                />
 
-            {/* Marital Status */}
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <Heart size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Marital Status</span>
-                </div>
-                <div className="relative">
+                <SelectWrapper label="Age Group" icon={Calendar}>
+                    <select
+                        value={value.age_group}
+                        onChange={(e) => handleChange('age_group', e.target.value)}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+                    >
+                        {AGE_GROUPS.map(g => (
+                            <option key={g.id} value={g.id}>{g.name}</option>
+                        ))}
+                    </select>
+                </SelectWrapper>
+
+                <SelectWrapper label="Marital Status" icon={Heart}>
                     <select
                         value={value.marital_status}
                         onChange={(e) => handleChange('marital_status', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
                     >
-                        <option value="Any">Any Status</option>
-                        <option value="Single">Single</option>
-                        <option value="Married">Married</option>
-                        <option value="Divorced">Divorced</option>
-                        <option value="Widowed">Widowed</option>
+                        {MARITAL_STATUSES.map(s => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
                     </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                </div>
+                </SelectWrapper>
             </div>
 
-            {/* Revenue Range */}
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <Banknote size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Revenue (Annual Tier)</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500">$</span>
-                        <input
-                            type="number"
-                            value={value.revenue_range[0]}
-                            onChange={(e) => handleChange('revenue_range', [parseInt(e.target.value) || 0, value.revenue_range[1]])}
-                            className={`w-full pl-7 pr-3 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
-                            placeholder="Min"
-                        />
-                    </div>
-                    <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500">$</span>
-                        <input
-                            type="number"
-                            value={value.revenue_range[1]}
-                            onChange={(e) => handleChange('revenue_range', [value.revenue_range[0], parseInt(e.target.value) || 0])}
-                            className={`w-full pl-7 pr-3 py-2 text-xs font-bold rounded-xl border ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
-                            placeholder="Max"
-                        />
-                    </div>
-                </div>
-            </div>
+            {/* ROW 3: Socio-Economics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <SelectWrapper label="Revenue Group" icon={Banknote}>
+                    <select
+                        value={value.revenue_group}
+                        onChange={(e) => handleChange('revenue_group', e.target.value)}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
+                    >
+                        {REVENUE_GROUPS.map(r => (
+                            <option key={r.id} value={r.id}>{r.name}</option>
+                        ))}
+                    </select>
+                </SelectWrapper>
 
-            {/* Education Level (Refinement) */}
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <GraduationCap size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Education level</span>
-                </div>
-                <div className="relative">
+                <SelectWrapper label="Education Level" icon={GraduationCap}>
                     <select
                         value={value.education_level}
                         onChange={(e) => handleChange('education_level', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
                     >
-                        <option value="Any">Any Level</option>
-                        <option value="Primary">Primary</option>
-                        <option value="Secondary">Secondary</option>
-                        <option value="University">University</option>
-                        <option value="Postgraduate">Postgraduate</option>
+                        {EDUCATION_LEVELS.map(l => (
+                            <option key={l.id} value={l.id}>{l.name}</option>
+                        ))}
                     </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                </div>
-            </div>
+                </SelectWrapper>
 
-            {/* Employment Sector (Refinement) */}
-            <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                    <Briefcase size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Employment Sector</span>
-                </div>
-                <div className="relative">
+                <SelectWrapper label="Employment Status" icon={Briefcase}>
                     <select
-                        value={value.employment_sector}
-                        onChange={(e) => handleChange('employment_sector', e.target.value)}
-                        className={`w-full px-4 py-2 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/40`}
+                        value={value.employment_status}
+                        onChange={(e) => handleChange('employment_status', e.target.value)}
+                        className={`w-full px-4 py-2.5 text-xs font-bold rounded-xl border appearance-none ${inputBg} ${textColor} focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all`}
                     >
-                        <option value="Any">Any Sector</option>
-                        <option value="Private">Private Sector</option>
-                        <option value="Public">Public Sector</option>
-                        <option value="Self-Employed">Self-Employed</option>
-                        <option value="Student">Student</option>
-                        <option value="Unemployed">Unemployed / Other</option>
+                        {EMPLOYMENT_STATUSES.map(s => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
                     </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                </div>
+                </SelectWrapper>
             </div>
 
-            {/* Urbanization (Refinement) */}
-            <div className="space-y-3 lg:col-span-2">
-                <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-emerald-500" />
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${subLabelColor}`}>Urbanization Density</span>
-                </div>
-                <div className={`flex p-1 rounded-xl ${inputBg} border`}>
-                    {['Urban', 'Suburban', 'Rural', 'Any'].map((u) => (
-                        <button
-                            key={u}
-                            onClick={() => handleChange('urbanization', u)}
-                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-tighter rounded-lg transition-all ${value.urbanization === u
-                                ? "bg-emerald-600 text-white shadow-lg"
-                                : `text-slate-500 hover:${textColor}`
-                                }`}
-                        >
-                            {u}
-                        </button>
-                    ))}
-                </div>
+            {/* ROW 4: Perimeter */}
+            <div className="pt-2">
+                <RadioWrapper
+                    label="Urbanization Density"
+                    icon={MapPin}
+                    options={URBANIZATION_LEVELS.map(u => u.name)}
+                    current={value.urbanization}
+                    onChangeKey="urbanization"
+                    className="max-w-2xl"
+                />
             </div>
         </div>
     );

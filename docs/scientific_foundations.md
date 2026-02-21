@@ -15,7 +15,7 @@ To establish a rigorous, non-negotiable scientific baseline for all research ins
 ### Pillar II: Agent-Based Cognitive Simulation (Ghost Fieldwork)
 *   **Cognitive Architecture**: Personas are built on established models of human memory and decision-making (Decision Theory).
 *   **Stochastic Variance**: Implementing Monte Carlo methods to simulate real-world response noise and "Satisficing" behavior (respondent shortcuts).
-*   **Demographic Calibration**: Quota-weighting based on National Census Data (Statistics Mauritius) and socio-economic stratification.
+*   **Demographic Calibration**: Quota-weighting based on Official National Census Data and socio-economic stratification.
 
 ### Pillar III: Linguistic & Structural Diagnostics (The Audit Engine)
 *   **Heuristic Evaluation**: Automated checking against "The Bureau's 8 Dimensions of Quality" (Neutrality, Clarity, Scope, etc.).

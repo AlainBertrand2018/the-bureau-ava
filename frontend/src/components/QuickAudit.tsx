@@ -13,19 +13,20 @@ import {
     ChevronUp,
     Fingerprint
 } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
 import { AudienceTargeting } from "@/context/MissionContext";
 import AudienceConfigurator from "./shared/AudienceConfigurator";
 
 const DEFAULT_TARGETING: AudienceTargeting = {
-    gender: 'All',
-    age_range: [18, 65],
-    marital_status: 'Any',
-    revenue_range: [15000, 100000],
-    education_level: 'Any',
-    employment_sector: 'Any',
-    urbanization: 'Any',
-    country: 'Mauritius'
+    country: "",
+    region: "",
+    language: "",
+    gender: 'Mixed',
+    age_group: 'Any',
+    marital_status: 'Regardless',
+    revenue_group: 'Regardless',
+    education_level: 'Regardless',
+    employment_status: 'Regardless',
+    urbanization: 'Regardless'
 };
 
 interface AuditIssue {
@@ -42,7 +43,6 @@ interface QuickAuditResult {
 }
 
 export default function QuickAudit() {
-    const { t, language } = useLanguage();
     const [auditQuestion, setAuditQuestion] = useState("");
     const [auditResult, setAuditResult] = useState<QuickAuditResult | null>(null);
     const [auditLoading, setAuditLoading] = useState(false);
@@ -52,16 +52,11 @@ export default function QuickAudit() {
     const inputRef = useRef<HTMLInputElement>(null);
 
     /* Typing placeholder animation */
-    const placeholders = language === 'en' ? [
+    const placeholders = [
         "How satisfied are you with our amazing service?",
         "Don't you agree the product is excellent?",
         "Rate your experience from 1-10",
         "Do you like or dislike the new feature?",
-    ] : [
-        "Êtes-vous satisfait de notre service incroyable ?",
-        "Ne trouvez-vous pas que le produit est excellent ?",
-        "Notez votre expérience de 1 à 10",
-        "Aimez-vous ou détestez-vous la nouvelle fonctionnalité ?",
     ];
 
     const [phIdx, setPhIdx] = useState(0);
@@ -90,6 +85,7 @@ export default function QuickAudit() {
     }, [typed, isTyping, phIdx, placeholders]);
 
     const runQuickAudit = async () => {
+        // ... keeps logic ...
         if (!auditQuestion.trim()) { inputRef.current?.focus(); return; }
         setAuditLoading(true);
         setAuditError("");
@@ -127,7 +123,7 @@ export default function QuickAudit() {
     const scoreBg = (s: number) =>
         s >= 80 ? "bg-emerald-50" : s >= 60 ? "bg-amber-50" : "bg-red-50";
     const scoreLabel = (s: number) =>
-        s >= 80 ? t.quick_audit.score_good : s >= 60 ? t.quick_audit.score_neutral : t.quick_audit.score_poor;
+        s >= 80 ? "Good" : s >= 60 ? "Needs Work" : "Poor";
 
     function issueBadge(type: string) {
         const t = type.toUpperCase();
@@ -145,7 +141,7 @@ export default function QuickAudit() {
         <div className="w-full max-w-2xl mx-auto">
             <div className="mb-4">
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3 text-center">
-                    {t.quick_audit.header}
+                    STRESS-TEST A SINGLE QUESTION
                 </p>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-white border-2 border-slate-200 rounded-3xl p-2 shadow-lg shadow-slate-200/60 focus-within:border-emerald-400 focus-within:shadow-emerald-100/60 transition-all">
                     <input
@@ -166,11 +162,11 @@ export default function QuickAudit() {
                         ) : (
                             <Send size={14} />
                         )}
-                        {auditLoading ? t.quick_audit.btn_loading : t.quick_audit.btn}
+                        {auditLoading ? "Analyzing..." : "Run Audit"}
                     </button>
                 </div>
                 <p className="text-[10px] text-slate-400 font-medium mt-3 text-center">
-                    {t.quick_audit.footer}
+                    We Value Privacy • No signup required (on Trial) • Results in under 5 minutes
                 </p>
 
                 <div className="mt-6">
@@ -235,7 +231,7 @@ export default function QuickAudit() {
                                 <div className="flex-1">
                                     <p className="text-slate-900 font-bold text-sm mb-1">{auditResult.verdict}</p>
                                     <p className="text-slate-400 text-xs font-medium">
-                                        {t.quick_audit.dimensions}
+                                        Dimensions Analyzed: Neutrality, Clarity, Scope
                                     </p>
                                 </div>
                             </div>
@@ -244,7 +240,7 @@ export default function QuickAudit() {
                                 <div className="mb-6">
                                     <h4 className="text-[9px] font-bold uppercase tracking-widest text-red-500 mb-3 flex items-center gap-2">
                                         <AlertTriangle size={10} />
-                                        {t.quick_audit.results_title}
+                                        Issues Found
                                     </h4>
                                     <div className="space-y-2">
                                         {auditResult.issues.map((issue, k) => (
@@ -262,7 +258,7 @@ export default function QuickAudit() {
                             <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-5">
                                 <h4 className="text-[9px] font-bold uppercase tracking-widest text-emerald-600 mb-2 flex items-center gap-2">
                                     <CheckCircle2 size={10} />
-                                    {t.quick_audit.rewrite_title}
+                                    My Recommended Rewrite
                                 </h4>
                                 <p className="text-slate-800 font-bold text-sm leading-relaxed">
                                     "{auditResult.rewrite}"

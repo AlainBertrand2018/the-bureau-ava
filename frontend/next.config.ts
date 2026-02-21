@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+    // @ts-ignore - Turbopack root configuration
+    turbopack: {
+        root: '..',
+    },
+    logging: {
+        fetches: {
+            fullUrl: true,
+        },
+    },
     async rewrites() {
         return [
             {

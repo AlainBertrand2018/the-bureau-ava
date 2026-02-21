@@ -3,11 +3,10 @@ import React from "react";
 import { Building2, TrendingUp, BarChart3, AlertTriangle } from "lucide-react";
 import { Reveal } from "./LandingUtils";
 
-interface PainPointsProps {
-    t: any;
-}
+// No props needed.
 
-export default function PainPoints({ t }: PainPointsProps) {
+
+export default function PainPoints() {
     return (
         <section id="painpoints" className="section-full relative overflow-hidden bg-white">
             <div className="absolute inset-0 bg-gradient-to-b from-red-50/20 via-white to-white pointer-events-none" />
@@ -20,7 +19,7 @@ export default function PainPoints({ t }: PainPointsProps) {
                         </span>
                     </div>
                     <h2 className="text-section-title text-slate-900 mb-6">
-                        {t.pain_points.title_1}
+                        Bad data is expensive.
                         <br />
                         <span
                             style={{
@@ -30,13 +29,13 @@ export default function PainPoints({ t }: PainPointsProps) {
                                 backgroundClip: "text",
                             }}
                         >
-                            {t.pain_points.title_2}
+                            Broken surveys are the cause.
                         </span>
                     </h2>
                     <div className="max-w-3xl mx-auto">
-                        <p className="text-slate-900 font-extrabold text-xl mb-1">{t.pain_points.sub_1}</p>
+                        <p className="text-slate-900 font-extrabold text-xl mb-1">The average enterprise wastes $120k annually on flawed research instrumentation.</p>
                         <p className="text-slate-500 font-medium text-sm">
-                            {t.pain_points.sub_2}
+                            Leading questions, double-barreled structures, and cognitive fatigue lead to 40% drop-off rates and useless datasets.
                         </p>
                     </div>
                 </Reveal>
@@ -47,22 +46,22 @@ export default function PainPoints({ t }: PainPointsProps) {
                             icon: <Building2 size={20} />,
                             color: "text-red-500",
                             bg: "bg-red-50",
-                            title: t.pain_points.card_1_title,
-                            desc: t.pain_points.card_1_desc,
+                            title: "The Executive Risk",
+                            desc: "Making $10M decisions based on biased feedback loops is a gamble, not a strategy.",
                         },
                         {
                             icon: <TrendingUp size={20} />,
                             color: "text-amber-600",
                             bg: "bg-amber-50",
-                            title: t.pain_points.card_2_title,
-                            desc: t.pain_points.card_2_desc,
+                            title: "The Trust Deficit",
+                            desc: "Once stakeholders lose faith in your data, your department loses its seat at the table.",
                         },
                         {
                             icon: <BarChart3 size={20} />,
                             color: "text-violet-600",
                             bg: "bg-violet-50",
-                            title: t.pain_points.card_3_title,
-                            desc: t.pain_points.card_3_desc,
+                            title: "The Lost Opportunity",
+                            desc: "You aren't just losing money; you're missing the market shift your competitors are seeing.",
                         },
                     ].map((item, i) => (
                         <Reveal key={i} delay={i * 0.1}>

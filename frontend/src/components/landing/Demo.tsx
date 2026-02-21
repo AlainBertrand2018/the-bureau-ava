@@ -8,11 +8,10 @@ const RotatingDashboard = dynamic(() => import("@/components/RotatingDashboard")
 const AnimatedReportCard = dynamic(() => import("@/components/AnimatedReportCard"), { ssr: false });
 
 interface DemoProps {
-    t: any;
     onProtocolOpen: () => void;
 }
 
-export default function Demo({ t, onProtocolOpen }: DemoProps) {
+export default function Demo({ onProtocolOpen }: DemoProps) {
     return (
         <section id="demo" className="section-full section-warm relative">
             <div className="max-w-6xl mx-auto px-6 w-full">
@@ -24,10 +23,10 @@ export default function Demo({ t, onProtocolOpen }: DemoProps) {
                         </span>
                     </div>
                     <h2 className="text-section-title text-slate-900 mb-6">
-                        {t.demo.title}
+                        See what you'll get.
                     </h2>
                     <p className="text-body-lg text-slate-500 font-medium">
-                        {t.demo.sub}
+                        Bureau reports provide actionable intelligence, identifying exactly where your instrument will fail and how to fix it.
                     </p>
                 </Reveal>
 
@@ -51,7 +50,7 @@ export default function Demo({ t, onProtocolOpen }: DemoProps) {
                         className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
                     >
                         <Sparkles size={16} />
-                        {t.demo.cta}
+                        Start Simulation Lab
                     </button>
                 </Reveal>
             </div>

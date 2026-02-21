@@ -4,11 +4,7 @@ import Image from "next/image";
 import { Sparkles, FileText, Globe, BarChart3, Cpu, Users, Shield } from "lucide-react";
 import { Reveal } from "./LandingUtils";
 
-interface MeetAvaProps {
-    t: any;
-}
-
-export default function MeetAva({ t }: MeetAvaProps) {
+export default function MeetAva() {
     return (
         <section id="meet-ava" className="relative bg-slate-950 overflow-hidden">
             {/* Background texture */}

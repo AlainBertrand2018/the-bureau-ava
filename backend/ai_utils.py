@@ -63,6 +63,19 @@ def clean_json_text(text: str) -> str:
             text = text[:-3]
     return text.strip()
 
+def extract_country(context: str) -> str:
+    """Extract country name from context string if present."""
+    # Common patterns: "in India", "for Nigeria", "India market"
+    country_patterns = [
+        r'\bin\s+(India|Nigeria|South Africa|Kenya|Mauritius|United States|United Kingdom|France|Germany|Brazil|China|Japan|Australia|Canada|Ghana|Egypt|Morocco|Indonesia|Philippines|Vietnam|Thailand|Malaysia|Singapore|UAE|Saudi Arabia|Mexico|Colombia|Argentina|Turkey|Poland|Italy|Spain|Netherlands|Sweden|Norway|Denmark|Switzerland|Austria|Belgium|Portugal|Greece|Czech Republic|Romania|Hungary|Pakistan|Bangladesh|Sri Lanka|Nepal|Myanmar|Tanzania|Uganda|Ethiopia|Senegal|Ivory Coast|Cameroon|DRC|Rwanda|Zimbabwe|Mozambique|Madagascar|Zambia|Botswana|Namibia|Angola|Tunisia|Algeria|Libya|Sudan|Somalia|Jordan|Lebanon|Iraq|Iran|Israel|Palestine|Qatar|Kuwait|Bahrain|Oman|Yemen|Afghanistan|Uzbekistan|Kazakhstan|Mongolia|Taiwan|South Korea|North Korea|Hong Kong|New Zealand|Fiji|Papua New Guinea|Jamaica|Trinidad|Haiti|Cuba|Dominican Republic|Costa Rica|Panama|Ecuador|Peru|Chile|Uruguay|Paraguay|Bolivia|Venezuela)\b',
+        r'\bfor\s+(\w+)\s+(?:market|consumers|audience|professionals)',
+    ]
+    for pattern in country_patterns:
+        match = re.search(pattern, context, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+    return ""  # No default here, let the caller decide fallback
+
 def safe_parse_json(text: str, default: Any = None) -> Any:
     """
     Robustly attempts to parse JSON, including regex fallback for embedded objects.

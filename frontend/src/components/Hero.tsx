@@ -5,13 +5,11 @@ import { FileUp, ShieldCheck, Zap, AlertCircle, PlayCircle, Info } from 'lucide-
 import { uploadSurvey } from '@/app/actions/upload';
 import Modal from '@/components/Modal';
 import RotatingDashboard from '@/components/RotatingDashboard';
-import { useLanguage } from '@/context/LanguageContext';
 
 export default function Hero() {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [activeModal, setActiveModal] = useState<'demo' | 'methodology' | 'audit' | null>(null);
-    const { t } = useLanguage();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -46,14 +44,14 @@ export default function Hero() {
                         className="max-w-xl"
                     >
                         <div className="flex items-center gap-2 mb-8">
-                            <span className="bg-primary/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase border border-primary/30">{t.hero.badge}</span>
-                            <span className="text-slate-400 text-xs font-bold tracking-widest uppercase">{t.hero.badge_sub}</span>
+                            <span className="bg-primary/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase border border-primary/30">The Elite Choice</span>
+                            <span className="text-slate-400 text-xs font-bold tracking-widest uppercase">Used by Leading Mauritian Brands</span>
                         </div>
                         <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-6 leading-[1.0] max-w-2xl">
-                            {t.hero.title.split(' ').slice(0, -1).join(' ')} <span className="text-blue-500">{t.hero.title.split(' ').slice(-1)}</span>
+                            I Secure Success Before Launching <span className="text-blue-500">Surveys</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed font-light tracking-wide">
-                            {t.hero.description}
+                            My AI agents and I, we rigorously stress-test your market research instruments across any target markets, ensuring your survey delivers meaningful, reliable data within each unique cultural, economic, and social context.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-5">
@@ -66,7 +64,7 @@ export default function Hero() {
                                 />
                                 <button className={`bg-primary text-white px-8 py-4 rounded-full font-black text-xs tracking-widest flex items-center gap-3 transition-all hover:bg-blue-700 hover:shadow-2xl hover:shadow-blue-500/40 uppercase ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                                     <FileUp size={16} />
-                                    {isUploading ? t.hero.cta_auditing : t.hero.cta_audit}
+                                    {isUploading ? "AUDITING..." : "Catch A Glimpse of What We Can Do"}
                                 </button>
                             </div>
                             <button
@@ -74,7 +72,7 @@ export default function Hero() {
                                 className="bg-white/5 text-white border border-white/10 flex items-center gap-3 px-8 py-4 rounded-full font-bold text-xs tracking-widest transition-all hover:bg-white/10 hover:border-white/20 uppercase"
                             >
                                 <PlayCircle size={16} className="text-blue-500" />
-                                {t.hero.cta_demo}
+                                Build Your Questionnaire from Scratch
                             </button>
                         </div>
 
@@ -86,7 +84,7 @@ export default function Hero() {
 
                         <div className="mt-16 flex items-center gap-10">
                             <button onClick={() => setActiveModal('methodology')} className="text-slate-400 hover:text-primary transition-colors text-xs font-black tracking-widest flex items-center gap-2 uppercase underline underline-offset-8 decoration-slate-200">
-                                <Info size={14} /> {t.hero.scientific_link}
+                                <Info size={14} /> See Why Scientific Simulation Beats Panels
                             </button>
                         </div>
                     </motion.div>

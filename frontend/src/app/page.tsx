@@ -7,10 +7,9 @@ import {
   Globe, Cpu, ArrowRight, Sparkles, Sun, Moon,
   Shield, BarChart3, FileText, Users, Target, Microscope, X,
 } from "lucide-react";
-import Preloader from "@/components/Preloader";
 
 /* ─── Typewriter Hook ─── */
-function useTypewriter(text: string, speed = 45, delay = 800) {
+function useTypewriter(text: string, speed = 40, delay = 300) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
 
@@ -149,7 +148,7 @@ const PORTAL_DATA = {
       { icon: FileText, label: "Genesis Suite", desc: "I create surveys from scratch" },
     ],
     cta: "Enter The Bureau",
-    href: "/landing",
+    href: "/os?app=bureau",
   },
   cockpit: {
     icon: Cpu,
@@ -171,7 +170,7 @@ const PORTAL_DATA = {
       { icon: FileText, label: "Field Instrument", desc: "Publication-ready questionnaires" },
     ],
     cta: "Launch Cockpit",
-    href: "/mission-control",
+    href: "/os?app=sentinel",
   },
 };
 
@@ -340,8 +339,8 @@ function TransitionalModal({
    MAIN GATEWAY COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 export default function AVAGateway() {
-  const [loading, setLoading] = useState(true);
-  const greeting = useTypewriter("Hello. I'm AVA.", 55, 1000);
+  const router = useRouter();
+  const greeting = useTypewriter("Hello. I'm AVA.", 40, 300);
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showBody, setShowBody] = useState(false);
   const [showCTAs, setShowCTAs] = useState(false);
@@ -350,18 +349,15 @@ export default function AVAGateway() {
   const [activePortal, setActivePortal] = useState<PortalType>(null);
 
   useEffect(() => {
-    if (greeting.done && !loading) {
-      // Slowed down the staging for a more cinematic feel
-      const t1 = setTimeout(() => setShowSubtitle(true), 500);
-      const t2 = setTimeout(() => setShowBody(true), 1200);
-      const t3 = setTimeout(() => setShowCTAs(true), 2000);
+    if (greeting.done) {
+      // Significantly reduced delays for a snappier experience while keeping the staging
+      const t1 = setTimeout(() => setShowSubtitle(true), 200);
+      const t2 = setTimeout(() => setShowBody(true), 400);
+      const t3 = setTimeout(() => setShowCTAs(true), 700);
       return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
-  }, [greeting.done, loading]);
+  }, [greeting.done]);
 
-  if (loading) {
-    return <Preloader onComplete={() => setLoading(false)} />;
-  }
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden flex items-center justify-center transition-colors duration-700 py-12 md:py-20 ${dark ? "bg-[#060B18] text-white" : "bg-white text-slate-900"
@@ -489,7 +485,7 @@ export default function AVAGateway() {
                 className={`text-lg md:text-xl lg:text-2xl font-medium mb-5 transition-colors duration-700 ${dark ? "text-emerald-300/90" : "text-emerald-600"
                   }`}
               >
-                Your Survey Intelligence Analyst.
+                Your Autonomous Validation Analyst
               </motion.p>
             )}
           </AnimatePresence>
@@ -504,89 +500,43 @@ export default function AVAGateway() {
                 className={`text-sm md:text-base leading-relaxed mb-10 max-w-md transition-colors duration-700 ${dark ? "text-slate-400" : "text-slate-500"
                   }`}
               >
-                I transform survey research through AI-powered cultural intelligence.
-                From cultural dossiers to statistically rigorous field instruments —
-                I handle the complexity so you can focus on insight.
-                Get my agents at work.
+                Our Survey OS delivers a suite of Agentic AI tools purpose-built for Market Research professionals — streamlining the end-to-end development of research instruments through intelligent staging, stress testing, design optimization, validation, and Data Integrity assurance — so your surveys are fieldwork-ready with confidence.
               </motion.p>
             )}
           </AnimatePresence>
 
-          {/* CTAs — Now open transitional modals */}
+          {/* CTA: Activate Survey OS */}
           <AnimatePresence>
             {showCTAs && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.0, ease: [0.19, 1, 0.22, 1] }}
+                className="w-full sm:w-auto"
               >
-                {/* CTA 1: Discover */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.0, ease: [0.19, 1, 0.22, 1] }}
+                <button
+                  onClick={() => router.push("/os")}
+                  className={`group relative flex items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:min-w-[320px] ${dark
+                    ? "border border-emerald-500/30 bg-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/20 hover:shadow-2xl hover:shadow-emerald-500/20"
+                    : "border border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/30 shadow-lg shadow-emerald-100"
+                    }`}
                 >
-                  <div
-                    onClick={() => setActivePortal("discover")}
-                    onMouseEnter={() => setHoveredCard("discover")}
-                    onMouseLeave={() => setHoveredCard(null)}
-                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:w-[300px] min-h-[100px] ${dark
-                      ? "border border-white/10 bg-white/[0.03] hover:border-slate-500/30 hover:bg-white/[0.06] hover:shadow-lg hover:shadow-slate-500/5"
-                      : "border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/30 hover:shadow-xl hover:shadow-blue-100/40 shadow-md shadow-slate-100"
-                      }`}
-                  >
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-500 ${dark
-                      ? "bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20"
-                      : "bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200"
-                      }`}>
-                      <Globe className={`w-5 h-5 transition-transform duration-500 group-hover:scale-110 ${dark ? "text-blue-400" : "text-blue-500"}`} />
-                    </div>
-                    <div className="flex-1">
-                      <div className={`text-sm font-bold tracking-wide transition-colors duration-700 ${dark ? "text-white" : "text-slate-800"}`}>
-                        Discover The Bureau
-                      </div>
-                      <div className={`text-[11px] mt-0.5 transition-colors duration-700 ${dark ? "text-slate-500" : "text-slate-400"}`}>
-                        My methodology & vision
-                      </div>
-                    </div>
-                    <ArrowRight className={`w-4 h-4 transition-all duration-300 group-hover:translate-x-1 ${dark ? "text-slate-600 group-hover:text-blue-400" : "text-slate-300 group-hover:text-blue-500"
-                      }`} />
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 ${dark
+                    ? "bg-emerald-500/20 border border-emerald-500/30"
+                    : "bg-white/20 border border-white/30"
+                    }`}>
+                    <Cpu className="w-6 h-6 text-white animate-pulse" />
                   </div>
-                </motion.div>
-
-                {/* CTA 2: Enter Cockpit */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 1.0, ease: [0.19, 1, 0.22, 1], delay: 0.1 }}
-                >
-                  <div
-                    onClick={() => setActivePortal("cockpit")}
-                    onMouseEnter={() => setHoveredCard("cockpit")}
-                    onMouseLeave={() => setHoveredCard(null)}
-                    className={`group relative flex items-center gap-4 px-7 py-4 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:w-[300px] min-h-[100px] ${dark
-                      ? "border border-emerald-500/20 bg-emerald-500/[0.05] hover:border-emerald-400/40 hover:bg-emerald-500/[0.1] hover:shadow-lg hover:shadow-emerald-500/10"
-                      : "border border-emerald-200 bg-emerald-50/30 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-xl hover:shadow-emerald-100/40 shadow-md shadow-emerald-50"
-                      }`}
-                  >
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-500 ${dark
-                      ? "bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/20"
-                      : "bg-gradient-to-br from-emerald-100 to-emerald-50 border border-emerald-200"
-                      }`}>
-                      <Cpu className={`w-5 h-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 ${dark ? "text-emerald-400" : "text-emerald-500"}`} />
+                  <div className="text-left">
+                    <div className={`text-sm font-black uppercase tracking-[0.2em] ${dark ? "text-white" : "text-white"}`}>
+                      Activate Survey OS
                     </div>
-                    <div className="flex-1">
-                      <div className={`text-sm font-bold tracking-wide transition-colors duration-700 ${dark ? "text-white" : "text-slate-800"}`}>
-                        Capture insights from any corner of the globe.
-                      </div>
-                      <div className={`text-[11px] mt-0.5 transition-colors duration-700 ${dark ? "text-emerald-500/70" : "text-emerald-600/70"}`}>
-                        Mission Control & AI Lab
-                      </div>
+                    <div className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${dark ? "text-emerald-400/70" : "text-emerald-100"}`}>
+                      Booting AVA v2.4.1
                     </div>
-                    <ArrowRight className={`w-4 h-4 transition-all duration-300 group-hover:translate-x-1 ${dark ? "text-emerald-600 group-hover:text-emerald-300" : "text-emerald-300 group-hover:text-emerald-500"
-                      }`} />
                   </div>
-                </motion.div>
+                  <ArrowRight className="w-5 h-5 text-white/50 group-hover:translate-x-1 group-hover:text-white transition-all ml-auto" />
+                </button>
               </motion.div>
             )}
           </AnimatePresence>

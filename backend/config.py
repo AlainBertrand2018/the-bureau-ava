@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     # API URLs (Internal)
     NEXT_PUBLIC_API_URL: str = os.getenv("NEXT_PUBLIC_API_URL", "http://127.0.0.1:8000")
 
+    # Unit Economics (USD)
+    PRICING_HERO_AUDIT: float = 5.0
+    PRICING_ENTERPRISE_SIM: float = 50.0
+    
+    # Token Costs per 1M (Gemini 2.0 Flash approx)
+    COST_PER_1M_INPUT: float = 0.10
+    COST_PER_1M_OUTPUT: float = 0.40
+
     class Config:
         env_file = ".env"
 

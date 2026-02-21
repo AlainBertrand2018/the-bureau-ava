@@ -110,7 +110,7 @@ export default function PersonasStep({
                                     Archetype Generator
                                 </h3>
                                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                    {(currentMission?.config.target_country || "Mauritius")}-Grounded Diagnostic Lenses
+                                    {(currentMission?.config.target_country || "Market")}-Grounded Diagnostic Lenses
                                 </p>
                             </div>
                         </div>

@@ -8,9 +8,44 @@ export interface PersonaArchetype {
     background: string;
 }
 
+export interface EconomicsDossier {
+    salary_ranges: string;
+    gender_revenue_parity: string;
+    macro_indicators: string;
+    budgetary_decisions: string;
+}
+
+export interface EducationDossier {
+    literacy_levels: string;
+    educational_attainment: string;
+}
+
+export interface TechnologyDossier {
+    adoption_metrics: string;
+    tech_literacy: string;
+}
+
+export interface DemographicsDossier {
+    gender_ratios: string;
+    age_structure: string;
+    urban_rural_split: string;
+    ethnic_religious_composition: string;
+}
+
+export interface SamplingParameters {
+    targeted_segment_size: string;
+    ideal_sample_size: string;
+    suggested_distribution_mode: string;
+}
+
 export interface CulturalDossier {
     country: string;
-    economic_context: string;
+    economic_context?: string;
+    economics: EconomicsDossier;
+    education: EducationDossier;
+    technology: TechnologyDossier;
+    demographics?: DemographicsDossier;
+    sampling_parameters?: SamplingParameters;
     cultural_axioms: string[];
     linguistic_nuances: string[];
     taboos: string[];
@@ -20,14 +55,16 @@ export interface CulturalDossier {
 }
 
 export interface AudienceTargeting {
-    gender: 'Male' | 'Female' | 'All';
-    age_range: [number, number];
-    marital_status: 'Single' | 'Married' | 'Divorced' | 'Widowed' | 'Any';
-    revenue_range: [number, number];
-    education_level: 'Primary' | 'Secondary' | 'University' | 'Postgraduate' | 'Any';
-    employment_sector: string;
-    urbanization: 'Urban' | 'Suburban' | 'Rural' | 'Any';
     country: string;
+    region: string;
+    language: string;
+    gender: 'Male' | 'Female' | 'Mixed' | string;
+    age_group: string;
+    marital_status: string;
+    revenue_group: string;
+    education_level: string;
+    employment_status: string;
+    urbanization: string;
 }
 
 export interface MissionConfiguration {

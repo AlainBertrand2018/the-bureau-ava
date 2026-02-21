@@ -3,11 +3,10 @@ import React from "react";
 import { FileText, ShieldCheck, CheckCircle2, Clock } from "lucide-react";
 import { Reveal } from "./LandingUtils";
 
-interface HowItWorksProps {
-    t: any;
-}
 
-export default function HowItWorks({ t }: HowItWorksProps) {
+
+
+export default function HowItWorks() {
     return (
         <section id="how-it-works" className="section-full section-tinted relative">
             <div className="max-w-5xl mx-auto px-6 w-full">
@@ -19,31 +18,31 @@ export default function HowItWorks({ t }: HowItWorksProps) {
                         </span>
                     </div>
                     <h2 className="text-section-title text-slate-900 mb-6">
-                        {t.how_it_works.title}
+                        Three steps. Under 5 minutes.
                     </h2>
-                    <p className="text-body-lg text-slate-500 font-medium">{t.how_it_works.sub}</p>
+                    <p className="text-body-lg text-slate-500 font-medium">Bureau protocols are designed for speed without compromising scientific rigor.</p>
                 </Reveal>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {[
                         {
                             step: "01",
-                            title: t.how_it_works.step1_title,
-                            desc: t.how_it_works.step1_desc,
+                            title: "Define Strategy",
+                            desc: "Set your research objectives and target audience demographics.",
                             icon: <FileText size={24} />,
                             gradient: "from-blue-600 to-blue-500",
                         },
                         {
                             step: "02",
-                            title: t.how_it_works.step2_title,
-                            desc: t.how_it_works.step2_desc,
+                            title: "Execute Audit",
+                            desc: "Our behavioral engines stress-test every question against your specific personas.",
                             icon: <ShieldCheck size={24} />,
                             gradient: "from-violet-600 to-blue-500",
                         },
                         {
                             step: "03",
-                            title: t.how_it_works.step3_title,
-                            desc: t.how_it_works.step3_desc,
+                            title: "Deploy Verified",
+                            desc: "Receive a deployable field instrument that is guaranteed to be bias-free.",
                             icon: <CheckCircle2 size={24} />,
                             gradient: "from-emerald-600 to-sky-500",
                         },

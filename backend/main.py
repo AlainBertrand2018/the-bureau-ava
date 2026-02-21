@@ -8,7 +8,8 @@ import os
 import time
 from simulation_engine import MarketSimulator
 import uvicorn
-from db_manager import log_transaction, log_audit_stat, get_admin_stats
+from contextlib import asynccontextmanager
+from db_manager import log_transaction, log_audit_stat, get_admin_stats, init_db, log_feedback, get_feedback_stats, save_mission, load_mission, list_missions_db
 from architect_service import SurveyArchitect
 from report_generator import bureau_reports
 from context_engine import MissionConfiguration, Mission, context_engine, AudienceTargeting
@@ -17,7 +18,13 @@ from config import settings
 from logger import bureau_logger
 from ai_utils import generate_with_retry, safe_parse_json
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initialize DB on startup
+    await init_db()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 # Enable CORS for Next.js
 app.add_middleware(
@@ -31,7 +38,7 @@ simulator = MarketSimulator()
 architect = SurveyArchitect()
 
 # ── In-memory stores (replace with DB in production) ──
-feedback_store: List[Dict] = []
+# ── In-memory stores (Legacy, moving to DB) ──
 mission_registry: Dict[str, Mission] = {}
 bureau_logger.info("Service Scaffolding Loaded. AVA is operational.")
 
@@ -40,7 +47,7 @@ async def health_check():
     """System health monitor for Render/Vercel deployment."""
     try:
         # Check DB
-        stats = get_admin_stats()
+        stats = await get_admin_stats()
         return {
             "status": "HEALTHY",
             "version": "2.0.0",
@@ -59,21 +66,26 @@ class SimulationRequest(BaseModel):
     demographics: List[Dict]
     questions: List[str]
     mission_id: Optional[str] = None
+    targeting_refinement: Optional[AudienceTargeting] = None
 
 class PersonaRequest(BaseModel):
     count: int
     context: str
     mission_id: Optional[str] = None
-
+    targeting_refinement: Optional[AudienceTargeting] = None
+    
 class QuestionRequest(BaseModel):
     context: str
     count: Optional[int] = 5
     mission_id: Optional[str] = None
+    targeting_refinement: Optional[AudienceTargeting] = None
 
 class AnalysisRequest(BaseModel):
     context: str
     questions: List[str]
     results: List[Dict]
+    mission_id: Optional[str] = None
+    targeting_refinement: Optional[AudienceTargeting] = None
 
 class QuickAuditRequest(BaseModel):
     question: str
@@ -102,13 +114,16 @@ async def initialize_mission(config: MissionConfiguration):
         try:
             async for chunk in context_engine.initialize_mission_stream_generator(config):
                 yield chunk
-                # Capture final mission to save to registry
+                # Capture final mission to save to registry/DB
                 try:
                     data = json.loads(chunk)
                     if data.get("type") == "mission":
+                        await save_mission(data["data"]["mission_id"], data["data"])
+                        # Legacy registry fallback
                         m = Mission(**data["data"])
                         mission_registry[m.mission_id] = m
-                except:
+                except Exception as e:
+                    bureau_logger.error(f"Failed to record mission in stream: {e}")
                     pass
         except Exception as e:
             yield json.dumps({"type": "error", "detail": str(e)}) + "\n"
@@ -116,9 +131,16 @@ async def initialize_mission(config: MissionConfiguration):
     return StreamingResponse(stream_wrapper(), media_type="application/x-ndjson")
 
 @app.get("/mission/{mission_id}")
-async def get_mission(mission_id: str):
+async def get_mission_endpoint(mission_id: str):
     """Retrieves the details of a specific mission and its dossier."""
+    # Check hot registry first, then DB
     mission = mission_registry.get(mission_id)
+    if not mission:
+        mission_data = await load_mission(mission_id)
+        if mission_data:
+            mission = Mission(**mission_data)
+            mission_registry[mission_id] = mission # Hydrate hot cache
+            
     if not mission:
         raise HTTPException(status_code=404, detail="Mission not found")
     return mission
@@ -126,7 +148,9 @@ async def get_mission(mission_id: str):
 @app.get("/missions")
 async def list_missions():
     """Lists all active missions in the session."""
-    return list(mission_registry.values())
+    missions = await list_missions_db()
+    # Also include any hot missions not yet in DB if any (unlikely with save_mission in stream)
+    return missions
 
 
 # ── Endpoints ──
@@ -141,10 +165,11 @@ async def simulate(req: SimulationRequest):
     start_time = time.time()
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        df, provenance = await simulator.run_simulation(req.demographics, req.questions, mission=mission)
+        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        df, provenance = await simulator.run_simulation(req.demographics, req.questions, mission=mission, targeting=targeting)
         latency = (time.time() - start_time) * 1000
         
-        log_transaction(
+        await log_transaction(
             endpoint="/simulate",
             status="SUCCESS",
             latency_ms=latency,
@@ -159,14 +184,15 @@ async def simulate(req: SimulationRequest):
             "provenance": provenance
         }
     except Exception as e:
-        log_transaction(endpoint="/simulate", status="ERROR", latency_ms=0)
+        await log_transaction(endpoint="/simulate", status="ERROR", latency_ms=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/generate_personas")
 async def generate_personas(req: PersonaRequest):
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        personas = await simulator.generate_personas(req.count, req.context, mission=mission)
+        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        personas = await simulator.generate_personas(req.count, req.context, mission=mission, targeting=targeting)
         return personas
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -175,7 +201,8 @@ async def generate_personas(req: PersonaRequest):
 async def generate_questions(req: QuestionRequest):
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        data = await simulator.generate_questions(req.context, req.count, mission=mission)
+        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        data = await simulator.generate_questions(req.context, req.count, mission=mission, targeting=targeting)
         return data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -183,9 +210,9 @@ async def generate_questions(req: QuestionRequest):
 @app.post("/analyze_results")
 async def analyze_results(req: AnalysisRequest):
     try:
-        # mission_id not currently in AnalysisRequest, but let's assume it might be needed for report context
-        # mission = mission_registry.get(req.mission_id) if hasattr(req, 'mission_id') else None
-        report = await simulator.generate_report(req.context, req.questions, req.results)
+        mission = mission_registry.get(req.mission_id) if req.mission_id else None
+        targeting = req.targeting_refinement.dict() if req.targeting_refinement else None
+        report = await simulator.generate_report(req.context, req.questions, req.results, mission=mission, targeting=targeting)
         return report
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -218,11 +245,14 @@ async def submit_feedback(item: FeedbackItem):
     """
     entry = item.dict()
     entry["timestamp"] = entry.get("timestamp") or time.time()
-    feedback_store.append(entry)
     
-    # Calculate running accuracy from feedback
-    total = len(feedback_store)
-    agreed = sum(1 for f in feedback_store if f["client_verdict"] == "AGREE")
+    # Save to DB
+    await log_feedback(entry)
+    
+    # Calculate running accuracy from DB
+    all_feedback = await get_feedback_stats()
+    total = len(all_feedback)
+    agreed = sum(1 for f in all_feedback if f["client_verdict"] == "AGREE")
     
     return {
         "status": "recorded",
@@ -234,7 +264,8 @@ async def submit_feedback(item: FeedbackItem):
 @app.get("/feedback/stats")
 async def feedback_stats():
     """Returns aggregated feedback statistics for the trust dashboard."""
-    total = len(feedback_store)
+    all_feedback = await get_feedback_stats()
+    total = len(all_feedback)
     if total == 0:
         return {
             "total_feedback": 0,
@@ -243,11 +274,11 @@ async def feedback_stats():
             "message": "No client feedback received yet."
         }
     
-    agreed = sum(1 for f in feedback_store if f["client_verdict"] == "AGREE")
+    agreed = sum(1 for f in all_feedback if f["client_verdict"] == "AGREE")
     
     # Group by finding type
     by_type = {}
-    for f in feedback_store:
+    for f in all_feedback:
         ft = f.get("finding_type", "UNKNOWN")
         if ft not in by_type:
             by_type[ft] = {"total": 0, "agreed": 0}
@@ -338,8 +369,8 @@ async def quick_audit(req: QuickAuditRequest):
              original_audit["verdict"] = "Verification complete. This question meets the Survey Optimization Bureau's maximum quality benchmarks."
 
         if original_audit.get("quality_score", 0) == 100:
-            log_transaction(endpoint="/quick_audit", status="SUCCESS", latency_ms=0)
-            log_audit_stat(100, [])
+            await log_transaction(endpoint="/quick_audit", status="SUCCESS", latency_ms=0)
+            await log_audit_stat(100, [])
             return original_audit
 
         # 2. Recursive Perfection Loop (Limit 4)
@@ -396,8 +427,8 @@ async def quick_audit(req: QuickAuditRequest):
 
         original_audit["rewrite"] = best_rewrite
         
-        log_transaction(endpoint="/quick_audit", status="SUCCESS", latency_ms=0, item_count=1, sample_size=0)
-        log_audit_stat(original_audit.get("quality_score", 0), original_audit.get("issues", []))
+        await log_transaction(endpoint="/quick_audit", status="SUCCESS", latency_ms=0, item_count=1, sample_size=0)
+        await log_audit_stat(original_audit.get("quality_score", 0), original_audit.get("issues", []))
         
         return original_audit
 
@@ -408,13 +439,13 @@ async def quick_audit(req: QuickAuditRequest):
 @app.get("/admin/dashboard")
 async def admin_dashboard():
     """Service metrics for the admin dashboard."""
-    return get_admin_stats()
+    return await get_admin_stats()
 
 @app.get("/public/stats")
 async def public_stats():
     """Returns non-sensitive platform statistics for the landing page."""
     try:
-        admin_data = get_admin_stats()
+        admin_data = await get_admin_stats()
         return {
             "total_questions_processed": admin_data["unit_economics"]["total_questions_processed"],
             "average_quality_score": admin_data["audit_metrics"]["average_quality_score"],
@@ -443,27 +474,17 @@ async def architect_generate(req: ArchitectRequest):
     """
     AVA Genesis Suite: Generates a 20-item 'Bureau-Certified' research instrument.
     Includes generation, recursive self-audit, and a deployment manual.
+    Returns a stream of agent logs followed by the final package.
     """
-    try:
-        mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        package = await architect.create_full_package(
+    return StreamingResponse(
+        architect.create_full_package_stream(
             req.context, 
             req.item_count, 
-            mission=mission, 
+            mission=mission_registry.get(req.mission_id) if req.mission_id else None, 
             targeting=req.targeting_refinement.dict() if req.targeting_refinement else None
-        )
-        
-        log_transaction(
-            endpoint="/architect/generate",
-            status="SUCCESS",
-            latency_ms=0,
-            item_count=req.item_count
-        )
-        
-        return package
-    except Exception as e:
-        print(f"!!! [ARCHITECT ERROR] !!!: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        ), 
+        media_type="application/x-ndjson"
+    )
 
 
 # ── AVA Chat — "Chat with Me" ──
@@ -582,11 +603,11 @@ async def chat_with_ava(req: ChatRequest):
 
         reply = response.text.strip() if response.text else "I'm momentarily recalibrating. Could you rephrase that?"
 
-        log_transaction(endpoint="/chat/ava", status="OK", latency_ms=0)
+        await log_transaction(endpoint="/chat/ava", status="OK", latency_ms=0)
         return {"reply": reply}
 
     except Exception as e:
-        log_transaction(endpoint="/chat/ava", status="ERROR", latency_ms=0)
+        await log_transaction(endpoint="/chat/ava", status="ERROR", latency_ms=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 

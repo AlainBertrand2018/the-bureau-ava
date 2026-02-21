@@ -4,9 +4,11 @@
   "description": "The Survey Optimization Bureau - Full Stack Workspace",
   "scripts": {
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && ..\\.venv\\Scripts\\python.exe -m uvicorn main:app --reload --reload-exclude bureau_system.log --reload-exclude debug_ai_response.log --port 8000",
+    "dev:backend": "cd backend && ..\\.venv\\Scripts\\python.exe -m uvicorn main:app --reload --reload-dir . --reload-exclude \"bureau_system.log\" --reload-exclude \"debug_ai_response.log\" --reload-exclude \"the_bureau.db*\" --port 8000",
     "dev:studio": "cd frontend && npx sanity dev --port 3333",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:studio\"",
+    "dev:lite": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "build": "cd frontend && npm run build",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && ..\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt"
   },
   "devDependencies": {
