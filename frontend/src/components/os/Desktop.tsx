@@ -5,8 +5,8 @@ import Window from './Window';
 import Dock from './Dock';
 import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget } from './Widgets';
 import Onboarding from './Onboarding';
-import { AnimatePresence } from 'framer-motion';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Book } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Desktop: React.FC = () => {
     const { openWindows, wallpaper, triggerHandover } = useOS();
@@ -70,6 +70,45 @@ const Desktop: React.FC = () => {
                     <CountryWidget />
                     <BureauFeedWidget />
                 </WidgetContainer>
+            )}
+
+            {/* Desktop Icons */}
+            {!hasMaximizedWindow && (
+                <div className="fixed top-12 right-4 md:right-8 flex flex-col gap-6 md:gap-10 z-10 py-6">
+                    <motion.a
+                        href="/landing#faq"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1 }}
+                        className="group flex flex-col items-center gap-2 w-16 md:w-20"
+                    >
+                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
+                            <HelpCircle className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-emerald-400 transition-colors" />
+                        </div>
+                        <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
+                            System FAQ
+                        </span>
+                    </motion.a>
+
+                    <motion.a
+                        href="/glossary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 1.2 }}
+                        className="group flex flex-col items-center gap-2 w-16 md:w-20"
+                    >
+                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
+                            <Book className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-amber-400 transition-colors" />
+                        </div>
+                        <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
+                            Intelligence Glossary
+                        </span>
+                    </motion.a>
+                </div>
             )}
 
             {/* App Windows */}

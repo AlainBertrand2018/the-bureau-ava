@@ -29,6 +29,7 @@ import Demo from "@/components/landing/Demo";
 import SurveyMechanics from "@/components/landing/SurveyMechanics";
 import GenesisSection from "@/components/landing/GenesisSection";
 import PricingSection from "@/components/landing/PricingSection";
+import FAQSection from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import Navbar from "@/components/landing/Navbar";
 
@@ -167,6 +168,9 @@ export default function Home() {
           onContactClick={() => setIsContactOpen(true)}
           onGenesisClick={() => setShowGenesisModal(true)}
         />
+
+        {/* 11.5 FAQ Section >>> Address objections */}
+        <FAQSection />
 
         {/* 12. Final CTA >>> Last push */}
         <FinalCTASection
