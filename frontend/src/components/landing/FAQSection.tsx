@@ -55,21 +55,19 @@ const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: typeof FA
                     </div>
                 </button>
 
-                <AnimatePresence initial={false}>
-                    {isOpen && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                            className="overflow-hidden"
-                        >
-                            <p className="text-slate-500 text-base md:text-lg leading-relaxed font-normal max-w-3xl pb-8 md:pb-10">
-                                {item.answer}
-                            </p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <motion.div
+                    initial={false}
+                    animate={{
+                        height: isOpen ? "auto" : 0,
+                        opacity: isOpen ? 1 : 0
+                    }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden"
+                >
+                    <p className="text-slate-500 text-base md:text-lg leading-relaxed font-normal max-w-3xl pb-8 md:pb-10">
+                        {item.answer}
+                    </p>
+                </motion.div>
             </div>
         </Reveal>
     );

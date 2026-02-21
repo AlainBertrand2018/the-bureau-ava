@@ -31,40 +31,38 @@ const ModuleItem = ({ agent, index, activeIndex, setActiveIndex }: { agent: Agen
                 </Reveal>
             </button>
 
-            <AnimatePresence initial={false}>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        className="overflow-hidden"
-                    >
-                        <div className="space-y-10 pt-10">
-                            <div>
-                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Is</span>
-                                <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed">
-                                    {agent.whatItIs}
-                                </p>
-                            </div>
+            <motion.div
+                initial={false}
+                animate={{
+                    height: isOpen ? "auto" : 0,
+                    opacity: isOpen ? 1 : 0
+                }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+            >
+                <div className="space-y-10 pt-10">
+                    <div>
+                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Is</span>
+                        <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed">
+                            {agent.whatItIs}
+                        </p>
+                    </div>
 
-                            <div>
-                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Does</span>
-                                <p className="text-base md:text-lg text-slate-500 leading-relaxed italic">
-                                    {agent.whatItDoes}
-                                </p>
-                            </div>
+                    <div>
+                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Does</span>
+                        <p className="text-base md:text-lg text-slate-500 leading-relaxed italic">
+                            {agent.whatItDoes}
+                        </p>
+                    </div>
 
-                            <div className="p-6 md:p-8 bg-white/80 rounded-2xl border border-blue-100 shadow-sm">
-                                <p className="text-sm md:text-base text-slate-800 leading-relaxed font-bold uppercase tracking-tight">
-                                    <span className="text-blue-600 mr-2">Output:</span>
-                                    {agent.output}
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    <div className="p-6 md:p-8 bg-white/80 rounded-2xl border border-blue-100 shadow-sm">
+                        <p className="text-sm md:text-base text-slate-800 leading-relaxed font-bold uppercase tracking-tight">
+                            <span className="text-blue-600 mr-2">Output:</span>
+                            {agent.output}
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
         </div>
     );
 };
