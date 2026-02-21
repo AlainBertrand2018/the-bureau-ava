@@ -26,7 +26,7 @@ export default function AgentsIndexPage() {
             "name": agent.name,
             "applicationCategory": "AI Researcher",
             "description": agent.whatItIs,
-            "url": `https://thebureau.ai/agents/${agent.slug}`
+            "url": `https://the-bureau-ava.vercel.app/agents/${agent.slug}`
         }))
     };
 

@@ -41,8 +41,8 @@ export default async function GlossaryTermPage({ params }: Props) {
         "@type": "DefinedTerm",
         "name": entry.term,
         "description": entry.definition,
-        "url": `https://thebureau.ai/glossary/${entry.slug}`,
-        "inDefinedTermSet": "https://thebureau.ai/glossary"
+        "url": `https://the-bureau-ava.vercel.app/glossary/${entry.slug}`,
+        "inDefinedTermSet": "https://the-bureau-ava.vercel.app/glossary"
     };
 
     return (

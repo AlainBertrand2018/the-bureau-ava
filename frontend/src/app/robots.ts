@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: ['/admin/', '/studio/'],
         },
-        sitemap: 'https://thebureau.ai/sitemap.xml',
+        sitemap: 'https://the-bureau-ava.vercel.app/sitemap.xml',
     };
 }
