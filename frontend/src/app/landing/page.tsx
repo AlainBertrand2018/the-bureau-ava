@@ -25,6 +25,7 @@ import Solution from "@/components/landing/Solution";
 import Proof from "@/components/landing/Proof";
 import MeetAva from "@/components/landing/MeetAva";
 import HowItWorks from "@/components/landing/HowItWorks";
+import AgentCapabilities from "@/components/landing/AgentCapabilities";
 import Demo from "@/components/landing/Demo";
 import SurveyMechanics from "@/components/landing/SurveyMechanics";
 import GenesisSection from "@/components/landing/GenesisSection";
@@ -143,6 +144,9 @@ export default function Home() {
 
         {/* 7. Three steps. Under 5 minutes >>> Now they trust you — show it's easy */}
         <HowItWorks />
+
+        {/* 7.5 Agent Capabilities >>> Technical Specifications for GEO/LLMO */}
+        <AgentCapabilities />
 
         {/* 8. See what you'll get >>> Feature demo after trust is earned */}
         <Demo
