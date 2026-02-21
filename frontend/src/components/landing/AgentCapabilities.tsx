@@ -41,13 +41,19 @@ const ModuleItem = ({ agent, index, activeIndex, setActiveIndex }: { agent: Agen
                         className="overflow-hidden"
                     >
                         <div className="space-y-10 pt-10">
-                            <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed">
-                                {agent.p1}
-                            </p>
+                            <div>
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Is</span>
+                                <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed">
+                                    {agent.whatItIs}
+                                </p>
+                            </div>
 
-                            <p className="text-base md:text-lg text-slate-500 leading-relaxed">
-                                {agent.p2}
-                            </p>
+                            <div>
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Does</span>
+                                <p className="text-base md:text-lg text-slate-500 leading-relaxed italic">
+                                    {agent.whatItDoes}
+                                </p>
+                            </div>
 
                             <div className="p-6 md:p-8 bg-white/80 rounded-2xl border border-blue-100 shadow-sm">
                                 <p className="text-sm md:text-base text-slate-800 leading-relaxed font-bold uppercase tracking-tight">

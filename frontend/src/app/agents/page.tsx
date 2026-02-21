@@ -24,8 +24,8 @@ export default function AgentsIndexPage() {
         "hasPart": agentData.map(agent => ({
             "@type": "SoftwareApplication",
             "name": agent.name,
-            "applicationCategory": "Researcher",
-            "description": agent.p1,
+            "applicationCategory": "AI Researcher",
+            "description": agent.whatItIs,
             "url": `https://thebureau.ai/agents/${agent.slug}`
         }))
     };
@@ -89,7 +89,7 @@ export default function AgentsIndexPage() {
                                     </p>
 
                                     <p className="text-sm text-slate-500 line-clamp-4 leading-relaxed font-medium mb-8">
-                                        {agent.p1}
+                                        {agent.whatItIs}
                                     </p>
 
                                     <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">

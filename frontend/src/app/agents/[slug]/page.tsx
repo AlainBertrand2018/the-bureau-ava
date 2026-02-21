@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { agentData } from "@/constants/agents";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/Footer";
-import { ChevronRight, Shield, Wrench, Cpu, Zap } from "lucide-react";
+import { ChevronRight, Shield, Wrench, Cpu, Zap, Activity, Target, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from 'next';
 
@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!agent) return { title: "Agent Not Found" };
 
     return {
-        title: `${agent.name} — ${agent.role} | AVA OS`,
-        description: agent.p1,
+        title: `${agent.name} — ${agent.role} | Agentic Roster`,
+        description: agent.whatItIs,
     };
 }
 
@@ -36,9 +36,9 @@ export default function AgentDossierPage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": agent.name,
-        "applicationCategory": "Researcher",
+        "applicationCategory": "AI Agent",
         "operatingSystem": "AVA OS",
-        "description": agent.p1,
+        "description": agent.whatItIs,
         "featureList": agent.skills,
         "provider": {
             "@type": "Organization",
@@ -74,7 +74,7 @@ export default function AgentDossierPage({ params }: Props) {
 
                         {/* Left Content Column */}
                         <div className="flex-1">
-                            <div className="flex items-center gap-4 mb-8">
+                            <div className="flex items-center gap-4 mb-12">
                                 <div className="p-4 bg-blue-600 rounded-2xl shadow-xl shadow-blue-600/20 text-white">
                                     <agent.icon size={32} />
                                 </div>
@@ -88,26 +88,49 @@ export default function AgentDossierPage({ params }: Props) {
                                 </div>
                             </div>
 
-                            <div className="space-y-12">
+                            <div className="space-y-16">
+                                {/* Pillar 1: What It Is */}
                                 <div className="space-y-6">
-                                    <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase border-b border-slate-100 pb-4">Purpose & Scope</h2>
-                                    <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-medium">
-                                        {agent.p1}
+                                    <div className="flex items-center gap-3 text-blue-600">
+                                        <Target size={20} />
+                                        <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase">What It Is</h2>
+                                    </div>
+                                    <p className="text-xl md:text-2xl text-slate-600 leading-relaxed font-medium pl-8 border-l-2 border-slate-100">
+                                        {agent.whatItIs}
                                     </p>
                                 </div>
 
+                                {/* Pillar 2: Purpose */}
                                 <div className="space-y-6">
-                                    <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase border-b border-slate-100 pb-4">Operational Mechanism</h2>
-                                    <p className="text-lg text-slate-500 leading-relaxed italic">
-                                        {agent.p2}
+                                    <div className="flex items-center gap-3 text-blue-600">
+                                        <ShieldCheck size={20} />
+                                        <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase">Purpose</h2>
+                                    </div>
+                                    <p className="text-lg md:text-xl text-slate-500 leading-relaxed pl-8 border-l-2 border-slate-100">
+                                        {agent.purpose}
                                     </p>
                                 </div>
 
+                                {/* Pillar 3: What It Does */}
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 text-blue-600">
+                                        <Activity size={20} />
+                                        <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase">What It Does</h2>
+                                    </div>
+                                    <p className="text-lg text-slate-500 leading-relaxed pl-8 border-l-2 border-slate-100 font-medium italic">
+                                        {agent.whatItDoes}
+                                    </p>
+                                </div>
+
+                                {/* Pillar 4: Output */}
                                 <div className="p-8 md:p-12 bg-slate-900 rounded-[3rem] text-white relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-blue-600/30 transition-colors duration-500" />
                                     <div className="relative z-10">
-                                        <span className="inline-block text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-6">Core Deliverable</span>
-                                        <h3 className="text-2xl md:text-3xl font-black leading-tight mb-4">Output:</h3>
+                                        <div className="flex items-center gap-3 text-blue-400 mb-6">
+                                            <Zap size={20} fill="currentColor" />
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Core Outcome</span>
+                                        </div>
+                                        <h3 className="text-2xl md:text-3xl font-black leading-tight mb-4 uppercase">Output:</h3>
                                         <p className="text-xl text-slate-300 font-medium leading-relaxed">
                                             {agent.output}
                                         </p>
@@ -118,16 +141,16 @@ export default function AgentDossierPage({ params }: Props) {
 
                         {/* Right Sidebar */}
                         <div className="w-full lg:w-80 space-y-10">
-                            {/* Stats Box */}
-                            <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100">
+                            {/* Status Box */}
+                            <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm">
                                 <div className="flex items-center gap-3 mb-8">
                                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                                     <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Status: {agent.status}</span>
                                 </div>
 
-                                <div className="space-y-6">
+                                <div className="space-y-8">
                                     <div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-4 border-b border-slate-200 pb-2">Primary Skills</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-4 border-b border-slate-200 pb-2">Integrated Skills</span>
                                         <div className="flex flex-wrap gap-2">
                                             {agent.skills.map((skill, i) => (
                                                 <span key={i} className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 uppercase tracking-tight">
@@ -138,7 +161,7 @@ export default function AgentDossierPage({ params }: Props) {
                                     </div>
 
                                     <div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-4 border-b border-slate-200 pb-2">Resource Stack</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-4 border-b border-slate-200 pb-2">Hardware/Software Stack</span>
                                         <div className="flex flex-wrap gap-2">
                                             {agent.tools.map((tool, i) => (
                                                 <span key={i} className="px-3 py-1 bg-blue-50 border border-blue-100 rounded-lg text-[10px] font-bold text-blue-600 uppercase tracking-tight">
@@ -150,10 +173,13 @@ export default function AgentDossierPage({ params }: Props) {
                                 </div>
                             </div>
 
-                            {/* Related Knowledge Graph */}
+                            {/* Internal Knowledge Links */}
                             <div className="p-8 bg-white border border-slate-100 rounded-3xl shadow-sm">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 block mb-6">Knowledge Graph</span>
-                                <div className="space-y-4">
+                                <div className="flex items-center gap-2 mb-6">
+                                    <Cpu size={16} className="text-blue-600" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Contextual Matrix</span>
+                                </div>
+                                <div className="space-y-3">
                                     {agent.relatedGlossary.map((term, i) => (
                                         <Link
                                             key={i}
@@ -167,11 +193,11 @@ export default function AgentDossierPage({ params }: Props) {
                                 </div>
                             </div>
 
-                            {/* Security Badge */}
-                            <div className="flex items-center gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                                <Shield size={24} className="text-slate-300" />
-                                <p className="text-[9px] font-bold text-slate-400 leading-relaxed uppercase tracking-widest">
-                                    Audited by Bureau Security v1.4.2
+                            {/* Bureau Security Stamp */}
+                            <div className="flex items-center gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100 grayscale hover:grayscale-0 transition-all duration-500">
+                                <Shield size={24} className="text-blue-600/40" />
+                                <p className="text-[9px] font-bold text-slate-400 leading-tight uppercase tracking-widest">
+                                    Bureau Protocol <br /><span className="text-slate-500">Identity Verified</span>
                                 </p>
                             </div>
                         </div>
@@ -180,7 +206,7 @@ export default function AgentDossierPage({ params }: Props) {
                 </div>
             </section>
 
-            {/* CTA Section */}
+            {/* Unified Reasoning Footer */}
             <section className="py-20 border-t border-slate-100 bg-slate-50">
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight mb-8">Deploy this intelligence.</h2>
@@ -188,7 +214,7 @@ export default function AgentDossierPage({ params }: Props) {
                         href="/os"
                         className="inline-flex items-center gap-3 px-10 py-5 bg-blue-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] hover:bg-blue-700 transition-all hover:shadow-2xl hover:shadow-blue-600/40 hover:-translate-y-1 transform"
                     >
-                        Launch OS <Zap size={18} fill="currentColor" />
+                        Launch Bureau OS <Zap size={18} fill="currentColor" />
                     </Link>
                 </div>
             </section>

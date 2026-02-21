@@ -4,8 +4,9 @@ export interface AgentModule {
     name: string;
     slug: string;
     role: string;
-    p1: string;
-    p2: string;
+    whatItIs: string;
+    purpose: string;
+    whatItDoes: string;
     output: string;
     icon: LucideIcon;
     status: "Operational" | "Deep Learning" | "Optimizing";
@@ -19,9 +20,10 @@ export const agentData: AgentModule[] = [
         name: "AVA",
         slug: "ava-orchestrator",
         role: "The Autonomous Survey Orchestrator",
-        p1: "AVA is the first Agentic AI platform purpose-built for survey intelligence. She orchestrates a suite of specialized agents to automate the end-to-end development of market research instruments to ensure scientific rigor and data integrity — before, during, and after fieldwork.",
-        p2: "AVA works by integrating Large Language Models with proprietary research methodologies and behavioral databases. Her system reasons through complex methodology constraints to provide researchers with an autonomous analyst that works with 98% accuracy and 100x the speed of traditional manual survey review.",
-        output: "A centralized Survey OS environment providing autonomous control over the entire research design lifecycle, from market reconnaissance to final data validation.",
+        whatItIs: "AVA is the first Agentic AI platform purpose-built for survey intelligence. She is the central intelligence that governs the Bureau's research lifecycle.",
+        purpose: "To automate the end-to-end development of market research instruments while ensuring scientific rigor and 100% data integrity.",
+        whatItDoes: "She orchestrates a suite of specialized agents, integrating Large Language Models with proprietary research methodologies and reasoning engines to handle complex survey constraints.",
+        output: "A centralized Survey OS environment providing autonomous control over reconnaissance, construction, simulation, and data validation.",
         icon: Sparkles,
         status: "Operational",
         skills: ["Agentic Orchestration", "Multi-model reasoning", "Strategic Planning", "Quality Gatekeeping"],
@@ -35,9 +37,10 @@ export const agentData: AgentModule[] = [
         name: "Sentinel",
         slug: "sentinel-recon",
         role: "OSINT Market Reconnaissance",
-        p1: "Sentinel is AVA's open-source intelligence agent. It scans real-time cultural, economic, and social data about your target market to build a contextual foundation for your Market Research instrument — before a single question is written.",
-        p2: "Sentinel works by aggregating OSINT signals across your target geography and demographic segment, identifying survey-sensitive topics, cultural blind spots, linguistic codes, and contextual risk factors that generic survey design ignores. The result is a research-grade market brief delivered in minutes, not days.",
-        output: "A real-time market context dossier covering cultural landscape, economic indicators, social sensitivities, and survey-design risk flags — specific to your target audience and geography.",
+        whatItIs: "Sentinel is AVA's open-source intelligence specialist. It acts as the frontline scout for every research project.",
+        purpose: "To build a real-time cultural, economic, and social foundation for survey instruments before a single question is drafted.",
+        whatItDoes: "It scans global OSINT signals across target geographies and segments, identifying survey-sensitive topics, linguistic codes, and contextual risk factors.",
+        output: "A real-time market context dossier covering cultural landscapes, social sensitivities, and specific survey-design risk flags.",
         icon: Target,
         status: "Operational",
         skills: ["OSINT Harvesting", "Cultural Sentiment Mapping", "Geographic Analysis", "Risk Flagging"],
@@ -51,9 +54,10 @@ export const agentData: AgentModule[] = [
         name: "Genesis",
         slug: "genesis-architect",
         role: "Autonomous Instrument Construction",
-        p1: "Genesis is AVA's autonomous survey architect. It transforms raw research objectives into statistically rigorous, fieldwork-ready questionnaires to ensure every data point collected is actionable — before your fieldwork budget is even touched.",
-        p2: "Genesis works by applying advanced psychometric principles and logical branching sequences to your project brief. It automatically constructs complex survey logic, skip-patterns, and randomized blocks while ensuring every item adheres to global data integrity standards for quantitative and qualitative inquiry.",
-        output: "A publication-ready digital field instrument, including full survey logic maps, psychometrically optimized phrasing, and ready-to-deploy digital asset files.",
+        whatItIs: "Genesis is AVA's autonomous survey architect. It is the engine responsible for the structural integrity of the field instrument.",
+        purpose: "To transform raw research objectives into statistically rigorous, fieldwork-ready questionnaires that produce zero-bias data.",
+        whatItDoes: "It applies advanced psychometric principles to construct complex logic, skip-patterns, and randomized blocks while optimizing phrasing for participant clarity.",
+        output: "A publication-ready digital field instrument with full logic maps and psychometrically optimized question batteries.",
         icon: Cpu,
         status: "Operational",
         skills: ["Psychometric Design", "Logical Path Construction", "Bias Mitigation", "Skip-logic Optimization"],
@@ -68,9 +72,10 @@ export const agentData: AgentModule[] = [
         name: "The Lab",
         slug: "the-lab-simulator",
         role: "Behavioral Stress-Testing",
-        p1: "The Lab is AVA's behavioral stress-testing environment. It simulates thousands of unique respondent journeys through your questionnaire to detect bias, ambiguity, and structural flaws — before a single real human respondent is contacted.",
-        p2: "The Lab works by deploying thousands of synthetic personas, calibrated to your specific census-weighted target audience, to interact with your survey. It tracks cognitive load, response friction, and sentiment skew for every question variant, flagging exact points of potential data contamination or participant drop-off.",
-        output: "A comprehensive stress-test diagnostic report featuring a Data Integrity score, bias heatmaps, ambiguity alerts, and prioritized question-rewrite suggestions.",
+        whatItIs: "The Lab is AVA's behavioral simulation environment. It serves as the ultimate proving ground for survey instruments.",
+        purpose: "To detect bias, ambiguity, and structural flaws by simulating human respondent behavior before actual fieldwork begins.",
+        whatItDoes: "It deploys thousands of synthetic personas, calibrated to census-weighted audiences, to stress-test logical paths and measure cognitive friction.",
+        output: "A comprehensive stress-test diagnostic report featuring Data Integrity scores, bias heatmaps, and priority rewrite alerts.",
         icon: Microscope,
         status: "Operational",
         skills: ["Synthetic Persona Modeling", "Cognitive Load Simulation", "Stress-Testing", "Predictive Analytics"],
@@ -86,9 +91,10 @@ export const agentData: AgentModule[] = [
         name: "Field Interpreter",
         slug: "field-interpreter-audit",
         role: "Post-Field Data Audit",
-        p1: "The Field Interpreter is AVA's post-fieldwork audit engine. It analyzes raw survey data to detect fraud, straight-lining, and inconsistent response patterns to protect the validity of your final insights — before you begin your statistical analysis.",
-        p2: "The Interpreter works by applying behavioral pattern-matching algorithms to detect bot activity, non-serious responses, and logical contradictions within the dataset. It cleans and validates raw data batches in real-time, assigning a 'Trustworthiness Score' to every individual survey record to ensure your findings are defensible.",
-        output: "A validated and cleaned data audit report, including fraud-detection maps, record-level trustworthiness scores, and a certificate of data integrity for your final stakeholder presentation.",
+        whatItIs: "The Field Interpreter is AVA's statistical security engine. it is the final gatekeeper of data veracity.",
+        purpose: "To protect the validity of research insights by detecting fraud, bot activity, and participant straight-lining in raw data.",
+        whatItDoes: "It applies behavioral pattern-matching and anomaly detection to real-time data batches, assigning individual trustworthiness scores to every record.",
+        output: "A validated data audit report with fraud-detection maps and verified certificates of data integrity for stakeholders.",
         icon: FileCheck,
         status: "Operational",
         skills: ["Fraud Detection", "Pattern Recognition", "Data Cleaning", "Trust Scoring"],
