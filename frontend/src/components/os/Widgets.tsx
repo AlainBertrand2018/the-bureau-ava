@@ -16,13 +16,18 @@ export const WidgetContainer: React.FC<{ children: React.ReactNode }> = ({ child
 const WidgetWrapper: React.FC<{ children: React.ReactNode; delay?: number; id: string }> = ({ children, delay = 0, id }) => {
     const { wallpaper } = useOS();
     const isLight = wallpaper === 'clinical-white';
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const lightClasses = "bg-white/70 backdrop-blur-3xl border-slate-200 shadow-xl group hover:bg-white text-slate-800";
     const darkClasses = "bg-white/5 backdrop-blur-3xl border-white/10 shadow-xl group hover:bg-white/10 text-white";
 
     return (
         <motion.div
-            drag={typeof window !== 'undefined' && window.innerWidth > 768}
+            drag={mounted && window.innerWidth > 768}
             dragMomentum={false}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
             whileDrag={{ scale: 1.05, rotate: 2, zIndex: 100 }}

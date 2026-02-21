@@ -14,8 +14,13 @@ interface WindowProps {
 
 const Window: React.FC<WindowProps> = ({ id, title, children, isMaximized, zIndex }) => {
     const { closeApp, maximizeApp, focusApp } = useOS();
+    const [mounted, setMounted] = React.useState(false);
 
-    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const isMobile = mounted ? window.innerWidth < 768 : false;
     const finalMaximized = isMaximized || isMobile;
 
     const handleBodyClick = () => {
