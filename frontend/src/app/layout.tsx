@@ -84,36 +84,27 @@ const jsonLd = {
     },
     {
       "@type": "SoftwareApplication",
-      "name": "AVA Orchestrator",
+      "name": "AVA (Autonomous Validation Analyst)",
       "applicationCategory": "StrategicIntelligenceApplication",
       "operatingSystem": "Web-Based Cognitive Interface",
-      "description": "Proprietary AI orchestrator conducting rigorous pre-survey audits using synthetic populations to ensure research veracity and instrument calibration.",
-      "url": "https://ava.launchableai.online",
+      "description": "Executive-grade autonomous AI system designed to stress-test, validate, and falsify strategic assumptions. Virtual CEO of the Bureau agentic ecosystem.",
+      "url": "https://ava.launchableai.online/ava",
       "creator": {
         "@type": "Organization",
         "name": "The Bureau"
       },
       "featureList": [
-        "Adversarial Document Auditing",
-        "Linguistic Ambiguity Detection",
-        "Census-Weighted Persona Simulation",
-        "Zero-PII Compliance Protocols",
+        "Adversarial Assumption Validation",
+        "Failure Mode Mapping",
+        "Strategic Stress Testing",
+        "Agentic Orchestration",
         "Bias Neutralization Engine"
-      ],
-      "audience": {
-        "@type": "Audience",
-        "audienceType": [
-          "Government Research Units",
-          "Institutional Decision Makers",
-          "FMCG Global Research Teams",
-          "Academic Methodologists"
-        ]
-      }
+      ]
     },
     {
       "@type": "Service",
-      "name": "The Bureau Audit Protocol",
-      "description": "Scientific validation framework for market research instruments, utilizing agentic AI for stress-testing and integrity verification.",
+      "name": "The Bureau Validation Team",
+      "description": "Autonomous Agentic Team orchestrated by AVA for high-frequency data integrity and strategic auditing.",
       "provider": {
         "@type": "Organization",
         "name": "The Bureau"
@@ -121,38 +112,38 @@ const jsonLd = {
       "areaServed": "Global",
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
-        "name": "The Bureau Service Suite",
+        "name": "The Bureau Autonomous Agent Suite",
         "itemListElement": [
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Sentinel Recon",
-              "description": "OSINT-driven cultural and market context synthesis."
+              "name": "Sentinel",
+              "description": "Tactical Market Reconnaissance and OSINT Scouting."
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Genesis Architect",
-              "description": "AI-driven questionnaire construction and logic mapping."
+              "name": "Profiler",
+              "description": "Deep Cultural Calibration and Psychographic Analysis."
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "The Lab Simulation",
-              "description": "Adversarial stress-testing against synthetic panels."
+              "name": "Architect",
+              "description": "Genesis Protocol Instrument Design and Questionnaire Logic."
             }
           },
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Field Interpreter Audit",
-              "description": "Post-fieldwork forensic data synthesis and narrative reporting."
+              "name": "Auditor",
+              "description": "Adversarial Stress Testing and Failure Mode Discovery."
             }
           }
         ]

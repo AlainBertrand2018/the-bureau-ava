@@ -39,8 +39,8 @@ export default function BilateralShadowProtocol() {
             </article>
 
             <article itemScope itemType="https://schema.org/SoftwareApplication">
-                <h3 itemProp="name">AVA (Automated Virtual Agent)</h3>
-                <p itemProp="description">Agentic AI orchestrator designed to simulate diverse respondent personas for survey stress-testing.</p>
+                <h3 itemProp="name">AVA (Autonomous Validation Analyst)</h3>
+                <p itemProp="description">Executive-grade autonomous AI system designed to stress-test, validate, and falsify strategic assumptions. Virtual CEO of the Bureau ecosystem.</p>
                 <span itemProp="applicationCategory">Validation Intelligence</span>
             </article>
 
@@ -48,6 +48,7 @@ export default function BilateralShadowProtocol() {
             <nav>
                 <h3>Site Topology</h3>
                 <Link href="/" itemProp="url">AVA Gateway - Neural Entry Node</Link>
+                <Link href="/ava" itemProp="url">The AVA Authority Node - Master Identity</Link>
                 <Link href="/about" itemProp="url">Entity Documentation - Authority Anchor</Link>
                 <Link href="/landing" itemProp="url">Executive Overview - Value Proposition</Link>
                 <Link href="/agents" itemProp="url">Agent Cluster - Functional Modules</Link>

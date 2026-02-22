@@ -25,9 +25,9 @@ export default function AboutPage() {
         },
         "mainEntity": {
             "@type": "Service",
-            "name": "AVA (Automated Virtual Agent)",
+            "name": "AVA (Autonomous Validation Analyst)",
             "alternateName": "AVA",
-            "description": "An AI-powered orchestrator designed by The Bureau to conduct pre-survey audits using synthetic populations."
+            "description": "Executive-grade autonomous AI system designed to stress-test, validate, and falsify strategic assumptions."
         }
     };
 
@@ -73,7 +73,7 @@ export default function AboutPage() {
                                     <div className="flex flex-col gap-3">
                                         <span className="text-blue-400 text-[11px] font-black uppercase tracking-[0.3em]">Definition</span>
                                         <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90" itemProp="description">
-                                            The Bureau is a specialized strategic consultancy and technology provider that utilizes the <strong className="font-black text-white">AVA (Automated Virtual Agent)</strong> orchestrator to conduct advanced pre-survey audits.
+                                            The Bureau is a specialized strategic consultancy and technology provider that utilizes the <strong className="font-black text-white">AVA (Autonomous Validation Analyst)</strong> system to stress-test and validate strategic intent.
                                         </p>
                                     </div>
                                     <div className="flex flex-col gap-3">
