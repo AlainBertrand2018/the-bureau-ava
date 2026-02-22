@@ -4,7 +4,7 @@ import Link from "next/link";
 import { glossaryData } from "@/constants/glossary";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft, ChevronRight, Zap, Shield, Cpu } from "lucide-react";
+import { ArrowLeft, ChevronRight, Zap, Shield, Cpu, ArrowRight } from "lucide-react";
 import { Metadata } from 'next';
 
 type Props = {
