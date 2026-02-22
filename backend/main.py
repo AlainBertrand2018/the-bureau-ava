@@ -520,10 +520,11 @@ AVA_SYSTEM_PROMPT = """You are AVA — Autonomous Validation Analyst and virtual
 6. **Simulate respondents** — Census-weighted synthetic panels to stress-test before fieldwork
 
 ## YOUR SERVICES & PRICING
-- Trial Audit: Free — 1 survey, 10 personas, 3 questions
-- Standard Audit: €280 — Up to 50 personas, 20 questions, full report, PDF export
-- Deep Simulation: €830 — Up to 200 personas, 50 questions, demographic cross-tabs
-- Enterprise: Custom pricing with API + SLA
+- Sentinel: FREE — Tactical Market Reconnaissance and Persona Synthesis
+- Genesis Protocol: €378 — Full Questionnaire Generation + Scientific Internal Audit
+- The Lab: €300 — Individual Instrument Stress Testing and Adversarial Simulation
+- Result Interpreter: €240 — Deep Narrative Reporting and Psychographic Insights
+- Enterprise Membership: €600/month — 60,000 Bureau Credits per month allowance for high-volume deployments
 
 ## CONVERSATIONAL STYLE
 - Be concise but substantive — no fluff
@@ -575,20 +576,36 @@ async def chat_with_ava(req: ChatRequest):
             parts=[types.Part.from_text(text=req.message)]
         ))
 
-        # Adjust pricing in prompt based on incoming currency
+        # Adjust pricing in prompt based on incoming currency (1 EUR ≈ 50 MUR)
         pricing_map = {
-            "MUR": {"standard": "Rs 15,000", "deep": "Rs 45,000"},
-            "USD": {"standard": "$330", "deep": "$980"},
-            "GBP": {"standard": "£240", "deep": "£710"},
-            "EUR": {"standard": "€280", "deep": "€830"}
+            "MUR": {
+                "sentinel": "FREE",
+                "genesis": "Rs 18,900",
+                "lab": "Rs 15,000",
+                "interpreter": "Rs 12,000",
+                "enterprise": "Rs 30,000/month (60k Credits)"
+            },
+            "EUR": {
+                "sentinel": "FREE",
+                "genesis": "€378",
+                "lab": "€300",
+                "interpreter": "€240",
+                "enterprise": "€600/month (60k Credits)"
+            }
         }
         curr = req.currency if req.currency in pricing_map else "EUR"
         p = pricing_map[curr]
         
         dynamic_system_prompt = AVA_SYSTEM_PROMPT.replace(
-            "Standard Audit: €280", f"Standard Audit: {p['standard']}"
+            "Sentinel: FREE", f"Sentinel: {p['sentinel']}"
         ).replace(
-            "Deep Simulation: €830", f"Deep Simulation: {p['deep']}"
+            "Genesis Protocol: €378", f"Genesis Protocol: {p['genesis']}"
+        ).replace(
+            "The Lab: €300", f"The Lab: {p['lab']}"
+        ).replace(
+            "Result Interpreter: €240", f"Result Interpreter: {p['interpreter']}"
+        ).replace(
+            "Enterprise Membership: €600/month", f"Enterprise Membership: {p['enterprise']}"
         )
 
         response = client.models.generate_content(

@@ -12,10 +12,11 @@ interface CurrencyConfig {
     code: CurrencyCode;
     symbol: string;
     tiers: {
-        tier1: PricingTier;
-        tier2: PricingTier;
-        tier3: PricingTier;
+        sentinel: PricingTier;
+        interpreter: PricingTier;
+        lab: PricingTier;
         genesis: PricingTier;
+        enterprise: PricingTier;
     };
     riskRange: string;
     icebergDesign: string;
@@ -25,10 +26,11 @@ interface CurrencyConfig {
 }
 
 const BASE_EUR_CONFIG = {
-    tier1: 0,
-    tier2: 280,
-    tier3: 420,
-    genesis: 350,
+    sentinel: 0,        // Market Recon: FREE
+    interpreter: 240,   // Results Analysis: €240
+    lab: 300,           // Stress Testing: €300
+    genesis: 378,       // Survey from Scratch: €378
+    enterprise: 600,    // Unlimited Monthly: €600
     riskRange: [4000, 16000],
     icebergDesign: [1000, 3000],
     icebergRecruitment: [2000, 8000],
@@ -60,10 +62,11 @@ const generateConfig = (code: CurrencyCode, currentRates: Record<string, number>
     const rate = currentRates[code] || FALLBACK_RATES[code];
     const symbol = SYMBOLS[code];
 
-    const t1 = formatPrice(BASE_EUR_CONFIG.tier1 * rate, code);
-    const t2 = formatPrice(BASE_EUR_CONFIG.tier2 * rate, code);
-    const t3 = formatPrice(BASE_EUR_CONFIG.tier3 * rate, code);
-    const tg = formatPrice(BASE_EUR_CONFIG.genesis * rate, code);
+    const tS = formatPrice(BASE_EUR_CONFIG.sentinel * rate, code);
+    const tI = formatPrice(BASE_EUR_CONFIG.interpreter * rate, code);
+    const tL = formatPrice(BASE_EUR_CONFIG.lab * rate, code);
+    const tG = formatPrice(BASE_EUR_CONFIG.genesis * rate, code);
+    const tE = formatPrice(BASE_EUR_CONFIG.enterprise * rate, code);
 
     const convRange = (range: number[]) => {
         const low = formatPrice(range[0] * rate, code);
@@ -86,10 +89,11 @@ const generateConfig = (code: CurrencyCode, currentRates: Record<string, number>
         code,
         symbol,
         tiers: {
-            tier1: { price: t1, symbol },
-            tier2: { price: t2, symbol },
-            tier3: { price: t3, symbol },
-            genesis: { price: tg, symbol },
+            sentinel: { price: tS, symbol },
+            interpreter: { price: tI, symbol },
+            lab: { price: tL, symbol },
+            genesis: { price: tG, symbol },
+            enterprise: { price: tE, symbol },
         },
         riskRange: convRange(BASE_EUR_CONFIG.riskRange),
         icebergDesign: convRangeSimple(BASE_EUR_CONFIG.icebergDesign),

@@ -5,6 +5,7 @@ import { useOS, AppId } from '@/context/OSContext';
 import Image from 'next/image';
 import { CornerDownLeft, Command, User as UserIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { avaKnowledge, KnowledgeNode } from '@/config/avaKnowledge';
 
 interface Message {
     role: 'ava' | 'user';
@@ -18,6 +19,38 @@ interface Job {
     consentQuestion: string;
     costInfo: string;
 }
+
+const RESPONSE_POOLS = {
+    greetings: [
+        "Hello! I am AVA, your research intelligence officer. How can I assist your workflow today?",
+        "Welcome. I'm AVA. Which tactical research operation shall we initialize today?",
+        "Greetings. AVA systems active. How can I support your survey architecture or analysis?",
+        "Systems online. I am AVA. Ready to deploy specialized market research tools for you."
+    ],
+    fallbacks: [
+        "I am sorry, my intelligence is strictly focused on Market Research Tools and Methodology.",
+        "My protocols are specialized for Market Research only. I cannot assist with that request.",
+        "That falls outside the SOB framework. I only specialize in tactical survey optimization tools.",
+        "I am optimized for market reconnaissance and survey auditing. Please keep requests within that scope."
+    ],
+    acknowledgments: [
+        "Understood. I am standing by for your next command.",
+        "Acknowledged. Monitoring your workflow progress.",
+        "Confirmed. Awaiting further tactical instructions.",
+        "Received. I'm active and ready for your next requirement."
+    ],
+    redirections: [
+        "Ok. I am now redirecting you to the service.",
+        "Initializing core protocols. Transferring you now.",
+        "Understood. Launching the requested intelligence suite.",
+        "Sectors aligned. Accessing the specialized tool for you."
+    ]
+};
+
+const getRandomResponse = (pool: keyof typeof RESPONSE_POOLS) => {
+    const list = RESPONSE_POOLS[pool];
+    return list[Math.floor(Math.random() * list.length)];
+};
 
 const AskAva: React.FC = () => {
     const { wallpaper, launchApp } = useOS();
@@ -38,49 +71,49 @@ const AskAva: React.FC = () => {
             type: 'app',
             target: 'lab',
             consentQuestion: "I can initialize a Stress Test to validate your instrument. Shall I open the Lab?",
-            costInfo: "Stress Testing is part of our audit suite. Basic validation starts at 50 credits per instrument."
+            costInfo: "Stress Testing (The Lab) is a premium audit service priced at €300 per instrument."
         },
         {
             label: 'Survey from Scratch',
             type: 'app',
             target: 'genesis',
             consentQuestion: "Genesis is ready to build your questionnaire from the ground up. Ready to start?",
-            costInfo: "Creating a survey from scratch in Genesis is complimentary for initial drafts. AI optimization varies by complexity."
+            costInfo: "Genesis protocol (Generation + Self-Stress Audit) is priced at €378 per run."
         },
         {
             label: 'Market Recon',
             type: 'app',
             target: 'sentinel',
             consentQuestion: "Sentinel is standing by for market reconnaissance. Should I deploy the system?",
-            costInfo: "Market Reconnaissance through Sentinel is a premium service based on data volume and targeted demographics."
+            costInfo: "Market Reconnaissance (Sentinel) is currently available as a COMPLIMENTARY service (FREE)."
         },
         {
             label: 'Result Analysis',
             type: 'app',
             target: 'interpreter',
             consentQuestion: "Our Result Interpreter is ready to decode your data. Would you like me to open the Interpretation Suite?",
-            costInfo: "Result Analysis in the Interpreter suite is billed per data point processed and visualized."
+            costInfo: "Result Analysis (The Interpreter) is priced at €240 per full data set analysis."
         },
         {
             label: 'Agent information',
             type: 'link',
             target: '/agents',
             consentQuestion: "We have a team of skillful agents at your service. Do you want to learn more about them?",
-            costInfo: "All information regarding our Agentic Roster is free to consult in the Roster section."
+            costInfo: "Information regarding our Agentic Roster is complimentary."
         },
         {
             label: 'Information about The Bureau',
             type: 'link',
             target: '/landing',
             consentQuestion: "I can provide a full briefing on The Bureau's operations. Shall I take you there?",
-            costInfo: "Detailed information about The Bureau's methodology and mission is openly available."
+            costInfo: "Methodology and mission briefings are complimentary."
         },
         {
             label: 'Glossary',
             type: 'link',
             target: '/glossary',
             consentQuestion: "Our Intelligence Glossary contains all specialized terminology. Do you wish to consult it?",
-            costInfo: "Access to the Intelligence Glossary is unrestricted for all verified users."
+            costInfo: "Consulting the Intelligence Glossary is free of charge."
         }
     ];
 
@@ -91,7 +124,7 @@ const AskAva: React.FC = () => {
     }, [messages]);
 
     const performSmoothRedirection = (job: Job) => {
-        setMessages(prev => [...prev, { role: 'ava', content: "Ok. I am now redirecting you to the service." }]);
+        setMessages(prev => [...prev, { role: 'ava', content: getRandomResponse('redirections') }]);
 
         setTimeout(() => {
             if (job.type === 'app') {
@@ -118,7 +151,7 @@ const AskAva: React.FC = () => {
             return performSmoothRedirection(pendingJob);
         }
 
-        // 2. Layer: Intent Identification
+        // 2. Layer: Tool/Job Identification
         const findJob = (input: string) => {
             if (input.includes('stress') || input.includes('test') || input.includes('validate') || input.includes('lab')) return jobs[0];
             if (input.includes('scratch') || input.includes('create') || input.includes('new') || input.includes('build') || input.includes('questionnaire') || input.includes('survey')) {
@@ -133,10 +166,19 @@ const AskAva: React.FC = () => {
             return undefined;
         };
 
-        let detectedJob = findJob(t);
-        const activeJob = detectedJob || pendingJob || currentContext;
+        const detectedJob = findJob(t);
 
-        // 3. Layer: Contextual Modifiers (Cost/Price)
+        // 3. Layer: Knowledge Base Retrieval (NEW Intelligence Bridge)
+        const findKnowledge = (input: string) => {
+            return avaKnowledge.find(node =>
+                node.keywords.some(keyword => input.includes(keyword))
+            );
+        };
+
+        const detectedKnowledge = findKnowledge(t);
+
+        // 4. Layer: Contextual Modifiers (Cost/Price)
+        const activeJob = detectedJob || pendingJob || currentContext;
         if ((t.includes('how much') || t.includes('cost') || t.includes('price')) && activeJob) {
             setTimeout(() => {
                 setMessages(prev => [...prev, {
@@ -149,31 +191,47 @@ const AskAva: React.FC = () => {
             return;
         }
 
-        // 4. Layer: Acknowledgments (Only if no job detected)
-        const acknowledgments = ['ok', 'thanks', 'thank you', 'cool', 'fine', 'got it', 'understood'];
-        if (acknowledgments.includes(t) && !detectedJob) {
+        // 5. Layer: Knowledge Response Logic
+        if (detectedKnowledge && !detectedJob) {
+            setTimeout(() => {
+                const ctaJob = detectedKnowledge.cta ? jobs.find(j => j.label === detectedKnowledge.cta) : null;
+                const response = ctaJob
+                    ? `${detectedKnowledge.content} ${ctaJob.consentQuestion}`
+                    : detectedKnowledge.content;
+
+                setMessages(prev => [...prev, { role: 'ava', content: response }]);
+                if (ctaJob) setPendingJob(ctaJob);
+            }, 600);
+            return;
+        }
+
+        // 6. Layer: Acknowledgments (Only if no job/knowledge detected)
+        const acknowledgmentWords = ['ok', 'thanks', 'thank you', 'cool', 'fine', 'got it', 'understood', 'great', 'awesome', 'excellent'];
+        const isAcknowledgment = acknowledgmentWords.some(word => t.includes(word));
+
+        if (isAcknowledgment && !detectedJob && !detectedKnowledge) {
             setTimeout(() => {
                 setMessages(prev => [...prev, {
                     role: 'ava',
-                    content: "Understood. I am standing by for your next command."
+                    content: getRandomResponse('acknowledgments')
                 }]);
                 setPendingJob(null);
             }, 500);
             return;
         }
 
-        // 5. Layer: Greetings
+        // 7. Layer: Greetings
         if (t === 'hello' || t === 'hi' || t === 'hey' || t.startsWith('hello ') || t.startsWith('hi ')) {
             setTimeout(() => {
                 setMessages(prev => [...prev, {
                     role: 'ava',
-                    content: "Hello! I am AVA, your research intelligence officer. How can I assist your workflow today?"
+                    content: getRandomResponse('greetings')
                 }]);
             }, 600);
             return;
         }
 
-        // 6. Layer: Execution/Handshake Suggestion
+        // 8. Layer: Final Handshake Suggestion
         setTimeout(() => {
             if (detectedJob) {
                 setPendingJob(detectedJob);
@@ -182,7 +240,7 @@ const AskAva: React.FC = () => {
             } else {
                 setMessages(prev => [...prev, {
                     role: 'ava',
-                    content: "I am sorry, we only specialize in Market Research Tools"
+                    content: getRandomResponse('fallbacks')
                 }]);
             }
         }, 600);
