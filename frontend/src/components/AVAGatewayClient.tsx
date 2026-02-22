@@ -516,7 +516,7 @@ export default function AVAGatewayClient() {
                                 className="w-full sm:w-auto"
                             >
                                 <button
-                                    onClick={() => window.open("/os", "_blank")}
+                                    onClick={() => router.push("/os")}
                                     className={`group relative flex items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:min-w-[320px] ${dark
                                         ? "border border-emerald-500/30 bg-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/20 hover:shadow-2xl hover:shadow-emerald-500/20"
                                         : "border border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/30 shadow-lg shadow-emerald-100"

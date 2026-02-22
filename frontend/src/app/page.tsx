@@ -59,6 +59,9 @@ export default function AVAGateway() {
             </tr>
           </tbody>
         </table>
+
+        <h2>Next Logical Ingestion Point</h2>
+        <a href="/landing">Continue to Executive Landing & Brand identity</a>
       </div>
 
       <AVAGatewayClient />
