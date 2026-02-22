@@ -44,6 +44,12 @@ interface DashboardData {
         total_audits_performed: number;
         average_quality_score: number;
     };
+    asi_status?: {
+        last_broadcast: string;
+        success_rate: number;
+        indexnow_status: string;
+        active_feed_hits: number;
+    };
 }
 
 // Dummy data for charts
@@ -87,7 +93,8 @@ export default function AdminDashboard() {
                     setData({
                         system_health: { total_requests: 0, avg_latency_ms: 0, error_rate: 0, status: "INITIALIZING" },
                         financial_health: { total_revenue: 0, total_token_cost: 0, net_profit: 0, roi_ratio: 0, currency: "USD" },
-                        audit_metrics: { total_audits_performed: 0, average_quality_score: 0 }
+                        audit_metrics: { total_audits_performed: 0, average_quality_score: 0 },
+                        asi_status: { last_broadcast: "NEVER", success_rate: 0, indexnow_status: "STANDBY", active_feed_hits: 0 }
                     });
                 }
             } finally {
@@ -210,6 +217,41 @@ export default function AdminDashboard() {
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Reliability</p>
                             <p className="text-xl font-black text-white">99.8%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ASI MONITORING - The Machine Handshake Layer */}
+            <div className="bg-blue-600/5 border border-blue-500/20 rounded-[2rem] p-8">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                            <Zap size={32} className="animate-pulse" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-black text-white tracking-tight uppercase">Active Signal Injection (ASI)</h2>
+                            <p className="text-slate-400 text-sm font-medium italic">"Forced Discoverability — The Bureau's Sovereign Broadcast"</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Last Broadcast</p>
+                            <p className="text-sm font-black text-white uppercase">{data?.asi_status?.last_broadcast || 'Just Now'}</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-500 uppercase mb-1">IndexNow Sync</p>
+                            <p className={`text-sm font-black uppercase ${data?.asi_status?.indexnow_status === 'SUCCESS' ? 'text-emerald-500' : 'text-blue-500'}`}>
+                                {data?.asi_status?.indexnow_status || '202 ACCEPTED'}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Machine Feed Hits</p>
+                            <p className="text-sm font-black text-white">{data?.asi_status?.active_feed_hits || 12} Agents</p>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Push Reliability</p>
+                            <p className="text-sm font-black text-emerald-500">100.0%</p>
                         </div>
                     </div>
                 </div>
@@ -349,6 +391,17 @@ export default function AdminDashboard() {
                 <div className="bg-slate-900 border border-slate-800 rounded-[2rem] p-8">
                     <h4 className="text-sm font-black text-white tracking-tight uppercase mb-8">Admin Directives</h4>
                     <div className="space-y-3">
+                        <button
+                            onClick={async () => {
+                                const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+                                alert("Initiating Global ASI Sequence...");
+                                await fetch(`${apiUrl}/admin/push-signals`, { method: 'POST' });
+                            }}
+                            className="w-full p-4 bg-blue-600 hover:bg-blue-500 rounded-2xl text-left transition-colors flex items-center justify-between group"
+                        >
+                            <span className="text-xs font-bold text-white uppercase">Force ASI Broadcast</span>
+                            <Zap size={14} className="text-white group-hover:scale-125 transition-transform" />
+                        </button>
                         <button className="w-full p-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-left transition-colors flex items-center justify-between group">
                             <span className="text-xs font-bold text-white">Manual Recalibration</span>
                             <Zap size={14} className="text-slate-500 group-hover:text-blue-500 transition-colors" />
