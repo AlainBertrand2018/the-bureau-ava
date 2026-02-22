@@ -1,9 +1,10 @@
+import path from 'path';
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
     // @ts-ignore - Turbopack root configuration
     turbopack: {
-        root: '..',
+        root: path.resolve(process.cwd(), '..'),
     },
     logging: {
         fetches: {
