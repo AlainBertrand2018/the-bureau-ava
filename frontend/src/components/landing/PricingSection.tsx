@@ -32,20 +32,23 @@ export default function PricingSection({ currency, onProtocolOpen, onContactClic
                     {/* Sentinel - FREE */}
                     <Reveal delay={0}>
                         <div className="card-elevated p-8 h-full bg-white border border-slate-100">
-                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mb-3">Market Recon</div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 mb-3">Market & Audience Reconnaissance</div>
                             <div className="text-4xl font-black text-slate-900 mb-1">FREE</div>
                             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-6">Sentinel Protocol</p>
+                            <p className="text-slate-500 text-xs font-medium leading-relaxed mb-8">
+                                Open-source intelligence (OSINT) scanning to synthesize real-time profiles of target market landscapes. Sentinel constructs the foundational cultural context required for rigorous research.
+                            </p>
                             <ul className="space-y-3 mb-8">
                                 {["Target Market Recon", "Demographic Synthesis", "Persona Archetypes", "Trend Prediction", "Global Market Coverage"].map((f: string, i: number) => (
-                                    <li key={i} className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                                        <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+                                    <li key={i} className="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                                        <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />
                                         {f}
                                     </li>
                                 ))}
                             </ul>
                             <button
                                 onClick={onProtocolOpen}
-                                className="w-full block text-center py-3 px-6 border-2 border-emerald-100 text-emerald-700 rounded-full text-[11px] font-bold uppercase tracking-widest hover:border-emerald-200 hover:bg-emerald-50 transition-all"
+                                className="w-full block text-center py-3 px-6 border-2 border-emerald-100 text-emerald-700 rounded-full text-[11px] font-bold uppercase tracking-widest hover:border-emerald-200 hover:bg-emerald-50 transition-all mt-auto"
                             >
                                 Deploy Sentinel
                             </button>
@@ -54,24 +57,27 @@ export default function PricingSection({ currency, onProtocolOpen, onContactClic
 
                     {/* Interpreter - €240 */}
                     <Reveal delay={0.1}>
-                        <div className="card-elevated p-8 h-full bg-white border border-slate-100">
-                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">Data Intelligence</div>
+                        <div className="card-elevated p-8 h-full bg-white border border-slate-100 flex flex-col">
+                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">Post-Field Data Narrative Synthesis</div>
                             <div className="text-4xl font-black text-slate-900 mb-1">
                                 {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
                                 {currency.tiers.interpreter.price.toLocaleString()}
                             </div>
                             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-6">Result Interpreter</p>
+                            <p className="text-slate-500 text-xs font-medium leading-relaxed mb-8">
+                                Post-fieldwork data audit and executive briefing generation. Ingestion of raw survey results to identify non-obvious correlations and deliver boardroom-ready briefings.
+                            </p>
                             <ul className="space-y-3 mb-8">
-                                {["Full Field Result Processing", "Narrative Report Synthesis", "Deep Psychological Insights", "Cross-tabulation Analysis", "Human-Readable Visuals"].map((f: string, i: number) => (
-                                    <li key={i} className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                                        <CheckCircle2 size={14} className="text-blue-500 shrink-0" />
+                                {["Field Result Processing", "Narrative Report Synthesis", "Psychological Insights", "Cross-tabulation Analysis", "Boardroom Visuals"].map((f: string, i: number) => (
+                                    <li key={i} className="flex items-center gap-2 text-[11px] text-slate-600 font-medium">
+                                        <CheckCircle2 size={12} className="text-blue-500 shrink-0" />
                                         {f}
                                     </li>
                                 ))}
                             </ul>
                             <Link
                                 href="/field-interpreter"
-                                className="w-full block text-center py-3 px-6 border-2 border-blue-100 text-blue-700 rounded-full text-[11px] font-bold uppercase tracking-widest hover:border-blue-200 hover:bg-blue-50 transition-all"
+                                className="w-full block text-center py-3 px-6 border-2 border-blue-100 text-blue-700 rounded-full text-[11px] font-bold uppercase tracking-widest hover:border-blue-200 hover:bg-blue-50 transition-all mt-auto"
                             >
                                 Open Interpreter
                             </Link>
@@ -80,33 +86,36 @@ export default function PricingSection({ currency, onProtocolOpen, onContactClic
 
                     {/* Lab - €300 */}
                     <Reveal delay={0.2}>
-                        <div className="card-featured p-8 h-full relative border border-blue-200">
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest rounded-full shadow-sm">
+                        <div className="card-featured p-8 h-full relative border border-blue-200 flex flex-col">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest rounded-full shadow-sm whitespace-nowrap">
                                 Adversarial Stress Test
                             </div>
-                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">Neural Audit</div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">Behavioral Instrument Stress-Testing</div>
                             <div className="text-4xl font-black text-slate-900 mb-1">
                                 {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
                                 {currency.tiers.lab.price.toLocaleString()}
                             </div>
                             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-6">The Laboratory</p>
+                            <p className="text-slate-700 text-xs font-medium leading-relaxed mb-8">
+                                Rigorous neural auditing of existing survey instruments. Ingest and simulate interaction against targeted synthetic populations to identify structural flaws and drop-off risks.
+                            </p>
                             <ul className="space-y-3 mb-8 text-left">
                                 {[
-                                    "Adversarial Bot Simulation",
+                                    "Neural Audit Loop",
                                     "Bias & Ambiguity Detection",
                                     "Cognitive Load Audit",
-                                    "n=50 Multi-Persona Validation",
+                                    "Multi-Persona Validation",
                                     "Detailed Flaw Heatmap"
                                 ].map((f: string, i: number) => (
-                                    <li key={i} className="flex items-center gap-2 text-sm text-slate-700 font-medium">
-                                        <CheckCircle2 size={14} className="text-blue-600 shrink-0" />
+                                    <li key={i} className="flex items-center gap-2 text-[11px] text-slate-700 font-medium">
+                                        <CheckCircle2 size={12} className="text-blue-600 shrink-0" />
                                         {f}
                                     </li>
                                 ))}
                             </ul>
                             <Link
                                 href="/lab"
-                                className="block text-center py-3 px-6 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20"
+                                className="block text-center py-3 px-6 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 mt-auto"
                             >
                                 Initiate Lab Protocol
                             </Link>
@@ -123,11 +132,11 @@ export default function PricingSection({ currency, onProtocolOpen, onContactClic
                             <div className="relative z-10">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
                                     <Sparkles size={12} className="text-blue-400" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">The Master Suite</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">AI-Driven Questionnaire Architecture</span>
                                 </div>
                                 <h3 className="text-3xl font-black text-white mb-4 uppercase tracking-tighter">Genesis</h3>
                                 <p className="text-slate-400 text-sm font-medium mb-6">
-                                    Full Questionnaire Generation + Scientific Internal Audit. Let our Architect build your 20-item instrument from scratch.
+                                    Advanced survey architecture. AVA generates statistically rigorous questionnaires from scratch, calibrated to specific institutional requirements and cultural nuances.
                                 </p>
                                 <div className="text-4xl font-black text-white mb-8">
                                     {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
@@ -138,7 +147,7 @@ export default function PricingSection({ currency, onProtocolOpen, onContactClic
                                     onClick={onGenesisClick}
                                     className="w-full py-4 bg-white text-slate-900 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-blue-50 transition-all shadow-lg active:scale-95"
                                 >
-                                    Unlock Genesis
+                                    Unlock Genesis Protocol
                                 </button>
                             </div>
                         </div>
@@ -150,11 +159,11 @@ export default function PricingSection({ currency, onProtocolOpen, onContactClic
                             <div className="relative z-10">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 mb-6">
                                     <Target size={12} className="text-slate-600" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">The Institutional Bureau</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Global Bureau Membership</span>
                                 </div>
                                 <h3 className="text-3xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Enterprise</h3>
                                 <p className="text-slate-500 text-sm font-medium mb-6">
-                                    High-volume tactical access for teams. Includes 60,000 Bureau Credits per month for Lab runs, Genesis generation, and Interpreter analysis.
+                                    High-volume tactical access for institutional research teams. Provides a managed allowance of 60,000 Bureau Credits per month for continuous validation.
                                 </p>
                                 <div className="text-4xl font-black text-slate-900 mb-8">
                                     {currency.code === 'MUR' ? 'Rs ' : currency.symbol}

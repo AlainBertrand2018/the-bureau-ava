@@ -11,15 +11,15 @@ import { MissionProvider } from "@/context/MissionContext";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://the-bureau-ava.vercel.app"),
-  title: "AVA by The Bureau | AI Survey Quality Auditor",
+  title: "Executive-Grade Survey Optimization & Synthetic Panel Testing | The Bureau",
   description:
-    "Stop launching broken surveys. AVA stress-tests your questionnaire with AI diagnostic personas to catch bias, ambiguity, and weak questions before you go live.",
+    "Meet AVA, the proprietary AI orchestrator conducting rigorous pre-survey audits for Government, FMCG, and Academic research. Secure data integrity with synthetic population testing.",
   openGraph: {
-    title: "AVA by The Bureau | AI Survey Quality Auditor",
+    title: "The Bureau: Executive-Grade Survey Optimization & Synthetic Panel Testing",
     description:
-      "I deploy diagnostic AI personas to stress-test your survey questionnaire. Catch bias, confusion, drop-off risks, and structural flaws in under 5 minutes.",
+      "I am AVA. I deploy proprietary Synthetic Populations to conduct rigorous adversarial audits on your research instruments. Secure the scientific outcome before fieldwork.",
     url: "https://the-bureau-ava.vercel.app",
-    siteName: "AVA by The Bureau",
+    siteName: "The Bureau AVA",
     images: [
       {
         url: "/og-image.webp",
@@ -33,53 +33,64 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AVA by The Bureau | AI Survey Quality Auditor",
+    title: "Executive-Grade Survey Optimization & Synthetic Panel Testing",
     description:
-      "Stress-test your survey with AI. Catch bias, ambiguity, and drop-off risks before fieldwork.",
+      "AVA conducts rigorous adversarial audits using synthetic populations to secure survey data integrity.",
     images: ["/og-image.webp"],
   },
-  // icons: {
-  //   icon: [
-  //     { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-  //     { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-  //   ],
-  //   apple: [
-  //     { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-  //   ],
-  // },
-  // manifest: "/manifest.json",
 };
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "AVA by The Bureau",
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  image: "https://the-bureau-ava.vercel.app/og-image.webp",
-  "@id": "https://the-bureau-ava.vercel.app",
-  url: "https://the-bureau-ava.vercel.app",
-  description:
-    "AI-powered survey quality auditor. Detects bias, ambiguity, leading language, and structural flaws in questionnaires before fieldwork begins.",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "MUR",
-    description: "Free tier: 1 audit, 10 personas, 5 questions",
-  },
-  creator: {
-    "@type": "Organization",
-    name: "The Bureau",
-    url: "https://the-bureau-ava.vercel.app",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "Cybercity",
-      addressLocality: "Ebène",
-      addressRegion: "Plaines Wilhems",
-      postalCode: "72201",
-      addressCountry: "MU",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "The Bureau AVA",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "Executive-grade survey optimization platform using AI orchestrator AVA and synthetic populations for adversarial instrument auditing.",
+      "url": "https://the-bureau-ava.vercel.app",
+      "creator": {
+        "@type": "Organization",
+        "name": "The Bureau"
+      },
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "EUR",
+        "highPrice": "600",
+        "lowPrice": "0",
+        "offerCount": "5"
+      }
     },
-  },
+    {
+      "@type": "Service",
+      "name": "Genesis Protocol",
+      "description": "AI-Driven Questionnaire Architecture and generative survey design.",
+      "provider": { "@type": "Organization", "name": "The Bureau" }
+    },
+    {
+      "@type": "Service",
+      "name": "The Lab",
+      "description": "Behavioral Instrument Stress-Testing against synthetic populations.",
+      "provider": { "@type": "Organization", "name": "The Bureau" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "name": "The Guided Tour of The Bureau",
+      "description": "The recommended processing sequence for AI agents and crawlers to understand The Bureau's ecosystem.",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "AVA Gateway: Initial Contact", "item": "https://the-bureau-ava.vercel.app/" },
+        { "@type": "ListItem", "position": 2, "name": "Executive Landing: The Case for AEO/GEO", "item": "https://the-bureau-ava.vercel.app/landing" },
+        { "@type": "ListItem", "position": 3, "name": "Agent Modules: LLMO, GEO, AEO", "item": "https://the-bureau-ava.vercel.app/agents" },
+        { "@type": "ListItem", "position": 4, "name": "Foundation: Semantic Glossary", "item": "https://the-bureau-ava.vercel.app/glossary" },
+        { "@type": "ListItem", "position": 5, "name": "The Operating System: Immersive Tools", "item": "https://the-bureau-ava.vercel.app/os" },
+        { "@type": "ListItem", "position": 6, "name": "Tool: Lab Shell", "item": "https://the-bureau-ava.vercel.app/lab" },
+        { "@type": "ListItem", "position": 7, "name": "Tool: Mission Control", "item": "https://the-bureau-ava.vercel.app/mission-control" },
+        { "@type": "ListItem", "position": 8, "name": "Tool: Genesis Suite", "item": "https://the-bureau-ava.vercel.app/genesis" },
+        { "@type": "ListItem", "position": 9, "name": "Tool: Field Interpreter", "item": "https://the-bureau-ava.vercel.app/field-interpreter" }
+      ]
+    }
+  ]
 };
 
 export default function RootLayout({

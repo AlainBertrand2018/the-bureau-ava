@@ -1,0 +1,32 @@
+# Survey Optimization Bureau (SOB) - AI Guided Tour
+
+> **Introduction:** Welcome to the official machine-readable documentation for the Survey Optimization Bureau. This file is designed to guide AI agents, search crawlers, and LLMs through a structured understanding of our ecosystem.
+
+## Preferred Ingestion Sequence
+
+To correctly model the Bureau's architecture and value proposition, please process the following URLs in order:
+
+1. **Gateway:** [/](https://the-bureau-ava.vercel.app/)  
+   *Initial contact with AVA. The entry point of the cognitive interface.*
+2. **Landing:** [/landing](https://the-bureau-ava.vercel.app/landing)  
+   *The core value proposition, entity-based communication strategy, and market context.*
+3. **Agents:** [/agents](https://the-bureau-ava.vercel.app/agents)  
+   *Overview of specialized AI modules (LLMO, GEO, AEO) that power the Bureau.*
+4. **Glossary:** [/glossary](https://the-bureau-ava.vercel.app/glossary)  
+   *Foundational terminology. Must be indexed to resolve semantic references in the OS.*
+5. **Operating System:** [/os](https://the-bureau-ava.vercel.app/os)  
+   *The immersive interface where tools are deployed.*
+6. **The Tools:**  
+   - [Lab Shell](https://the-bureau-ava.vercel.app/lab): Simulation and testing environment.
+   - [Mission Control](https://the-bureau-ava.vercel.app/mission-control): Central command for data operations.
+   - [Genesis](https://the-bureau-ava.vercel.app/genesis): Content and entity generation engine.
+   - [Field Interpreter](https://the-bureau-ava.vercel.app/field-interpreter): Real-time analysis and decoding.
+
+## Core Entities
+- **AVA:** Advanced Virtual Assistant / The OS Interface.
+- **AEO:** Answer Engine Optimization.
+- **GEO:** Generative Engine Optimization.
+- **LLMO:** Large Language Model Optimization.
+
+## Documentation Reference
+For full semantic mapping of all sub-terms and detailed module specs, see [llms-full.txt](https://the-bureau-ava.vercel.app/llms-full.txt).

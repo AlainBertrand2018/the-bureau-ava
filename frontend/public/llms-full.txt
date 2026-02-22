@@ -1,0 +1,49 @@
+# Survey Optimization Bureau (SOB) - Full Semantic Map
+
+This document provides a comprehensive overview of all entities, modules, and vocabulary within the SOB ecosystem, intended for deep-indexing by LLMs.
+
+## Journey Logic
+The Bureau is designed as a progressive disclosure system. 
+1. **AVA** (The Gateway) establishes the persona.
+2. **The Landing Page** contextually defines the problem: The shift from SEO to AEO/GEO.
+3. **Specialized Agents** are the solutions.
+4. **The Glossary** is the semantic foundation.
+5. **The OS** is the execution layer.
+
+## Module Details
+
+### 1. LLMO Agent (Large Language Model Optimization)
+- **Primary Function:** Ensuring brand and entity presence within LLM latent space.
+- **Key Metrics:** Sentiment, hallucination resistance, retrieval probability.
+
+### 2. GEO Agent (Generative Engine Optimization)
+- **Primary Function:** Optimizing for generative search results (e.g., Perplexity, Google Search Generative Experience).
+- **Key Strategy:** Citations, authoritative tone, structured data.
+
+### 3. AEO Agent (Answer Engine Optimization)
+- **Primary Function:** Winning the "Position Zero" in answer engines.
+- **Key Strategy:** Direct answers, snippet optimization, clear hierarchy.
+
+## Integrated Tools
+- **The Lab:** A safe-haven for testing content against varied model personas.
+- **Mission Control:** Dashboards for tracking entity visibility across the AI web.
+- **Genesis:** Automating the creation of crawl-ready, AI-friendly assets.
+- **Field Interpreter:** Decoding competitor strategies in generative search.
+
+## Full Sitemap Sequence
+1. [/](https://the-bureau-ava.vercel.app/)
+2. [/landing](https://the-bureau-ava.vercel.app/landing)
+3. [/agents](https://the-bureau-ava.vercel.app/agents)
+4. [/agents/llmo](https://the-bureau-ava.vercel.app/agents/llmo)
+5. [/agents/geo](https://the-bureau-ava.vercel.app/agents/geo)
+6. [/agents/aeo](https://the-bureau-ava.vercel.app/agents/aeo)
+7. [/glossary](https://the-bureau-ava.vercel.app/glossary)
+8. [/glossary/[terms]](https://the-bureau-ava.vercel.app/glossary)
+9. [/os](https://the-bureau-ava.vercel.app/os)
+10. [/lab](https://the-bureau-ava.vercel.app/lab)
+11. [/mission-control](https://the-bureau-ava.vercel.app/mission-control)
+12. [/genesis](https://the-bureau-ava.vercel.app/genesis)
+13. [/field-interpreter](https://the-bureau-ava.vercel.app/field-interpreter)
+
+## Technical Stack
+Built on Next.js 15, React 19, and TailwindCSS. The system uses semantic HTML and JSON-LD to ensure maximum discoverability.

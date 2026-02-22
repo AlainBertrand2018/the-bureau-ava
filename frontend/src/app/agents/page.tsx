@@ -9,6 +9,10 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
     title: 'Agentic Roster | Autonomous Research Workforce',
     description: 'Meet the specialized AI agents driving the AVA OS. Explore the roles of Sentinel, Genesis, The Lab, and Field Interpreter in ensuring data integrity.',
+    other: {
+        'rel': 'next',
+        'href': '/glossary',
+    }
 };
 
 export default function AgentsIndexPage() {
@@ -111,7 +115,7 @@ export default function AgentsIndexPage() {
                     <p className="text-slate-400 text-lg leading-relaxed mb-12">
                         While each agent has a specialized domain, they share a unified reasoning kernel. This collaboration ensures that insights found by Sentinel in recon are automatically applied by Genesis in construction, and verified by The Lab in simulation.
                     </p>
-                    <div className="flex flex-wrap justify-center gap-6">
+                    <div className="flex flex-wrap justify-center gap-6 mb-16">
                         <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white/5 border border-white/10">
                             <ShieldCheck size={20} className="text-emerald-400" />
                             <span className="text-sm font-bold tracking-tight">Zero-Bias Protocol</span>
@@ -120,6 +124,17 @@ export default function AgentsIndexPage() {
                             <Activity size={20} className="text-blue-400" />
                             <span className="text-sm font-bold tracking-tight">Real-time Validation</span>
                         </div>
+                    </div>
+
+                    <div className="pt-16 border-t border-white/5 flex flex-col items-center">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-6 underline decoration-slate-500/30">Next Step in the Guided Tour</p>
+                        <Link
+                            href="/glossary"
+                            className="group flex items-center gap-4 text-2xl font-black text-white hover:text-blue-400 transition-all"
+                        >
+                            Explore Intelligence Glossary
+                            <ArrowRight size={24} className="text-blue-600 group-hover:translate-x-2 transition-transform" />
+                        </Link>
                     </div>
                 </div>
             </section>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://the-bureau-ava.vercel.app/sitemap.xml
+llms: https://the-bureau-ava.vercel.app/llms.txt

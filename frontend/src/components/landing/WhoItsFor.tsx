@@ -39,12 +39,12 @@ export default function WhoItsFor() {
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {[
-                        { icon: <BarChart3 size={20} />, title: "Market Researchers", desc: "Scientific auditing for complex field instruments." },
-                        { icon: <Briefcase size={20} />, title: "Brand Managers", desc: "Protecting brand integrity with biased-free insights." },
-                        { icon: <Building2 size={20} />, title: "Strategy Directors", desc: "Decision-quality data for large-scale investments." },
-                        { icon: <Globe size={20} />, title: "UX Designers", desc: "Deep empathy mapping through behavioral personas." },
-                        { icon: <GraduationCap size={20} />, title: "Academics", desc: "Vetting questionnaires for peer-reviewed rigor." },
-                        { icon: <Megaphone size={20} />, title: "Creative Agencies", desc: "Proving message resonance before launch." },
+                        { icon: <Building2 size={20} />, title: "Governmental Agencies", desc: "Scientific auditing for national policy and social research." },
+                        { icon: <Briefcase size={20} />, title: "FMCG Brand Leads", desc: "Securing market reconnaissance for global product launches." },
+                        { icon: <GraduationCap size={20} />, title: "Academic Institutions", desc: "Vetting complex questionnaires for peer-reviewed rigor." },
+                        { icon: <BarChart3 size={20} />, title: "Market Research Units", desc: "Adversarial stress-testing for institutional field instruments." },
+                        { icon: <Globe size={20} />, title: "Behavioral Analysts", desc: "Deep psychometric mapping through synthetic respondent personas." },
+                        { icon: <Megaphone size={20} />, title: "Strategic Consultants", desc: "Securing decision-quality data for large-scale investments." },
                     ].map((item, i) => (
                         <Reveal key={i} delay={i * 0.08}>
                             <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 group hover:bg-white/[0.05] hover:border-white/10 transition-all cursor-default h-full">

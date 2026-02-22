@@ -9,6 +9,10 @@ import { Metadata } from 'next';
 export const metadata: Metadata = {
     title: 'AVA Glossary | Survey Intelligence & AI Methodology',
     description: 'The definitive knowledge base for autonomous survey validation, agentic AI research, and data integrity standards.',
+    other: {
+        'rel': 'next',
+        'href': '/os',
+    }
 };
 
 export default function GlossaryPage() {
@@ -104,6 +108,27 @@ export default function GlossaryPage() {
                             Data Integrity Focus
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* NEXT STEP CTA */}
+            <section className="py-24 border-t border-slate-100 flex flex-col items-center text-center">
+                <div className="max-w-2xl px-6">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Step 5 of the Bureau Journey</p>
+                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter">
+                        Knowledge is Power. <br />
+                        <span className="text-blue-600">Action is Sovereignty.</span>
+                    </h2>
+                    <p className="text-slate-500 font-medium mb-12 leading-relaxed">
+                        Now that you understand the lexicon of the Bureau, enter the immersive environment where these concepts become reality.
+                    </p>
+                    <Link
+                        href="/os"
+                        className="inline-flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-600 transition-all group"
+                    >
+                        Launch AVA OS
+                        <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                    </Link>
                 </div>
             </section>
 

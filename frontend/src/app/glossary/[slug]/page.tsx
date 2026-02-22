@@ -19,6 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
         title: `${entry.term} | AVA Glossary`,
         description: entry.definition.split('.')[0],
+        other: {
+            'rel': 'next',
+            'href': '/os',
+        }
     };
 }
 
@@ -120,7 +124,7 @@ export default async function GlossaryTermPage({ params }: Props) {
                     </div>
 
                     {/* RELATED TERMS LINK GRAPH */}
-                    <footer className="pt-12 border-t border-slate-100">
+                    <footer className="pt-12 border-t border-slate-100 mb-20">
                         <h2 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">Related Intelligence</h2>
                         <div className="flex flex-wrap gap-3">
                             {entry.relatedTerms.map((rel) => (
@@ -134,6 +138,21 @@ export default async function GlossaryTermPage({ params }: Props) {
                             ))}
                         </div>
                     </footer>
+
+                    {/* DEEP TOUR HOOK */}
+                    <div className="p-12 rounded-[3rem] bg-slate-900 border border-slate-800 text-center relative overflow-hidden group">
+                        <div className="absolute inset-0 hero-dot-grid opacity-10" />
+                        <div className="relative z-10">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 transition-colors group-hover:text-amber-400">Contextual Sovereignty</p>
+                            <h3 className="text-2xl font-black text-white mb-6">Mastered the theory? Deploy the practice.</h3>
+                            <Link
+                                href="/os"
+                                className="inline-flex items-center gap-3 text-lg font-bold text-blue-400 hover:text-white transition-all group-hover:gap-4"
+                            >
+                                Enter the AVA OS <ArrowRight size={20} />
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </article>
 

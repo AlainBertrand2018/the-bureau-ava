@@ -18,11 +18,11 @@ export default function Solution({ onAuditClick }: SolutionProps) {
                     <div className="badge-blue inline-flex items-center gap-2 mb-6">
                         <ShieldCheck size={12} className="text-blue-600" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">
-                            The Protocol
+                            The Adversarial Protocol
                         </span>
                     </div>
                     <h2 className="text-section-title text-slate-900 mb-6">
-                        Audit before you deploy.
+                        Secure the scientific outcome.
                         <br />
                         <span
                             style={{
@@ -32,28 +32,28 @@ export default function Solution({ onAuditClick }: SolutionProps) {
                                 backgroundClip: "text",
                             }}
                         >
-                            Scientific verification in seconds.
+                            Adversarial auditing at machine speed.
                         </span>
                     </h2>
                     <p className="text-body-lg text-slate-500 font-medium max-w-3xl mx-auto">
-                        Bureau protocols use behavioral AI to simulate 1,000s of respondent interactions, identifying structural flaws, cognitive biases, and conversion risks before you spend a cent on fieldwork.
+                        Bureau protocols utilize agentic AI to deploy synthetic respondent populations against your research instruments. We identify cognitive bias, linguistic friction, and structural flaws before a single human respondent is ever reached.
                     </p>
                 </Reveal>
 
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-14">
                     {[
-                        { icon: <AlertTriangle size={18} />, label: "Bias Detection", color: "text-red-500", bg: "bg-red-50" },
-                        { icon: <Target size={18} />, label: "Clarity Audit", color: "text-amber-600", bg: "bg-amber-50" },
-                        { icon: <Users size={18} />, label: "Persona Fit", color: "text-violet-600", bg: "bg-violet-50" },
-                        { icon: <BarChart3 size={18} />, label: "Drop-off Risk", color: "text-sky-600", bg: "bg-sky-50" },
-                        { icon: <CheckCircle2 size={18} />, label: "Trust Index", color: "text-emerald-600", bg: "bg-emerald-50" },
+                        { icon: <AlertTriangle size={18} />, label: "Cognitive Bias Auditing", color: "text-red-500", bg: "bg-red-50" },
+                        { icon: <Target size={18} />, label: "Linguistic Integrity", color: "text-amber-600", bg: "bg-amber-50" },
+                        { icon: <Users size={18} />, label: "Synthetic Panel Alignment", color: "text-violet-600", bg: "bg-violet-50" },
+                        { icon: <BarChart3 size={18} />, label: "Structural Friction Mapping", color: "text-sky-600", bg: "bg-sky-50" },
+                        { icon: <CheckCircle2 size={18} />, label: "Scientific Veracity Score", color: "text-emerald-600", bg: "bg-emerald-50" },
                     ].map((cap, i) => (
                         <Reveal key={i} delay={i * 0.08}>
                             <div className="card p-6 text-center group cursor-default h-full">
                                 <div className={`w-10 h-10 rounded-xl ${cap.bg} ${cap.color} flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
                                     {cap.icon}
                                 </div>
-                                <span className="text-slate-800 text-xs font-bold">{cap.label}</span>
+                                <span className="text-slate-800 text-[10px] font-black uppercase tracking-tight leading-tight block">{cap.label}</span>
                             </div>
                         </Reveal>
                     ))}

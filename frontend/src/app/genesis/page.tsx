@@ -1,20 +1,12 @@
-"use client";
+import React from "react";
+import GenesisClient from "@/components/GenesisClient";
+import { Metadata } from 'next';
 
-import dynamic from "next/dynamic";
-
-const SurveyArchitect = dynamic(() => import("@/components/architect/SurveyArchitect"), {
-    ssr: false,
-    loading: () => (
-        <div className="flex items-center justify-center min-h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-        </div>
-    )
-});
+export const metadata: Metadata = {
+    title: 'Genesis | Autonomous Survey Instrument Design',
+    description: 'The primary architect of the Bureau. Generate executive-grade field instruments with built-in adversarial resistance and cultural integrity.',
+};
 
 export default function GenesisPage() {
-    return (
-        <div className="min-h-screen bg-slate-950 p-8 flex items-center justify-center">
-            <SurveyArchitect mode="app" />
-        </div>
-    );
+    return <GenesisClient />;
 }

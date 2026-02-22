@@ -33,6 +33,7 @@ import PricingSection from "@/components/landing/PricingSection";
 import FAQSection from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import Navbar from "@/components/landing/Navbar";
+import EntityDefinition from "@/components/landing/EntityDefinition";
 
 import {
   ArrowRight,
@@ -122,6 +123,9 @@ export default function Home() {
           onAuditClick={() => setShowQuickAuditModal(true)}
           onGenesisClick={() => setShowGenesisModal(true)}
         />
+
+        {/* 1.5 Entity Definition >> Machine readability anchor */}
+        <EntityDefinition />
 
         {/* 2. "Built for Decision Makers" >>> Qualify the audience immediately */}
         <WhoItsFor />

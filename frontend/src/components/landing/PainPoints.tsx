@@ -15,11 +15,11 @@ export default function PainPoints() {
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 mb-6">
                         <AlertTriangle size={12} className="text-red-500" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-500">
-                            The Problem
+                            The Crisis of Veracity
                         </span>
                     </div>
                     <h2 className="text-section-title text-slate-900 mb-6">
-                        Bad data is expensive.
+                        The high cost of
                         <br />
                         <span
                             style={{
@@ -29,13 +29,13 @@ export default function PainPoints() {
                                 backgroundClip: "text",
                             }}
                         >
-                            Broken surveys are the cause.
+                            structural research bias.
                         </span>
                     </h2>
                     <div className="max-w-3xl mx-auto">
-                        <p className="text-slate-900 font-extrabold text-xl mb-1">The average enterprise wastes $120k annually on flawed research instrumentation.</p>
+                        <p className="text-slate-900 font-extrabold text-xl mb-1">Enterprises lose millions annually to contaminated datasets and flawed instrumentation.</p>
                         <p className="text-slate-500 font-medium text-sm">
-                            Leading questions, double-barreled structures, and cognitive fatigue lead to 40% drop-off rates and useless datasets.
+                            Fragmented logic, leading language, and cognitive load issues corrupt respondent integrity, resulting in decision-making based on statistical noise rather than market truth.
                         </p>
                     </div>
                 </Reveal>
@@ -46,22 +46,22 @@ export default function PainPoints() {
                             icon: <Building2 size={20} />,
                             color: "text-red-500",
                             bg: "bg-red-50",
-                            title: "The Executive Risk",
-                            desc: "Making $10M decisions based on biased feedback loops is a gamble, not a strategy.",
+                            title: "Institutional Risk",
+                            desc: "Deploying government policy or 8-figure FMCG investments based on biased feedback loops is a systemic failure, not a strategy.",
                         },
                         {
                             icon: <TrendingUp size={20} />,
                             color: "text-amber-600",
                             bg: "bg-amber-50",
-                            title: "The Trust Deficit",
-                            desc: "Once stakeholders lose faith in your data, your department loses its seat at the table.",
+                            title: "Data Veracity Erosion",
+                            desc: "Once stakeholders identify structural flaws in your research designs, the institutional authority of your intelligence unit evaporates.",
                         },
                         {
                             icon: <BarChart3 size={20} />,
                             color: "text-violet-600",
                             bg: "bg-violet-50",
-                            title: "The Lost Opportunity",
-                            desc: "You aren't just losing money; you're missing the market shift your competitors are seeing.",
+                            title: "Intelligence Deficit",
+                            desc: "You aren't just losing capital; you are failing to identify the non-obvious market shifts currently being captured by adversarial competitors.",
                         },
                     ].map((item, i) => (
                         <Reveal key={i} delay={i * 0.1}>

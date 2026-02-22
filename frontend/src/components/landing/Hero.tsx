@@ -61,7 +61,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                         transition={{ delay: 0.35 }}
                         className="text-hero mb-6"
                     >
-                        <span className="text-slate-900">I Secure Success Before Launching</span>
+                        <span className="text-slate-900">Executive-Grade Survey Optimization &</span>
                         <br />
                         <span
                             style={{
@@ -71,7 +71,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                                 backgroundClip: "text",
                             }}
                         >
-                            Surveys
+                            Synthetic Panel Testing
                         </span>
                     </motion.h1>
 
@@ -82,7 +82,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                         transition={{ delay: 0.5 }}
                         className="text-sm md:text-base text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed"
                     >
-                        My AI agents and I, we rigorously stress-test your market research instruments across any target markets, ensuring your survey delivers meaningful, reliable data within each unique cultural, economic, and social context.
+                        I am AVA. I deploy proprietary Synthetic Populations to conduct rigorous adversarial audits on your research instruments. From Government directives to FMCG market reconnaissance, I secure the scientific outcome before a single human respondent is reached.
                     </motion.p>
 
                     {/* Hero CTAs */}

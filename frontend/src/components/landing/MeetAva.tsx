@@ -95,32 +95,32 @@ export default function MeetAva() {
                                 {[
                                     {
                                         name: "Sentinel",
-                                        role: "OSINT Reconnaissance",
-                                        desc: "Scans open-source intelligence to build a real-time picture of your target market's cultural, economic, and social landscape.",
+                                        role: "Market Reconnaissance",
+                                        desc: "Synthesizes open-source intelligence to build a real-time framework of your target market's cultural and social landscape.",
                                         color: "text-sky-400",
                                         border: "border-sky-500/20",
                                         bg: "bg-sky-500/5",
                                     },
                                     {
-                                        name: "Profiler",
-                                        role: "Cultural Deep Analysis",
-                                        desc: "Constructs psychographic profiles, identifies taboos, linguistic codes, and survey-sensitive topics unique to your audience.",
+                                        name: "Interpreter",
+                                        role: "Narrative Synthesis",
+                                        desc: "Forensic intelligence specialized in post-fieldwork data auditing and high-density psychographic narrative reporting.",
                                         color: "text-amber-400",
                                         border: "border-amber-500/20",
                                         bg: "bg-amber-500/5",
                                     },
                                     {
-                                        name: "Architect",
-                                        role: "Instrument Design",
-                                        desc: "Generates statistically rigorous questionnaires from scratch using the Genesis Protocol, calibrated to your target's cultural context.",
+                                        name: "Genesis",
+                                        role: "AI-Driven Architecture",
+                                        desc: "Generates statistically rigorous research instruments from scratch using generative design and psychometric calibration.",
                                         color: "text-violet-400",
                                         border: "border-violet-500/20",
                                         bg: "bg-violet-500/5",
                                     },
                                     {
-                                        name: "Auditor",
-                                        role: "Quality Assurance",
-                                        desc: "Stress-tests every question for bias, ambiguity, double-barreling, leading language, and drop-off risk before deployment.",
+                                        name: "The Lab",
+                                        role: "Adversarial Stress-Testing",
+                                        desc: "Deploys synthetic respondent populations to audit instruments for structural friction, bias, and data-integrity risks.",
                                         color: "text-emerald-400",
                                         border: "border-emerald-500/20",
                                         bg: "bg-emerald-500/5",
@@ -145,9 +145,9 @@ export default function MeetAva() {
                                 <h4 className="text-white font-black text-base mb-3">How I Think</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     {[
-                                        { num: "01", title: "Contextualise", desc: "I research your target market before touching a single question. No generic advice." },
-                                        { num: "02", title: "Stress-Test", desc: "Every question faces simulated respondents calibrated to your audience's real demographics." },
-                                        { num: "03", title: "Harden", desc: "I rewrite, restructure, and validate until the instrument is deployment-ready." },
+                                        { num: "01", title: "Synthesize", desc: "I conduct deep-spectrum OSINT reconnaissance to establish cultural relevance before architecting a single question." },
+                                        { num: "02", title: "Stress-Test", desc: "Every instrument faces adversarial simulation against census-weighted synthetic panel nodes to identify structural friction." },
+                                        { num: "03", title: "Veracity", desc: "I provide forensic verification and psychometric hardening until the research instrument is boardroom-ready." },
                                     ].map((step, i) => (
                                         <div key={i} className="text-center">
                                             <span className="text-emerald-400/50 text-3xl font-black">{step.num}</span>

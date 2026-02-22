@@ -6,32 +6,28 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const FAQ_DATA = [
     {
-        question: "What is survey stress-testing?",
-        answer: "Survey stress-testing is the process of simulating real respondent behaviour on a Market Research questionnaire before fieldwork begins, using synthetic personas calibrated to the target demographic to detect bias, ambiguity, and structural flaws that compromise Data Integrity."
+        question: "How does AI stress-test a survey questionnaire?",
+        answer: "AVA audits survey instruments prior to fieldwork by running them through an adversarial simulation loop. The system detects leading bias, double-barreled questions, and ambiguity by simulating how different personas interpret the language. This generates a prioritized fix-list that ensures maximum data quality and minimizes respondent drop-off."
     },
     {
-        question: "What does AVA actually do?",
-        answer: "AVA is an Agentic AI platform by The Bureau that audits survey questionnaires before they go to field. Her agents detect leading questions, double-barreled items, cultural blind spots, drop-off risks, and ambiguity — then generate a prioritized fix list with rewritten question suggestions."
+        question: "How do synthetic populations work in market research?",
+        answer: "Synthetic populations are AI-generated panels calibrated to replicate the exact demographic and psychographic profiles of a target audience. By utilizing census-weighted data and cultural LLM nodes, The Bureau simulates real-world interaction with a survey, allowing researchers to predict results and identify structural flaws without the cost or risk of early human fieldwork."
     },
     {
-        question: "How long does an AVA audit take?",
-        answer: "A full AVA diagnostic audit takes under 5 minutes — faster than scheduling a pilot focus group. Results include a complete bias flag report, ambiguity alerts, and AI rewrite suggestions ready to implement immediately."
+        question: "Can AVA calibrate surveys for specific cultural and regional contexts?",
+        answer: "Yes. AVA utilizes Cross-Cultural Intelligence (CCI) nodes to audit surveys for linguistic nuances, regional taboos, and local terminology. Whether the research is aimed at the Mauritian market, FMCG sectors in Europe, or governmental studies in emerging markets, AVA secures the cultural validity of every question."
+    },
+    {
+        question: "What is the primary difference between Genesis and The Lab?",
+        answer: "Genesis is an AI-driven architectural protocol used for generative survey design and statistical calibration. The Lab is an adversarial testing environment used to audit existing research instruments against synthetic respondent populations to ensure they are boardroom-ready."
     },
     {
         question: "Who is AVA designed for?",
-        answer: "AVA is purpose-built for Market Research agencies, government survey teams, academic researchers, consultants, international development organizations (UNDP, World Bank, AfDB), and brand and marketing professionals who need defensible, high-quality survey data."
-    },
-    {
-        question: "What is the cost of a bad survey?",
-        answer: "A structurally flawed questionnaire exposes research projects to a total risk of €4,000–€16,000 per study — covering design fees, fieldwork and sample costs, data collection, and post-analysis. 94% of failed surveys had no stress-testing at the design stage."
+        answer: "AVA is engineered for institutional research units, governmental departments, FMGC insights teams, academic researchers, and intergovernmental organizations (UNDP, World Bank, AfDB) that require defensible, high-veracity data for large-scale decision-making."
     },
     {
         question: "Does AVA store my survey data?",
-        answer: "No. AVA processes all survey data in real time and never stores it permanently. All audits are fully confidential. The Bureau operates on a Zero PII policy — only synthetic, census-weighted personas are used in simulation."
-    },
-    {
-        question: "What is a synthetic respondent?",
-        answer: "A synthetic respondent is an AI-generated persona calibrated to match the demographic, cultural, socioeconomic, and psychographic profile of your target audience. AVA uses synthetic respondents instead of real humans to safely stress-test questionnaires without risking data exposure or pilot bias."
+        answer: "No. AVA processes all survey data in real time and never stores it permanently. The Bureau operates on a Zero PII policy — only synthetic, census-weighted personas are used in simulation to guarantee absolute protocol confidentiality."
     }
 ];
 

@@ -24,7 +24,7 @@ export default function FinalCTASection({ onEntryOpen }: FinalCTASectionProps) {
 
                         <div className="relative z-10">
                             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 mb-4">
-                                Don't guess.{" "}
+                                Zero tolerance for{" "}
                                 <span
                                     style={{
                                         background: "linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%)",
@@ -33,11 +33,11 @@ export default function FinalCTASection({ onEntryOpen }: FinalCTASectionProps) {
                                         backgroundClip: "text",
                                     }}
                                 >
-                                    Audit first.
+                                    data contamination.
                                 </span>
                             </h2>
                             <p className="text-lg text-slate-500 font-medium max-w-lg mx-auto mb-10">
-                                Leave the stress-test to me. Run your first survey quality audit now — completely free.
+                                Deploy your research on a foundation of scientific certainty. Run your first adversarial audit now — completely complimentary.
                             </p>
                             <button
                                 onClick={onEntryOpen}
