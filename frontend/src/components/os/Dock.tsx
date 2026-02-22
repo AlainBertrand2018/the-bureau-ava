@@ -28,8 +28,8 @@ const Dock: React.FC = () => {
     };
 
     return (
-        <div className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[95%] md:w-auto">
-            <div className="flex items-center justify-center gap-2 md:gap-4 px-3 md:px-5 py-2 md:py-3 rounded-[2rem] md:rounded-[2.5rem] bg-black/30 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="fixed bottom-4 md:bottom-[1.5vw] left-1/2 -translate-x-1/2 z-[1000] w-[95%] md:w-auto">
+            <div className="flex items-center justify-center gap-1.5 md:gap-[0.8vw] px-3 md:px-[1.2vw] py-2 md:py-[0.7vw] rounded-xl md:rounded-[1.2vw] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-[0_1.2vw_3vw_rgba(0,0,0,0.5)]">
                 {DOCK_ITEMS.map((app) => {
                     const isOpen = openWindows.some(w => w.id === app.id);
                     const isActive = activeApp === app.id;
@@ -38,11 +38,11 @@ const Dock: React.FC = () => {
                     return (
                         <div key={app.id} className="relative group">
                             <motion.button
-                                whileHover={{ scale: 1.25, y: -12 }}
+                                whileHover={{ scale: 1.2, y: '-0.5vw' }}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => launchApp(app.id)}
-                                className={`w-11 h-11 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-500 relative
-                  ${isActive ? 'shadow-[0_0_25px_rgba(255,255,255,0.15)] ring-1 ring-white/20' : ''}
+                                className={`w-9 h-9 md:w-[2.8vw] md:h-[2.8vw] md:min-w-[2.5rem] md:min-h-[2.5rem] rounded-lg md:rounded-[0.6vw] flex items-center justify-center transition-all duration-500 relative
+                  ${isActive ? 'shadow-[0_0_1vw_rgba(255,255,255,0.1)] ring-1 ring-white/10' : ''}
                 `}
                             >
                                 {/* Modern Icon Base */}
@@ -52,17 +52,17 @@ const Dock: React.FC = () => {
                                 {/* Glowing Core */}
                                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-40 bg-gradient-to-br ${getIconGradient(app.color)} blur-xl transition-opacity`} />
 
-                                <Icon className={`w-5 h-5 md:w-7 md:h-7 relative z-10 transition-all duration-500
+                                <Icon className={`w-4 h-4 md:w-[1.3vw] md:h-[1.3vw] md:min-w-[1.1rem] md:min-h-[1.1rem] relative z-10 transition-all duration-500
                   ${isActive ? 'text-white scale-110' : 'text-white/60 group-hover:text-white group-hover:scale-110'}
                 `} strokeWidth={1.5} />
                             </motion.button>
 
                             {/* Detailed Tooltip - Hidden on mobile */}
-                            <div className="hidden md:flex absolute -top-24 left-1/2 -translate-x-1/2 px-4 py-3 min-w-[200px] max-w-[250px] rounded-xl bg-black/80 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none shadow-xl flex flex-col items-center text-center">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white mb-1">
+                            <div className="hidden md:flex absolute -top-[6.5vw] left-1/2 -translate-x-1/2 px-[1vw] py-[0.8vw] min-w-[12vw] max-w-[15.5vw] rounded-[0.8vw] bg-black/80 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[0.5vw] group-hover:translate-y-0 pointer-events-none shadow-xl flex flex-col items-center text-center">
+                                <span className="text-[clamp(10px,0.6vw,12px)] font-black uppercase tracking-[0.2em] text-white mb-[0.2vw]">
                                     {app.label}
                                 </span>
-                                <span className="text-[10px] text-white/50 leading-relaxed">
+                                <span className="text-[clamp(9px,0.55vw,11px)] text-white/50 leading-relaxed">
                                     {app.description}
                                 </span>
                             </div>
@@ -71,7 +71,7 @@ const Dock: React.FC = () => {
                             {isOpen && (
                                 <motion.div
                                     layoutId={`active-${app.id}`}
-                                    className="absolute -bottom-1.5 md:-bottom-2.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white shadow-[0_0_10px_white,0_0_20px_white]"
+                                    className="absolute -bottom-1.5 md:-bottom-[0.5vw] left-1/2 -translate-x-1/2 w-1 h-1 md:w-[0.2vw] md:h-[0.2vw] rounded-full bg-white shadow-[0_0_0.5vw_white,0_0_1vw_white]"
                                 />
                             )}
                         </div>

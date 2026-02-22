@@ -31,7 +31,7 @@ const OSContext = createContext<OSContextType | undefined>(undefined);
 export const OSProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [openWindows, setOpenWindows] = useState<WindowState[]>([]);
     const [activeApp, setActiveApp] = useState<AppId | null>(null);
-    const [wallpaper, setWallpaperState] = useState('sentient-emerald');
+    const [wallpaper, setWallpaperState] = useState('cyber-grid');
     const [maxZIndex, setMaxZIndex] = useState(10);
 
     useEffect(() => {

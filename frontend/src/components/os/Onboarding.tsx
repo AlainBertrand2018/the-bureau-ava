@@ -1,122 +1,82 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const HUD_STEPS = [
-    {
-        id: 'dock',
-        title: 'SYSTEM: COMMAND',
-        description: 'Launch tools via the primary dock.',
-        position: 'bottom-44 left-1/2 -translate-x-1/2',
-        arrowPath: 'M 10 0 L 10 40 L 0 30 M 10 40 L 20 30', // Simple downward arrow
-        arrowPos: 'bottom-[-50px] left-1/2 -translate-x-1/2'
-    },
-    {
-        id: 'widgets',
-        title: 'SYSTEM: INTELLIGENCE',
-        description: 'Live mission data & system status.',
-        position: 'top-1/3 left-[28rem]',
-        arrowPath: 'M 40 10 L 0 10 L 10 0 M 0 10 L 10 20', // Simple leftward arrow
-        arrowPos: 'left-[-60px] top-1/2 -translate-y-1/2'
-    },
-    {
-        id: 'workspace',
-        title: 'SYSTEM: READY',
-        description: 'Interactive workspace initialized. Drag to organize.',
-        position: 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-        arrowPath: '',
-        arrowPos: ''
-    }
-];
+import { useOS } from '@/context/OSContext';
 
 const Onboarding: React.FC = () => {
-    const [currentStep, setCurrentStep] = useState(0);
+    const { wallpaper } = useOS();
+    const isLight = wallpaper === 'clinical-white';
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const hasSeen = localStorage.getItem('ava-os-onboarding-v2');
+        const hasSeen = localStorage.getItem('ava-os-onboarding-v4');
         if (!hasSeen) {
-            const timer = setTimeout(() => setIsVisible(true), 1500);
+            const timer = setTimeout(() => setIsVisible(true), 1000);
             return () => clearTimeout(timer);
         }
     }, []);
 
-    const nextStep = () => {
-        if (currentStep < HUD_STEPS.length - 1) {
-            setCurrentStep(prev => prev + 1);
-        } else {
-            complete();
-        }
-    };
-
     const complete = () => {
         setIsVisible(false);
-        localStorage.setItem('ava-os-onboarding-v2', 'true');
+        localStorage.setItem('ava-os-onboarding-v4', 'true');
     };
 
     if (!isVisible) return null;
 
-    const step = HUD_STEPS[currentStep];
-
     return (
-        <div className="fixed inset-0 z-[3000] flex items-center justify-center cursor-pointer select-none" onClick={nextStep}>
-            {/* Ghost Dimmer */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
-            />
-
-            {/* HUD Info Row */}
-            <AnimatePresence mode="wait">
+        <AnimatePresence>
+            <div className="fixed inset-0 z-[3000] flex items-center justify-center p-6 px-4">
                 <motion.div
-                    key={step.id}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
-                    className={`absolute ${step.position} flex flex-col items-center text-center`}
-                >
-                    {/* Subtle Arrow HUD Component */}
-                    {step.arrowPath && (
-                        <div className={`absolute ${step.arrowPos}`}>
-                            <svg width="40" height="40" viewBox="0 0 40 40" className="opacity-40">
-                                <path d={step.arrowPath} fill="none" stroke="#10b981" strokeWidth="1.5" />
-                            </svg>
-                        </div>
-                    )}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                    onClick={complete}
+                />
 
-                    <div className="flex flex-col gap-1 items-center">
-                        <h2 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.4em] opacity-80 mb-1">
-                            {step.title}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    className={`relative w-full md:w-2/5 p-8 md:p-12 rounded-[2.5rem] border backdrop-blur-3xl shadow-2xl flex flex-col items-center text-center gap-8 ${isLight
+                        ? 'bg-white/60 border-slate-200/50 text-slate-900'
+                        : 'bg-black/40 border-white/5 text-white'
+                        }`}
+                >
+                    <div className="flex flex-col gap-5">
+                        <div className="flex items-center justify-center gap-3 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
+                            <span className="text-[11px] font-bold uppercase tracking-[0.5em] opacity-40">
+                                System Initialization
+                            </span>
+                        </div>
+
+                        <h2 className="text-2xl md:text-3xl font-semibold leading-tight uppercase tracking-[0.15em] opacity-90">
+                            Welcome to the Bureau
                         </h2>
-                        <p className="text-white text-sm font-light tracking-wide max-w-[280px]">
-                            {step.description}
+
+                        <p className={`text-base md:text-lg font-normal leading-relaxed opacity-70 ${isLight ? 'text-slate-600' : 'text-slate-200'}`}>
+                            This is our <span className="text-emerald-400/80 font-semibold">SURVEY OS</span>—your interface to global market intelligence.
+                            Feel free to explore the interactive widgets, manage field apps via the dock, or simply ask AVA if you need help.
                         </p>
                     </div>
-                </motion.div>
-            </AnimatePresence>
 
-            {/* Global Interface Hints */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
-            >
-                <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.3em] animate-pulse">
-                    Tap anywhere to advance handover
-                </span>
-                <div className="flex gap-4">
-                    {HUD_STEPS.map((_, i) => (
-                        <div
-                            key={i}
-                            className={`h-[2px] transition-all duration-700 ${i === currentStep ? 'w-12 bg-emerald-500' : 'w-4 bg-white/10'}`}
-                        />
-                    ))}
-                </div>
-            </motion.div>
-        </div>
+                    <button
+                        onClick={complete}
+                        className={`w-full py-4 rounded-2xl font-semibold uppercase tracking-[0.3em] transition-all duration-500 backdrop-blur-md border ${isLight
+                            ? 'bg-slate-900/90 text-white border-slate-800 hover:bg-emerald-600/90 shadow-lg'
+                            : 'bg-white/5 text-white/90 border-white/10 hover:bg-white/10 hover:border-white/20 shadow-xl'
+                            }`}
+                    >
+                        Initialize Interface
+                    </button>
+
+                    <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">
+                        Neural Link Active • Version 2.4.1
+                    </span>
+                </motion.div>
+            </div>
+        </AnimatePresence>
     );
 };
 

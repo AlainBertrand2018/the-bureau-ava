@@ -51,7 +51,7 @@ export default function MeetAva() {
                             </p>
 
                             <div className="mt-6 p-4 rounded-xl bg-white/[0.03] border border-white/5">
-                                <p className="text-slate-400 text-xs leading-relaxed italic">
+                                <p className="text-slate-400 text-xs leading-relaxed">
                                     "I don't replace researchers. I make their instruments unbreakable before a single cent or hour is spent."
                                 </p>
                             </div>

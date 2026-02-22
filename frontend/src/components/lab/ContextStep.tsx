@@ -57,7 +57,7 @@ export default function ContextStep({ context, setContext }: ContextStepProps) {
                         <Crosshair size={22} className="text-teal-400" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black tracking-tight text-white uppercase italic">
+                        <h2 className="text-3xl font-black tracking-tight text-white uppercase">
                             Mission Brief
                         </h2>
                         <div className="flex items-center gap-2 mt-1">

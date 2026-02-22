@@ -927,7 +927,7 @@ function MissionControlContent() {
                                             </div>
                                         </div>
                                     )) || (
-                                            <div className="p-8 text-center text-slate-500 italic">No audit trail available for this mission.</div>
+                                            <div className="p-8 text-center text-slate-500">No audit trail available for this mission.</div>
                                         )}
                                 </div>
                             </motion.div>

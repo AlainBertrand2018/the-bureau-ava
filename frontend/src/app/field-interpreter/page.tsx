@@ -29,7 +29,7 @@ const AgentCard = ({ name, role, status, message }: { name: string, role: string
                 <motion.p
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
-                    className="text-slate-400 text-sm italic mt-2 border-l-2 border-emerald-500/30 pl-3"
+                    className="text-slate-400 text-sm mt-2 border-l-2 border-emerald-500/30 pl-3"
                 >
                     "{message}"
                 </motion.p>
@@ -145,7 +145,7 @@ export default function FieldInterpreterPage() {
                                 <div className="flex items-center justify-between mb-8">
                                     <div>
                                         <h3 className="text-2xl font-bold mb-2">Sentinel Inference</h3>
-                                        <p className="text-slate-400 text-sm italic">Sentinel has analyzed your headers and proposed a mapping.</p>
+                                        <p className="text-slate-400 text-sm">Sentinel has analyzed your headers and proposed a mapping.</p>
                                     </div>
                                     <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                                         <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -204,7 +204,7 @@ export default function FieldInterpreterPage() {
                                             className="p-8 bg-emerald-500 text-black rounded-3xl flex items-center justify-between"
                                         >
                                             <div>
-                                                <h2 className="text-3xl font-black leading-tight italic">VERDICT: PASS (A+)</h2>
+                                                <h2 className="text-3xl font-black leading-tight">VERDICT: PASS (A+)</h2>
                                                 <p className="font-bold opacity-80">Data exceeds methodology standards for reliability.</p>
                                             </div>
                                             <CheckCircle2 className="w-16 h-16 opacity-50" />
@@ -309,7 +309,7 @@ export default function FieldInterpreterPage() {
                             </div>
                             <div>
                                 <h5 className="text-sm font-bold text-emerald-500 mb-1">Scientific Disclosure</h5>
-                                <p className="text-xs text-slate-400 leading-relaxed italic">
+                                <p className="text-xs text-slate-400 leading-relaxed">
                                     Results final. All findings triangulated via the Bureau standard:
                                     Quant (Analytics) + Qual (Synthesis) + Synthetic Control (Twin Sim).
                                 </p>

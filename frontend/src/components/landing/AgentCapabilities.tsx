@@ -50,7 +50,7 @@ const ModuleItem = ({ agent, index, activeIndex, setActiveIndex }: { agent: Agen
 
                     <div>
                         <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-2">What It Does</span>
-                        <p className="text-base md:text-lg text-slate-500 leading-relaxed italic">
+                        <p className="text-base md:text-lg text-slate-500 leading-relaxed">
                             {agent.whatItDoes}
                         </p>
                     </div>

@@ -190,7 +190,7 @@ export default function LabShell() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-3">
-                                    <h1 className="text-lg font-black tracking-tight text-white uppercase italic">
+                                    <h1 className="text-lg font-black tracking-tight text-white uppercase">
                                         Survey Stress Test Lab
                                     </h1>
                                     {currentMission && (
@@ -242,7 +242,7 @@ export default function LabShell() {
                                     }`}
                             >
                                 <span
-                                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black italic transition-colors ${i === currentStep
+                                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black transition-colors ${i === currentStep
                                         ? "bg-white/20"
                                         : i < currentStep
                                             ? "bg-teal-400/20"

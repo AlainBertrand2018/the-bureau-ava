@@ -193,7 +193,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                     <div className="space-y-6">
                         <div>
                             <h3 className="text-xl font-black text-slate-900 mb-2">Target Audience</h3>
-                            <p className="text-sm text-slate-500 font-medium italic">Calibration for 10 diagnostic personas.</p>
+                            <p className="text-sm text-slate-500 font-medium">Calibration for 10 diagnostic personas.</p>
                         </div>
 
                         <div className="space-y-4">
@@ -271,7 +271,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                     <div className="space-y-6">
                         <div>
                             <h3 className="text-xl font-black text-slate-900 mb-2">What are you researching?</h3>
-                            <p className="text-sm text-slate-500 font-medium italic">Defined contexts yield sharper diagnostics.</p>
+                            <p className="text-sm text-slate-500 font-medium">Defined contexts yield sharper diagnostics.</p>
                         </div>
                         <div className="relative">
                             <textarea
@@ -313,7 +313,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                 <h3 className="text-xl font-black text-slate-900">Your Survey Questions</h3>
                                 <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded">TIER 1: MAX 3</span>
                             </div>
-                            <p className="text-sm text-slate-500 font-medium italic">Input up to 3 questions for a structural audit.</p>
+                            <p className="text-sm text-slate-500 font-medium">Input up to 3 questions for a structural audit.</p>
                         </div>
                         <div className="space-y-3">
                             {questions.map((q, i) => (
@@ -410,7 +410,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                             <div className="flex flex-col items-center gap-3 mt-8">
                                 <div className="flex items-center gap-3">
                                     <Loader2 size={16} className="text-emerald-600 animate-spin" />
-                                    <span className="text-xs font-bold text-slate-500 italic">Processing high-fidelity responses...</span>
+                                    <span className="text-xs font-bold text-slate-500">Processing high-fidelity responses...</span>
                                 </div>
                                 <div className="flex flex-wrap justify-center gap-1.5 max-w-sm">
                                     {personas.map((p, i) => (
@@ -445,7 +445,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                 <TrendingUp size={14} className="text-emerald-600" />
                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Executive Summary</h4>
                             </div>
-                            <p className="text-sm font-medium text-slate-700 leading-relaxed italic">
+                            <p className="text-sm font-medium text-slate-700 leading-relaxed">
                                 &quot;{report?.executive_summary}&quot;
                             </p>
                         </div>

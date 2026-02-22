@@ -117,7 +117,7 @@ export default function AgentDossierPage({ params }: Props) {
                                         <Activity size={20} />
                                         <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase">What It Does</h2>
                                     </div>
-                                    <p className="text-lg text-slate-500 leading-relaxed pl-8 border-l-2 border-slate-100 font-medium italic">
+                                    <p className="text-lg text-slate-500 leading-relaxed pl-8 border-l-2 border-slate-100 font-medium font-normal">
                                         {agent.whatItDoes}
                                     </p>
                                 </div>

@@ -5,6 +5,7 @@ import Window from './Window';
 import Dock from './Dock';
 import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget } from './Widgets';
 import Onboarding from './Onboarding';
+import AskAva from './AskAva';
 import { HelpCircle, Book, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -40,24 +41,24 @@ const Desktop: React.FC = () => {
     return (
         <div className={`relative w-full h-screen overflow-hidden transition-colors duration-1000 ${getWallpaperStyles()}`}>
             {/* Ambient Lighting */}
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full" />
-            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full" />
+            <div className="absolute bottom-0 left-0 w-[400px] md:w-[26vw] h-[400px] md:h-[26vw] bg-emerald-500/5 blur-[100px] md:blur-[6.2vw] rounded-full" />
+            <div className="absolute top-0 right-0 w-[300px] md:w-[21vw] h-[300px] md:h-[21vw] bg-blue-500/5 blur-[80px] md:blur-[5.2vw] rounded-full" />
 
             {/* Taskbar/Top Bar */}
-            <div className="fixed top-0 left-0 right-0 h-8 flex items-center justify-between px-4 md:px-6 z-[1001] bg-black/10 backdrop-blur-md border-b border-white/5">
-                <div className="flex items-center gap-6">
-                    <span className="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-white/40">AVA OS v2.4.1</span>
+            <div className="fixed top-0 left-0 right-0 h-8 md:h-[2vw] md:min-h-[1.5rem] flex items-center justify-between px-4 md:px-[1.5vw] z-[1001] bg-black/10 backdrop-blur-md border-b border-white/5">
+                <div className="flex items-center gap-6 md:gap-[1.5vw]">
+                    <span className="hidden md:block text-[clamp(10px,0.55vw,12px)] font-black uppercase tracking-[0.2em] text-white/40">AVA OS v2.4.1</span>
                     <span className="md:hidden text-[10px] font-black uppercase tracking-[0.2em] text-white/60">AVA OS</span>
                 </div>
-                <div className="flex items-center gap-4 md:gap-6">
+                <div className="flex items-center gap-4 md:gap-[1.5vw]">
                     <button
                         onClick={() => triggerHandover()}
-                        className="flex items-center gap-2 group cursor-pointer"
+                        className="flex items-center gap-2 md:gap-[0.5vw] group cursor-pointer"
                         title="System Handover"
                     >
-                        <HelpCircle className="w-3.5 h-3.5 text-white/40 group-hover:text-emerald-400 transition-colors" />
+                        <HelpCircle className="w-3.5 h-3.5 md:w-[0.8vw] md:h-[0.8vw] text-white/40 group-hover:text-emerald-400 transition-colors" />
                     </button>
-                    <span className="text-[10px] font-bold text-white/60 min-w-[45px] md:min-w-[50px] text-right">
+                    <span className="text-[10px] md:text-[clamp(10px,0.6vw,12px)] font-bold text-white/60 min-w-[45px] md:min-w-[3vw] text-right">
                         {time || "--:--"}
                     </span>
                 </div>
@@ -74,7 +75,7 @@ const Desktop: React.FC = () => {
 
             {/* Desktop Icons */}
             {!hasMaximizedWindow && (
-                <div className="fixed top-12 right-4 md:right-8 flex flex-col gap-6 md:gap-10 z-10 py-6">
+                <div className="fixed top-12 md:top-[3vw] right-4 md:right-[1.5vw] flex flex-col gap-4 md:gap-[1.5vw] z-10 py-4 md:py-[1.2vw]">
                     <motion.a
                         href="/landing#faq"
                         target="_blank"
@@ -82,12 +83,12 @@ const Desktop: React.FC = () => {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 1 }}
-                        className="group flex flex-col items-center gap-2 w-16 md:w-20"
+                        className="group flex flex-col items-center gap-1.5 md:gap-[0.4vw] w-14 md:w-[4.2vw]"
                     >
-                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
-                            <HelpCircle className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-emerald-400 transition-colors" />
+                        <div className="w-10 h-10 md:w-[3.2vw] md:h-[3.2vw] md:min-w-[2.5rem] md:min-h-[2.5rem] rounded-lg md:rounded-[0.8vw] bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
+                            <HelpCircle className="w-5 h-5 md:w-[1.4vw] md:h-[1.4vw] text-white/50 group-hover:text-emerald-400 transition-colors" />
                         </div>
-                        <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
+                        <span className="text-[7px] md:text-[clamp(7px,0.45vw,9px)] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
                             System FAQ
                         </span>
                     </motion.a>
@@ -99,12 +100,12 @@ const Desktop: React.FC = () => {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 1.2 }}
-                        className="group flex flex-col items-center gap-2 w-16 md:w-20"
+                        className="group flex flex-col items-center gap-1.5 md:gap-[0.4vw] w-14 md:w-[4.2vw]"
                     >
-                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
-                            <Book className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-amber-400 transition-colors" />
+                        <div className="w-10 h-10 md:w-[3.2vw] md:h-[3.2vw] md:min-w-[2.5rem] md:min-h-[2.5rem] rounded-lg md:rounded-[0.8vw] bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
+                            <Book className="w-5 h-5 md:w-[1.4vw] md:h-[1.4vw] text-white/50 group-hover:text-amber-400 transition-colors" />
                         </div>
-                        <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
+                        <span className="text-[7px] md:text-[clamp(7px,0.45vw,9px)] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
                             Intelligence Glossary
                         </span>
                     </motion.a>
@@ -116,12 +117,12 @@ const Desktop: React.FC = () => {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 1.4 }}
-                        className="group flex flex-col items-center gap-2 w-16 md:w-20"
+                        className="group flex flex-col items-center gap-1.5 md:gap-[0.4vw] w-14 md:w-[4.2vw]"
                     >
-                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
-                            <Users className="w-6 h-6 md:w-7 md:h-7 text-white/50 group-hover:text-blue-400 transition-colors" />
+                        <div className="w-10 h-10 md:w-[3.2vw] md:h-[3.2vw] md:min-w-[2.5rem] md:min-h-[2.5rem] rounded-lg md:rounded-[0.8vw] bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center group-hover:bg-white/10 group-hover:border-white/20 transition-all duration-300 shadow-xl group-active:scale-95">
+                            <Users className="w-5 h-5 md:w-[1.4vw] md:h-[1.4vw] text-white/50 group-hover:text-blue-400 transition-colors" />
                         </div>
-                        <span className="text-[8px] md:text-[10px] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
+                        <span className="text-[7px] md:text-[clamp(7px,0.45vw,9px)] font-bold text-white/40 group-hover:text-white text-center uppercase tracking-widest leading-tight">
                             Agentic Roster
                         </span>
                     </motion.a>
@@ -145,6 +146,7 @@ const Desktop: React.FC = () => {
                 ))}
             </AnimatePresence>
 
+            {!hasMaximizedWindow && <AskAva />}
             <Dock />
             <Onboarding />
         </div>
