@@ -11,7 +11,7 @@ export default function Navbar() {
 
     const menuItems = [
         {
-            title: "Survey Optimization Bureau",
+            title: "The Bureau",
             href: "#",
             subItems: [
                 { title: "About The Bureau", href: "/about" },
@@ -102,7 +102,7 @@ export default function Navbar() {
                         className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95"
                     >
                         <Zap size={12} />
-                        Activate Survey OS
+                        Open Playground
                     </button>
                 </div>
             </div>

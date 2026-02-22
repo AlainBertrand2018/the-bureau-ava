@@ -82,7 +82,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                         transition={{ delay: 0.5 }}
                         className="text-sm md:text-base text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed"
                     >
-                        <span className="text-slate-900 font-bold italic">The Survey Optimization Bureau (SOB)</span> provides autonomous validation for market research instruments. I am <span className="text-blue-600 font-bold">AVA</span>, an AI-powered analyzer that utilizes proprietary <span className="text-slate-900 font-bold">Synthetic Populations</span> and <span className="text-slate-900 font-bold">Adversarial Auditing</span> to identify leading bias, linguistic ambiguity, and structural flaws. I secure data integrity for institutional research units and government agencies before fieldwork begins.
+                        <span className="text-slate-900 font-bold italic">The Bureau</span> provides autonomous validation for market research instruments. I am <span className="text-blue-600 font-bold">AVA</span>, an AI-powered analyzer that utilizes proprietary <span className="text-slate-900 font-bold">Synthetic Populations</span> and <span className="text-slate-900 font-bold">Adversarial Auditing</span> to identify leading bias, linguistic ambiguity, and structural flaws. I secure data integrity for institutional research units and government agencies before fieldwork begins.
                     </motion.p>
 
                     {/* Hero CTAs */}

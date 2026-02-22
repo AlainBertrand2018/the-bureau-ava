@@ -530,7 +530,7 @@ export default function AVAGatewayClient() {
                                     </div>
                                     <div className="text-left">
                                         <div className={`text-sm font-black uppercase tracking-[0.2em] ${dark ? "text-white" : "text-white"}`}>
-                                            Activate Survey OS
+                                            Open Playground
                                         </div>
                                         <div className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${dark ? "text-emerald-400/70" : "text-emerald-100"}`}>
                                             Booting AVA v2.4.1

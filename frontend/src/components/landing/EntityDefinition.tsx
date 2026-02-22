@@ -11,13 +11,13 @@ export default function EntityDefinition() {
                     {/* [H2] Primary Topic or Question - Downgraded from H1 for semantic hierarchy */}
                     <div className="mb-12">
                         <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 uppercase tracking-tighter">
-                            What is The Survey Optimization <span className="text-blue-600">Bureau (SOB)?</span>
+                            What is <span className="text-blue-600">The Bureau?</span>
                         </h2>
 
                         {/* The Direct Answer (40–60 words) */}
                         <div className="p-8 md:p-10 bg-blue-50/50 rounded-[2.5rem] border border-blue-100 mb-12">
                             <p className="text-xl md:text-2xl text-slate-800 font-bold leading-relaxed tracking-tight italic">
-                                The Survey Optimization Bureau (SOB) is a specialized AI intelligence platform designed for pre-fieldwork survey validation and data integrity assurance. It utilizes AVA (Autonomous Validation Analyst) to deploy scientifically calibrated synthetic populations, stress-testing research instruments to identify adversarial flaws and linguistic bias, ensuring maximum data reliability for institutional research.
+                                The Bureau is a specialized AI intelligence platform designed for pre-fieldwork survey validation and data integrity assurance. It utilizes AVA (Autonomous Validation Analyst) to deploy scientifically calibrated synthetic populations, stress-testing research instruments to identify adversarial flaws and linguistic bias, ensuring maximum data reliability for institutional research.
                             </p>
                         </div>
                     </div>
@@ -84,7 +84,7 @@ export default function EntityDefinition() {
                                     <tr className="bg-slate-900 text-white font-black uppercase tracking-widest text-[10px]">
                                         <th className="p-6">Protocol Attribute</th>
                                         <th className="p-6">Traditional Research</th>
-                                        <th className="p-6 border-l border-white/10">The Bureau (SOB)</th>
+                                        <th className="p-6 border-l border-white/10">The Bureau</th>
                                     </tr>
                                 </thead>
                                 <tbody className="font-medium text-slate-600">

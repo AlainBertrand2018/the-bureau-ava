@@ -33,7 +33,7 @@ const Footer: React.FC<FooterProps> = ({ dark = false }) => {
                     {/* Column 2 */}
                     <div>
                         <h4 className={`text-[11px] font-black uppercase tracking-[0.3em] mb-10 ${dark ? "text-white" : "text-slate-900"}`}>
-                            Survey Optimization Bureau
+                            The Bureau
                         </h4>
                         <ul className="space-y-5 text-[10px] font-bold uppercase tracking-[0.2em]">
                             <li><Link href="/about" className="hover:text-blue-500 transition-colors">About The Bureau</Link></li>

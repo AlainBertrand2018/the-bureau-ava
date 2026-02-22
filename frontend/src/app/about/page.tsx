@@ -202,7 +202,7 @@ export default function AboutPage() {
                         target="_blank"
                         className="inline-flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-600 transition-all group"
                     >
-                        Activate Survey OS
+                        Open Playground
                     </Link>
                 </div>
             </section>
