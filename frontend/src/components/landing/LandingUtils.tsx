@@ -40,9 +40,14 @@ export function AnimatedCounter({
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-40px" });
     const [count, setCount] = useState(0);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!isInView) return;
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isInView || !mounted) return;
         let start = 0;
         const duration = 1800;
         const step = (timestamp: number) => {
@@ -53,11 +58,11 @@ export function AnimatedCounter({
             if (progress < 1) requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
-    }, [isInView, target]);
+    }, [isInView, target, mounted]);
 
     return (
         <span ref={ref} className={className}>
-            {count}{suffix}
+            {!mounted ? target : count}{suffix}
         </span>
     );
 }

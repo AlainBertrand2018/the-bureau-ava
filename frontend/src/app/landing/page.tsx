@@ -95,13 +95,13 @@ export default function Home() {
       } catch (err) {
         // Silent fallback - don't let it bother the console/user
         setPubStats({
-          total_questions_processed: 12450,
+          total_questions_processed: 520,
           average_quality_score: 98.4,
-          total_audits: 4500,
+          total_audits: 12,
           top_issues: [
-            { name: "Double-Barreled", count: 145 },
-            { name: "Leading Bias", count: 112 },
-            { name: "Ambiguity", count: 89 }
+            { name: "Double-Barreled", count: 14 },
+            { name: "Leading Bias", count: 12 },
+            { name: "Ambiguity", count: 9 }
           ]
         });
       }

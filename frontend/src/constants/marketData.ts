@@ -103,7 +103,7 @@ export const REVENUE_GROUPS = [
     { id: "Middle Income", name: "Middle Income" },
     { id: "Upper Middle Income", name: "Upper Middle Income" },
     { id: "High Earners", name: "High Earners" },
-    { id: "HNWI", name: "HNWI ($1M+ Net)" },
+    { id: "HNWI", name: "HNWI (€1M+ Net)" },
 ];
 
 export const EDUCATION_LEVELS = [

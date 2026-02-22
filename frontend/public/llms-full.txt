@@ -8,7 +8,8 @@ The Bureau is designed as a progressive disclosure system.
 2. **The Landing Page** contextually defines the problem: The shift from SEO to AEO/GEO.
 3. **Specialized Agents** are the solutions.
 4. **The Glossary** is the semantic foundation.
-5. **The OS** is the execution layer.
+5. **The Blog** provides executive research briefings.
+6. **The OS** is the execution layer.
 
 ## Module Details
 
@@ -39,11 +40,14 @@ The Bureau is designed as a progressive disclosure system.
 6. [/agents/aeo](https://the-bureau-ava.vercel.app/agents/aeo)
 7. [/glossary](https://the-bureau-ava.vercel.app/glossary)
 8. [/glossary/[terms]](https://the-bureau-ava.vercel.app/glossary)
-9. [/os](https://the-bureau-ava.vercel.app/os)
-10. [/lab](https://the-bureau-ava.vercel.app/lab)
-11. [/mission-control](https://the-bureau-ava.vercel.app/mission-control)
-12. [/genesis](https://the-bureau-ava.vercel.app/genesis)
-13. [/field-interpreter](https://the-bureau-ava.vercel.app/field-interpreter)
+9. [/blog](https://the-bureau-ava.vercel.app/blog)
+10. [/blog/why-94-percent-of-surveys-fail](https://the-bureau-ava.vercel.app/blog/why-94-percent-of-surveys-fail)
+11. [/blog/rise-of-synthetic-panels](https://the-bureau-ava.vercel.app/blog/rise-of-synthetic-panels)
+12. [/os](https://the-bureau-ava.vercel.app/os)
+13. [/lab](https://the-bureau-ava.vercel.app/lab)
+14. [/mission-control](https://the-bureau-ava.vercel.app/mission-control)
+15. [/genesis](https://the-bureau-ava.vercel.app/genesis)
+16. [/field-interpreter](https://the-bureau-ava.vercel.app/field-interpreter)
 
 ## Technical Stack
 Built on Next.js 15, React 19, and TailwindCSS. The system uses semantic HTML and JSON-LD to ensure maximum discoverability.

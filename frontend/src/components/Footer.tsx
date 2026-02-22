@@ -26,7 +26,7 @@ const Footer: React.FC<FooterProps> = ({ dark = false }) => {
                             </span>
                         </div>
                         <p className="text-[11px] leading-relaxed max-w-sm font-medium opacity-70">
-                            We use bespoke AI-powered engines to stress-test survey questionnaires before field work. With our AI-agents, we generate reports and redressment recommendations that are key to guarantee exploitable data. Your survey data is processed in real-time and never stored permanently. All audits are confidential.
+                            We use bespoke AI-powered engines to stress-test survey questionnaires before field work. With our AI-agents, we generate reports and redressment recommendations that are key to guarantee actionable data. Your survey data is processed in real-time and never stored permanently. All audits are confidential.
                         </p>
                     </div>
 

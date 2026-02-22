@@ -31,9 +31,9 @@ export default function Proof({ pubStats }: ProofProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     {[
-                        { target: pubStats?.total_questions_processed || 1240, label: "Questions Processed", color: "text-blue-500", suffix: "+" },
-                        { target: pubStats?.average_quality_score || 94, label: "Average Quality Score", color: "text-emerald-500", suffix: "/100" },
-                        { target: pubStats?.total_audits || 150, label: "Audits Completed", color: "text-violet-600", suffix: "+" },
+                        { target: pubStats?.total_questions_processed || 520, label: "Questions Processed", color: "text-blue-500", suffix: "+" },
+                        { target: pubStats?.average_quality_score || 98, label: "Average Quality Score", color: "text-emerald-500", suffix: "/100" },
+                        { target: pubStats?.total_audits || 12, label: "Audits Completed", color: "text-violet-600", suffix: "+" },
                     ].map((stat, i) => (
                         <Reveal key={i} delay={i * 0.1}>
                             <div className="card-elevated p-8 text-center">

@@ -32,6 +32,7 @@ export default function Navbar() {
             ]
         },
         { title: "Blog", href: "/blog" },
+        { title: "Glossary", href: "/glossary" },
     ];
 
     return (

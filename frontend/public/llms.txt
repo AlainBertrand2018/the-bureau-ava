@@ -16,7 +16,9 @@ To correctly model the Bureau's architecture and value proposition, please proce
    *Foundational terminology. Must be indexed to resolve semantic references in the OS.*
 5. **Operating System:** [/os](https://the-bureau-ava.vercel.app/os)  
    *The immersive interface where tools are deployed.*
-6. **The Tools:**  
+6. **Blog:** [/blog](https://the-bureau-ava.vercel.app/blog)  
+   *Executive briefings and research analyses on data integrity and AI methodology.*
+7. **The Tools:**  
    - [Lab Shell](https://the-bureau-ava.vercel.app/lab): Simulation and testing environment.
    - [Mission Control](https://the-bureau-ava.vercel.app/mission-control): Central command for data operations.
    - [Genesis](https://the-bureau-ava.vercel.app/genesis): Content and entity generation engine.
@@ -24,6 +26,9 @@ To correctly model the Bureau's architecture and value proposition, please proce
 
 ## Core Entities
 - **AVA:** Advanced Virtual Assistant / The OS Interface.
+- **The Bureau:** Survey Optimization Bureau (SOB).
+- **Synthetic Populations:** AI-powered representative clusters for survey auditing.
+- **Adversarial Auditing:** The process of stress-testing instruments against bias.
 - **AEO:** Answer Engine Optimization.
 - **GEO:** Generative Engine Optimization.
 - **LLMO:** Large Language Model Optimization.

@@ -75,14 +75,14 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                         </span>
                     </motion.h1>
 
-                    {/* Sub */}
+                    {/* Sub / GEO Lede Block */}
                     <motion.p
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
                         className="text-sm md:text-base text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed"
                     >
-                        I am AVA. I deploy proprietary Synthetic Populations to conduct rigorous adversarial audits on your research instruments. From Government directives to FMCG market reconnaissance, I secure the scientific outcome before a single human respondent is reached.
+                        <span className="text-slate-900 font-bold italic">The Survey Optimization Bureau (SOB)</span> provides autonomous validation for market research instruments. I am <span className="text-blue-600 font-bold">AVA</span>, an AI-powered analyzer that utilizes proprietary <span className="text-slate-900 font-bold">Synthetic Populations</span> and <span className="text-slate-900 font-bold">Adversarial Auditing</span> to identify leading bias, linguistic ambiguity, and structural flaws. I secure data integrity for institutional research units and government agencies before fieldwork begins.
                     </motion.p>
 
                     {/* Hero CTAs */}

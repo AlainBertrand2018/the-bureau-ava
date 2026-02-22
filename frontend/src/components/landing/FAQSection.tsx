@@ -40,6 +40,7 @@ const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: typeof FA
                 <button
                     onClick={() => setActiveIndex(isOpen ? null : index)}
                     className="w-full text-left py-6 md:py-8 focus:outline-none cursor-pointer"
+                    aria-expanded={isOpen}
                 >
                     <div className="flex items-start justify-between gap-4">
                         <h3 className={`text-xl md:text-2xl font-black tracking-tight transition-colors duration-400 ${isOpen ? 'text-blue-600' : 'text-slate-900 group-hover:text-blue-600'}`}>
@@ -51,19 +52,13 @@ const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: typeof FA
                     </div>
                 </button>
 
-                <motion.div
-                    initial={false}
-                    animate={{
-                        height: isOpen ? "auto" : 0,
-                        opacity: isOpen ? 1 : 0
-                    }}
-                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="overflow-hidden"
-                >
-                    <p className="text-slate-500 text-base md:text-lg leading-relaxed font-normal max-w-3xl pb-8 md:pb-10">
-                        {item.answer}
-                    </p>
-                </motion.div>
+                <div className={`grid transition-all duration-400 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 overflow-hidden'}`}>
+                    <div className="overflow-hidden">
+                        <p className="text-slate-500 text-base md:text-lg leading-relaxed font-normal max-w-3xl pb-8 md:pb-10 whitespace-pre-wrap">
+                            {item.answer}
+                        </p>
+                    </div>
+                </div>
             </div>
         </Reveal>
     );

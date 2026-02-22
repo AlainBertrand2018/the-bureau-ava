@@ -42,5 +42,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.7,
     }));
 
-    return [...staticRoutes, ...glossaryRoutes, ...agentRoutes];
+    // Blog dynamic routes
+    const blogRoutes = [
+        { slug: "why-94-percent-of-surveys-fail" },
+        { slug: "rise-of-synthetic-panels" }
+    ].map((post) => ({
+        url: `${baseUrl}/blog/${post.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+    }));
+
+    return [...staticRoutes, ...glossaryRoutes, ...agentRoutes, ...blogRoutes];
 }
