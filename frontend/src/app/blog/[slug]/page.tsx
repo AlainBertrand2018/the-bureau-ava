@@ -128,7 +128,7 @@ export default async function BlogPostPage({ params }: Props) {
                         prose-blockquote:border-l-4 prose-blockquote:border-blue-600 prose-blockquote:bg-blue-50/50 prose-blockquote:p-8 prose-blockquote:rounded-r-3xl prose-blockquote:font-bold prose-blockquote:italic
                     ">
                         {post.content.split('\n').map((line, i) => {
-                            if (line.startsWith('# ')) return <h1 key={i}>{line.replace('# ', '')}</h1>;
+                            if (line.startsWith('# ')) return <h2 key={i}>{line.replace('# ', '')}</h2>;
                             if (line.startsWith('## ')) return <h2 key={i}>{line.replace('## ', '')}</h2>;
                             if (line.startsWith('### ')) return <h3 key={i}>{line.replace('### ', '')}</h3>;
                             if (line.startsWith('- ')) return <li key={i}>{line.replace('- ', '')}</li>;

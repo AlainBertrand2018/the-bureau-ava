@@ -14,6 +14,7 @@ export default function Navbar() {
             title: "Survey Optimization Bureau",
             href: "#",
             subItems: [
+                { title: "About The Bureau", href: "/about" },
                 { title: "For Whom", href: "/landing#who-its-for" },
                 { title: "Why Choose AVA", href: "/landing#painpoints" },
                 { title: "What We Do", href: "/landing#solution" },

@@ -37,7 +37,7 @@ export default function GlossaryPage() {
             />
             <Navbar />
 
-            {/* Hero Header */}
+            {/* [H1] Primary Topic or Question: The Bureau Knowledge Base */}
             <section className="pt-32 pb-20 bg-white border-b border-slate-100 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full hero-dot-grid opacity-30 pointer-events-none" />
                 <div className="max-w-6xl mx-auto px-6 relative z-10">
@@ -47,12 +47,39 @@ export default function GlossaryPage() {
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">The Bureau Knowledge Base</span>
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-                        Glossary of <span className="text-blue-600">Intelligence.</span>
+
+                    <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-8 uppercase">
+                        What is the AVA Survey <span className="text-blue-600">Intelligence Glossary?</span>
                     </h1>
-                    <p className="text-xl text-slate-500 font-medium max-w-2xl leading-relaxed">
-                        A definitive guide to the methodologies, AI techniques, and quality standards driving the next generation of autonomous survey validation.
-                    </p>
+
+                    {/* The Direct Answer (40–60 words) */}
+                    <div className="p-8 md:p-10 bg-blue-50/50 border border-blue-100 rounded-[2.5rem] mb-12 max-w-4xl">
+                        <p className="text-lg md:text-xl text-slate-800 font-bold leading-relaxed italic">
+                            The AVA Survey Intelligence Glossary is the definitive knowledge base for autonomous survey validation and agentic AI research. It provides standardized definitions for methodologies like Adversarial Auditing and Synthetic Population simulation, ensuring linguistic and scientific alignment for institutional data integrity.
+                        </p>
+                    </div>
+
+                    {/* The Entity Triad */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4 max-w-5xl">
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Definition</span>
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                A comprehensive lexicon defining the intersection of Market Research and autonomous AI reasoning.
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Attribute</span>
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                Curated by the AVA Intelligence Unit, covering v2.4.1 protocols and data integrity standards.
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Importance</span>
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                Enables legally defensible and scientifically rigorous instrumentation by standardizing technical registers.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
 

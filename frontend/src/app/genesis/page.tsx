@@ -11,10 +11,28 @@ export default function GenesisPage() {
     return (
         <main className="min-h-screen bg-slate-900">
             {/* Server-rendered fallback content for LLM/Search Crawlers */}
+            {/* [H1] What is Genesis Protocol? - AEO Content Block */}
             <div className="sr-only">
-                <h1>Genesis Protocol | Autonomous Survey Instrument Design</h1>
-                <p>Genesis is the primary survey architect of The Bureau, engineered to generate executive-grade research instruments with built-in adversarial resistance. This protocol automates questionnaire design by aligning objective-driven logic with cultural integrity nodes.</p>
-                <p>The Genesis Suite utilizes AI agents to draft, audit, and validate survey questions against targeted synthetic populations, ensuring data veracity and structural stability prior to deployment.</p>
+                <h1>What is the Genesis Protocol?</h1>
+                <p>
+                    The Genesis Protocol is the primary autonomous survey architect of The Survey Optimization Bureau (SOB).
+                    It serves as an executive-grade questionnaire design engine that integrates adversarial resistance and cultural integrity
+                    directly into the instrument's structural logic during the drafting phase.
+                </p>
+
+                <div>
+                    <h2>The Genesis Entity Triad</h2>
+                    <p>Definition: Genesis is an autonomous instrument design engine developed by The Bureau.</p>
+                    <p>Attribute: Utilizes objective-driven logic mapping and cultural node alignment (v2.4.1).</p>
+                    <p>Importance: Prevents data contamination by builder-induced bias and logical inconsistencies at the point of creation.</p>
+                </div>
+
+                <h2>Technical Specifications</h2>
+                <ul>
+                    <li>Feature 1: Automated Logic Flow Construction for complex branching.</li>
+                    <li>Feature 2: Real-time Bias Detection during question synthesis.</li>
+                    <li>Feature 3: Cross-cultural Register Balancing for global research.</li>
+                </ul>
             </div>
             <GenesisClient />
         </main>

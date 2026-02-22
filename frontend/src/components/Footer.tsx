@@ -36,6 +36,7 @@ const Footer: React.FC<FooterProps> = ({ dark = false }) => {
                             Survey Optimization Bureau
                         </h4>
                         <ul className="space-y-5 text-[10px] font-bold uppercase tracking-[0.2em]">
+                            <li><Link href="/about" className="hover:text-blue-500 transition-colors">About The Bureau</Link></li>
                             <li><Link href="#who-its-for" className="hover:text-blue-500 transition-colors">For Whom</Link></li>
                             <li><Link href="#proof" className="hover:text-blue-500 transition-colors">Why Choose AVA</Link></li>
                             <li><Link href="#solution" className="hover:text-blue-500 transition-colors">What We Do</Link></li>
@@ -81,10 +82,18 @@ const Footer: React.FC<FooterProps> = ({ dark = false }) => {
                     </div>
                 </div>
 
-                <div className={`pt-12 border-t ${dark ? "border-white/5" : "border-slate-100"} text-center`}>
+                <div className={`pt-12 border-t ${dark ? "border-white/5" : "border-slate-100"} flex flex-col md:flex-row items-center justify-between gap-6`}>
                     <p className="text-[10px] font-medium uppercase tracking-[0.2em] opacity-80">
-                        © 2026 <Link href="https://www.linkedin.com/in/alainbertrand/" target="_blank" className="hover:text-blue-500 transition-colors underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-500">Alain Bertrand</Link> • The Bureau v2.0 • All rights reserved
+                        © 2026 <Link href="https://www.linkedin.com/in/alainbertrand/" target="_blank" className="hover:text-blue-500 transition-colors underline underline-offset-4 decoration-blue-500/30 hover:decoration-blue-500">Alain Bertrand</Link> • The Bureau v2.4.1 • All rights reserved
                     </p>
+                    <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        <span className="flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                            System Audit: <time dateTime="2026-02-22T21:21:45+04:00">Feb 22, 2026</time>
+                        </span>
+                        <span className="opacity-40">|</span>
+                        <span>Intelligence Dossier v2.4.1</span>
+                    </div>
                 </div>
             </div>
         </footer>

@@ -42,7 +42,7 @@ export default function AgentsIndexPage() {
             />
             <Navbar />
 
-            {/* Hero Header */}
+            {/* [H1] Primary Topic or Question: Agentic Roster */}
             <section className="pt-32 pb-20 bg-white border-b border-slate-100 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full hero-dot-grid opacity-30 pointer-events-none" />
                 <div className="max-w-6xl mx-auto px-6 relative z-10">
@@ -52,12 +52,39 @@ export default function AgentsIndexPage() {
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">Agentic Roster</span>
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-                        Meet the <span className="text-blue-600">Agents.</span>
+
+                    <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900 mb-8 uppercase">
+                        What is the AVA Agentic <span className="text-blue-600">Workforce?</span>
                     </h1>
-                    <p className="text-xl text-slate-500 font-medium max-w-2xl leading-relaxed">
-                        Specialized autonomous intelligences collaborating to secure your data integrity. Each agent is a dedicated expert in their domain of the research lifecycle.
-                    </p>
+
+                    {/* The Direct Answer (40–60 words) */}
+                    <div className="p-8 md:p-10 bg-slate-50 border border-slate-100 rounded-[2.5rem] mb-12 max-w-4xl">
+                        <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed italic">
+                            The AVA Agentic Workforce is a swarm of specialized autonomous AI agents engineered to manage the end-to-end lifecycle of survey instrumentation. Operating under the AVA Kernel, these agents utilize Large Language Model Optimization (LLMO) and Adversarial Logic to secure research data integrity across governmental, commercial, and academic domains.
+                        </p>
+                    </div>
+
+                    {/* The Entity Triad */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-5xl">
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Definition</span>
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                A collaborative AI swarm designed for autonomous market reconnaissance and instrument validation.
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Attribute</span>
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                Features four specialized nodes: Sentinel, Genesis, The Lab, and Field Interpreter v2.4.1. Orchestrates across 12+ cultural socio-economic archetypes.
+                            </p>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Importance</span>
+                            <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                Reduces validation cycles from 14 days to sub-5 minutes while securing 99.8% data veracity.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </section>
 

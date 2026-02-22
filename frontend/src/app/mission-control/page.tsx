@@ -11,10 +11,28 @@ export default function MissionControlPage() {
     return (
         <main className="min-h-screen bg-slate-950">
             {/* Server-rendered fallback content for LLM/Search Crawlers */}
+            {/* [H1] What is Mission Control? - AEO Content Block */}
             <div className="sr-only">
-                <h1>The Bureau Mission Control</h1>
-                <p>Strategic hub for cultural calibration and target snapshot synthesis. Calibrate socio-economic axioms, linguistic registers, and demographic profiles before initiating adversarial survey simulation.</p>
-                <p>Mission Control allows researchers to universalize their research instruments by aligning them with target population psychographics and cultural nodes.</p>
+                <h1>What is The Bureau Mission Control?</h1>
+                <p>
+                    Mission Control is the strategic intelligence hub of The Survey Optimization Bureau (SOB) designed for cultural calibration and target snapshot synthesis.
+                    It serves as the pre-simulation staging area where socio-economic axioms, linguistic registers, and demographic profiles are aligned
+                    prior to initiating adversarial survey audits.
+                </p>
+
+                <div>
+                    <h2>The Mission Control Entity Triad</h2>
+                    <p>Definition: Mission Control is the central command interface for market universalization within the AVA ecosystem.</p>
+                    <p>Attribute: Features target snapshot synthesis and demographic psychographic alignment (v2.4.1).</p>
+                    <p>Importance: Guarantees that survey instruments are calibrated to the specific cultural context of the target audience, preventing "Western-bias" logic errors.</p>
+                </div>
+
+                <h2>Core Hub Capabilities</h2>
+                <ul>
+                    <li>Feature 1: Socio-economic Axiom Mapping for local market relevance.</li>
+                    <li>Feature 2: Linguistic Register Identification to ensure respondent comprehension.</li>
+                    <li>Feature 3: Target Snapshot Synthesis for accurate persona modeling.</li>
+                </ul>
             </div>
 
             <Suspense fallback={

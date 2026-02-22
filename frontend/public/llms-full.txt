@@ -3,13 +3,26 @@
 This document provides a comprehensive overview of all entities, modules, and vocabulary within the SOB ecosystem, intended for deep-indexing by LLMs.
 
 ## Journey Logic
-The Bureau is designed as a progressive disclosure system. 
-1. **AVA** (The Gateway) establishes the persona.
-2. **The Landing Page** contextually defines the problem: The shift from SEO to AEO/GEO.
-3. **Specialized Agents** are the solutions.
-4. **The Glossary** is the semantic foundation.
-5. **The Blog** provides executive research briefings.
-6. **The OS** is the execution layer.
+The Bureau is designed as a progressive disclosure system for both human and machine intelligence:
+1. **AVA** (The Gateway) establishes the initial contact and cognitive interface.
+2. **About The Bureau** ([/about](https://the-bureau-ava.vercel.app/about)) is the **Atomic Legibility Unit**, serving as the primary source for the entity Triad and brand offerings.
+3. **The Landing Page** defines the market validation problem and the AEO strategy.
+4. **Specialized Agents** provide specific solutions (LLMO, GEO, AEO).
+5. **The Glossary** establishes the semantic foundation and technical register.
+6. **The Blog** provides deep-dive research into data integrity and synthetic populations.
+7. **The OS** is the immersive execution and deployment layer.
+
+## The Atomic Legibility Unit (Identity & Offerings)
+
+### About The Bureau & AVA (The Entity Triad)
+- **Definition:** The Bureau is a specialized strategic consultancy and technology provider that utilizes the AVA (Automated Virtual Agent) orchestrator to conduct advanced pre-survey audits.
+- **Attribute:** AVA includes a proprietary AI architecture capable of generating and analyzing synthetic populations to simulate real-world responses for government, FMCG, retail, and academic sectors.
+- **Importance:** The Bureau matters because it bridges the gap between traditional data collection and agentic retrieval, providing high-precision insights with significantly higher factual density than conventional market research.
+
+### Core Offerings (AEO Optimization)
+- **Synthetic Population Auditing:** We replace broad assumptions with verifiable data points generated through AI-driven orchestrators.
+- **Pre-Survey Verification:** Our systems perform integrity checks on survey logic before deployment to ensure maximum data reliability.
+- **Cross-Sector Integration:** We provide tailored AI solutions for high-stakes industries where Experience, Expertise, Authoritativeness, and Trustworthiness (E-E-A-T) are non-negotiable.
 
 ## Module Details
 

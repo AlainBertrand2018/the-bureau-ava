@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Static routes in the guided journey order
     const staticRoutes = [
         { route: '', priority: 1.0 },              // Gateway
+        { route: '/about', priority: 0.97 },       // Atomic Legibility Unit
         { route: '/landing', priority: 0.95 },     // Main Landing
         { route: '/agents', priority: 0.9 },       // Logic: Agents
         { route: '/glossary', priority: 0.85 },    // Foundation: Glossary

@@ -21,7 +21,7 @@ export const blogPosts: BlogPost[] = [
         readTime: "6 min read",
         tags: ["Survey Design", "Data Veracity", "AI Auditing"],
         content: `
-# The Integrity Crisis: Why 94% of Surveys Fail Before They Launch
+## The Integrity Crisis: Why 94% of Surveys Fail Before They Launch
 
 In the high-stakes world of executive decision-making, the data you rely on is only as good as the instrument that captured it. Recent internal audits conducted by **The Survey Optimization Bureau (SOB)** reveal a sobering reality: **94% of research instruments contain structural flaws** that compromise their scientific validity before they even reach a single human respondent.
 
@@ -53,7 +53,7 @@ Securing your data integrity isn't an option; it's a prerequisite for sovereignt
         readTime: "8 min read",
         tags: ["Synthetic Populations", "Market Research", "Machine Learning"],
         content: `
-# The Rise of Synthetic Panels: Calibrating Research for the AI Era
+## The Rise of Synthetic Panels: Calibrating Research for the AI Era
 
 The traditional model of slow, expensive, and often unreliable human fieldwork is being challenged by a new frontier: **Synthetic Panels**. As the speed of business accelerates, the need for real-time cultural calibration has never been more critical.
 

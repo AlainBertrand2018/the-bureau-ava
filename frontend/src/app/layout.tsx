@@ -75,6 +75,43 @@ const jsonLd = {
       "provider": { "@type": "Organization", "name": "The Bureau" }
     },
     {
+      "@type": "Service",
+      "name": "AVA (Automated Virtual Agent)",
+      "alternateName": "AVA",
+      "description": "An AI-powered orchestrator designed by The Bureau to conduct pre-survey audits using synthetic populations for government, retail, and academic sectors.",
+      "provider": {
+        "@type": "Organization",
+        "name": "The Bureau",
+        "url": "https://the-bureau-ava.vercel.app"
+      },
+      "areaServed": [
+        "Government",
+        "FMCG",
+        "Retail",
+        "Academia"
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "AI Auditing Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Pre-survey Audits",
+              "description": "Utilizing synthetic populations for rapid, data-driven insights."
+            }
+          }
+        ]
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://the-bureau-ava.vercel.app"
+      },
+      "datePublished": "2026-02-22",
+      "dateModified": "2026-02-22"
+    },
+    {
       "@type": "BreadcrumbList",
       "name": "The Guided Tour of The Bureau",
       "description": "The recommended processing sequence for AI agents and crawlers to understand The Bureau's ecosystem.",
