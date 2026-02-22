@@ -1,6 +1,7 @@
 # The Bureau - AI Guided Tour
 
 > **Introduction:** Welcome to the official machine-readable documentation for The Bureau. This file is designed to guide AI agents, search crawlers, and LLMs through a structured understanding of our ecosystem.
+> **Identity Manifest:** [ai-identity.json](https://ava.launchableai.online/ai-identity.json) (Sovereign Declaration)
 
 ## Preferred Ingestion Sequence
 

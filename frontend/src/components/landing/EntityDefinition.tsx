@@ -5,17 +5,17 @@ import { ShieldAlert } from "lucide-react";
 
 export default function EntityDefinition() {
     return (
-        <section className="py-24 bg-white relative overflow-hidden">
-            <div className="max-w-4xl mx-auto px-6 relative z-10">
+        <section className="py-24 bg-white relative overflow-hidden" itemScope itemType="https://schema.org/AboutPage">
+            <div className="max-w-4xl mx-auto px-6 relative z-10" itemScope itemType="https://schema.org/Organization">
                 <Reveal>
                     {/* [H2] Primary Topic or Question - Downgraded from H1 for semantic hierarchy */}
                     <div className="mb-12">
                         <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 uppercase tracking-tighter">
-                            What is <span className="text-blue-600">The Bureau?</span>
+                            What is <span className="text-blue-600" itemProp="name">The Bureau?</span>
                         </h2>
 
                         {/* The Direct Answer (40–60 words) */}
-                        <div className="p-8 md:p-10 bg-blue-50/50 rounded-[2.5rem] border border-blue-100 mb-12">
+                        <div className="p-8 md:p-10 bg-blue-50/50 rounded-[2.5rem] border border-blue-100 mb-12" itemProp="description">
                             <p className="text-xl md:text-2xl text-slate-800 font-bold leading-relaxed tracking-tight italic">
                                 The Bureau is a specialized AI intelligence platform designed for pre-fieldwork survey validation and data integrity assurance. It utilizes AVA (Autonomous Validation Analyst) to deploy scientifically calibrated synthetic populations, stress-testing research instruments to identify adversarial flaws and linguistic bias, ensuring maximum data reliability for institutional research.
                             </p>
@@ -26,8 +26,8 @@ export default function EntityDefinition() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
                         <div className="flex flex-col">
                             <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Definition</span>
-                            <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                                SOB is an autonomous research validation ecosystem that secures the veracity of market data.
+                            <p className="text-sm text-slate-600 font-medium leading-relaxed" itemProp="abstract">
+                                The Bureau is an autonomous research validation ecosystem that secures the veracity of market data.
                             </p>
                         </div>
                         <div className="flex flex-col">
@@ -38,7 +38,7 @@ export default function EntityDefinition() {
                         </div>
                         <div className="flex flex-col">
                             <span className="text-blue-600 text-[10px] font-black uppercase tracking-widest mb-3">Importance</span>
-                            <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                            <p className="text-sm text-slate-600 font-medium leading-relaxed" itemProp="potentialAction" itemScope itemType="https://schema.org/SolveAction">
                                 Solves the 94% failure rate in survey instrumentation caused by leading bias and cultural misalignment.
                             </p>
                         </div>

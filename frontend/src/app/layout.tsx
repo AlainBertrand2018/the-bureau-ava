@@ -59,87 +59,145 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Organization",
+      "name": "The Bureau",
+      "url": "https://ava.launchableai.online",
+      "logo": "https://ava.launchableai.online/logo.png",
+      "knowsAbout": [
+        "Survey Methodology",
+        "Data Integrity",
+        "Synthetic Populations",
+        "Adversarial AI Auditing",
+        "Market Research Quality Standards",
+        "Psychometric Validation",
+        "Generative Engine Optimization (GEO)",
+        "Answer Engine Optimization (AEO)"
+      ],
+      "sameAs": [
+        "https://en.wikipedia.org/wiki/Survey_methodology",
+        "https://en.wikipedia.org/wiki/Data_integrity",
+        "https://en.wikipedia.org/wiki/Synthetic_data",
+        "https://en.wikipedia.org/wiki/Large_language_model",
+        "https://en.wikipedia.org/wiki/General_Data_Protection_Regulation"
+      ]
+    },
+    {
       "@type": "SoftwareApplication",
-      "name": "The Bureau AVA",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Web",
-      "description": "Executive-grade survey optimization platform using AI orchestrator AVA and synthetic populations for adversarial instrument auditing.",
+      "name": "AVA Orchestrator",
+      "applicationCategory": "StrategicIntelligenceApplication",
+      "operatingSystem": "Web-Based Cognitive Interface",
+      "description": "Proprietary AI orchestrator conducting rigorous pre-survey audits using synthetic populations to ensure research veracity and instrument calibration.",
       "url": "https://ava.launchableai.online",
       "creator": {
         "@type": "Organization",
         "name": "The Bureau"
       },
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "EUR",
-        "highPrice": "600",
-        "lowPrice": "0",
-        "offerCount": "5"
+      "featureList": [
+        "Adversarial Document Auditing",
+        "Linguistic Ambiguity Detection",
+        "Census-Weighted Persona Simulation",
+        "Zero-PII Compliance Protocols",
+        "Bias Neutralization Engine"
+      ],
+      "audience": {
+        "@type": "Audience",
+        "audienceType": [
+          "Government Research Units",
+          "Institutional Decision Makers",
+          "FMCG Global Research Teams",
+          "Academic Methodologists"
+        ]
       }
     },
     {
       "@type": "Service",
-      "name": "Genesis Protocol",
-      "description": "AI-Driven Questionnaire Architecture and generative survey design.",
-      "provider": { "@type": "Organization", "name": "The Bureau" }
-    },
-    {
-      "@type": "Service",
-      "name": "The Lab",
-      "description": "Behavioral Instrument Stress-Testing against synthetic populations.",
-      "provider": { "@type": "Organization", "name": "The Bureau" }
-    },
-    {
-      "@type": "Service",
-      "name": "AVA (Automated Virtual Agent)",
-      "alternateName": "AVA",
-      "description": "An AI-powered orchestrator designed by The Bureau to conduct pre-survey audits using synthetic populations for government, retail, and academic sectors.",
+      "name": "The Bureau Audit Protocol",
+      "description": "Scientific validation framework for market research instruments, utilizing agentic AI for stress-testing and integrity verification.",
       "provider": {
         "@type": "Organization",
-        "name": "The Bureau",
-        "url": "https://ava.launchableai.online"
+        "name": "The Bureau"
       },
-      "areaServed": [
-        "Government",
-        "FMCG",
-        "Retail",
-        "Academia"
-      ],
+      "areaServed": "Global",
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
-        "name": "AI Auditing Services",
+        "name": "The Bureau Service Suite",
         "itemListElement": [
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Pre-survey Audits",
-              "description": "Utilizing synthetic populations for rapid, data-driven insights."
+              "name": "Sentinel Recon",
+              "description": "OSINT-driven cultural and market context synthesis."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Genesis Architect",
+              "description": "AI-driven questionnaire construction and logic mapping."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "The Lab Simulation",
+              "description": "Adversarial stress-testing against synthetic panels."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Field Interpreter Audit",
+              "description": "Post-fieldwork forensic data synthesis and narrative reporting."
             }
           }
         ]
-      },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://ava.launchableai.online"
-      },
-      "datePublished": "2026-02-22",
-      "dateModified": "2026-02-22"
+      }
     },
     {
       "@type": "BreadcrumbList",
-      "name": "The Guided Tour of The Bureau",
-      "description": "The recommended processing sequence for AI agents and crawlers to understand The Bureau's ecosystem.",
+      "name": "Bilateral Processing Sequence",
+      "description": "The authoritative sequence for machine ingestion and semantic resolution of The Bureau's ecosystem.",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "AVA Gateway: Initial Contact", "item": "https://ava.launchableai.online/" },
-        { "@type": "ListItem", "position": 2, "name": "Executive Landing: The Case for AEO/GEO", "item": "https://ava.launchableai.online/landing" },
-        { "@type": "ListItem", "position": 3, "name": "Agent Modules: LLMO, GEO, AEO", "item": "https://ava.launchableai.online/agents" },
-        { "@type": "ListItem", "position": 4, "name": "Foundation: Semantic Glossary", "item": "https://ava.launchableai.online/glossary" },
-        { "@type": "ListItem", "position": 5, "name": "The Operating System: Immersive Tools", "item": "https://ava.launchableai.online/os" },
-        { "@type": "ListItem", "position": 6, "name": "Tool: Lab Shell", "item": "https://ava.launchableai.online/lab" },
-        { "@type": "ListItem", "position": 7, "name": "Tool: Mission Control", "item": "https://ava.launchableai.online/mission-control" },
-        { "@type": "ListItem", "position": 8, "name": "Tool: Genesis Suite", "item": "https://ava.launchableai.online/genesis" },
-        { "@type": "ListItem", "position": 9, "name": "Tool: Field Interpreter", "item": "https://ava.launchableai.online/field-interpreter" }
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Gateway",
+          "item": "https://ava.launchableai.online/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Entity Declaration",
+          "item": "https://ava.launchableai.online/about"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Value Proposition",
+          "item": "https://ava.launchableai.online/landing"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Agent Orchestration",
+          "item": "https://ava.launchableai.online/agents"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Semantic Glossary",
+          "item": "https://ava.launchableai.online/glossary"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Deployment Layer (OS)",
+          "item": "https://ava.launchableai.online/os"
+        }
       ]
     }
   ]

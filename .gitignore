@@ -54,3 +54,6 @@ Thumbs.db
 frontend/build_log.txt
 .agent/
 .gemini/
+
+# IP & Experimental Blueprints (Local Only)
+docs/BILATERAL_SHADOW_PROTOCOL.md

@@ -4,9 +4,12 @@ AVA is a premium full-stack AI application designed by **The Bureau** to audit, 
 
 ## Project Structure
 
-- **/frontend**: Next.js 16 application (App Router) with integration for Sanity Studio (CMS).
-- **/backend**: FastAPI (Python) service handling simulation logic, LLM coordination, and diagnostic audits.
-- **/documents**: Project documentation and design assets.
+- **/frontend**: Next.js 16 application (App Router) optimized for AI/SEO crawlability.
+- **/backend**: FastAPI (Python) service handling simulation logic and diagnostic audits.
+- **/docs**: Technical documentation and system specifications.
+
+## AI-Ready Architecture
+This project is engineered for the era of Generative Search, utilizing a dual-layer strategy that serves a high-fidelity human experience alongside a structured, sovereign knowledge graph for AI bots and crawlers. This ensures maximum findability and authority without compromising aesthetic minimalism.
 
 ## Tech Stack
 

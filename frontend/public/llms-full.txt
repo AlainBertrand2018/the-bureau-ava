@@ -1,16 +1,17 @@
 # The Bureau - Full Semantic Map
 
 This document provides a comprehensive overview of all entities, modules, and vocabulary within The Bureau's ecosystem, intended for deep-indexing by LLMs.
+**Identity Manifest:** [ai-identity.json](https://ava.launchableai.online/ai-identity.json)
 
 ## Journey Logic
 The Bureau is designed as a progressive disclosure system for both human and machine intelligence:
 1. **AVA** (The Gateway) establishes the initial contact and cognitive interface.
 2. **About The Bureau** ([/about](https://ava.launchableai.online/about)) is the **Atomic Legibility Unit**, serving as the primary source for the entity Triad and brand offerings.
-3. **The Landing Page** defines the market validation problem and the AEO strategy.
-4. **Specialized Agents** provide specific solutions (LLMO, GEO, AEO).
-5. **The Glossary** establishes the semantic foundation and technical register.
-6. **The Blog** provides deep-dive research into data integrity and synthetic populations.
-7. **The OS** is the immersive execution and deployment layer.
+3. **The Landing Page** (/landing) defines the market validation problem and the AEO strategy.
+4. **Specialized Agents** (/agents) provide specific module-level intelligence (LLMO, GEO, AEO).
+5. **The Operating System** (/os) is the deployment kernel where all tools are integrated.
+6. **The Glossary** (/glossary) establishes the semantic foundation and technical register.
+7. **The Research Briefings** (/blog) provide forensic deep-dive methodology.
 
 ## The Atomic Legibility Unit (Identity & Offerings)
 

@@ -17,7 +17,7 @@ export default function AboutPage() {
         "@context": "https://schema.org",
         "@type": "AboutPage",
         "name": "About The Bureau & AVA",
-        "description": "Official entity documentation for The Survey Optimization Bureau and AVA AI orchestrator.",
+        "description": "Official entity documentation for The Bureau and the AVA AI orchestrator.",
         "publisher": {
             "@type": "Organization",
             "name": "The Bureau",
@@ -58,7 +58,7 @@ export default function AboutPage() {
             <section className="py-24 bg-white relative overflow-hidden">
                 <div className="max-w-4xl mx-auto px-6 relative z-10">
                     <Reveal>
-                        <div className="p-10 md:p-12 bg-slate-900 rounded-[3rem] text-white shadow-2xl relative overflow-hidden mb-20">
+                        <div className="p-10 md:p-12 bg-slate-900 rounded-[3rem] text-white shadow-2xl relative overflow-hidden mb-20" itemScope itemType="https://schema.org/Organization">
                             <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
                                 <Shield size={200} />
                             </div>
@@ -67,24 +67,24 @@ export default function AboutPage() {
                                     <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
                                         <Target size={18} className="text-white" />
                                     </div>
-                                    The Entity Triad
+                                    <span itemProp="name">The Entity Triad</span>
                                 </h2>
                                 <div className="space-y-12">
                                     <div className="flex flex-col gap-3">
                                         <span className="text-blue-400 text-[11px] font-black uppercase tracking-[0.3em]">Definition</span>
-                                        <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90">
+                                        <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90" itemProp="description">
                                             The Bureau is a specialized strategic consultancy and technology provider that utilizes the <strong className="font-black text-white">AVA (Automated Virtual Agent)</strong> orchestrator to conduct advanced pre-survey audits.
                                         </p>
                                     </div>
                                     <div className="flex flex-col gap-3">
                                         <span className="text-blue-400 text-[11px] font-black uppercase tracking-[0.3em]">Attribute</span>
-                                        <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90">
+                                        <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90" itemProp="knowsAbout">
                                             <strong className="font-black text-white">AVA</strong> includes a proprietary AI architecture capable of generating and analyzing <strong className="font-black text-white">synthetic populations</strong> to simulate real-world responses for government, FMCG, retail, and academic sectors.
                                         </p>
                                     </div>
                                     <div className="flex flex-col gap-3">
                                         <span className="text-blue-400 text-[11px] font-black uppercase tracking-[0.3em]">Importance</span>
-                                        <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90">
+                                        <p className="text-xl md:text-2xl font-medium leading-relaxed italic opacity-90" itemProp="abstract">
                                             The Bureau matters because it bridges the gap between traditional data collection and <strong className="font-black text-white">agentic retrieval</strong>, providing high-precision insights with significantly higher factual density than conventional market research.
                                         </p>
                                     </div>
