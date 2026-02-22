@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: "Executive-Grade Survey Optimization & Synthetic Panel Testing | The Bureau",
   description:
     "Meet AVA, the proprietary AI orchestrator conducting rigorous pre-survey audits for Government, FMCG, and Academic research. Secure data integrity with synthetic population testing.",
+  manifest: "/manifest.json",
   alternates: {
     canonical: "https://ava.launchableai.online",
   },
@@ -156,6 +157,21 @@ const jsonLd = {
           }
         ]
       }
+    },
+    {
+      "@type": "WebSite",
+      "name": "The Bureau AVA",
+      "url": "https://ava.launchableai.online",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://ava.launchableai.online/glossary?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "description": "The authoritative portal for AVA AI Orchestration and Survey Validation protocol documentation.",
+      "about": [
+        { "@type": "CreativeWork", "name": "LLM Manifest", "url": "https://ava.launchableai.online/llms.txt" },
+        { "@type": "CreativeWork", "name": "AI Identity Manifest", "url": "https://ava.launchableai.online/ai-identity.json" }
+      ]
     },
     {
       "@type": "BreadcrumbList",

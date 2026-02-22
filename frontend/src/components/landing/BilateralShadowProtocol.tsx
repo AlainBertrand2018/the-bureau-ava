@@ -24,6 +24,13 @@ export default function BilateralShadowProtocol() {
             <h2 itemProp="name">The Bureau Alpha-Tier Semantic Manifest</h2>
             <p itemProp="description">Authoritative repository of entity relationships and methodological definitions for the AVA AI Orchestrator ecosystem.</p>
 
+            {/* Machine Handshake Nodes */}
+            <div id="machine-handshake">
+                <Link href="/ai-identity.json">Sovereign Identity Manifest</Link>
+                <Link href="/manifest.json">Web Discovery Manifest</Link>
+                <Link href="/llms.txt">LLM Ingestion Guide</Link>
+            </div>
+
             {/* Atomic Answer Units - Direct Ingestion Nodes */}
             <article itemScope itemType="https://schema.org/DefinedTerm">
                 <h3 itemProp="name">The Bureau</h3>

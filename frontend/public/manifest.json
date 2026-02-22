@@ -1,0 +1,33 @@
+{
+    "name": "The Bureau AVA",
+    "short_name": "AVA",
+    "description": "Executive-Grade Survey Optimization & Synthetic Panel Testing. Autonomous research validation using agentic AI.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#2563eb",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        }
+    ],
+    "categories": [
+        "productivity",
+        "business",
+        "utilities"
+    ],
+    "shortcuts": [
+        {
+            "name": "Open Laboratory",
+            "url": "/lab",
+            "description": "Enter the adversarial simulation lab"
+        },
+        {
+            "name": "Mission Control",
+            "url": "/mission-control",
+            "description": "Track visibility and data operations"
+        }
+    ]
+}
