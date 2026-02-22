@@ -24,6 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { route: '/admin/commercial', priority: 0.1 },
         { route: '/admin/stats', priority: 0.1 },
         { route: '/admin/tokens', priority: 0.1 },
+        { route: '/feed/ai', priority: 0.1 },
     ].map(({ route, priority }) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),

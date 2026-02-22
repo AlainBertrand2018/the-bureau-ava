@@ -17,6 +17,7 @@ from context_engine import MissionConfiguration, Mission, context_engine, Audien
 from config import settings
 from logger import bureau_logger
 from ai_utils import generate_with_retry, safe_parse_json
+from services.announcer import announcer
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -627,6 +628,19 @@ async def chat_with_ava(req: ChatRequest):
         await log_transaction(endpoint="/chat/ava", status="ERROR", latency_ms=0)
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@app.post("/admin/push-signals")
+async def trigger_push_signals(urls: Optional[List[str]] = None):
+    """
+    Triggers the Active Signal Injection (ASI) sequence.
+    Forces Bing/Google to crawl and LLMs to refresh local context.
+    """
+    try:
+        result = await announcer.push_all_signals(urls)
+        return result
+    except Exception as e:
+        bureau_logger.error(f"PUSH_SIGNAL_TRIGGER_FAILED: {str(e)}")
+        raise HTTPException(status_code=500, detail="Push sequence failed")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -12,6 +12,7 @@
         "manifest_url": "https://ava.launchableai.online/llms.txt",
         "full_manifest_url": "https://ava.launchableai.online/llms-full.txt",
         "sitemap_url": "https://ava.launchableai.online/sitemap.xml",
+        "ai_ingestion_feed": "https://ava.launchableai.online/feed/ai",
         "schema_graph_url": "https://ava.launchableai.online/"
     },
     "authority_signals": {
