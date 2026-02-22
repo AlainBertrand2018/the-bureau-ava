@@ -27,4 +27,4 @@ User-agent: Applebot-Extended
 Allow: /
 
 # Sitemap Location
-Sitemap: https://the-bureau-ava.vercel.app/sitemap.xml
+Sitemap: https://ava.launchableai.online/sitemap.xml

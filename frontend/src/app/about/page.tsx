@@ -20,7 +20,7 @@ export default function AboutPage() {
         "publisher": {
             "@type": "Organization",
             "name": "The Bureau",
-            "url": "https://the-bureau-ava.vercel.app"
+            "url": "https://ava.launchableai.online"
         },
         "mainEntity": {
             "@type": "Service",
@@ -175,7 +175,7 @@ export default function AboutPage() {
                                 </div>
                                 <div>
                                     <span className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Official Domain</span>
-                                    <span className="text-sm font-black text-blue-600 underline underline-offset-4 decoration-blue-500/30">https://the-bureau-ava.vercel.app</span>
+                                    <span className="text-sm font-black text-blue-600 underline underline-offset-4 decoration-blue-500/30">https://ava.launchableai.online</span>
                                 </div>
                                 <div>
                                     <span className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Industry Focus</span>
@@ -199,9 +199,10 @@ export default function AboutPage() {
                     </h2>
                     <Link
                         href="/os"
+                        target="_blank"
                         className="inline-flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-600 transition-all group"
                     >
-                        Initialize AVA OS
+                        Activate Survey OS
                     </Link>
                 </div>
             </section>

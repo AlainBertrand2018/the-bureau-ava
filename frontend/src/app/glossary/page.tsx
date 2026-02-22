@@ -25,7 +25,7 @@ export default function GlossaryPage() {
             "@type": "DefinedTerm",
             "name": item.term,
             "description": item.definition,
-            "url": `https://the-bureau-ava.vercel.app/glossary/${item.slug}`
+            "url": `https://ava.launchableai.online/glossary/${item.slug}`
         }))
     };
 

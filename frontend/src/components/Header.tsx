@@ -13,7 +13,7 @@ export default function Header() {
                 <nav className="hidden md:flex items-center gap-8 text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">
                     <Link href="#methodology" className="hover:text-blue-400 transition-colors uppercase tracking-widest">How it Works</Link>
                     <Link href="#services" className="hover:text-blue-400 transition-colors uppercase tracking-widest">Who it's for</Link>
-                    <Link href="/lab" className="hover:text-blue-400 transition-colors text-blue-400/70 uppercase tracking-widest">Open Lab</Link>
+                    <Link href="/os" target="_blank" className="hover:text-blue-400 transition-colors text-blue-400/70 uppercase tracking-widest">Activate Survey OS</Link>
                 </nav>
 
                 <div className="flex items-center gap-4">

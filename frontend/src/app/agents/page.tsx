@@ -30,7 +30,7 @@ export default function AgentsIndexPage() {
             "name": agent.name,
             "applicationCategory": "AI Researcher",
             "description": agent.whatItIs,
-            "url": `https://the-bureau-ava.vercel.app/agents/${agent.slug}`
+            "url": `https://ava.launchableai.online/agents/${agent.slug}`
         }))
     };
 

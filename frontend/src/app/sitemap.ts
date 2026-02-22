@@ -3,7 +3,7 @@ import { glossaryData } from '@/constants/glossary';
 import { agentData } from '@/constants/agents';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://the-bureau-ava.vercel.app';
+    const baseUrl = 'https://ava.launchableai.online';
 
     // Static routes in the guided journey order
     const staticRoutes = [
