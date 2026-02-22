@@ -20,6 +20,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { route: '/blog', priority: 0.6 },
         { route: '/early-adopters', priority: 0.5 },
         { route: '/investors', priority: 0.5 },
+        { route: '/admin', priority: 0.1 },
+        { route: '/admin/commercial', priority: 0.1 },
+        { route: '/admin/stats', priority: 0.1 },
+        { route: '/admin/tokens', priority: 0.1 },
     ].map(({ route, priority }) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),

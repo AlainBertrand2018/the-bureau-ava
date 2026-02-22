@@ -4,6 +4,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/Footer";
 import { Shield, Target, Users, Globe, Database, Cpu, Zap, Sparkles } from "lucide-react";
 import { Reveal } from "@/components/landing/LandingUtils";
+import BilateralShadowProtocol from "@/components/landing/BilateralShadowProtocol";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function AboutPage() {
 
     return (
         <main className="min-h-screen bg-white flex flex-col">
+            <BilateralShadowProtocol />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

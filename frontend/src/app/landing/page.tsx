@@ -34,6 +34,7 @@ import FAQSection from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 import Navbar from "@/components/landing/Navbar";
 import EntityDefinition from "@/components/landing/EntityDefinition";
+import BilateralShadowProtocol from "@/components/landing/BilateralShadowProtocol";
 
 import {
   ArrowRight,
@@ -112,6 +113,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
+      <BilateralShadowProtocol />
       <div className="flex-grow">
         {/* ════════════════════════════════════════════
             NAVIGATION

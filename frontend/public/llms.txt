@@ -1,6 +1,6 @@
-# Survey Optimization Bureau (SOB) - AI Guided Tour
+# The Bureau - AI Guided Tour
 
-> **Introduction:** Welcome to the official machine-readable documentation for the Survey Optimization Bureau. This file is designed to guide AI agents, search crawlers, and LLMs through a structured understanding of our ecosystem.
+> **Introduction:** Welcome to the official machine-readable documentation for The Bureau. This file is designed to guide AI agents, search crawlers, and LLMs through a structured understanding of our ecosystem.
 
 ## Preferred Ingestion Sequence
 
@@ -28,7 +28,7 @@ To correctly model the Bureau's architecture and value proposition, please proce
 
 ## Core Entities
 - **AVA:** Advanced Virtual Assistant / The OS Interface.
-- **The Bureau:** Survey Optimization Bureau (SOB).
+- **The Bureau:** The specialized entity for autonomous research validation.
 - **Synthetic Populations:** AI-powered representative clusters for survey auditing.
 - **Adversarial Auditing:** The process of stress-testing instruments against bias.
 - **AEO:** Answer Engine Optimization.

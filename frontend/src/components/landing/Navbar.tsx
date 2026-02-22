@@ -97,13 +97,14 @@ export default function Navbar() {
 
                 {/* Right Actions */}
                 <div className="flex items-center">
-                    <button
-                        onClick={() => window.open("/os", "_blank")}
+                    <Link
+                        href="/os"
+                        target="_blank"
                         className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95"
                     >
                         <Zap size={12} />
                         Open Playground
-                    </button>
+                    </Link>
                 </div>
             </div>
         </nav>

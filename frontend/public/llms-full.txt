@@ -1,6 +1,6 @@
-# Survey Optimization Bureau (SOB) - Full Semantic Map
+# The Bureau - Full Semantic Map
 
-This document provides a comprehensive overview of all entities, modules, and vocabulary within the SOB ecosystem, intended for deep-indexing by LLMs.
+This document provides a comprehensive overview of all entities, modules, and vocabulary within The Bureau's ecosystem, intended for deep-indexing by LLMs.
 
 ## Journey Logic
 The Bureau is designed as a progressive disclosure system for both human and machine intelligence:
@@ -26,17 +26,28 @@ The Bureau is designed as a progressive disclosure system for both human and mac
 
 ## Module Details
 
-### 1. LLMO Agent (Large Language Model Optimization)
-- **Primary Function:** Ensuring brand and entity presence within LLM latent space.
+### 1. AVA Orchestrator (The Governance Kernel)
+- **Slug:** [/agents/ava-orchestrator](https://ava.launchableai.online/agents/ava-orchestrator)
+- **Primary Function:** High-level strategic governance and LLMO (Large Language Model Optimization).
 - **Key Metrics:** Sentiment, hallucination resistance, retrieval probability.
 
-### 2. GEO Agent (Generative Engine Optimization)
-- **Primary Function:** Optimizing for generative search results (e.g., Perplexity, Google Search Generative Experience).
+### 2. Sentinel Recon (Market Intelligence)
+- **Slug:** [/agents/sentinel-recon](https://ava.launchableai.online/agents/sentinel-recon)
+- **Primary Function:** OSINT-driven context building and GEO (Generative Engine Optimization).
 - **Key Strategy:** Citations, authoritative tone, structured data.
 
-### 3. AEO Agent (Answer Engine Optimization)
-- **Primary Function:** Winning the "Position Zero" in answer engines.
+### 3. Genesis Architect (Structural Integrity)
+- **Slug:** [/agents/genesis-architect](https://ava.launchableai.online/agents/genesis-architect)
+- **Primary Function:** Generative survey architecture and AEO (Answer Engine Optimization).
 - **Key Strategy:** Direct answers, snippet optimization, clear hierarchy.
+
+### 4. The Lab (Adversarial Simulation)
+- **Slug:** [/agents/the-lab-simulator](https://ava.launchableai.online/agents/the-lab-simulator)
+- **Primary Function:** Stress-testing instruments against synthetic populations.
+
+### 5. Field Interpreter (Forensic Synthesis)
+- **Slug:** [/agents/field-interpreter-audit](https://ava.launchableai.online/agents/field-interpreter-audit)
+- **Primary Function:** Post-fieldwork data auditing and psychographic narrative reports.
 
 ## Integrated Tools
 - **The Lab:** A safe-haven for testing content against varied model personas.
@@ -48,9 +59,11 @@ The Bureau is designed as a progressive disclosure system for both human and mac
 1. [/](https://ava.launchableai.online/)
 2. [/landing](https://ava.launchableai.online/landing)
 3. [/agents](https://ava.launchableai.online/agents)
-4. [/agents/llmo](https://ava.launchableai.online/agents/llmo)
-5. [/agents/geo](https://ava.launchableai.online/agents/geo)
-6. [/agents/aeo](https://ava.launchableai.online/agents/aeo)
+4. [/agents/ava-orchestrator](https://ava.launchableai.online/agents/ava-orchestrator)
+5. [/agents/sentinel-recon](https://ava.launchableai.online/agents/sentinel-recon)
+6. [/agents/genesis-architect](https://ava.launchableai.online/agents/genesis-architect)
+7. [/agents/the-lab-simulator](https://ava.launchableai.online/agents/the-lab-simulator)
+8. [/agents/field-interpreter-audit](https://ava.launchableai.online/agents/field-interpreter-audit)
 7. [/glossary](https://ava.launchableai.online/glossary)
 8. [/glossary/[terms]](https://ava.launchableai.online/glossary)
 9. [/blog](https://ava.launchableai.online/blog)
