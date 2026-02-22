@@ -12,7 +12,7 @@ class AnnouncerService:
     def __init__(self):
         self.base_url = "https://ava.launchableai.online"
         self.sitemap_url = f"{self.base_url}/sitemap.xml"
-        self.indexnow_key = os.getenv("INDEXNOW_KEY", "bureau_sovereign_key") # Placeholder or env
+        self.indexnow_key = os.getenv("INDEXNOW_KEY", "bureau-sovereign-key") # Compliant with a-z, A-Z, 0-9, -
         
     async def ping_indexnow(self, urls: list):
         """Notifies Bing and others via IndexNow protocol."""
@@ -28,8 +28,8 @@ class AnnouncerService:
         try:
             async with httpx.AsyncClient() as client:
                 resp = await client.post(endpoint, json=payload, timeout=10.0)
-                if resp.status_code == 200:
-                    bureau_logger.info(f"INDEXNOW_PUSH_SUCCESS: {len(urls)} URLs pushed.")
+                if resp.status_code in [200, 202, 204]:
+                    bureau_logger.info(f"INDEXNOW_PUSH_SUCCESS: {len(urls)} URLs pushed [{resp.status_code}].")
                     return True
                 else:
                     bureau_logger.error(f"INDEXNOW_PUSH_FAILED: {resp.status_code} - {resp.text}")
