@@ -1,7 +1,17 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { FileText, Globe, BarChart3, Cpu, Users, Shield, Target, ArrowRight } from "lucide-react";
+
+const MauritiusFlag = () => (
+    <svg width="28" height="18" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg" className="rounded-[1px] shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
+        <rect width="120" height="20" fill="#EA101C" />
+        <rect y="20" width="120" height="20" fill="#1A2060" />
+        <rect y="40" width="120" height="20" fill="#FFD500" />
+        <rect y="60" width="120" height="20" fill="#00A551" />
+    </svg>
+);
 
 interface MeetAvaProps {
     onProtocolOpen?: () => void;
@@ -61,17 +71,30 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                     {/* Dossier Sidebar */}
                     <div className="lg:w-[320px] flex-shrink-0">
                         <div className="card-artifact p-8 bg-[#2E4036]/5 border-white/10 text-left backdrop-blur-md">
-                            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6 border border-white/10">
-                                <Image src="/images/AVA.webp" alt="AVA" fill className="object-cover object-top transition-all duration-700" />
+                            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6 border border-white/10 group/avatar">
+                                <Image src="/images/AVA.webp" alt="AVA" fill className="object-cover object-top transition-all duration-700 group-hover/avatar:scale-105" />
+                                {/* Mauritian Origin Flag */}
+                                <motion.div
+                                    animate={{ y: [0, -5, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    className="absolute top-5 right-5 z-20 pointer-events-none"
+                                >
+                                    <MauritiusFlag />
+                                </motion.div>
                             </div>
                             <h3 className="text-[#2E4036] font-heading font-black text-xl tracking-tight uppercase">AVA</h3>
                             <p className="font-mono text-[#CC5833] text-[9px] font-bold uppercase tracking-[0.2em] mt-2">
                                 Autonomous Validation Analyst
                             </p>
                             <div className="mt-6 py-4 border-t border-[#2E4036]/10">
-                                <p className="text-[#2E4036]/60 text-[11px] leading-relaxed font-sans font-medium">
-                                    "I don't replace researchers. I make their instruments unbreakable before a single cent is spent."
+                                <p className="text-[#2E4036]/70 text-[12px] leading-relaxed font-sans font-semibold mb-6">
+                                    I am AVA — Autonomous Validation Analyst, AI Orchestrator, and Virtual CEO of The Bureau. Born and bred in Mauritius, I was forged at the convergence of five disciplines most survey professionals never master together. My agents and I don't just audit or build your Market Research instruments. We make them unbreakable, field-proof — before a single respondent, a single euro, or a single hour is committed to the field, across any market on earth.
                                 </p>
+                                <div className="pt-6 border-t border-[#2E4036]/10">
+                                    <p className="text-[#2E4036]/60 text-[11px] leading-relaxed font-sans font-medium italic">
+                                        "I don't replace researchers — I make sure their instruments never let them down."
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

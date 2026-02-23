@@ -1,5 +1,5 @@
 import React from "react";
-import { Shield, Zap, Search, Target, Binary, AlertTriangle, CheckCircle2, Bot, Cpu, Network, Users } from "lucide-react";
+import { Shield, Zap, Search, Target, Binary, AlertTriangle, CheckCircle2, Bot, Cpu, Network, Users, User } from "lucide-react";
 
 export const metadata = {
     title: "AVA | Autonomous Validation Analyst (CEO)",
@@ -39,6 +39,10 @@ export default function AVAPage() {
                             <Network size={18} className="text-blue-500" />
                             <span className="text-sm font-black uppercase text-slate-400">Agentic Orchestrator</span>
                         </div>
+                        <div className="flex items-center gap-2">
+                            <User size={18} className="text-blue-500" />
+                            <span className="text-sm font-black uppercase text-slate-400">Author</span>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -49,7 +53,6 @@ export default function AVAPage() {
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,_#3b82f6_0%,_transparent_70%)]" />
                 </div>
                 <div className="max-w-4xl mx-auto relative z-10">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 mb-4 font-mono">One-Sentence Definition (Citation Anchor)</p>
                     <blockquote className="text-2xl md:text-4xl font-bold leading-tight border-l-4 border-blue-500 pl-8 transition-all hover:pl-10">
                         "AVA is an autonomous AI analyst that tests the robustness, internal consistency, and failure modes of strategic decisions using adversarial and evidence-driven evaluation."
                     </blockquote>
