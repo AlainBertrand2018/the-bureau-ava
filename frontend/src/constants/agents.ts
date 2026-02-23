@@ -1,4 +1,4 @@
-import { Cpu, Target, Microscope, FileCheck, Sparkles, LucideIcon } from "lucide-react";
+import { Cpu, Target, Microscope, FileCheck, Sparkles, LucideIcon, Users } from "lucide-react";
 
 export interface AgentModule {
     name: string;
@@ -19,7 +19,7 @@ export const agentData: AgentModule[] = [
     {
         name: "AVA",
         slug: "ava-orchestrator",
-        role: "The Autonomous Intelligent Orchestrator",
+        role: "The Autonomous Validation Analyst",
         whatItIs: "AVA is the presiding agentic intelligence for global survey governance. She is the proprietary orchestrator designed to manage complex research lifecycles with boardroom-level authority.",
         purpose: "To provide institutional oversight over the end-to-end development of research instruments, ensuring scientific rigor and 100% data integrity.",
         whatItDoes: "She presides over a specialized stack of agents, utilizing high-density reasoning engines to synthesize OSINT intelligence, generative architecture, and adversarial simulations into a unified data-integrity protocol.",
@@ -36,7 +36,7 @@ export const agentData: AgentModule[] = [
     {
         name: "Sentinel",
         slug: "sentinel-recon",
-        role: "Market & Audience Reconnaissance",
+        role: "Market Reconnaissance",
         whatItIs: "Sentinel is a specialized reconnaissance agent utilizing Open-Source Intelligence (OSINT) to synthesize foundational research contexts.",
         purpose: "To build a real-time cultural and socioeconomic framework for survey instruments, securing scientific relevance within target market landscapes.",
         whatItDoes: "It conducts deep-spectrum OSINT scanning across global signal networks to identify survey-sensitive linguistic codes, cultural taboos, and psychographic trends in real time.",
@@ -51,12 +51,29 @@ export const agentData: AgentModule[] = [
         ]
     },
     {
-        name: "Genesis",
+        name: "Profiler",
+        slug: "profiler-calibration",
+        role: "Cultural Calibration",
+        whatItIs: "Profiler is a deep-spectrum behavioral engine designed to map the psychographic and cultural registers of target demographics.",
+        purpose: "To ensure that survey instruments are calibrated to the specific linguistic and social norms of a population, preventing cultural contamination.",
+        whatItDoes: "It performs granular analysis of local behavioral codes and taboos, providing the necessary calibration data for the Architect and Auditor modules.",
+        output: "A Cultural Calibration Protocol that defines the exact register, tone, and logic required for high-veracity respondent engagement.",
+        icon: Users,
+        status: "Operational",
+        skills: ["Psychographic Mapping", "Linguistic Registration", "Taboo Detection", "Bias Alignment"],
+        tools: ["Behavioral Logic Engine", "Registry of Global Norms", "Tone Calibrator"],
+        relatedGlossary: [
+            { name: "Psychometrics", slug: "psychometrics" },
+            { name: "Cognitive Load", slug: "cognitive-load" }
+        ]
+    },
+    {
+        name: "Architect",
         slug: "genesis-architect",
-        role: "AI-Driven Questionnaire Architecture",
-        whatItIs: "Genesis is an autonomous generative engine responsible for the structural and statistical integrity of research instruments.",
-        purpose: "To transform institutional research goals into publication-ready questionnaires that produce zero-bias data through advanced survey architecture.",
-        whatItDoes: "It applies psychometric logic to generate statistically rigorous questionnaires, optimizing phrase-weighting and skip-patterns to eliminate respondent fatigue and instrument contamination.",
+        role: "Instrument Design",
+        whatItIs: "Architect is an autonomous generative engine responsible for the structural and statistical integrity of research instruments.",
+        purpose: "To transform institutional research goals into publication-ready questionnaires that produce zero-bias data through the Genesis Protocol.",
+        whatItDoes: "It applies psychometric logic to generate statistically rigorous questionnaires, optimizing phrase-weighting and skip-patterns to eliminate respondent fatigue.",
         output: "A Bureau-certified digital field instrument featuring advanced logic maps and psychometrically optimized question batteries.",
         icon: Cpu,
         status: "Operational",
@@ -69,10 +86,10 @@ export const agentData: AgentModule[] = [
         ]
     },
     {
-        name: "The Lab",
+        name: "Auditor",
         slug: "the-lab-simulator",
-        role: "Behavioral Instrument Stress-Testing",
-        whatItIs: "The Lab is an adversarial simulation environment designed to audit survey instruments against synthetic respondent populations.",
+        role: "Adversarial Stress Testing",
+        whatItIs: "Auditor is an adversarial simulation environment designed to audit survey instruments against synthetic respondent populations.",
         purpose: "To identify structural flaws, cognitive bias, and drop-off risks by simulating genuine human interaction prior to real-world fieldwork.",
         whatItDoes: "It deploys census-weighted synthetic panels to engage in adversarial simulations with the survey instrument, measuring friction points and predicting data quality outcomes.",
         output: "A forensic stress-test diagnostic featuring Data Integrity scores, predictive bias heatmaps, and prioritize instrument rewrite directives.",
@@ -88,10 +105,10 @@ export const agentData: AgentModule[] = [
         ]
     },
     {
-        name: "Field Interpreter",
+        name: "Interpreter",
         slug: "field-interpreter-audit",
-        role: "Post-Field Data Narrative Synthesis",
-        whatItIs: "The Interpreter is a forensic intelligence engine specialized in post-fieldwork data auditing and psychographic narrative reporting.",
+        role: "Narrative Synthesis",
+        whatItIs: "Interpreter is a forensic intelligence engine specialized in post-fieldwork data auditing and psychographic narrative reporting.",
         purpose: "To transform raw fieldwork data into courtroom-defensible intelligence by identifying non-obvious correlations and identifying data contamination.",
         whatItDoes: "It applies pattern-recognition and behavioral anomaly detection to assign trustworthiness scores to individual records and synthesize raw data into boardroom-ready briefings.",
         output: "Validated Data Integrity reports including psychographic narrative briefings and verified certificates of research veracity.",
