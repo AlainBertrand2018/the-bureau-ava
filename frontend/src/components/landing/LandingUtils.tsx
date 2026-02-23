@@ -1,29 +1,48 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-/* ─── Scroll Animation Wrapper ─── */
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+}
+
+/* ─── GSAP Reveal Wrapper ─── */
 export function Reveal({
     children,
     className = "",
     delay = 0,
+    y = 40,
 }: {
     children: React.ReactNode;
     className?: string;
     delay?: number;
+    y?: number;
 }) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-60px" });
+    const elementRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            gsap.from(elementRef.current, {
+                opacity: 0,
+                y: y,
+                duration: 1,
+                ease: "power3.out",
+                delay: delay,
+                scrollTrigger: {
+                    trigger: elementRef.current,
+                    start: "top 90%",
+                    toggleActions: "play none none none",
+                },
+            });
+        });
+        return () => ctx.revert();
+    }, [delay, y]);
+
     return (
-        <motion.div
-            ref={ref}
-            initial={{ opacity: 0, y: 32 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, ease: "easeOut", delay }}
-            className={className}
-        >
+        <div ref={elementRef} className={className}>
             {children}
-        </motion.div>
+        </div>
     );
 }
 
@@ -32,37 +51,38 @@ export function AnimatedCounter({
     target,
     suffix = "",
     className = "",
+    duration = 2,
 }: {
     target: number;
     suffix?: string;
     className?: string;
+    duration?: number;
 }) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, margin: "-40px" });
     const [count, setCount] = useState(0);
-    const [mounted, setMounted] = useState(false);
+    const countRef = useRef<HTMLSpanElement>(null);
+    const obj = { value: 0 };
 
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!isInView || !mounted) return;
-        let start = 0;
-        const duration = 1800;
-        const step = (timestamp: number) => {
-            if (!start) start = timestamp;
-            const progress = Math.min((timestamp - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-            setCount(Math.round(eased * target));
-            if (progress < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-    }, [isInView, target, mounted]);
+        const ctx = gsap.context(() => {
+            gsap.to(obj, {
+                value: target,
+                duration: duration,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: countRef.current,
+                    start: "top 90%",
+                },
+                onUpdate: () => {
+                    setCount(Math.round(obj.value));
+                },
+            });
+        });
+        return () => ctx.revert();
+    }, [target, duration]);
 
     return (
-        <span ref={ref} className={className}>
-            {!mounted ? target : count}{suffix}
+        <span ref={countRef} className={className}>
+            {count.toLocaleString()}{suffix}
         </span>
     );
 }

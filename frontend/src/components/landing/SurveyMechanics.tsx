@@ -1,124 +1,120 @@
 "use client";
 import React from "react";
-import { TrendingUp, AlertTriangle, ShieldCheck } from "lucide-react";
-import { Reveal } from "./LandingUtils";
+import { TrendingUp, AlertTriangle, ShieldCheck, ChevronRight } from "lucide-react";
 
 interface SurveyMechanicsProps {
     currency: any;
-    onShieldClick: () => void;
+    onProtocolOpen: () => void;
 }
 
-export default function SurveyMechanics({ currency, onShieldClick }: SurveyMechanicsProps) {
+export default function SurveyMechanics({ currency, onProtocolOpen }: SurveyMechanicsProps) {
     return (
-        <section id="mechanics" className="section-full bg-slate-50 relative overflow-hidden border-y border-slate-100">
+        <section id="mechanics" className="section-full bg-[#F2F0E9] relative">
+            {/* Depth Chart Background */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `linear-gradient(#2E4036 1px, transparent 1px), linear-gradient(90deg, #2E4036 1px, transparent 1px)`,
+                    backgroundSize: '100px 100px'
+                }} />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#2E4036]/10 to-transparent" />
+            </div>
+
             <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
-                <Reveal className="text-center mb-16">
-                    <div className="badge-blue inline-flex items-center gap-2 mb-6">
-                        <TrendingUp size={12} className="text-blue-600" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600">
-                            The Economics
-                        </span>
+                <div className="mb-20">
+                    <div className="badge-minimal text-[#2E4036]/60 border-[#2E4036]/20 mb-6 inline-flex items-center gap-2">
+                        <TrendingUp size={12} className="text-[#CC5833]" />
+                        <span>The Economics of Research</span>
                     </div>
-                    <h2 className="text-section-title text-slate-900 mb-6 font-black uppercase tracking-tight">
-                        Research Intelligence Hub
+                    <h2 className="text-section-title text-[#2E4036] mb-4">
+                        Intelligence Hub.
                     </h2>
-                    <p className="text-body-lg text-slate-500 font-medium max-w-2xl mx-auto">
-                        Deep dives into the economics and heuristics of modern research.
+                    <p className="text-body-lg text-[#2E4036]/70 max-w-xl font-sans leading-relaxed">
+                        Deep-spectrum analysis of the hidden heuristics and economic risks in modern market research.
                     </p>
-                </Reveal>
+                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Main Article (Iceberg) */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    {/* The Iceberg Visualization */}
                     <div className="lg:col-span-2">
-                        <Reveal className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm h-full flex flex-col">
-                            <div className="p-8 md:p-12 border-b border-slate-50 pb-6">
-                                <span className="text-blue-600 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Featured Analysis</span>
-                                <h3 className="text-3xl font-black text-slate-900 mb-4">The Iceberg of Research Costs</h3>
-                                <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-xl">
-                                    Most researchers only see the visible cost of design. The real risk lies beneath the surface — in fieldwork, collection, and the catastrophic cost of bad data.
+                        <div className="bg-white border border-[#2E4036]/10 rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden shadow-2xl shadow-[#2E4036]/5 transition-all">
+                            <div className="mb-12 border-b border-[#2E4036]/10 pb-10">
+                                <span className="font-mono text-[#CC5833] text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Case Analysis_01: Cost Exposure</span>
+                                <h3 className="text-3xl md:text-5xl font-heading font-black text-[#2E4036] uppercase tracking-tighter mb-6">The Iceberg of Research Costs</h3>
+                                <p className="text-[#2E4036]/80 text-sm font-sans leading-relaxed max-w-xl font-medium">
+                                    Most researchers focus on the visible design fees. The catastrophic risk lies beneath the surface — in fieldwork, sample collection, and the cost of invalid data.
                                 </p>
                             </div>
 
-                            <div className="flex-grow p-8 md:p-12 bg-slate-50/30">
-                                {/* The Iceberg Concept */}
-                                <div className="relative flex flex-col items-center max-w-2xl mx-auto">
-                                    {/* TIP */}
-                                    <div className="w-[80%] bg-blue-50 border-x border-t border-blue-100 rounded-t-[2rem] p-6 text-center shadow-sm relative z-20">
-                                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-1">Surface Level</span>
-                                        <h4 className="text-slate-900 font-bold text-sm tracking-tight mb-1">Design Fees</h4>
-                                        <span className="text-blue-600 font-black text-xs">{currency.icebergDesign}</span>
+                            {/* Tactical Iceberg */}
+                            <div className="relative pt-12 pb-24">
+                                <div className="absolute left-1/2 -translate-x-1/2 w-px h-full bg-[#2E4036]/5 border-dashed border-l border-[#2E4036]/20" />
+
+                                {/* Visible Tip */}
+                                <div className="relative z-20 flex flex-col items-center mb-10">
+                                    <div className="w-48 py-4 bg-[#F2F0E9] border border-[#2E4036]/20 rounded-t-xl text-center shadow-lg">
+                                        <span className="font-mono text-[8px] text-[#2E4036]/50 uppercase tracking-widest block mb-1">Surface Protocol</span>
+                                        <h4 className="text-[#2E4036] font-black text-xs uppercase tracking-tighter mb-1">Design Fees</h4>
+                                        <span className="text-[#CC5833] font-mono text-xs font-bold">{currency.icebergDesign}</span>
                                     </div>
-
-                                    {/* WATERLINE */}
-                                    <div className="w-full h-px bg-blue-200 relative z-30">
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-0.5 bg-white border border-blue-100 rounded-full text-[8px] font-black text-blue-400 uppercase tracking-[0.2em]">
-                                            Visible Cost
-                                        </div>
+                                    <div className="w-full h-px bg-[#CC5833]/40 mt-[-1px] relative">
+                                        <div className="absolute right-0 top-0 translate-y-[-50%] px-4 py-1 bg-white border border-[#CC5833]/40 rounded-full font-mono text-[8px] text-[#CC5833] font-black uppercase tracking-widest shadow-sm">Visible Cost Line</div>
                                     </div>
+                                </div>
 
-                                    {/* SUBMERGED */}
-                                    <div className="w-full bg-gradient-to-b from-blue-50/50 to-white border-x border-b border-blue-100 rounded-b-[2rem] p-8 space-y-4 shadow-inner">
-                                        <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 border-b border-blue-100/50 pb-2">
-                                            <span>Fieldwork & Sample</span>
-                                            <span className="text-slate-900">{currency.icebergRecruitment}</span>
+                                {/* Submerged Mass */}
+                                <div className="space-y-4 max-w-md mx-auto">
+                                    {[
+                                        { label: "Fieldwork & Sample", value: currency.icebergRecruitment },
+                                        { label: "Data Collection", value: currency.icebergCollection },
+                                        { label: "Post-Analysis Architecture", value: currency.icebergAnalysis }
+                                    ].map((row, i) => (
+                                        <div key={i} className="flex justify-between items-center bg-[#2E4036]/5 border border-[#2E4036]/5 p-4 rounded-lg group hover:border-[#CC5833]/30 transition-all">
+                                            <span className="font-mono text-[10px] text-[#2E4036]/60 uppercase tracking-widest group-hover:text-[#2E4036] transition-colors font-bold">{row.label}</span>
+                                            <span className="font-mono text-[#2E4036] text-xs font-black">{row.value}</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 border-b border-blue-100/50 pb-2">
-                                            <span>Data Collection</span>
-                                            <span className="text-slate-900">{currency.icebergCollection}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-[11px] font-bold text-slate-600 pb-2">
-                                            <span>Post-Analysis</span>
-                                            <span className="text-slate-900">{currency.icebergAnalysis}</span>
-                                        </div>
+                                    ))}
 
-                                        <div className="pt-8 text-center">
-                                            <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em] mb-2 flex items-center justify-center gap-2">
-                                                <AlertTriangle size={10} />
-                                                Danger Zone
-                                            </p>
-                                            <h4 className="text-xl font-black text-slate-900 tracking-tight mb-2">Total Risk Exposure</h4>
-                                            <p className="text-slate-400 font-black text-xl tracking-tighter mb-8">{currency.riskRange}</p>
-                                            <button
-                                                onClick={onShieldClick}
-                                                className="inline-flex items-center gap-2 px-8 py-3 bg-slate-900 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-blue-600 transition-all group"
-                                            >
-                                                <ShieldCheck size={14} className="text-blue-400 group-hover:text-white transition-colors" />
-                                                Deploy Shield
-                                            </button>
+                                    <div className="pt-16 text-center">
+                                        <div className="inline-flex items-center gap-2 mb-4 px-4 py-1 bg-[#CC5833]/10 border border-[#CC5833]/20 rounded-full">
+                                            <AlertTriangle size={12} className="text-[#CC5833]" />
+                                            <span className="font-mono text-[9px] text-[#CC5833] font-black uppercase tracking-[0.2em]">Danger_Zone: Risk Exposure</span>
                                         </div>
+                                        <h4 className="text-4xl md:text-6xl font-black text-[#2E4036] tracking-tighter mb-4">{currency.riskRange}</h4>
+                                        <button
+                                            onClick={onProtocolOpen}
+                                            className="btn-magnetic bg-[#CC5833] text-white px-10 py-4 shadow-2xl shadow-[#CC5833]/20 hover:bg-[#2E4036]"
+                                        >
+                                            <ShieldCheck size={16} />
+                                            <span>Deploy Validation Shield</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        </Reveal>
+                        </div>
                     </div>
 
-                    {/* Sidebar Blog-like Items */}
-                    <div className="space-y-6">
-                        <Reveal delay={0.1} className="h-[48%]">
-                            <div className="bg-white p-8 rounded-[2rem] border border-slate-100 h-full flex flex-col justify-center">
-                                <span className="text-emerald-600 text-[9px] font-black uppercase tracking-widest mb-4 block">Case Study</span>
-                                <h4 className="text-lg font-black text-slate-900 mb-3 leading-tight">The Psychology of Survey Fatigue</h4>
-                                <p className="text-slate-500 text-xs font-medium leading-relaxed mb-6">
-                                    How cognitive load impacts response quality across different demographics in East Africa.
-                                </p>
-                                <div className="mt-auto pt-4 border-t border-slate-50">
-                                    <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Read Article →</span>
+                    {/* Sidebar Articles */}
+                    <div className="flex flex-col gap-8">
+                        {[
+                            { tag: "Case Study", title: "The Psychology of Survey Fatigue", desc: "How cognitive load impacts response quality across different demographics in East Africa.", color: "text-[#CC5833]" },
+                            { tag: "Methodology", title: "Census-Weighting Protocols", desc: "Using synthetic personas to validate demographic representation before fieldwork.", color: "text-[#2E4036]" }
+                        ].map((post, i) => (
+                            <div key={i} className="h-full flex-grow">
+                                <div className="bg-white border border-[#2E4036]/10 p-10 h-full flex flex-col justify-between group hover:bg-[#2E4036] transition-all duration-700 rounded-[2.5rem] shadow-xl shadow-[#2E4036]/5">
+                                    <div>
+                                        <span className={`font-mono text-[10px] font-black uppercase tracking-widest mb-6 block ${post.color} group-hover:text-white`}>{post.tag}</span>
+                                        <h4 className="text-xl md:text-2xl font-heading font-black text-[#2E4036] group-hover:text-white mb-4 uppercase tracking-tighter transition-colors">{post.title}</h4>
+                                        <p className="text-[#2E4036]/80 group-hover:text-white/80 text-sm font-sans leading-relaxed transition-colors font-medium">
+                                            {post.desc}
+                                        </p>
+                                    </div>
+                                    <div className="pt-8 mt-12 border-t border-[#2E4036]/5 group-hover:border-white/10 flex items-center justify-between transition-colors">
+                                        <span className="font-mono text-[9px] text-[#CC5833] group-hover:text-white uppercase font-bold tracking-widest">Read Article</span>
+                                        <ChevronRight size={16} className="text-[#CC5833] group-hover:text-white" />
+                                    </div>
                                 </div>
                             </div>
-                        </Reveal>
-
-                        <Reveal delay={0.2} className="h-[48%]">
-                            <div className="bg-white p-8 rounded-[2rem] border border-slate-100 h-full flex flex-col justify-center">
-                                <span className="text-violet-600 text-[9px] font-black uppercase tracking-widest mb-4 block">Methodology</span>
-                                <h4 className="text-lg font-black text-slate-900 mb-3 leading-tight">Census-Weighting Protocols</h4>
-                                <p className="text-slate-500 text-xs font-medium leading-relaxed mb-6">
-                                    Using synthetic personas to validate demographic representation before fieldwork.
-                                </p>
-                                <div className="mt-auto pt-4 border-t border-slate-50">
-                                    <span className="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Read Article →</span>
-                                </div>
-                            </div>
-                        </Reveal>
+                        ))}
                     </div>
                 </div>
             </div>

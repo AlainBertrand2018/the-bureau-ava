@@ -1,93 +1,179 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Sparkles, Zap, ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Sparkles, Zap, ChevronDown, Menu, X, UserCircle } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import gsap from "gsap";
+import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
 
-export default function Navbar() {
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollToPlugin);
+}
+
+interface NavbarProps {
+    onContactClick?: () => void;
+    onOnboardingClick?: () => void;
+}
+
+export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     const menuItems = [
         {
-            title: "The Bureau",
-            href: "#",
+            title: "Welcome",
+            href: "/landing",
             subItems: [
-                { title: "About The Bureau", href: "/about" },
-                { title: "For Whom", href: "/landing#who-its-for" },
-                { title: "Why Choose AVA", href: "/landing#painpoints" },
-                { title: "What We Do", href: "/landing#solution" },
-                { title: "How We Do", href: "/landing#how-it-works" },
+                { title: "To The Bureau", href: "/landing#hero" },
+                { title: "What are We", href: "/landing#whatisthebureau" },
+                { title: "Who is it For", href: "/landing#who-its-for" },
+                { title: "What We Solve", href: "/landing#painpoints" },
+                { title: "How We Do", href: "/landing#solution" },
+                { title: "About AVA", href: "/landing#philosophy" },
+                { title: "How it Works", href: "/landing#how-it-works" },
+                { title: "System FAQ", href: "/landing#faq" },
             ]
         },
-        { title: "Meet AVA", href: "/landing#meet-ava" },
-        { title: "Create Your Survey From Scratch", href: "/landing#genesis" },
+        {
+            title: "About",
+            href: "/about",
+            subItems: [
+                { title: "The Bureau", href: "/about" },
+                { title: "Meet AVA", href: "/ava" },
+                { title: "Our Agents", href: "/agents" },
+            ]
+        },
+        { title: "FAQ", href: "/faq" },
         { title: "Pricing", href: "/landing#pricing" },
         {
-            title: "Contact Us",
-            href: "/landing#contact",
+            title: "Blog",
+            href: "/blog",
             subItems: [
-                { title: "Early Adopters", href: "/early-adopters" },
-                { title: "Investors", href: "/investors" },
+                { title: "Network Feed", href: "/blog" },
+                { title: "Newsfeed", href: "/news" },
+                { title: "Glossary", href: "/glossary" },
             ]
         },
-        { title: "Blog", href: "/blog" },
-        { title: "Glossary", href: "/glossary" },
+        {
+            title: "Contact",
+            href: "#",
+            subItems: [
+                { title: "Contact Us", onClick: onContactClick },
+                { title: "Business On-boarding", onClick: onOnboardingClick },
+                { title: "Investor's Channel", href: "/investors-channel" },
+            ]
+        }
     ];
 
+    const scrollToId = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, href: string) => {
+        if (href.includes("#")) {
+            const [base, id] = href.split("#");
+
+            // If we are on the page already, just scroll
+            if (pathname === base || (base === "/landing" && pathname === "/landing") || (base === "" && id)) {
+                e.preventDefault();
+                const element = document.getElementById(id);
+                if (element) {
+                    const navHeight = scrolled ? 72 : 96;
+                    gsap.to(window, {
+                        duration: 1.2,
+                        scrollTo: { y: element, offsetY: navHeight },
+                        ease: "power3.inOut"
+                    });
+                    setMobileMenuOpen(false);
+                    setOpenDropdown(null);
+                }
+            }
+        }
+    };
+
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
-            <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+        <nav
+            className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-mono ${scrolled
+                ? "py-3 bg-[#F2F0E9]/80 backdrop-blur-2xl border-b border-[#2E4036]/5"
+                : "py-6 bg-transparent"
+                }`}
+        >
+            <div className="max-w-[95rem] mx-auto px-6 md:px-10 flex items-center justify-between">
                 {/* Logo Section */}
-                <Link href="/" className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-sky-400 flex items-center justify-center shadow-sm group-hover:shadow-blue-500/20 transition-all">
-                        <Sparkles size={14} className="text-white" />
+                <Link href="/" className="flex items-center gap-4 group">
+                    <div className="w-9 h-9 rounded-xl bg-[#2E4036] flex items-center justify-center shadow-2xl shadow-[#2E4036]/20 group-hover:scale-110 transition-transform">
+                        <Sparkles size={16} className="text-[#CC5833]" />
                     </div>
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-slate-900 font-black text-lg tracking-tight uppercase">The Bureau</span>
-                        <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest hidden sm:inline">WITH AVA</span>
+                    <div className="flex flex-col">
+                        <span className="text-[#2E4036] font-black text-sm tracking-[0.2em] uppercase leading-none">The Bureau</span>
+                        <span className="text-[#2E4036]/40 text-[8px] font-bold uppercase tracking-[0.3em] mt-1">Instrument Validation</span>
                     </div>
                 </Link>
 
                 {/* Desktop Menu */}
-                <div className="hidden lg:flex items-center gap-6">
+                <div className="hidden lg:flex items-center gap-8">
                     {menuItems.map((item, idx) => (
                         <div
                             key={idx}
-                            className="relative group h-full py-2"
+                            className="relative group py-2"
                             onMouseEnter={() => item.subItems && setOpenDropdown(item.title)}
                             onMouseLeave={() => setOpenDropdown(null)}
                         >
                             <Link
                                 href={item.href}
-                                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-600 transition-colors"
+                                onClick={(e) => scrollToId(e, item.href)}
+                                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-[#2E4036]/60 hover:text-[#CC5833] transition-all"
                             >
                                 {item.title}
                                 {item.subItems && (
-                                    <ChevronDown size={12} className={`transition-transform duration-300 ${openDropdown === item.title ? 'rotate-180' : ''}`} />
+                                    <ChevronDown size={10} className={`transition-transform duration-300 ${openDropdown === item.title ? 'rotate-180' : ''}`} />
                                 )}
                             </Link>
 
-                            {/* Dropdown Menu */}
                             <AnimatePresence>
                                 {item.subItems && openDropdown === item.title && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        transition={{ duration: 0.2, ease: "easeOut" }}
-                                        className="absolute top-full left-0 mt-1 min-w-[200px] bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden py-2 z-50"
+                                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                                        transition={{ duration: 0.2, ease: "circOut" }}
+                                        className="absolute top-full left-[-20px] mt-2 min-w-[240px] bg-[#F2F0E9] rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.05)] border border-[#2E4036]/10 overflow-hidden py-3 z-50"
                                     >
-                                        {item.subItems.map((sub, sIdx) => (
-                                            <Link
-                                                key={sIdx}
-                                                href={sub.href}
-                                                className="block px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-blue-600 hover:bg-slate-50 transition-all"
-                                            >
-                                                {sub.title}
-                                            </Link>
-                                        ))}
+                                        <div className="absolute inset-0 bg-white/40 pointer-events-none" />
+                                        <div className="relative z-10">
+                                            {item.subItems.map((sub, sIdx) => {
+                                                if (sub.onClick) {
+                                                    return (
+                                                        <button
+                                                            key={sIdx}
+                                                            onClick={() => {
+                                                                sub.onClick!();
+                                                                setOpenDropdown(null);
+                                                            }}
+                                                            className="w-full text-left block px-6 py-3 text-[9px] font-bold uppercase tracking-[0.1em] text-[#2E4036]/60 hover:text-[#CC5833] hover:bg-[#2E4036]/5 transition-all"
+                                                        >
+                                                            {sub.title}
+                                                        </button>
+                                                    );
+                                                }
+                                                return (
+                                                    <Link
+                                                        key={sIdx}
+                                                        href={sub.href || "#"}
+                                                        onClick={(e) => scrollToId(e, sub.href || "#")}
+                                                        className="block px-6 py-3 text-[9px] font-bold uppercase tracking-[0.1em] text-[#2E4036]/60 hover:text-[#CC5833] hover:bg-[#2E4036]/5 transition-all"
+                                                    >
+                                                        {sub.title}
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -96,17 +182,95 @@ export default function Navbar() {
                 </div>
 
                 {/* Right Actions */}
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
                     <Link
                         href="/os"
                         target="_blank"
-                        className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 active:scale-95"
+                        className="btn-magnetic hidden md:flex px-6 py-2.5 bg-[#2E4036] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#CC5833] shadow-lg shadow-[#2E4036]/10"
                     >
-                        <Zap size={12} />
-                        Open Playground
+                        <Zap size={14} className="text-[#CC5833] group-hover:text-white" />
+                        Playground
                     </Link>
+
+                    <button
+                        className="p-2 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
+                        title="Login / Signup"
+                    >
+                        <UserCircle size={24} />
+                    </button>
+
+                    <button
+                        className="lg:hidden p-2 text-[#2E4036]"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
                 </div>
             </div>
+
+            {/* Mobile Menu */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, x: "100%" }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: "100%" }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className="fixed inset-0 z-[90] bg-[#F2F0E9] lg:hidden flex flex-col p-10 pt-32"
+                    >
+                        <div className="space-y-6 overflow-y-auto pb-20">
+                            {menuItems.map((item, idx) => (
+                                <div key={idx} className="space-y-4">
+                                    <Link
+                                        href={item.href}
+                                        onClick={(e) => {
+                                            if (item.href.includes("#")) {
+                                                scrollToId(e, item.href);
+                                            } else if (!item.subItems) {
+                                                setMobileMenuOpen(false);
+                                            }
+                                        }}
+                                        className="block text-2xl font-black uppercase tracking-widest text-[#2E4036]"
+                                    >
+                                        {item.title}
+                                    </Link>
+                                    {item.subItems && (
+                                        <div className="pl-4 space-y-4 border-l-2 border-[#2E4036]/10">
+                                            {item.subItems.map((sub, sIdx) => (
+                                                <button
+                                                    key={sIdx}
+                                                    onClick={(e) => {
+                                                        if (sub.onClick) {
+                                                            sub.onClick();
+                                                            setMobileMenuOpen(false);
+                                                        } else if (sub.href) {
+                                                            scrollToId(e as any, sub.href);
+                                                            if (!sub.href.includes("#")) setMobileMenuOpen(false);
+                                                        }
+                                                    }}
+                                                    className="block text-sm font-bold uppercase tracking-widest text-[#2E4036]/60 hover:text-[#CC5833]"
+                                                >
+                                                    {sub.title}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-auto pt-10">
+                            <Link
+                                href="/os"
+                                target="_blank"
+                                className="w-full justify-center btn-magnetic px-8 py-5 bg-[#2E4036] text-white text-sm font-bold uppercase tracking-[0.3em] flex items-center gap-3"
+                            >
+                                <Zap size={18} className="text-[#CC5833]" />
+                                Start Auditing
+                            </Link>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </nav>
     );
 }

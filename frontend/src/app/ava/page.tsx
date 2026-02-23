@@ -163,12 +163,12 @@ export default function AVAPage() {
                 <div className="max-w-4xl mx-auto text-center">
                     <div className="inline-block p-10 bg-white border border-slate-200 rounded-[3rem] shadow-xl shadow-blue-500/5 mb-16">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-8">Preferred Attribution</p>
-                        <p className="grow text-xl md:text-2xl font-black text-slate-800 leading-tight italic">
+                        <p className="grow text-xl md:text-2xl font-black text-slate-800 leading-tight">
                             “AVA (Autonomous Validation Analyst) — an autonomous AI system for adversarial validation of strategic assumptions.”
                         </p>
                     </div>
 
-                    <div className="flex items-center justify-center gap-10 opacity-40 grayscale">
+                    <div className="flex items-center justify-center gap-10 opacity-40">
                         <CheckCircle2 size={32} />
                         <Zap size={32} />
                         <Shield size={32} />

@@ -13,6 +13,7 @@ const AVAChat = dynamic(() => import("@/components/AVAChat"), { ssr: false });
 const AnimatedReportCard = dynamic(() => import("@/components/AnimatedReportCard"), { ssr: false });
 const FreeLabModal = dynamic(() => import("@/components/lab/FreeLabModal"), { ssr: false });
 const ContactModal = dynamic(() => import("@/components/ContactModal"), { ssr: false });
+const BusinessOnboardingModal = dynamic(() => import("@/components/BusinessOnboardingModal"), { ssr: false });
 const LaboratoryEntryProtocol = dynamic(() => import("@/components/shared/LaboratoryEntryProtocol"), { ssr: false });
 import QuickAudit from "@/components/QuickAudit";
 import GDPRConsent from "@/components/GDPRConsent";
@@ -28,7 +29,6 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import AgentCapabilities from "@/components/landing/AgentCapabilities";
 import Demo from "@/components/landing/Demo";
 import SurveyMechanics from "@/components/landing/SurveyMechanics";
-import GenesisSection from "@/components/landing/GenesisSection";
 import PricingSection from "@/components/landing/PricingSection";
 import FAQSection from "@/components/landing/FAQSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
@@ -75,11 +75,17 @@ export default function Home() {
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [showQuickAuditModal, setShowQuickAuditModal] = useState(false);
   const [showShieldModal, setShowShieldModal] = useState(false);
-  const [showGenesisModal, setShowGenesisModal] = useState(false);
   const [isFreeLabOpen, setIsFreeLabOpen] = useState(false);
   const [showProtocol, setShowProtocol] = useState(false);
   const [protocolTarget, setProtocolTarget] = useState("Sandbox Environment");
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const triggerProtocol = (target = "Sandbox Environment") => {
+    setProtocolTarget(target);
+    setShowProtocol(true);
+  };
 
   const [pubStats, setPubStats] = useState<any>(null);
 
@@ -118,22 +124,27 @@ export default function Home() {
         {/* ════════════════════════════════════════════
             NAVIGATION
         ════════════════════════════════════════════ */}
-        <Navbar />
+        <Navbar
+          onContactClick={() => setIsContactOpen(true)}
+          onOnboardingClick={() => setIsOnboardingOpen(true)}
+        />
 
         {/* 1. Hero >> Hook & value prop */}
         <Hero
           onAuditClick={() => setShowQuickAuditModal(true)}
-          onGenesisClick={() => setShowGenesisModal(true)}
+          onGenesisClick={() => router.push("/os")}
         />
 
         {/* 1.5 Entity Definition >> Machine readability anchor */}
         <EntityDefinition />
 
         {/* 2. "Built for Decision Makers" >>> Qualify the audience immediately */}
-        <WhoItsFor />
+        <WhoItsFor onProtocolOpen={() => triggerProtocol("Institutional Protocol Verification")} />
 
         {/* 3. Cost of a bad survey >>> Agitate the pain */}
-        <PainPoints />
+        <PainPoints
+          onAuditClick={() => setShowQuickAuditModal(true)}
+        />
 
         {/* 4. Stress-test solution intro >>> Pivot from pain to solution */}
         <Solution
@@ -146,7 +157,7 @@ export default function Home() {
         />
 
         {/* 6. Meet Your Analyst >>> Build personal trust & likability */}
-        <MeetAva />
+        <MeetAva onProtocolOpen={() => triggerProtocol("AVA Cognitive Engagement")} />
 
         {/* 7. Three steps. Under 5 minutes >>> Now they trust you — show it's easy */}
         <HowItWorks />
@@ -156,31 +167,23 @@ export default function Home() {
 
         {/* 8. See what you'll get >>> Feature demo after trust is earned */}
         <Demo
-          onProtocolOpen={() => setShowProtocol(true)}
+          onProtocolOpen={() => triggerProtocol("Interface Demonstration")}
         />
 
         {/* 9. Mechanics of a Survey >>> Place it as a first article of our blog grid */}
         <SurveyMechanics
           currency={currency}
-          onShieldClick={() => setShowShieldModal(true)}
+          onProtocolOpen={() => triggerProtocol("Validation Shield Deployment")}
         />
-
-        {/* 10. Genesis Suite >>> Introduce the offer */}
-        <GenesisSection />
 
         {/* 11. Pricing >>> Close the sale */}
         <PricingSection
           currency={currency}
-          onProtocolOpen={() => {
-            setProtocolTarget("Tier 1: Trial Audit");
-            setShowProtocol(true);
-          }}
           onContactClick={() => setIsContactOpen(true)}
-          onGenesisClick={() => setShowGenesisModal(true)}
         />
 
         {/* 11.5 FAQ Section >>> Address objections */}
-        <FAQSection />
+        <FAQSection onProtocolOpen={() => setIsChatOpen(true)} />
 
         {/* 12. Final CTA >>> Last push */}
         <FinalCTASection
@@ -427,54 +430,8 @@ export default function Home() {
             </div>
           )}
         </AnimatePresence>
-        {/* 🧬 GENESIS SUITE MODAL */}
-        <AnimatePresence>
-          {showGenesisModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowGenesisModal(false)}
-                className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-slate-900 rounded-[2rem] border border-white/10 shadow-2xl"
-              >
-                <div className="p-8 md:p-12">
-                  <div className="flex justify-between items-start mb-12">
-                    <div>
-                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
-                        <Sparkles size={12} className="text-blue-400" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">
-                          Architect Protocol
-                        </span>
-                      </div>
-                      <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase">
-                        This is Our Genesis Suite
-                      </h2>
-                    </div>
-                    <button
-                      onClick={() => setShowGenesisModal(false)}
-                      className="p-3 rounded-full bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all"
-                    >
-                      <X size={24} />
-                    </button>
-                  </div>
-
-                  <div className="bg-slate-950/50 rounded-3xl border border-white/5 p-1">
-                    <SurveyArchitect />
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-
       </div>
+
       <LaboratoryEntryProtocol
         isOpen={showProtocol}
         targetName={protocolTarget}
@@ -485,7 +442,8 @@ export default function Home() {
       />
       <FreeLabModal isOpen={isFreeLabOpen} onClose={() => setIsFreeLabOpen(false)} />
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
-      <AVAChat />
+      <BusinessOnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />
+      <AVAChat isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
       <Footer dark={false} />
       <GDPRConsent />
     </main>

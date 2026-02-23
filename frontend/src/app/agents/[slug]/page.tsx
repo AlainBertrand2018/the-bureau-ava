@@ -194,8 +194,8 @@ export default function AgentDossierPage({ params }: Props) {
                             </div>
 
                             {/* Bureau Security Stamp */}
-                            <div className="flex items-center gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100 grayscale hover:grayscale-0 transition-all duration-500">
-                                <Shield size={24} className="text-blue-600/40" />
+                            <div className="flex items-center gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100 transition-all duration-500">
+                                <Shield size={24} className="text-blue-600" />
                                 <p className="text-[9px] font-bold text-slate-400 leading-tight uppercase tracking-widest">
                                     Bureau Protocol <br /><span className="text-slate-500">Identity Verified</span>
                                 </p>

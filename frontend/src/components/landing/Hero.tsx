@@ -1,9 +1,8 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Target, FileText } from "lucide-react";
-import { Reveal } from "./LandingUtils";
+import { Target, FileText, Sparkles } from "lucide-react";
+import gsap from "gsap";
 
 interface HeroProps {
     onAuditClick: () => void;
@@ -11,104 +10,102 @@ interface HeroProps {
 }
 
 export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    const badgeRef = useRef<HTMLDivElement>(null);
+    const headlineRef = useRef<HTMLHeadingElement>(null);
+    const sublineRef = useRef<HTMLParagraphElement>(null);
+    const ctasRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 1.2 } });
+
+            tl.from(badgeRef.current, { y: 20, opacity: 0, delay: 0.2 })
+                .from(headlineRef.current, { y: 30, opacity: 0 }, "-=0.8")
+                .from(sublineRef.current, { y: 20, opacity: 0 }, "-=0.8")
+                .from(ctasRef.current, { y: 15, opacity: 0 }, "-=0.8");
+        });
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <section id="hero" className="relative min-h-screen flex items-center hero-dot-grid hero-spotlight pt-24 overflow-hidden">
-            {/* AVA — background presence */}
-            <div className="absolute bottom-0 right-0 hidden md:block pointer-events-none select-none" style={{ zIndex: 1 }}>
+        <section
+            id="hero"
+            ref={containerRef}
+            className="relative min-h-screen flex items-center bg-[#F2F0E9]"
+        >
+            {/* Background Layer: Dot Grid & AVA Presence */}
+            <div className="absolute inset-0 hero-dot-grid opacity-30 select-none pointer-events-none" />
+
+            <div className="absolute bottom-0 right-0 hidden lg:block pointer-events-none select-none z-0">
                 <div className="relative">
-                    {/* Soft fade on left edge only */}
                     <div
                         className="absolute inset-0 z-10"
                         style={{
-                            background: 'linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 12%)',
-                        }}
-                    />
-                    {/* Gentle fade at very top */}
-                    <div
-                        className="absolute inset-0 z-10"
-                        style={{
-                            background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 10%)',
+                            background: 'linear-gradient(to right, #F2F0E9 0%, transparent 20%)',
                         }}
                     />
                     <Image
                         src="/images/AVA.webp"
-                        alt="Meet AVA — your AI survey auditor"
-                        width={500}
-                        height={700}
-                        className="opacity-85 object-contain object-bottom transition-all duration-1000"
-                        style={{ maxHeight: '85vh' }}
+                        alt="AVA"
+                        width={600}
+                        height={800}
+                        className="opacity-90 transition-all duration-1000 object-contain object-bottom"
+                        style={{ maxHeight: '95vh' }}
                         priority
                     />
                 </div>
             </div>
-            <div className="relative z-10 max-w-[90rem] mx-auto px-6 w-full">
-                <div className="max-w-6xl mx-auto text-center mb-14">
+
+            <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
+                <div ref={contentRef} className="max-w-4xl text-left">
                     {/* Badge */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="badge-blue inline-flex items-center gap-2 mb-8"
-                    >
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse-soft" />
-                        The Elite Choice
-                    </motion.div>
+                    <div ref={badgeRef} className="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-[#2E4036]/20 bg-[#2E4036]/5">
+                        <Sparkles size={12} className="text-[#CC5833]" />
+                        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#2E4036]">
+                            The Elite Choice.
+                        </span>
+                    </div>
 
                     {/* Headline */}
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.35 }}
-                        className="text-hero mb-6"
-                    >
-                        <span className="text-slate-900">Executive-Grade Survey Optimization &</span>
-                        <br />
-                        <span
-                            style={{
-                                background: "linear-gradient(135deg, #2563EB 0%, #0EA5E9 100%)",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
-                            }}
-                        >
+                    <h1 ref={headlineRef} className="mb-8 flex flex-col items-start gap-1">
+                        <span className="text-hero text-[#2E4036] uppercase">
+                            Executive-Grade
+                        </span>
+                        <span className="text-hero text-[#2E4036] uppercase">
+                            Survey Optimization &
+                        </span>
+                        <span className="text-drama text-[#CC5833] -ml-1">
                             Synthetic Panel Testing
                         </span>
-                    </motion.h1>
+                    </h1>
 
-                    {/* Sub / GEO Lede Block */}
-                    <motion.p
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="text-sm md:text-base text-slate-500 font-medium max-w-2xl mx-auto mb-12 leading-relaxed"
-                    >
-                        <span className="text-slate-900 font-bold italic">The Bureau</span> provides autonomous validation for market research instruments. I am <span className="text-blue-600 font-bold">AVA</span>, an AI-powered analyzer that utilizes proprietary <span className="text-slate-900 font-bold">Synthetic Populations</span> and <span className="text-slate-900 font-bold">Adversarial Auditing</span> to identify leading bias, linguistic ambiguity, and structural flaws. I secure data integrity for institutional research units and government agencies before fieldwork begins.
-                    </motion.p>
+                    {/* Subheadline / Copy Anchor */}
+                    <p ref={sublineRef} className="text-body-lg text-[#2E4036]/70 max-w-xl mb-12 leading-relaxed">
+                        <strong className="font-bold">The Bureau</strong> provides autonomous validation for market research instruments. I am <span className="text-[#CC5833] font-bold">AVA</span>, an AI-powered analyzer that utilizes proprietary <strong className="font-bold">Synthetic Populations</strong> and <strong className="font-bold">Adversarial Auditing</strong> to identify leading bias, linguistic ambiguity, and structural flaws. I secure data integrity for institutional research units and government agencies before fieldwork begins.
+                    </p>
 
-                    {/* Hero CTAs */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-14"
-                    >
+                    {/* CTAs */}
+                    <div ref={ctasRef} className="flex flex-col sm:flex-row items-start gap-4">
                         <button
                             onClick={onAuditClick}
-                            className="flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-sm font-bold uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
+                            className="btn-magnetic bg-[#2E4036] text-white group shadow-xl shadow-[#2E4036]/10"
                         >
-                            <Target size={16} />
-                            Catch A Glimpse of What We Can Do
+                            <Target size={16} className="text-[#CC5833]" />
+                            <span>Catch A Glimpse</span>
                         </button>
                         <button
                             onClick={onGenesisClick}
-                            className="flex items-center gap-2 px-8 py-4 text-slate-500 border-2 border-slate-200 rounded-full text-sm font-bold uppercase tracking-widest hover:text-slate-900 hover:border-slate-300 transition-all"
+                            className="btn-magnetic border-2 border-[#2E4036]/20 text-[#2E4036] hover:border-[#2E4036] bg-transparent"
                         >
                             <FileText size={16} />
-                            Build Your Questionnaire from Scratch
+                            <span>Access Our Tools</span>
                         </button>
-                    </motion.div>
+                    </div>
                 </div>
             </div>
         </section>
     );
 }
+

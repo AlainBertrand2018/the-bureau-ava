@@ -1,13 +1,31 @@
 import type { Metadata } from "next";
-// import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit, Cormorant_Garamond, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { MissionProvider } from "@/context/MissionContext";
 
-// const inter = Inter({
-//   variable: "--font-inter",
-//   subsets: ["latin"],
-// });
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  style: ["italic"],
+  weight: ["700"],
+  variable: "--font-cormorant",
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ava.launchableai.online"),
@@ -216,14 +234,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${plusJakarta.variable} ${outfit.variable} ${cormorant.variable} ${mono.variable}`}>
       <body
-        className={`font-sans antialiased bg-white text-slate-900`}
+        className={`font-sans antialiased bg-[#F2F0E9] text-[#1A1A1A] relative`}
       >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+
+        {/* Global Noise Overlay */}
+        <div className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.035] mix-blend-overlay">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <filter id="noiseFilter">
+              <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+          </svg>
+        </div>
+
         <CurrencyProvider>
           <MissionProvider>
             {children}
