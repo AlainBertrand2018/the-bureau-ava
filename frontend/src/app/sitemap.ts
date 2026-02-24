@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { glossaryData } from '@/constants/glossary';
 import { agentData } from '@/constants/agents';
+import { client } from '@/sanity/lib/client';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://ava.launchableai.online';
 
     // Static routes in the guided journey order
@@ -51,15 +52,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.7,
     }));
 
-    // Blog dynamic routes
-    const blogRoutes = [
-        { slug: "why-94-percent-of-surveys-fail" },
-        { slug: "rise-of-synthetic-panels" }
-    ].map((post) => ({
+    // Blog dynamic routes from Sanity
+    const blogQuery = `*[_type == "post"] { "slug": slug.current, _updatedAt }`;
+    const sanePosts = await client.fetch(blogQuery);
+
+    const blogRoutes = sanePosts.map((post: any) => ({
         url: `${baseUrl}/blog/${post.slug}`,
-        lastModified: new Date(),
+        lastModified: new Date(post._updatedAt),
         changeFrequency: 'weekly' as const,
-        priority: 0.7,
+        priority: 0.85,
     }));
 
     return [...staticRoutes, ...glossaryRoutes, ...agentRoutes, ...blogRoutes];
