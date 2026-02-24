@@ -117,6 +117,12 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
         <main className="min-h-screen bg-[#F2F0E9] flex flex-col pt-32">
             <Navbar />
 
+            {post._id.startsWith('drafts.') && (
+                <div className="bg-[#CC5833] text-white py-2 px-6 flex items-center justify-center gap-4 fixed top-0 left-0 w-full z-[100] font-black uppercase tracking-widest text-[10px]">
+                    <span className="animate-pulse">●</span> DRAFT PREVIEW MODE // UNAUTHENTICATED ENGINES BLOCKED
+                </div>
+            )}
+
             <div className="max-w-7xl mx-auto px-6 w-full">
                 {/* Header Section */}
                 <header className="mb-20">

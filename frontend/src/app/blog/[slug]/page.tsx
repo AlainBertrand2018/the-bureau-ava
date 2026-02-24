@@ -8,23 +8,47 @@ type Props = {
     params: Promise<{ slug: string }>;
 };
 
-async function getPost(slug: string) {
+async function getPost(slug: string, isPreview: boolean = false) {
+    const token = process.env.SANITY_API_TOKEN;
+
+    // Use the client with specific configuration for the preview
+    const previewClient = isPreview && token
+        ? client.withConfig({ token, perspective: 'previewDrafts', useCdn: false })
+        : client;
+
     try {
         const query = `*[_type == "post" && slug.current == $slug][0] {
             ...,
             author->,
             categories[]->
         }`;
-        return await client.fetch(query, { slug });
-    } catch (e) {
-        console.error("fetchPost error:", e);
+
+        const post = await previewClient.fetch(query, { slug });
+
+        if (isPreview && !post) {
+            console.warn(`Preview Mode: No draft or published post found for slug "${slug}"`);
+        }
+
+        return post;
+    } catch (e: any) {
+        console.error(`fetchPost error (${slug}):`, e.message);
         return null;
     }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+    params,
+    searchParams
+}: {
+    params: Promise<{ slug: string }>,
+    searchParams: Promise<{ preview?: string }>
+}): Promise<Metadata> {
     const { slug } = await params;
-    const post = await getPost(slug);
+    const { preview } = await searchParams;
+    const isPreview = preview === 'true';
+
+    console.log(`[Metadata] Fetching post: ${slug}, isPreview: ${isPreview}`);
+    const post = await getPost(slug, isPreview);
 
     if (!post) return { title: 'Post Not Found' };
 
@@ -58,9 +82,17 @@ export async function generateStaticParams() {
     }
 }
 
-export default async function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({
+    params,
+    searchParams
+}: {
+    params: Promise<{ slug: string }>,
+    searchParams: Promise<{ preview?: string }>
+}) {
     const { slug } = await params;
-    const post = await getPost(slug);
+    const { preview } = await searchParams;
+    const isPreview = preview === 'true';
+    const post = await getPost(slug, isPreview);
 
     if (!post) {
         notFound();
