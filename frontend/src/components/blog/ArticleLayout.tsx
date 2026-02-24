@@ -68,11 +68,23 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
         return () => observer.disconnect();
     }, [toc]);
 
-    const shareUrls = {
-        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`,
-        twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm reviewing AVA's latest diagnostic on ${post.title}. The methodology for market research is shifting. What’s your take? ${post.mentionHandle} ${post.socialHashtags}`)}&url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.href : '')}`,
-        whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title} - ${typeof window !== 'undefined' ? window.location.href : ''}`)}`
-    };
+    const [shareUrls, setShareUrls] = useState({
+        linkedin: "",
+        twitter: "",
+        whatsapp: ""
+    });
+
+    // Handle social sharing URLs on client side to avoid hydration mismatch
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const currentUrl = window.location.href;
+            setShareUrls({
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
+                twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`I'm reviewing AVA's latest diagnostic on ${post.title}. The methodology for market research is shifting. What’s your take? ${post.mentionHandle || '@TheBureauAI'} ${post.socialHashtags || '#AdversarialAudit'}`)}&url=${encodeURIComponent(currentUrl)}`,
+                whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title} - ${currentUrl}`)}`
+            });
+        }
+    }, [post.title, post.mentionHandle, post.socialHashtags]);
 
     const components = {
         block: {
