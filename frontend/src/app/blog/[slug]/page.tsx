@@ -4,6 +4,9 @@ import { Metadata } from 'next';
 import { client } from "@/sanity/lib/client";
 import ArticleLayout from "@/components/blog/ArticleLayout";
 
+// Allow dynamic rendering when slug is not in static params (e.g., preview of new drafts)
+export const dynamicParams = true;
+
 type Props = {
     params: Promise<{ slug: string }>;
 };
@@ -12,8 +15,9 @@ async function getPost(slug: string, isPreview: boolean = false) {
     const token = process.env.SANITY_API_TOKEN;
 
     // Use the client with specific configuration for the preview
+    // Note: 'previewDrafts' was renamed to 'drafts' in recent Sanity API
     const previewClient = isPreview && token
-        ? client.withConfig({ token, perspective: 'previewDrafts', useCdn: false })
+        ? client.withConfig({ token, perspective: 'drafts', useCdn: false })
         : client;
 
     try {
