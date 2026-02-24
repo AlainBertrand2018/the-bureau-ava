@@ -104,15 +104,15 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                 : "py-6 bg-transparent"
                 }`}
         >
-            <div className="max-w-[95rem] mx-auto px-6 md:px-10 flex items-center justify-between">
+            <div className="max-w-[95rem] mx-auto px-4 sm:px-6 md:px-10 flex items-center justify-between overflow-hidden">
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center gap-4 group">
                     <div className="w-9 h-9 rounded-xl bg-[#2E4036] flex items-center justify-center shadow-2xl shadow-[#2E4036]/20 group-hover:scale-110 transition-transform">
                         <Sparkles size={16} className="text-[#CC5833]" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[#2E4036] font-black text-sm tracking-[0.2em] uppercase leading-none">The Bureau</span>
-                        <span className="text-[#2E4036]/40 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Instrument Validation</span>
+                        <span className="text-[#2E4036] font-black text-xs sm:text-sm tracking-[0.2em] uppercase leading-none">The Bureau</span>
+                        <span className="text-[#2E4036]/40 text-[10px] font-bold uppercase tracking-[0.3em] mt-1 hidden sm:block">Instrument Validation</span>
                     </div>
                 </Link>
 
@@ -186,7 +186,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                     <Link
                         href="/os"
                         target="_blank"
-                        className="btn-magnetic hidden md:flex px-6 py-2.5 bg-[#2E4036] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#CC5833] shadow-lg shadow-[#2E4036]/10"
+                        className="btn-magnetic hidden lg:flex px-6 py-2.5 bg-[#2E4036] text-white text-[10px] font-bold uppercase tracking-widest hover:bg-[#CC5833] shadow-lg shadow-[#2E4036]/10"
                     >
                         <Zap size={14} className="text-[#CC5833] group-hover:text-white" />
                         Playground

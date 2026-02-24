@@ -44,44 +44,44 @@ export default function GDPRConsent() {
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-4 right-4 sm:left-6 sm:right-6 z-[100] max-w-4xl mx-auto"
+                        className="fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 sm:left-6 sm:right-6 z-[100] max-w-4xl mx-auto"
                     >
-                        <div className="bg-white border border-slate-200 shadow-2xl rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+                        <div className="bg-white border border-slate-200 shadow-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-center gap-4 sm:gap-6 relative overflow-hidden">
                             {/* Decorative glow */}
                             <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/5 blur-3xl rounded-full" />
 
-                            <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-                                <Shield size={24} />
+                            <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                <Shield size={20} />
                             </div>
 
-                            <div className="flex-grow text-center md:text-left">
-                                <h3 className="text-slate-900 font-black text-lg mb-2 uppercase tracking-tight">
-                                    Precision Ethics & Privacy
+                            <div className="flex-grow text-center md:text-left min-w-0">
+                                <h3 className="text-slate-900 font-black text-sm sm:text-lg mb-1 sm:mb-2 uppercase tracking-tight">
+                                    Privacy &amp; Ethics
                                 </h3>
-                                <p className="text-slate-500 text-sm leading-relaxed max-w-2xl">
-                                    Bureau protocols use session-level telemetry to ensure diagnostic integrity. Your data remains your own, processed under state-of-the-art security.
+                                <p className="text-slate-500 text-xs sm:text-sm leading-relaxed">
+                                    Bureau protocols use session telemetry to ensure diagnostic integrity. Your data remains your own.
                                 </p>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
                                 <button
                                     onClick={() => setShowSettings(true)}
-                                    className="w-full sm:w-auto px-6 py-3 text-slate-500 hover:text-slate-900 text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                                    className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 text-slate-500 hover:text-slate-900 text-[10px] sm:text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Settings size={14} />
                                     Customize
                                 </button>
                                 <button
                                     onClick={handleDecline}
-                                    className="w-full sm:w-auto px-6 py-3 border border-slate-200 text-slate-900 hover:bg-slate-50 rounded-full text-xs font-black uppercase tracking-widest transition-all"
+                                    className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 border border-slate-200 text-slate-900 hover:bg-slate-50 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all"
                                 >
                                     Essential Only
                                 </button>
                                 <button
                                     onClick={handleAcceptAll}
-                                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white hover:bg-blue-700 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20"
+                                    className="w-full sm:w-auto px-4 sm:px-8 py-2.5 sm:py-3 bg-blue-600 text-white hover:bg-blue-700 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20"
                                 >
-                                    Authorize Full Stack
+                                    Accept All
                                 </button>
                             </div>
                         </div>

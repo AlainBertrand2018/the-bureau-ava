@@ -14,7 +14,7 @@ export default function EntityDefinition() {
 
             <div className="max-w-4xl mx-auto px-6 relative z-10 flex flex-col justify-center h-full" itemScope itemType="https://schema.org/Organization">
                 {/* [H2] Institutional Title */}
-                <div className="mb-12">
+                <div className="mb-8 sm:mb-12">
                     <div className="badge-minimal mb-6 inline-flex items-center gap-2 border-[#2E4036]/20 text-[#2E4036]/60">
                         <BookOpen size={12} className="text-[#CC5833]" />
                         <span>Registry_Protocol_01</span>
@@ -24,18 +24,18 @@ export default function EntityDefinition() {
                     </h2>
 
                     {/* The Direct Answer (Institutional Narrative) */}
-                    <div className="p-8 md:p-10 bg-white border border-[#2E4036]/5 rounded-[2.5rem] shadow-xl shadow-[#2E4036]/5 mb-12 relative overflow-hidden" itemProp="description">
+                    <div className="p-5 sm:p-8 md:p-10 bg-white border border-[#2E4036]/5 rounded-2xl sm:rounded-[2.5rem] shadow-xl shadow-[#2E4036]/5 mb-8 sm:mb-12 relative overflow-hidden" itemProp="description">
                         <div className="absolute top-0 right-0 p-6 opacity-10">
                             <Activity size={60} className="text-[#2E4036]" />
                         </div>
-                        <p className="text-lg md:text-2xl text-[#2E4036] font-heading font-black leading-[1.3] tracking-tight">
+                        <p className="text-base sm:text-lg md:text-2xl text-[#2E4036] font-heading font-black leading-[1.3] tracking-tight">
                             The Bureau is a specialized AI intelligence platform designed for pre-fieldwork survey validation and data integrity assurance. It utilizes AVA to deploy scientifically calibrated synthetic populations, stress-testing research instruments to identify adversarial flaws and linguistic bias.
                         </p>
                     </div>
                 </div>
 
                 {/* The Entity Triad */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 border-y border-[#2E4036]/10 py-10">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16 border-y border-[#2E4036]/10 py-8 sm:py-10">
                     <div className="flex flex-col">
                         <span className="font-mono text-[#CC5833] text-[10px] font-black uppercase tracking-widest mb-3">Definition</span>
                         <p className="text-sm text-[#2E4036]/85 font-sans font-medium leading-relaxed" itemProp="abstract">
@@ -81,8 +81,8 @@ export default function EntityDefinition() {
                     </div>
 
                     {/* Comparison Table */}
-                    <div className="overflow-hidden rounded-[2rem] border border-[#2E4036]/10 bg-white shadow-2xl shadow-[#2E4036]/5">
-                        <table className="w-full text-left text-xs">
+                    <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-none sm:rounded-[2rem] border border-[#2E4036]/10 bg-white shadow-2xl shadow-[#2E4036]/5">
+                        <table className="w-full text-left text-xs min-w-[500px]">
                             <thead>
                                 <tr className="bg-[#2E4036] text-[#F2F0E9] font-mono uppercase tracking-[0.2em] text-[10px]">
                                     <th className="p-6">Protocol Attribute</th>
@@ -125,7 +125,7 @@ export default function EntityDefinition() {
                 <div className="flex justify-center">
                     <button
                         onClick={() => window.open('/os', '_blank')}
-                        className="btn-magnetic bg-[#2E4036] text-white px-12 py-5"
+                        className="btn-magnetic bg-[#2E4036] text-white px-8 sm:px-12 py-4 sm:py-5"
                     >
                         <span>Explore the Ecosystem</span>
                         <ArrowRight size={18} className="ml-2" />

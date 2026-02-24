@@ -59,7 +59,7 @@ export default function WhoItsFor({ onProtocolOpen }: WhoItsForProps) {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
-                <div className="mb-20">
+                <div className="mb-10 sm:mb-20">
                     <div className="badge-minimal !text-[#F2F0E9]/60 border-[#F2F0E9]/20 mb-6 inline-flex items-center gap-2">
                         <Users size={12} className="text-[#CC5833]" />
                         <span>Institutional Reach</span>
@@ -75,16 +75,16 @@ export default function WhoItsFor({ onProtocolOpen }: WhoItsForProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
                     {TARGET_SEGMENTS.map((item, i) => (
                         <div key={i} className="h-full flex-grow">
-                            <div className="card-artifact bg-[#F2F0E9] border-[#2E4036]/10 p-8 h-full flex flex-col justify-between group hover:shadow-2xl hover:shadow-[#2E4036]/10 transition-all duration-500 rounded-[2.5rem]">
+                            <div className="card-artifact bg-[#F2F0E9] border-[#2E4036]/10 p-5 sm:p-8 h-full flex flex-col justify-between group hover:shadow-2xl hover:shadow-[#2E4036]/10 transition-all duration-500 rounded-2xl sm:rounded-[2.5rem]">
                                 <div>
-                                    <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#2E4036]/5">
+                                    <div className="flex items-center justify-between mb-4 sm:mb-8 pb-3 sm:pb-4 border-b border-[#2E4036]/5">
                                         <div className="p-3 bg-[#2E4036]/5 text-[#2E4036] rounded-lg group-hover:bg-[#CC5833] group-hover:text-white transition-all">
                                             {item.icon}
                                         </div>
                                         <span className="font-mono text-[11px] text-[#2E4036]/50 uppercase tracking-[0.3em]">REF_{item.id}</span>
                                     </div>
-                                    <h4 className="text-xl md:text-2xl font-heading font-black text-[#2E4036] mb-4 uppercase tracking-tighter">{item.title}</h4>
-                                    <p className="text-[#2E4036]/80 text-sm font-sans leading-relaxed mb-10 group-hover:text-[#2E4036] transition-colors">{item.desc}</p>
+                                    <h4 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-[#2E4036] mb-3 sm:mb-4 uppercase tracking-tighter">{item.title}</h4>
+                                    <p className="text-[#2E4036]/80 text-sm font-sans leading-relaxed mb-6 sm:mb-10 group-hover:text-[#2E4036] transition-colors">{item.desc}</p>
                                 </div>
 
                                 <div className="space-y-3">
@@ -105,7 +105,7 @@ export default function WhoItsFor({ onProtocolOpen }: WhoItsForProps) {
                 <div className="flex justify-center">
                     <button
                         onClick={onProtocolOpen}
-                        className="btn-magnetic bg-white text-[#2E4036] px-12 py-5 shadow-2xl shadow-[#2E4036]/20"
+                        className="btn-magnetic bg-white text-[#2E4036] px-8 sm:px-12 py-4 sm:py-5 shadow-2xl shadow-[#2E4036]/20"
                     >
                         <span>Verify Your Protocol</span>
                         <ArrowRight size={18} className="ml-2" />

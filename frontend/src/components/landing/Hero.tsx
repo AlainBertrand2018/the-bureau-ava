@@ -33,7 +33,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
         <section
             id="hero"
             ref={containerRef}
-            className="relative min-h-screen flex items-center bg-[#F2F0E9]"
+            className="relative min-h-[75vh] sm:min-h-screen flex items-center bg-[#F2F0E9] pb-12 sm:pb-0"
         >
             {/* Background Layer: Dot Grid & AVA Presence */}
             <div className="absolute inset-0 hero-dot-grid opacity-30 select-none pointer-events-none" />
@@ -82,7 +82,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                     </h1>
 
                     {/* Subheadline / Copy Anchor */}
-                    <p ref={sublineRef} className="text-body-lg text-[#2E4036]/70 max-w-xl mb-12 leading-relaxed">
+                    <p ref={sublineRef} className="text-body-lg text-[#2E4036]/70 max-w-xl mb-8 sm:mb-12 leading-relaxed">
                         Welcome to The Bureau. I am <span className="text-[#CC5833] font-bold">AVA</span>, your Autonomous Validation Analyst. I oversee a skillful team of AI agents that collectively validate market research instruments. We utilize proprietary <strong className="font-bold">Synthetic Populations</strong> and <strong className="font-bold">Adversarial Auditing</strong> to identify and resolve leading bias, linguistic ambiguity, and structural flaws.
                     </p>
 
