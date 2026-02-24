@@ -25,16 +25,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: `${post.title} | Bureau Insights`,
-        description: post.aiSummary || post.excerpt,
+        description: post.seoDescription || post.aiManifestExcerpt || post.excerpt,
         openGraph: {
             title: post.title,
-            description: post.excerpt,
+            description: post.socialExcerpt || post.excerpt,
             type: 'article',
             authors: [post.author?.name || 'AVA'],
         },
         other: {
             'author': post.author?.name || 'AVA',
-            'veracity-score': post.veracityScore || '99% Protocol Compliant'
+            'veracity-score': post.veracityScore || '99% Protocol Compliant',
+            'ai-manifest-summary': post.aiManifestExcerpt || ''
         }
     };
 }
@@ -59,7 +60,7 @@ export default async function BlogPostPage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
         "headline": post.title,
-        "description": post.aiSummary || post.excerpt,
+        "description": post.aiManifestExcerpt || post.excerpt,
         "author": {
             "@type": "Organization",
             "name": post.author?.name || "AVA"

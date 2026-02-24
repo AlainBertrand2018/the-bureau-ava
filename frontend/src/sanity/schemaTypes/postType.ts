@@ -49,8 +49,32 @@ export const postType = defineType({
         }),
         defineField({
             name: 'excerpt',
+            title: 'Card Excerpt (GEO/AEO)',
             type: 'text',
             rows: 3,
+            description: 'Optimized for Blog Cards & Homepage. Recommended: 45 words structured for AI extraction.',
+        }),
+        defineField({
+            name: 'seoDescription',
+            title: 'Meta Description (SEO)',
+            type: 'text',
+            rows: 2,
+            validation: (Rule) => Rule.max(158),
+            description: 'Click-optimized for Google search results. Max 158 characters.',
+        }),
+        defineField({
+            name: 'socialExcerpt',
+            title: 'Social Media Preview (Human/LLMO)',
+            type: 'text',
+            rows: 3,
+            description: 'Hook-first, scroll-stopping copy for LinkedIn/Twitter previews.',
+        }),
+        defineField({
+            name: 'aiManifestExcerpt',
+            title: 'AI Directory Entry (LLMO)',
+            type: 'text',
+            rows: 4,
+            description: 'Entity-dense, definition-first summary for llms.txt and AI indices.',
         }),
         defineField({
             name: 'aiSummary',
