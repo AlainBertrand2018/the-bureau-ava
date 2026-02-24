@@ -126,7 +126,7 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
     };
 
     return (
-        <main className="min-h-screen bg-[#F2F0E9] flex flex-col pt-32">
+        <main className="min-h-screen bg-[#F2F0E9] flex flex-col pt-20">
             <Navbar />
 
             {post?._id?.startsWith('drafts.') && (
@@ -137,11 +137,11 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
 
             <div className="max-w-7xl mx-auto px-6 w-full">
                 {/* Header Section */}
-                <header className="mb-20">
+                <header className="mb-12">
                     <div className="flex flex-wrap items-center gap-6 mb-8 text-[10px] font-black uppercase tracking-[0.2em] text-[#CC5833]">
                         <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm">
                             <Calendar size={12} />
-                            {new Date(post.publishedAt).toLocaleDateString()}
+                            {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Draft Protocol'}
                         </div>
                         <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm">
                             <Clock size={12} />
@@ -157,7 +157,7 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                         </div>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-black text-[#2E4036] uppercase tracking-tighter mb-12 leading-[0.9] max-w-5xl">
+                    <h1 className="text-3xl md:text-5xl font-black text-[#2E4036] uppercase tracking-[-0.04em] mb-10 leading-[1.1] max-w-4xl">
                         {post.title}
                     </h1>
 
@@ -171,7 +171,7 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                 </header>
 
                 {/* Featured Image */}
-                <div className="relative aspect-[21/9] rounded-[3rem] overflow-hidden mb-24 group shadow-2xl shadow-black/10">
+                <div className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden mb-16 group shadow-2xl shadow-black/10">
                     {post.image && (
                         <Image
                             src={urlFor(post.image).url()}
@@ -190,9 +190,9 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative">
-                    {/* Sidebar TOC */}
-                    <aside className="lg:col-span-3 hidden lg:block sticky top-40 h-fit">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative items-start">
+                    {/* Sidebar TOC - Pinned below image context */}
+                    <aside className="lg:col-span-3 space-y-12 py-0">
                         <div className="space-y-12">
                             <div>
                                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#CC5833] mb-8 flex items-center gap-2">
@@ -235,24 +235,16 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                     </aside>
 
                     {/* Main Content */}
-                    <div className="lg:col-span-12 items-center flex flex-col gap-2">
-                        <div className="max-w-4xl w-full">
+                    <div className="lg:col-span-9">
+                        <div className="w-full">
                             {/* AI Summary Leede */}
                             <div className="bg-[#2E4036] p-10 rounded-[3rem] mb-20 relative overflow-hidden group shadow-2xl shadow-[#2E4036]/20">
                                 <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-110 transition-transform duration-700">
                                     <Sparkles size={160} className="text-[#F2F0E9]" />
                                 </div>
                                 <div className="relative z-10">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="px-3 py-1 rounded bg-[#CC5833] text-white text-[9px] font-black uppercase tracking-[0.3em]">
-                                            AI_Ingestion_Node
-                                        </div>
-                                    </div>
-                                    <p className="text-2xl text-[#F2F0E9] font-bold leading-relaxed mb-4">
+                                    <p className="text-2xl text-[#F2F0E9] font-bold leading-relaxed">
                                         {post.aiSummary || post.excerpt}
-                                    </p>
-                                    <p className="font-mono text-[9px] text-[#F2F0E9]/40 uppercase tracking-[0.4em]">
-                                        // AUTOMATED_GEO_LEDE_FOR_SEMANTIC_INDEXING
                                     </p>
                                 </div>
                             </div>
