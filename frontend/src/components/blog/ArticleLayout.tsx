@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import {
     Clock,
     Calendar,
@@ -13,7 +12,6 @@ import {
     MessageCircle,
     ChevronRight,
     ArrowRight,
-    CheckCircle2,
     ShieldCheck,
     Lock,
     Star,
@@ -90,13 +88,13 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
         block: {
             h2: ({ children, value }: any) => {
                 const id = value.children.map((c: any) => c.text).join("").toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-                return <h2 id={id} className="text-3xl font-black uppercase tracking-tight text-[#2E4036] mt-16 mb-8">{children}</h2>;
+                return <h2 id={id} className="text-3xl font-bold text-[#2E4036] mt-16 mb-6 tracking-tight">{children}</h2>;
             },
             h3: ({ children, value }: any) => {
                 const id = value.children.map((c: any) => c.text).join("").toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-                return <h3 id={id} className="text-2xl font-black uppercase tracking-tight text-[#2E4036] mt-12 mb-6">{children}</h3>;
+                return <h3 id={id} className="text-2xl font-bold text-[#2E4036] mt-12 mb-4 tracking-tight">{children}</h3>;
             },
-            normal: ({ children }: any) => <p className="text-lg text-[#2E4036]/80 leading-relaxed mb-8 font-serif">{children}</p>,
+            normal: ({ children }: any) => <p className="text-lg text-[#2E4036]/80 leading-[1.8] mb-8 font-serif">{children}</p>,
             blockquote: ({ children }: any) => (
                 <blockquote className="my-12 p-8 bg-[#F2F0E9] border-l-4 border-[#CC5833] rounded-r-2xl relative overflow-hidden group">
                     <div className="absolute top-4 right-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -104,7 +102,7 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                     </div>
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-2 h-2 rounded-full bg-[#CC5833] animate-pulse" />
-                        <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#CC5833]">Verified Protocol Node</span>
+                        <span className="font-mono text-[10px] font-bold text-[#CC5833] tracking-widest uppercase">Verified protocol node</span>
                     </div>
                     <p className="text-xl font-bold italic text-[#2E4036] relative z-10 leading-relaxed">
                         "{children}"
@@ -123,55 +121,57 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                 </li>
             ),
         },
+        types: {
+            table: ({ value }: any) => (
+                <div className="my-12 overflow-x-auto rounded-2xl border border-[#2E4036]/10 shadow-xl shadow-black/5 bg-white">
+                    <table className="w-full border-collapse text-left text-sm">
+                        <tbody className="divide-y divide-[#2E4036]/5">
+                            {value.rows?.map((row: any, i: number) => (
+                                <tr key={i} className={i === 0 ? "bg-[#2E4036]/5" : "hover:bg-[#F2F0E9]/30 transition-colors"}>
+                                    {row.cells?.map((cell: any, j: number) => (
+                                        <td key={j} className={`p-5 ${i === 0 ? "font-bold text-[#2E4036] uppercase tracking-wider text-[10px]" : "text-[#2E4036]/70 font-serif text-base"}`}>
+                                            {cell}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ),
+            image: ({ value }: any) => (
+                <div className="my-12 relative aspect-video rounded-3xl overflow-hidden shadow-2xl shadow-black/5 group">
+                    <Image
+                        src={urlFor(value).url()}
+                        alt="Article illustration"
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                </div>
+            ),
+        }
     };
 
     return (
-        <main className="min-h-screen bg-[#F2F0E9] flex flex-col pt-20">
+        <main className="min-h-screen bg-[#F2F0E9] flex flex-col pt-52">
             <Navbar />
 
             {post?._id?.startsWith('drafts.') && (
-                <div className="bg-[#CC5833] text-white py-2 px-6 flex items-center justify-center gap-4 fixed top-0 left-0 w-full z-[100] font-black uppercase tracking-widest text-[10px]">
-                    <span className="animate-pulse">●</span> DRAFT PREVIEW MODE // UNAUTHENTICATED ENGINES BLOCKED
+                <div className="bg-[#CC5833] text-white py-2 px-6 flex items-center justify-center gap-4 fixed top-0 left-0 w-full z-[100] font-bold tracking-widest text-xs">
+                    <span className="animate-pulse">●</span> Draft preview mode // Unauthenticated engines blocked
                 </div>
             )}
 
             <div className="max-w-7xl mx-auto px-6 w-full">
                 {/* Header Section */}
-                <header className="mb-12">
-                    <div className="flex flex-wrap items-center gap-6 mb-8 text-[10px] font-black uppercase tracking-[0.2em] text-[#CC5833]">
-                        <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm">
-                            <Calendar size={12} />
-                            {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Draft Protocol'}
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm">
-                            <Clock size={12} />
-                            {post.readingTime} MIN READ
-                        </div>
-                        <div className="flex items-center gap-2 bg-white/50 px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-sm">
-                            <User size={12} />
-                            {post.author?.name || "AVA"}
-                        </div>
-                        <div className="flex items-center gap-2 bg-[#2E4036] text-white px-3 py-1.5 rounded-full">
-                            <ShieldCheck size={12} className="text-[#CC5833]" />
-                            {post.veracityScore}
-                        </div>
-                    </div>
-
-                    <h1 className="text-3xl md:text-5xl font-black text-[#2E4036] uppercase tracking-[-0.04em] mb-10 leading-[1.1] max-w-4xl">
+                <header className="mb-16">
+                    <h1 className="text-4xl md:text-6xl font-extrabold text-[#2E4036] tracking-tight mb-4 leading-[1.05] max-w-4xl">
                         {post.title}
                     </h1>
-
-                    <div className="flex flex-wrap gap-3">
-                        {post.categories?.filter(Boolean).map((cat: any) => (
-                            <span key={cat?._id || Math.random()} className="px-5 py-2 rounded-full bg-white border border-[#2E4036]/10 text-[10px] font-black text-[#2E4036]/60 uppercase tracking-widest hover:border-[#CC5833] hover:text-[#CC5833] transition-colors">
-                                {cat?.title || "General"}
-                            </span>
-                        ))}
-                    </div>
                 </header>
 
                 {/* Featured Image */}
-                <div className="relative aspect-[21/9] rounded-[2.5rem] overflow-hidden mb-16 group shadow-2xl shadow-black/10">
+                <div className="relative aspect-[21/9] rounded-[1.5rem] overflow-hidden mb-12 group shadow-2xl shadow-black/5">
                     {post.image && (
                         <Image
                             src={urlFor(post.image).url()}
@@ -181,55 +181,77 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                             priority
                         />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#2E4036]/40 to-transparent" />
-                    <div className="absolute bottom-10 left-10 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center">
-                            <Sparkles className="text-white animate-pulse" size={20} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#2E4036]/20 to-transparent" />
+                </div>
+
+                {/* Metadata Transition Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-6 mb-16 pb-8 border-b border-[#2E4036]/10">
+                    <div className="flex flex-wrap items-center gap-8 text-xs font-medium text-[#2E4036]/60">
+                        <div className="flex items-center gap-2">
+                            <Calendar size={14} className="text-[#CC5833]" />
+                            {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Draft Protocol'}
                         </div>
-                        <span className="text-white font-mono text-xs font-black uppercase tracking-widest drop-shadow-lg">Adversarial Insight Node // Active</span>
+                        <div className="flex items-center gap-2">
+                            <Clock size={14} className="text-[#CC5833]" />
+                            {post.readingTime} min read
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <User size={14} className="text-[#CC5833]" />
+                            {post.author?.name || "The Bureau"}
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1 bg-[#2E4036] text-[#F2F0E9] rounded-full text-xs font-bold">
+                            <ShieldCheck size={12} className="text-[#CC5833]" />
+                            Veracity {post.veracityScore}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {post.categories?.filter(Boolean).map((cat: any, idx: number) => (
+                            <span key={cat?._id || idx} className="px-4 py-1.5 rounded-full bg-white border border-[#2E4036]/5 text-xs font-bold text-[#2E4036]/40 tracking-widest">
+                                {cat?.title || "General"}
+                            </span>
+                        ))}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative items-start">
-                    {/* Sidebar TOC - Pinned below image context */}
-                    <aside className="lg:col-span-3 space-y-12 py-0">
-                        <div className="space-y-12">
-                            <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#CC5833] mb-8 flex items-center gap-2">
-                                    <ChevronRight size={12} /> Contents
-                                </h4>
-                                <nav className="space-y-4">
-                                    {toc.map((item) => (
-                                        <a
-                                            key={item.id}
-                                            href={`#${item.id}`}
-                                            className={`block text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-[#CC5833] ${activeSection === item.id ? 'text-[#CC5833] pl-4 border-l-2 border-[#CC5833]' : 'text-[#2E4036]/40'
-                                                } ${item.level > 2 ? 'ml-4' : ''}`}
-                                        >
-                                            {item.text}
-                                        </a>
-                                    ))}
-                                </nav>
-                            </div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative items-start mb-20">
+                    {/* Sidebar sharing/TOC */}
+                    <aside className="lg:col-span-3 space-y-12 py-0 border-r border-[#2E4036]/5 pr-8">
+                        <div>
+                            <h4 className="text-xs font-bold text-[#CC5833] mb-8 flex items-center gap-2 tracking-[0.2em] uppercase">
+                                <ChevronRight size={12} /> Contents
+                            </h4>
+                            <nav className="space-y-5">
+                                {toc.map((item) => (
+                                    <a
+                                        key={item.id}
+                                        href={`#${item.id}`}
+                                        className={`block text-sm font-medium transition-all duration-300 hover:text-[#CC5833] ${activeSection === item.id ? 'text-[#CC5833] font-bold' : 'text-[#2E4036]/60'
+                                            } ${item.level > 2 ? 'ml-4 opacity-60 text-xs' : ''}`}
+                                    >
+                                        {item.text}
+                                    </a>
+                                ))}
+                            </nav>
+                        </div>
 
-                            <div className="pt-12 border-t border-[#2E4036]/5">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#2E4036]/40 mb-8 flex items-center gap-2">
-                                    <Share2 size={12} /> Distribution
-                                </h4>
-                                <div className="flex flex-col gap-4">
-                                    <a href={shareUrls.linkedin} target="_blank" className="flex items-center justify-between group p-3 rounded-xl hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#2E4036]/60 group-hover:text-[#2E4036]">LinkedIn</span>
-                                        <Linkedin size={14} className="text-[#2E4036]/20 group-hover:text-[#0077b5]" />
-                                    </a>
-                                    <a href={shareUrls.twitter} target="_blank" className="flex items-center justify-between group p-3 rounded-xl hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#2E4036]/60 group-hover:text-[#2E4036]">X Cluster</span>
-                                        <Twitter size={14} className="text-[#2E4036]/20 group-hover:text-black" />
-                                    </a>
-                                    <a href={shareUrls.whatsapp} target="_blank" className="flex items-center justify-between group p-3 rounded-xl hover:bg-white hover:shadow-xl hover:shadow-black/5 transition-all">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#2E4036]/60 group-hover:text-[#2E4036]">Messaging</span>
-                                        <MessageCircle size={14} className="text-[#2E4036]/20 group-hover:text-[#25D366]" />
-                                    </a>
-                                </div>
+                        <div className="pt-12 border-t border-[#2E4036]/5">
+                            <h4 className="text-xs font-bold text-[#2E4036]/30 mb-8 flex items-center gap-2 tracking-[0.2em] uppercase">
+                                <Share2 size={12} /> Distribution
+                            </h4>
+                            <div className="flex flex-col gap-4">
+                                <a href={shareUrls.linkedin} target="_blank" className="flex items-center justify-between group py-2 text-[#2E4036]/60 hover:text-[#2E4036] transition-all">
+                                    <span className="text-sm font-medium">LinkedIn</span>
+                                    <Linkedin size={14} className="opacity-20 group-hover:opacity-100 transition-opacity" />
+                                </a>
+                                <a href={shareUrls.twitter} target="_blank" className="flex items-center justify-between group py-2 text-[#2E4036]/60 hover:text-[#2E4036] transition-all">
+                                    <span className="text-sm font-medium">X Cluster</span>
+                                    <Twitter size={14} className="opacity-20 group-hover:opacity-100 transition-opacity" />
+                                </a>
+                                <a href={shareUrls.whatsapp} target="_blank" className="flex items-center justify-blank group py-2 text-[#2E4036]/60 hover:text-[#2E4036] transition-all">
+                                    <span className="text-sm font-medium">Messaging</span>
+                                    <MessageCircle size={14} className="opacity-20 group-hover:opacity-100 transition-opacity" />
+                                </a>
                             </div>
                         </div>
                     </aside>
@@ -237,13 +259,13 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                     {/* Main Content */}
                     <div className="lg:col-span-9">
                         <div className="w-full">
-                            {/* AI Summary Leede */}
-                            <div className="bg-[#2E4036] p-10 rounded-[3rem] mb-20 relative overflow-hidden group shadow-2xl shadow-[#2E4036]/20">
-                                <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-110 transition-transform duration-700">
+                            {/* Ingestion Node - Subtle Sentence Case */}
+                            <div className="bg-[#2E4036] p-12 rounded-[2rem] mb-20 relative overflow-hidden group shadow-2xl shadow-[#2E4036]/10">
+                                <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
                                     <Sparkles size={160} className="text-[#F2F0E9]" />
                                 </div>
                                 <div className="relative z-10">
-                                    <p className="text-2xl text-[#F2F0E9] font-bold leading-relaxed">
+                                    <p className="text-2xl text-[#F2F0E9] font-bold leading-[1.6]">
                                         {post.aiSummary || post.excerpt}
                                     </p>
                                 </div>
@@ -260,7 +282,7 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                                     <div className="bg-white p-12 rounded-[3.5rem] border border-[#2E4036]/10 shadow-xl shadow-black/5">
                                         <div className="flex items-center justify-between mb-12">
                                             <div>
-                                                <h4 className="text-2xl font-black text-[#2E4036] uppercase tracking-tight mb-2">Institutional Review</h4>
+                                                <h4 className="text-2xl font-bold text-[#2E4036] tracking-tight mb-2">Institutional Review</h4>
                                                 <p className="text-sm text-[#2E4036]/50">Peer-reviewed commentary for verified researchers.</p>
                                             </div>
                                             <div className="flex gap-1 text-[#CC5833]">
@@ -269,11 +291,11 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                                         </div>
 
                                         <div className="bg-[#F2F0E9]/50 p-8 rounded-2xl border border-dashed border-[#2E4036]/20 text-center">
-                                            <Lock className="mx-auto mb-4 text-[#2E4036]/20" />
-                                            <p className="font-bold text-[#2E4036]/40 uppercase tracking-widest text-xs">
+                                            <Lock size={16} className="mx-auto mb-4 text-[#2E4036]/20" />
+                                            <p className="font-bold text-[#2E4036]/40 tracking-widest text-sm">
                                                 Please authenticate to access Peer Reviews
                                             </p>
-                                            <button className="mt-6 text-[#CC5833] font-black uppercase tracking-widest text-[10px] hover:underline">
+                                            <button className="mt-6 text-[#CC5833] font-bold tracking-widest text-xs hover:underline">
                                                 Researcher Login
                                             </button>
                                         </div>
@@ -282,14 +304,14 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
 
                                 {/* Social CTA */}
                                 <div className="text-center py-20 border-t border-[#2E4036]/5">
-                                    <h4 className="text-3xl font-black text-[#2E4036] uppercase tracking-tight mb-8">Discuss this logic?</h4>
+                                    <h4 className="text-3xl font-bold text-[#2E4036] tracking-tight mb-8">Discuss this logic?</h4>
                                     <div className="flex flex-wrap justify-center gap-6">
-                                        <a href={shareUrls.linkedin} target="_blank" className="flex items-center gap-3 px-8 py-4 bg-white rounded-2xl border border-[#2E4036]/10 font-black text-[10px] uppercase tracking-widest hover:border-[#CC5833] transition-all group">
+                                        <a href={shareUrls.linkedin} target="_blank" className="flex items-center gap-3 px-8 py-4 bg-white rounded-2xl border border-[#2E4036]/10 font-bold text-xs tracking-widest hover:border-[#CC5833] transition-all group">
                                             <Linkedin size={16} className="text-[#0077b5]" />
                                             <span>Share to LinkedIn</span>
                                             <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
                                         </a>
-                                        <button className="flex items-center gap-3 px-8 py-4 bg-[#2E4036] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:shadow-2xl hover:shadow-[#2E4036]/30 transition-all active:scale-95">
+                                        <button className="flex items-center gap-3 px-8 py-4 bg-[#2E4036] text-white rounded-2xl font-bold text-xs tracking-widest hover:shadow-2xl hover:shadow-[#2E4036]/30 transition-all active:scale-95">
                                             <MessageCircle size={16} />
                                             <span>Share-to-comment</span>
                                         </button>
@@ -314,10 +336,10 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                 </div>
 
                 <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#CC5833] rounded-full text-white text-[10px] font-black uppercase tracking-[0.3em] mb-12">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#CC5833] rounded-full text-white text-xs font-bold tracking-[0.3em] mb-12">
                         Institutional Deployment Hub
                     </div>
-                    <h2 className="text-5xl md:text-7xl font-black text-[#F2F0E9] uppercase tracking-tighter mb-8 leading-[0.9]">
+                    <h2 className="text-5xl md:text-7xl font-bold text-[#F2F0E9] tracking-tighter mb-8 leading-[0.9]">
                         Don't guess.<br /><span className="text-[#CC5833]">Audit first.</span>
                     </h2>
                     <p className="text-xl text-[#F2F0E9]/60 max-w-2xl mx-auto mb-16 font-serif">
@@ -332,8 +354,8 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                             { label: "Genesis", price: "€350" }
                         ].map(plan => (
                             <div key={plan.label} className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
-                                <div className="text-[10px] font-black text-[#F2F0E9]/40 uppercase tracking-widest mb-2">{plan.label}</div>
-                                <div className="text-2xl font-black text-[#F2F0E9]">{plan.price}</div>
+                                <div className="text-xs font-bold text-[#F2F0E9]/40 tracking-widest mb-2">{plan.label}</div>
+                                <div className="text-2xl font-bold text-[#F2F0E9]">{plan.price}</div>
                             </div>
                         ))}
                     </div>
@@ -346,8 +368,8 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                         <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
                     </Link>
 
-                    <div className="mt-12 font-mono text-[9px] text-[#F2F0E9]/20 uppercase tracking-[0.8em]">
-                        AVA_V2.4.1 // SECURE_AUDIT_HANDSHAKE
+                    <div className="mt-12 font-mono text-[11px] text-[#F2F0E9]/20 tracking-[0.8em] uppercase">
+                        AVA V2.4.1 // Secure audit handshake
                     </div>
                 </div>
             </section>

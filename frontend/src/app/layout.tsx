@@ -5,6 +5,7 @@ import { CurrencyProvider } from "@/context/CurrencyContext";
 import { MissionProvider } from "@/context/MissionContext";
 import { ChatProvider } from "@/context/ChatContext";
 import AVAChat from "@/components/AVAChat";
+import ClientOnly from "@/components/ClientOnly";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -250,7 +251,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`scroll-smooth ${plusJakarta.variable} ${outfit.variable} ${cormorant.variable} ${mono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`scroll-smooth ${plusJakarta.variable} ${outfit.variable} ${cormorant.variable} ${mono.variable}`}>
       <body
         className={`font-sans antialiased bg-[#F2F0E9] text-[#1A1A1A] relative`}
       >
@@ -273,7 +274,9 @@ export default function RootLayout({
           <MissionProvider>
             <ChatProvider>
               {children}
-              <AVAChat />
+              <ClientOnly>
+                <AVAChat />
+              </ClientOnly>
             </ChatProvider>
           </MissionProvider>
         </CurrencyProvider>

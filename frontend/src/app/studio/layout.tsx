@@ -3,5 +3,5 @@ export default function StudioLayout({
 }: {
     children: React.ReactNode
 }) {
-    return <div id="sanity-root" style={{ height: '100vh', width: '100vw' }}>{children}</div>
+    return <div id="sanity-root" suppressHydrationWarning style={{ height: '100vh', width: '100vw' }}>{children}</div>
 }
