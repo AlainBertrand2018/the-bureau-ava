@@ -41,6 +41,8 @@ export default function AVAChat({ }: AVAChatProps = {}) {
     const { isChatOpen: isOpen, setIsChatOpen: setIsOpen } = useChat();
     const pathname = usePathname();
 
+    if (pathname === '/os') return null;
+
     const [messages, setMessages] = useState<Message[]>([
         { role: "assistant", content: AVA_GREETING }
     ]);

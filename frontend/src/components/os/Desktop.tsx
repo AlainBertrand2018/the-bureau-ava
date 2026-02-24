@@ -5,6 +5,7 @@ import Window from './Window';
 import Dock from './Dock';
 import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget } from './Widgets';
 import Onboarding from './Onboarding';
+import AskAva from './AskAva';
 import { HelpCircle, Book, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -145,6 +146,7 @@ const Desktop: React.FC = () => {
                 ))}
             </AnimatePresence>
 
+            {!hasMaximizedWindow && <AskAva />}
             <Dock />
             <Onboarding />
         </div>
