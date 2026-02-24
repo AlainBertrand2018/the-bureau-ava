@@ -17,7 +17,7 @@ async function getPost(slug: string, isPreview: boolean = false) {
         : client;
 
     try {
-        const query = `*[_type == "post" && slug.current == $slug][0] {
+        const query = `*[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {
             ...,
             author->,
             categories[]->
@@ -92,7 +92,14 @@ export default async function BlogPostPage({
     const { slug } = await params;
     const { preview } = await searchParams;
     const isPreview = preview === 'true';
-    const post = await getPost(slug, isPreview);
+
+    let post;
+    try {
+        post = await getPost(slug, isPreview);
+    } catch (e) {
+        console.error("BlogPostPage fetch error:", e);
+        return <div className="p-20 text-center">Diagnostic Engine Fault: Failed to retrieve data node.</div>;
+    }
 
     if (!post) {
         notFound();
@@ -101,13 +108,13 @@ export default async function BlogPostPage({
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
-        "headline": post.title,
-        "description": post.aiManifestExcerpt || post.excerpt,
+        "headline": post.title || "Untitled Intelligence Briefing",
+        "description": post.seoDescription || post.aiManifestExcerpt || post.excerpt || "",
         "author": {
             "@type": "Organization",
             "name": post.author?.name || "AVA"
         },
-        "datePublished": post.publishedAt,
+        "datePublished": post.publishedAt || new Date().toISOString(),
         "publisher": {
             "@type": "Organization",
             "name": "The Survey Optimization Bureau",
@@ -118,7 +125,7 @@ export default async function BlogPostPage({
         },
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": `https://ava.launchableai.online/blog/${post.slug.current}`
+            "@id": `https://ava.launchableai.online/blog/${post.slug?.current || slug}`
         }
     };
 

@@ -117,7 +117,7 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
         <main className="min-h-screen bg-[#F2F0E9] flex flex-col pt-32">
             <Navbar />
 
-            {post._id.startsWith('drafts.') && (
+            {post?._id?.startsWith('drafts.') && (
                 <div className="bg-[#CC5833] text-white py-2 px-6 flex items-center justify-center gap-4 fixed top-0 left-0 w-full z-[100] font-black uppercase tracking-widest text-[10px]">
                     <span className="animate-pulse">●</span> DRAFT PREVIEW MODE // UNAUTHENTICATED ENGINES BLOCKED
                 </div>
@@ -150,9 +150,9 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                     </h1>
 
                     <div className="flex flex-wrap gap-3">
-                        {post.categories?.map((cat: any) => (
-                            <span key={cat._id} className="px-5 py-2 rounded-full bg-white border border-[#2E4036]/10 text-[10px] font-black text-[#2E4036]/60 uppercase tracking-widest hover:border-[#CC5833] hover:text-[#CC5833] transition-colors">
-                                {cat.title}
+                        {post.categories?.filter(Boolean).map((cat: any) => (
+                            <span key={cat?._id || Math.random()} className="px-5 py-2 rounded-full bg-white border border-[#2E4036]/10 text-[10px] font-black text-[#2E4036]/60 uppercase tracking-widest hover:border-[#CC5833] hover:text-[#CC5833] transition-colors">
+                                {cat?.title || "General"}
                             </span>
                         ))}
                     </div>
