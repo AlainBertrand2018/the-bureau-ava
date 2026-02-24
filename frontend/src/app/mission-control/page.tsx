@@ -3,7 +3,7 @@ import MissionControlClient from "@/components/MissionControlClient";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Mission Control | Cultural Calibration & Target Snapshot',
+    title: 'THE BUREAU | Market Staging Tool',
     description: 'The Bureau\'s strategic hub for market universalization. Calibrate socio-economic axioms and linguistic registers before simulation.',
 };
 

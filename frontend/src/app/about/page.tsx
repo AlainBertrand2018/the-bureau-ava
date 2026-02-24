@@ -8,7 +8,7 @@ import BilateralShadowProtocol from "@/components/landing/BilateralShadowProtoco
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'About The Bureau | AVA Entity Documentation',
+    title: 'THE BUREAU | About Us',
     description: 'Autonomous survey validation, agentic AI research, and data integrity standards. Official brand identity and entity confidence documentation.',
 };
 

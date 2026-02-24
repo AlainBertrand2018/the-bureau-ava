@@ -10,7 +10,7 @@ import Image from "next/image";
 import BlogGrid from "@/components/blog/BlogGrid";
 
 export const metadata: Metadata = {
-    title: 'Bureau Insights | Survey Intelligence & AI Research',
+    title: "THE BUREAU | AVA's Blog",
     description: 'Executive briefings on data integrity, synthetic population testing, and the future of autonomous market research.',
 };
 

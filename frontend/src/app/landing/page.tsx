@@ -57,12 +57,10 @@ import {
 } from "lucide-react";
 
 
-
-
 /* ═══════════════════════════════════════════════════════════════
    MAIN PAGE
    ═══════════════════════════════════════════════════════════════ */
-export default function Home() {
+export default function LandingPage() {
   const router = useRouter();
   const { currency } = useCurrency();
   const [showEntryModal, setShowEntryModal] = useState(false);

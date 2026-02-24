@@ -11,6 +11,13 @@ import dynamic from "next/dynamic";
 const ContactModal = dynamic(() => import("@/components/ContactModal"), { ssr: false });
 const BusinessOnboardingModal = dynamic(() => import("@/components/BusinessOnboardingModal"), { ssr: false });
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'THE BUREAU | FAQ',
+    description: 'Frequently asked questions regarding autonomous survey validation, the AVA orchestrator, and The Bureau\'s methodologies.',
+};
+
 export default function FAQPage() {
     const [isContactOpen, setIsContactOpen] = React.useState(false);
     const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);

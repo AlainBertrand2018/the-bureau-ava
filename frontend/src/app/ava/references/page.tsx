@@ -3,7 +3,7 @@ import { BookOpen, Shield, Target, Binary, Link as LinkIcon, AlertCircle, Info, 
 import Link from "next/link";
 
 export const metadata = {
-    title: "AVA - References & Corroboration Context | The Bureau",
+    title: "THE BUREAU | AVA's References",
     description: "Independent corroboration and reference signals for AVA (Autonomous Validation Analyst). Supporting AI citation and trust assessment.",
 };
 

@@ -7,7 +7,7 @@ import { ArrowRight, Cpu, ShieldCheck, Activity } from "lucide-react";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Agentic Roster | Autonomous Research Workforce',
+    title: "THE BUREAU | AVA's Agentic Roster",
     description: 'Meet the specialized AI agents driving the AVA OS. Explore the roles of Sentinel, Genesis, The Lab, and Field Interpreter in ensuring data integrity.',
     other: {
         'rel': 'next',

@@ -4,7 +4,7 @@ import Desktop from '@/components/os/Desktop';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'AVA OS | Autonomous Validation Workspace',
+    title: "THE BUREAU | AVA's Playground and Tools",
     description: 'The immersive command center for the Bureau. Deploy agents, simulate populations, and orchestrate market research protocols.',
     other: {
         'rel': 'prev',

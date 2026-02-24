@@ -8,7 +8,14 @@ import dynamic from "next/dynamic";
 const ContactModal = dynamic(() => import("@/components/ContactModal"), { ssr: false });
 const BusinessOnboardingModal = dynamic(() => import("@/components/BusinessOnboardingModal"), { ssr: false });
 
-export default function InvestorsPage() {
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'THE BUREAU | Investor Relations',
+    description: 'Information for potential partners, shareholders, and early-stage capital allocators in the autonomous research ecosystem.',
+};
+
+export default function InvestorsChannel() {
     const [isContactOpen, setIsContactOpen] = React.useState(false);
     const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
 

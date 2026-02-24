@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Shield, Zap, Search, Target, Binary, AlertTriangle, CheckCircle2, Bot, Cpu, Network, Users, User, BarChart3, ShieldCheck, FileText } from "lucide-react";
 
 export const metadata = {
-    title: "AVA | Autonomous Validation Analyst (CEO)",
+    title: "THE BUREAU | Meet AVA",
     description: "Executive-grade autonomous AI system for adversarial validation of strategic assumptions. The primary intelligence orchestrator of The Bureau.",
 };
 

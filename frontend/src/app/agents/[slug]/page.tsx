@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!agent) return { title: "Agent Not Found" };
 
     return {
-        title: `${agent.name} — ${agent.role} | Agentic Roster`,
+        title: `THE BUREAU | ${agent.name}`,
         description: agent.whatItIs,
     };
 }

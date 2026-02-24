@@ -7,7 +7,7 @@ import { ArrowRight, Book, Sparkles, Target } from "lucide-react";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'AVA Glossary | Survey Intelligence & AI Methodology',
+    title: 'THE BUREAU | Glossary',
     description: 'The definitive knowledge base for autonomous survey validation, agentic AI research, and data integrity standards.',
     other: {
         'rel': 'next',

@@ -66,7 +66,7 @@ export async function generateMetadata({
     if (!post) return { title: 'Post Not Found' };
 
     return {
-        title: `${post.title} | Bureau Insights`,
+        title: `THE BUREAU | ${post.title}`,
         description: post.seoDescription || post.aiManifestExcerpt || post.excerpt,
         openGraph: {
             title: post.title,

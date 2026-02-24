@@ -3,7 +3,7 @@ import FieldInterpreterClient from '@/components/FieldInterpreterClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Field Interpreter | Groundwork Analytics & Verification',
+    title: 'THE BUREAU | Survey Result Analyzer',
     description: 'The analytical engine of the Bureau. Consolidate raw fieldwork into actionable executive dossiers with mathematical certainty.',
 };
 

@@ -3,7 +3,7 @@ import GenesisClient from "@/components/GenesisClient";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Genesis | Autonomous Survey Instrument Design',
+    title: 'THE BUREAU | Questionnaire Generator',
     description: 'The primary architect of the Bureau. Generate executive-grade field instruments with built-in adversarial resistance and cultural integrity.',
 };
 

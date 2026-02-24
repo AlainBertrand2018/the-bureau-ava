@@ -38,7 +38,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ava.launchableai.online"),
-  title: "Executive-Grade Survey Optimization & Synthetic Panel Testing | The Bureau",
+  title: "THE BUREAU | Introducing AVA",
   description:
     "Meet AVA, the proprietary AI orchestrator conducting rigorous pre-survey audits for Government, FMCG, and Academic research. Secure data integrity with synthetic population testing.",
   manifest: "/manifest.json",

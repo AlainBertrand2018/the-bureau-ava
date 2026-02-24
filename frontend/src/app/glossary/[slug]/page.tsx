@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (!entry) return { title: 'Term Not Found' };
 
     return {
-        title: `${entry.term} | AVA Glossary`,
+        title: `THE BUREAU | ${entry.term}`,
         description: entry.definition.split('.')[0],
         other: {
             'rel': 'next',

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Executive Landing | The Case for AEO & GEO',
+    title: 'THE BUREAU | Survey Optimization Platform',
     description: 'Explore the methodology of The Bureau. Transitioning from traditional SEO to AI-centric Generative Engine Optimization.',
     other: {
         'rel': 'prev',
