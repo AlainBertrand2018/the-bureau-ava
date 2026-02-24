@@ -11,5 +11,5 @@ export const client = createClient({
 
 // Helper to determine perspective
 export const getPerspective = (isPreview?: boolean) => {
-    return isPreview ? 'previewDrafts' : 'published'
+    return isPreview ? 'drafts' : 'published'
 }

@@ -14,26 +14,35 @@ type Props = {
 async function getPost(slug: string, isPreview: boolean = false) {
     const token = process.env.SANITY_API_TOKEN;
 
-    // Use the client with specific configuration for the preview
-    // Note: 'previewDrafts' was renamed to 'drafts' in recent Sanity API
-    const previewClient = isPreview && token
-        ? client.withConfig({ token, perspective: 'drafts', useCdn: false })
-        : client;
+    const query = `*[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {
+        ...,
+        author->,
+        categories[]->
+    }`;
 
     try {
-        const query = `*[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {
-            ...,
-            author->,
-            categories[]->
-        }`;
-
-        const post = await previewClient.fetch(query, { slug });
-
-        if (isPreview && !post) {
-            console.warn(`Preview Mode: No draft or published post found for slug "${slug}"`);
+        // For preview mode, use drafts perspective directly
+        if (isPreview && token) {
+            const draftClient = client.withConfig({ token, perspective: 'drafts', useCdn: false });
+            const post = await draftClient.fetch(query, { slug });
+            if (!post) {
+                console.warn(`Preview Mode: No draft or published post found for slug "${slug}"`);
+            }
+            return post;
         }
 
-        return post;
+        // Standard: try published first
+        const post = await client.fetch(query, { slug });
+        if (post) return post;
+
+        // Fallback: if no published post found, try drafts (handles unpublished posts)
+        if (token) {
+            console.log(`[Blog] No published post for "${slug}", trying drafts...`);
+            const draftClient = client.withConfig({ token, perspective: 'drafts', useCdn: false });
+            return await draftClient.fetch(query, { slug });
+        }
+
+        return null;
     } catch (e: any) {
         console.error(`fetchPost error (${slug}):`, e.message);
         return null;

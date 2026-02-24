@@ -112,11 +112,18 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
         },
         list: {
             bullet: ({ children }: any) => <ul className="list-none space-y-4 mb-10 pl-4">{children}</ul>,
+            number: ({ children }: any) => <ol className="list-none space-y-4 mb-10 pl-4 counter-reset-item">{children}</ol>,
         },
         listItem: {
             bullet: ({ children }: any) => (
                 <li className="flex items-start gap-4">
                     <div className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-[#CC5833]" />
+                    <span className="text-lg text-[#2E4036]/80 font-serif">{children}</span>
+                </li>
+            ),
+            number: ({ children, index }: any) => (
+                <li className="flex items-start gap-4">
+                    <span className="mt-0.5 shrink-0 w-6 h-6 rounded-full bg-[#2E4036] text-[#F2F0E9] text-[10px] font-bold flex items-center justify-center">{(index ?? 0) + 1}</span>
                     <span className="text-lg text-[#2E4036]/80 font-serif">{children}</span>
                 </li>
             ),
