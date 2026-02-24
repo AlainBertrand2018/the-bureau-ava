@@ -7,5 +7,5 @@ export function proxy(request: NextRequest) {
 
 // Ensure static files at /public/ root bypass all middleware to avoid Vercel permissions errors
 export const config = {
-    matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|llms-full.txt).*)'],
+    matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|llms.txt|llms-full.txt|googlece2363cce581e2b9.html).*)'],
 };

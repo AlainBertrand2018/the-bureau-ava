@@ -24,7 +24,7 @@ export default function Demo({ onProtocolOpen }: DemoProps) {
 
             <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
                 <Reveal className="mb-20">
-                    <div className="badge-minimal text-white/40 border-white/10 mb-8 inline-flex items-center gap-2">
+                    <div className="badge-minimal !text-[#F2F0E9]/40 border-[#F2F0E9]/10 mb-8 inline-flex items-center gap-2">
                         <Terminal size={12} className="text-[#CC5833]" />
                         <span>The Output Interface</span>
                     </div>

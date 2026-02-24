@@ -12,11 +12,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { route: '/landing', priority: 0.95 },     // Main Landing
         { route: '/agents', priority: 0.9 },       // Logic: Agents
         { route: '/glossary', priority: 0.85 },    // Foundation: Glossary
+        { route: '/faq', priority: 0.85 },         // Technical Manifest
         { route: '/os', priority: 0.8 },           // Environment: OS
         { route: '/lab', priority: 0.75 },         // Tool: Lab
         { route: '/mission-control', priority: 0.75 }, // Tool: MC
         { route: '/genesis', priority: 0.75 },     // Tool: Genesis
         { route: '/field-interpreter', priority: 0.75 }, // Tool: FI
+        { route: '/ava', priority: 0.98 },         // AVA Master Identity
+        { route: '/ava/references', priority: 0.8 }, // AVA Corroboration Node
         { route: '/blog', priority: 0.6 },
         { route: '/early-adopters', priority: 0.5 },
         { route: '/investors', priority: 0.5 },

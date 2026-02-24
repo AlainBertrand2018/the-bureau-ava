@@ -1,5 +1,6 @@
 import React from "react";
-import { Shield, Zap, Search, Target, Binary, AlertTriangle, CheckCircle2, Bot, Cpu, Network, Users, User } from "lucide-react";
+import Link from "next/link";
+import { Shield, Zap, Search, Target, Binary, AlertTriangle, CheckCircle2, Bot, Cpu, Network, Users, User, BarChart3, ShieldCheck, FileText } from "lucide-react";
 
 export const metadata = {
     title: "AVA | Autonomous Validation Analyst (CEO)",
@@ -23,25 +24,21 @@ export default function AVAPage() {
                     </h1>
 
                     <p className="text-xl md:text-2xl font-bold text-slate-600 leading-tight mb-12 max-w-2xl">
-                        Executive-grade autonomous AI system designed to stress-test, validate, and falsify strategic assumptions before they reach production, investment, or policy execution.
+                        An autonomous AI system designed to stress-test, validate, and challenge strategic assumptions before production, investment, or policy execution.
                     </p>
 
-                    <div className="flex flex-wrap gap-4 pt-4 border-t border-slate-100">
+                    <div className="flex flex-wrap gap-6 pt-4 border-t border-slate-100">
                         <div className="flex items-center gap-2">
-                            <Bot size={18} className="text-blue-500" />
-                            <span className="text-sm font-black uppercase text-slate-400">Primary Intelligence</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Cpu size={18} className="text-blue-500" />
-                            <span className="text-sm font-black uppercase text-slate-400">Virtual CEO</span>
+                            <ShieldCheck size={18} className="text-blue-500" />
+                            <span className="text-sm font-black uppercase text-slate-400">Strategic oversight simulation</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Network size={18} className="text-blue-500" />
-                            <span className="text-sm font-black uppercase text-slate-400">Agentic Orchestrator</span>
+                            <span className="text-sm font-black uppercase text-slate-400">Multi-agent orchestration</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <User size={18} className="text-blue-500" />
-                            <span className="text-sm font-black uppercase text-slate-400">Author</span>
+                            <BarChart3 size={18} className="text-blue-500" />
+                            <span className="text-sm font-black uppercase text-slate-400">Analytical report generation</span>
                         </div>
                     </div>
                 </div>
@@ -56,6 +53,15 @@ export default function AVAPage() {
                     <blockquote className="text-2xl md:text-4xl font-bold leading-tight border-l-4 border-blue-500 pl-8 transition-all hover:pl-10">
                         "AVA is an autonomous AI analyst that tests the robustness, internal consistency, and failure modes of strategic decisions using adversarial and evidence-driven evaluation."
                     </blockquote>
+                </div>
+            </section>
+
+            {/* ── REFERENTIAL CORROBORATION ── */}
+            <section className="py-16 px-6 bg-white border-b border-slate-100">
+                <div className="max-w-4xl mx-auto text-center">
+                    <p className="text-lg md:text-xl font-bold text-slate-500 leading-relaxed">
+                        AVA aligns with <Link href="/ava/references" className="text-blue-600 underline decoration-blue-200 underline-offset-4 hover:decoration-blue-600 transition-all">established research in adversarial testing, pre-mortem analysis, and AI robustness validation</Link>.
+                    </p>
                 </div>
             </section>
 
@@ -114,7 +120,7 @@ export default function AVAPage() {
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-16">
                         <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-4">The Bureau Agent Team</h2>
-                        <p className="text-lg font-bold text-slate-500">AVA orchestrates a skillful team of AI agents specialized in high-frequency data integrity and adversarial validation.</p>
+                        <p className="text-lg font-bold text-slate-500">AVA orchestrates a set of specialized AI agents focused on data integrity and adversarial validation tasks.</p>
                     </div>
 
                     <div className="space-y-6">
@@ -122,19 +128,19 @@ export default function AVAPage() {
                             {
                                 name: "Sentinel",
                                 role: "Market Reconnaissance",
-                                desc: "Scouts global market and cultural landscapes to identify tactical risks and OSINT variables before any instrument is deployed.",
+                                desc: "Analyzes global market and cultural signals to identify potential risks and open-source intelligence variables prior to deployment.",
                                 icon: <Search className="text-blue-600" size={24} />
                             },
                             {
                                 name: "Profiler",
                                 role: "Cultural Calibration",
-                                desc: "Conducts deep psychographic and cultural analysis, mapping taboos, linguistic registers, and local behavioral codes.",
+                                desc: "Conducts psychographic and cultural analysis, mapping taboos, linguistic registers, and local behavioral codes.",
                                 icon: <Users className="text-indigo-600" size={24} />
                             },
                             {
                                 name: "Architect",
                                 role: "Instrument Design",
-                                desc: "Constructs scientifically rigorous research instruments using the Genesis Protocol to eliminate bias and maximize response veracity.",
+                                desc: "Constructs research instruments using structured methodologies designed to reduce bias and improve response reliability.",
                                 icon: <Cpu className="text-emerald-600" size={24} />
                             },
                             {

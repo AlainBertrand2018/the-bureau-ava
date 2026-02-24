@@ -9,7 +9,6 @@ import { useCurrency } from "@/context/CurrencyContext";
 
 const RotatingDashboard = dynamic(() => import("@/components/RotatingDashboard"), { ssr: false });
 const SurveyArchitect = dynamic(() => import("@/components/architect/SurveyArchitect"), { ssr: false });
-const AVAChat = dynamic(() => import("@/components/AVAChat"), { ssr: false });
 const AnimatedReportCard = dynamic(() => import("@/components/AnimatedReportCard"), { ssr: false });
 const FreeLabModal = dynamic(() => import("@/components/lab/FreeLabModal"), { ssr: false });
 const ContactModal = dynamic(() => import("@/components/ContactModal"), { ssr: false });
@@ -80,7 +79,6 @@ export default function Home() {
   const [protocolTarget, setProtocolTarget] = useState("Sandbox Environment");
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const triggerProtocol = (target = "Sandbox Environment") => {
     setProtocolTarget(target);
@@ -183,7 +181,7 @@ export default function Home() {
         />
 
         {/* 11.5 FAQ Section >>> Address objections */}
-        <FAQSection onProtocolOpen={() => setIsChatOpen(true)} />
+        <FAQSection />
 
         {/* 12. Final CTA >>> Last push */}
         <FinalCTASection
@@ -443,7 +441,6 @@ export default function Home() {
       <FreeLabModal isOpen={isFreeLabOpen} onClose={() => setIsFreeLabOpen(false)} />
       <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
       <BusinessOnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />
-      <AVAChat isOpen={isChatOpen} onOpenChange={setIsChatOpen} />
       <Footer dark={false} />
       <GDPRConsent />
     </main>

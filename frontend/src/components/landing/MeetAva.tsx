@@ -49,7 +49,7 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
             <div className="relative z-10 max-w-7xl mx-auto px-6 h-full flex flex-col justify-center">
                 {/* Manifesto Section */}
                 <div className="mb-24">
-                    <div className="badge-minimal text-white/40 border-white/10 mb-8 inline-flex items-center gap-2">
+                    <div className="badge-minimal !text-[#F2F0E9]/60 border-[#F2F0E9]/20 mb-8 inline-flex items-center gap-2">
                         <Target size={12} className="text-[#CC5833]" />
                         <span>The Intelligence Manifesto</span>
                     </div>
@@ -70,8 +70,8 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                 <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 mb-16">
                     {/* Dossier Sidebar */}
                     <div className="lg:w-[320px] flex-shrink-0">
-                        <div className="card-artifact p-8 bg-[#2E4036]/5 border-white/10 text-left backdrop-blur-md">
-                            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6 border border-white/10 group/avatar">
+                        <div className="card-artifact p-8 bg-[#F2F0E9] border-[#2E4036]/10 text-left shadow-2xl shadow-black/20">
+                            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6 border border-[#2E4036]/10 group/avatar">
                                 <Image src="/images/AVA.webp" alt="AVA" fill className="object-cover object-top transition-all duration-700 group-hover/avatar:scale-105" />
                                 {/* Mauritian Origin Flag */}
                                 <motion.div

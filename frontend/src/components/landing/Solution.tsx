@@ -162,7 +162,7 @@ function TelemetryTypewriter() {
                 <div className="w-2 h-2 rounded-full bg-[#CC5833] animate-pulse" />
                 <span className="font-mono text-[8px] font-bold text-[#CC5833] uppercase tracking-widest">Live Audit Feed</span>
             </div>
-            <p className="font-mono text-[11px] text-white/90 leading-relaxed min-h-[40px]">
+            <p className="font-mono text-[11px] text-[#F2F0E9]/90 leading-relaxed min-h-[40px]">
                 {text}
                 <span className="inline-block w-1.5 h-3 bg-[#CC5833] ml-1 animate-[blink_1s_infinite]" />
             </p>

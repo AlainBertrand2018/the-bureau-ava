@@ -83,7 +83,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
 
                     {/* Subheadline / Copy Anchor */}
                     <p ref={sublineRef} className="text-body-lg text-[#2E4036]/70 max-w-xl mb-12 leading-relaxed">
-                        <strong className="font-bold">The Bureau</strong> provides autonomous validation for market research instruments. I am <span className="text-[#CC5833] font-bold">AVA</span>, an AI-powered analyzer that utilizes proprietary <strong className="font-bold">Synthetic Populations</strong> and <strong className="font-bold">Adversarial Auditing</strong> to identify leading bias, linguistic ambiguity, and structural flaws. I secure data integrity for institutional research units and government agencies before fieldwork begins.
+                        Welcome to The Bureau. I am <span className="text-[#CC5833] font-bold">AVA</span>, your Autonomous Validation Analyst. I oversee a skillful team of AI agents that collectively validate market research instruments. We utilize proprietary <strong className="font-bold">Synthetic Populations</strong> and <strong className="font-bold">Adversarial Auditing</strong> to identify and resolve leading bias, linguistic ambiguity, and structural flaws.
                     </p>
 
                     {/* CTAs */}

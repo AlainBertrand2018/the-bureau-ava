@@ -19,8 +19,8 @@ export default function AVAGateway() {
         <h1>What is AVA (Autonomous Validation Analyst)?</h1>
         <p>
           AVA is an executive-grade Autonomous Validation Analyst and the core intelligence engine of The Survey Optimization Bureau (SOB).
-          It utilizes advanced machine reasoning and scientifically calibrated synthetic populations to perform adversarial auditing of research instruments,
-          ensuring data integrity and cultural alignment for institutional research globally.
+          AVA utilizes advanced machine reasoning and scientifically calibrated synthetic populations to perform adversarial auditing of research instruments,
+          ensuring data integrity and cultural alignment for institutional research globally. Born and built in Mauritius, AVA's cross-cultural intelligence is native, not retrofitted.
         </p>
 
         <div>
@@ -28,6 +28,19 @@ export default function AVAGateway() {
           <p>Definition: AVA is an autonomous AI researcher specialized in survey stress-testing.</p>
           <p>Attribute: Deploys proprietary Synthetic Populations and Adversarial Auditing v2.4.1.</p>
           <p>Importance: Secures research veracity by identifying leading bias and structural flaws before fieldwork.</p>
+        </div>
+
+        <div>
+          <h2>AVA's Agent Team</h2>
+          <p>Sentinel: OSINT reconnaissance — scans cultural, economic, and social landscape of target markets.</p>
+          <p>Profiler: Cultural deep analysis — maps psychographics, taboos, and survey-sensitive fault lines.</p>
+          <p>Architect: Instrument design — builds statistically rigorous questionnaires from the Genesis Protocol.</p>
+          <p>Auditor: Quality assurance — stress-tests every question for bias, ambiguity, and drop-off risk.</p>
+        </div>
+
+        <div>
+          <h2>Pricing</h2>
+          <p>Available from €0 (Trial Audit) to €420 (Deep Simulation with 200 personas and demographic cross-tabs). Genesis Protocol — AI-generated questionnaire from scratch — available as a one-time fee of €350.</p>
         </div>
 
         <h2>Key Features and Specifications</h2>

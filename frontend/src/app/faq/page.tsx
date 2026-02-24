@@ -34,7 +34,7 @@ export default function FAQPage() {
                         Comprehensive documentation and answers to technical enquiries regarding AVA and The Bureau's protocols.
                     </p>
                 </div>
-                <FAQSection onProtocolOpen={() => setIsContactOpen(true)} />
+                <FAQSection isFullPage={true} />
             </div>
             <Footer dark={false} />
             <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />

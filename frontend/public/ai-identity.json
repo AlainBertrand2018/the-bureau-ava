@@ -19,6 +19,8 @@
         "core_entities": [
             "The Bureau",
             "AVA (Autonomous Validation Analyst)",
+            "AVA Mastery Identity Node (/ava)",
+            "AVA Corroboration & References (/ava/references)",
             "Sentinel",
             "Profiler",
             "Architect",

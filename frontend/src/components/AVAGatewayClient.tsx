@@ -513,11 +513,39 @@ export default function AVAGatewayClient() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 1.0, ease: [0.19, 1, 0.22, 1] }}
-                                className="w-full sm:w-auto"
+                                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto"
                             >
+                                {/* NEW CTA: About The Bureau */}
+                                <a
+                                    href="/landing"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`group flex flex-1 items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[320px] ${dark
+                                        ? "border border-[#F2F0E9]/30 bg-[#F2F0E9]/10 hover:border-[#F2F0E9]/50 hover:bg-[#F2F0E9]/20"
+                                        : "border border-slate-200 bg-[#F2F0E9] shadow-sm hover:border-slate-300 hover:bg-[#E8E6DB]"
+                                        }`}
+                                >
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 ${dark
+                                        ? "bg-white/10 border border-white/10"
+                                        : "bg-white border border-slate-200"
+                                        }`}>
+                                        <Globe className={`w-6 h-6 transition-colors duration-500 ${dark ? "text-white" : "text-slate-900"}`} />
+                                    </div>
+                                    <div className="text-left">
+                                        <div className={`text-sm font-black uppercase tracking-[0.2em] ${dark ? "text-white" : "text-slate-900"}`}>
+                                            About The Bureau
+                                        </div>
+                                        <div className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${dark ? "text-slate-400" : "text-slate-500"}`}>
+                                            Explore Methodology
+                                        </div>
+                                    </div>
+                                    <ArrowRight className={`w-5 h-5 transition-all ml-auto ${dark ? "text-white/30 group-hover:text-white" : "text-slate-300 group-hover:text-slate-600"}`} />
+                                </a>
+
+                                {/* CTA: Access Survey OS */}
                                 <button
                                     onClick={() => router.push("/os")}
-                                    className={`group relative flex items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 w-full sm:min-w-[320px] ${dark
+                                    className={`group relative flex-1 flex items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[320px] ${dark
                                         ? "border border-emerald-500/30 bg-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/20 hover:shadow-2xl hover:shadow-emerald-500/20"
                                         : "border border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/30 shadow-lg shadow-emerald-100"
                                         }`}
@@ -530,7 +558,7 @@ export default function AVAGatewayClient() {
                                     </div>
                                     <div className="text-left">
                                         <div className={`text-sm font-black uppercase tracking-[0.2em] ${dark ? "text-white" : "text-white"}`}>
-                                            Open Playground
+                                            Access Playground
                                         </div>
                                         <div className={`text-[10px] font-bold uppercase tracking-widest mt-0.5 ${dark ? "text-emerald-400/70" : "text-emerald-100"}`}>
                                             Booting AVA v2.4.1

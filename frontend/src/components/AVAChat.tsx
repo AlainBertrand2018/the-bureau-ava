@@ -30,22 +30,15 @@ function renderMarkdownLite(text: string) {
     });
 }
 
+import { useChat } from "@/context/ChatContext";
+
 interface AVAChatProps {
-    isOpen?: boolean;
-    onOpenChange?: (open: boolean) => void;
+    // Props are now handled via context, but we keep the interface for compatibility
 }
 
-export default function AVAChat({ isOpen: externalIsOpen, onOpenChange }: AVAChatProps = {}) {
-    const [internalIsOpen, setInternalIsOpen] = useState(false);
-    const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+export default function AVAChat({ }: AVAChatProps = {}) {
+    const { isChatOpen: isOpen, setIsChatOpen: setIsOpen } = useChat();
 
-    const setIsOpen = (open: boolean) => {
-        if (onOpenChange) {
-            onOpenChange(open);
-        } else {
-            setInternalIsOpen(open);
-        }
-    };
 
     const [messages, setMessages] = useState<Message[]>([
         { role: "assistant", content: AVA_GREETING }

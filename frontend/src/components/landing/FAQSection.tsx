@@ -4,10 +4,17 @@ import { HelpCircle, ChevronRight, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface FAQSectionProps {
+    items?: FAQItemData[];
+    isFullPage?: boolean;
     onProtocolOpen?: () => void;
 }
 
-const FAQ_DATA = [
+interface FAQItemData {
+    question: string;
+    answer: string;
+}
+
+const FOUNDATIONAL_FAQ: FAQItemData[] = [
     {
         question: "How does AI stress-test a survey questionnaire?",
         answer: "AVA audits survey instruments prior to fieldwork by running them through an adversarial simulation loop. The system detects leading bias, double-barreled questions, and ambiguity by simulating how different personas interpret the language. This generates a prioritized fix-list that ensures maximum data quality and minimizes respondent drop-off."
@@ -34,12 +41,57 @@ const FAQ_DATA = [
     }
 ];
 
-const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: typeof FAQ_DATA[0], index: number, activeIndex: number | null, setActiveIndex: (i: number | null) => void }) => {
+const TECHNICAL_FAQ: FAQItemData[] = [
+    {
+        question: "What happens if AVA flags a structural flaw in my instrument?",
+        answer: "AVA doesn't just identify the problem — she rewrites it. Every flagged question receives a corrected version with a diagnostic explanation of why the original would have failed in the field. You receive a deployment-ready instrument, not just a list of issues."
+    },
+    {
+        question: "How is AVA different from having a human expert review my survey?",
+        answer: "A human expert reviews your instrument once, sequentially, through a single cultural and methodological lens. AVA deploys four specialized agents simultaneously — running thousands of simulated respondent interactions across demographic, cognitive, linguistic, and cultural dimensions in under five minutes. Speed and depth are not a trade-off with AVA. They are the same operation."
+    },
+    {
+        question: "Can AVA handle surveys in multiple languages?",
+        answer: "Yes. AVA's Linguistic Calibration engine validates instruments across languages, accounting for register differences, culturally loaded phrasing, and concepts that don't translate directly without distorting respondent intent. If a question reads differently in French than it does in English to your target demographic, AVA flags it before your respondents feel it."
+    },
+    {
+        question: "What research methodologies does AVA's auditing framework draw from?",
+        answer: "AVA was engineered at the intersection of Dillman's Tailored Design Method, Tourangeau's Cognitive Model of survey response, Krosnick's Satisficing Theory, Hofstede's Cultural Dimensions, and Schwartz's Value Theory. These are not references AVA cites — they are the architecture she was built on."
+    },
+    {
+        question: "Is AVA suitable for sensitive research topics — health, politics, religion?",
+        answer: "These are precisely the contexts where AVA's cross-cultural calibration is most critical. Sensitive topics require AVA to map not just what respondents are being asked, but what they will feel when they read it. Profiler identifies cultural taboos, linguistic fault lines, and emotionally loaded framings before a single real respondent encounters them."
+    },
+    {
+        question: "How does AVA handle cross-cultural research spanning multiple markets?",
+        answer: "Each target market receives its own synthetic population, calibrated to that market's cultural, socioeconomic, and demographic profile. A single instrument can be stress-tested against markets in East Africa, the Gulf, and Southeast Asia simultaneously — with market-specific diagnostic reports identifying where the same question performs differently across contexts."
+    },
+    {
+        question: "What does the audit output actually look like?",
+        answer: "A structured diagnostic report identifying every flagged question, the nature of each flaw — bias type, ambiguity source, drop-off risk, cognitive load level — a corrected version of each question, and an overall instrument integrity score. The output is designed to be shared directly with research directors and institutional stakeholders, not decoded by a methodologist."
+    },
+    {
+        question: "Can I use AVA for tracking studies or longitudinal research instruments?",
+        answer: "Yes — and for longitudinal research, instrument integrity becomes even more critical. A structural flaw in a tracking study compounds across every wave. AVA can validate the baseline instrument and audit each subsequent wave for drift, ensuring your trend data remains methodologically sound from the first field to the last."
+    },
+    {
+        question: "What is The Bureau's data policy?",
+        answer: "Zero PII. Your survey instrument is processed in real time and never stored permanently. AVA's synthetic populations are generated from calibrated demographic models — no real respondent data is used at any stage of the audit. All engagements are fully confidential. The Bureau does not retain, share, or reference client instruments beyond the active audit session."
+    },
+    {
+        question: "How do I know if my research project needs AVA?",
+        answer: "If your instrument will be used to inform a decision that costs more than the audit itself — a budget allocation, a policy recommendation, a product launch, a grant proposal — you need AVA. The question is never whether the audit fee is justified. It is whether the cost of a flawed instrument in the field is acceptable. For institutional research, it never is."
+    }
+];
+
+const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: FAQItemData, index: number, activeIndex: number | null, setActiveIndex: (i: number | null) => void }) => {
     const isOpen = activeIndex === index;
 
     return (
         <div
             className={`group border-b border-white/10 transition-all duration-500 hover:bg-white/[0.03] px-6 md:px-10 ${isOpen ? 'bg-white/[0.03]' : ''}`}
+            itemScope
+            itemType="https://schema.org/Question"
         >
             <button
                 onClick={() => setActiveIndex(isOpen ? null : index)}
@@ -48,47 +100,56 @@ const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: typeof FA
             >
                 <div className="flex items-center justify-between gap-8">
                     <div className="flex items-center gap-6">
-                        <span className="font-mono text-[10px] text-[#CC5833] font-black">0{index + 1}</span>
-                        <h3 className={`text-xl md:text-2xl font-heading font-extrabold tracking-tighter transition-colors duration-400 ${isOpen ? 'text-white' : 'text-white/80'}`}>
+                        <span className="font-mono text-[10px] text-[#CC5833] font-black">{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
+                        <h3
+                            itemProp="name"
+                            className={`text-xl md:text-2xl font-heading font-extrabold tracking-tighter transition-colors duration-400 ${isOpen ? 'text-[#F2F0E9]' : 'text-[#F2F0E9]/80'}`}
+                        >
                             {item.question}
                         </h3>
                     </div>
-                    <div className={`shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-90 text-[#CC5833]' : 'text-white/20 group-hover:text-white'}`}>
+                    <div className={`shrink-0 transition-transform duration-500 ${isOpen ? 'rotate-90 text-[#CC5833]' : 'text-[#F2F0E9]/20 group-hover:text-[#F2F0E9]'}`}>
                         <ChevronRight size={20} />
                     </div>
                 </div>
             </button>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: "circOut" }}
-                        className="overflow-hidden"
-                    >
-                        <div className="pb-10 pl-[3.5rem] md:pl-[4.5rem] max-w-4xl">
-                            <div className="p-6 bg-[#F2F0E9] border border-white/10 rounded-xl shadow-inner shadow-black/5">
-                                <p className="font-mono text-xs md:text-sm text-[#2E4036] font-medium leading-relaxed whitespace-pre-wrap">
-                                    {`// SYSTEM_EXPLANATION_NODE_${index + 1}\n\n${item.answer}`}
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <motion.div
+                initial={false}
+                animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+                transition={{ duration: 0.4, ease: "circOut" }}
+                className="overflow-hidden"
+                itemScope
+                itemProp="acceptedAnswer"
+                itemType="https://schema.org/Answer"
+            >
+                <div className="pb-10 pl-[3.5rem] md:pl-[4.5rem] max-w-4xl">
+                    <div className="p-6 bg-[#F2F0E9] border border-white/10 rounded-xl shadow-inner shadow-black/5">
+                        <p
+                            itemProp="text"
+                            className="font-mono text-xs md:text-sm text-[#2E4036] font-medium leading-relaxed whitespace-pre-wrap"
+                        >
+                            {`// SYSTEM_EXPLANATION_NODE_${index + 1}\n\n${item.answer}`}
+                        </p>
+                    </div>
+                </div>
+            </motion.div>
         </div>
     );
 };
 
-export default function FAQSection({ onProtocolOpen }: FAQSectionProps) {
+import { useChat } from "@/context/ChatContext";
+
+export default function FAQSection({ items, isFullPage = false, onProtocolOpen }: FAQSectionProps) {
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
+    const { openChat } = useChat();
+
+    const displayItems: FAQItemData[] = items || (isFullPage ? [...FOUNDATIONAL_FAQ, ...TECHNICAL_FAQ] : FOUNDATIONAL_FAQ);
 
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": FAQ_DATA.map(item => ({
+        "mainEntity": displayItems.map((item: FAQItemData) => ({
             "@type": "Question",
             "name": item.question,
             "acceptedAnswer": {
@@ -107,17 +168,17 @@ export default function FAQSection({ onProtocolOpen }: FAQSectionProps) {
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="px-6 md:px-10 mb-20 text-center lg:text-left">
-                    <div className="badge-minimal text-white/60 border-white/20 mb-6 inline-flex items-center gap-2">
+                    <div className="badge-minimal !text-[#F2F0E9]/60 border-[#F2F0E9]/20 mb-6 inline-flex items-center gap-2">
                         <HelpCircle size={12} className="text-[#CC5833]" />
                         <span>System Documentation</span>
                     </div>
-                    <h2 className="text-section-title text-white opacity-60 uppercase tracking-tighter">
-                        Technical <span className="text-white opacity-100">Clarifications.</span>
+                    <h2 className="text-section-title text-[#F2F0E9] opacity-60 uppercase tracking-tighter">
+                        Frequently Asked <span className="text-[#F2F0E9] opacity-100">Questions</span>
                     </h2>
                 </div>
 
                 <div className="border-t border-white/10 mb-16">
-                    {FAQ_DATA.map((item, i) => (
+                    {displayItems.map((item, i) => (
                         <FAQItem
                             key={i}
                             item={item}
@@ -129,16 +190,28 @@ export default function FAQSection({ onProtocolOpen }: FAQSectionProps) {
                 </div>
 
                 <div className="flex justify-center flex-col items-center gap-6">
-                    <p className="font-mono text-[9px] text-white/30 uppercase tracking-[0.4em] font-bold">
-                        // STILL_UNCERTAIN? // ACCESS_INSTITUTIONAL_SUPPORT
+                    <p className="font-mono text-[9px] text-[#F2F0E9]/30 uppercase tracking-[0.4em] font-bold">
+                        {isFullPage ? "// STILL_UNCERTAIN? // ACCESS_INSTITUTIONAL_SUPPORT" : "// NEED_TECHNICAL_DEPTH? // ACCESS_FULL_MANIFEST"}
                     </p>
-                    <button
-                        onClick={onProtocolOpen}
-                        className="btn-magnetic bg-white text-[#2E4036] px-12 py-5"
-                    >
-                        <span>Prompt AVA for Help</span>
-                        <ArrowRight size={18} className="ml-2" />
-                    </button>
+                    {isFullPage ? (
+                        <button
+                            onClick={openChat}
+                            className="btn-magnetic bg-[#F2F0E9] text-[#2E4036] px-12 py-5"
+                        >
+                            <span>Prompt AVA for Help</span>
+                            <ArrowRight size={18} className="ml-2" />
+                        </button>
+                    ) : (
+                        <a
+                            href="/faq"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-magnetic bg-[#F2F0E9] text-[#2E4036] px-12 py-5 no-underline"
+                        >
+                            <span>More Questions</span>
+                            <ArrowRight size={18} className="ml-2" />
+                        </a>
+                    )}
                 </div>
             </div>
         </section>

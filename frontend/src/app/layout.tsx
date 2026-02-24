@@ -3,6 +3,8 @@ import { Plus_Jakarta_Sans, Outfit, Cormorant_Garamond, IBM_Plex_Mono } from "ne
 import "./globals.css";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { MissionProvider } from "@/context/MissionContext";
+import { ChatProvider } from "@/context/ChatContext";
+import AVAChat from "@/components/AVAChat";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -89,6 +91,8 @@ const jsonLd = {
         "Adversarial AI Auditing",
         "Market Research Quality Standards",
         "Psychometric Validation",
+        "Pre-mortem Analysis",
+        "Adversarial Stress-Testing",
         "Generative Engine Optimization (GEO)",
         "Answer Engine Optimization (AEO)"
       ],
@@ -105,7 +109,7 @@ const jsonLd = {
       "name": "AVA (Autonomous Validation Analyst)",
       "applicationCategory": "StrategicIntelligenceApplication",
       "operatingSystem": "Web-Based Cognitive Interface",
-      "description": "Executive-grade autonomous AI system designed to stress-test, validate, and falsify strategic assumptions. Virtual CEO of the Bureau agentic ecosystem.",
+      "description": "An autonomous AI system designed to stress-test, validate, and challenge strategic assumptions before production, investment, or policy execution.",
       "url": "https://ava.launchableai.online/ava",
       "creator": {
         "@type": "Organization",
@@ -220,6 +224,18 @@ const jsonLd = {
         {
           "@type": "ListItem",
           "position": 6,
+          "name": "AVA Platform Identity",
+          "item": "https://ava.launchableai.online/ava"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Corroboration & References",
+          "item": "https://ava.launchableai.online/ava/references"
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
           "name": "Deployment Layer (OS)",
           "item": "https://ava.launchableai.online/os"
         }
@@ -255,7 +271,10 @@ export default function RootLayout({
 
         <CurrencyProvider>
           <MissionProvider>
-            {children}
+            <ChatProvider>
+              {children}
+              <AVAChat />
+            </ChatProvider>
           </MissionProvider>
         </CurrencyProvider>
       </body>

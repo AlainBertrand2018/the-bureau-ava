@@ -60,14 +60,14 @@ export default function WhoItsFor({ onProtocolOpen }: WhoItsForProps) {
 
             <div className="max-w-7xl mx-auto px-6 w-full relative z-10">
                 <div className="mb-20">
-                    <div className="badge-minimal text-white/50 border-white/20 mb-6 inline-flex items-center gap-2">
+                    <div className="badge-minimal !text-[#F2F0E9]/60 border-[#F2F0E9]/20 mb-6 inline-flex items-center gap-2">
                         <Users size={12} className="text-[#CC5833]" />
                         <span>Institutional Reach</span>
                     </div>
-                    <h2 className="text-section-title text-white mb-4">
+                    <h2 className="text-section-title text-[#F2F0E9] mb-4">
                         Entity Dossiers.
                     </h2>
-                    <p className="text-body-lg text-white/70 max-w-xl font-sans leading-relaxed">
+                    <p className="text-body-lg text-[#F2F0E9]/70 max-w-xl font-sans leading-relaxed">
                         The Bureau is programmed to secure the research protocols of the world&apos;s most demanding institutional organizations.
                     </p>
                 </div>
