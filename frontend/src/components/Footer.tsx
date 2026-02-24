@@ -19,7 +19,7 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
             </div>
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-16 mb-24">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-12 lg:gap-16 mb-24">
                     {/* Brand Column */}
                     <div className="lg:col-span-2 space-y-8">
                         <div className="flex items-center gap-4">
@@ -37,7 +37,7 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
 
                     {/* Column 2 */}
                     <div>
-                        <h4 className="font-mono text-[9px] font-black uppercase tracking-[0.4em] mb-10 text-[#CC5833]">
+                        <h4 className="font-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#CC5833]">
                             Protocol_Links
                         </h4>
                         <ul className="space-y-4 font-heading text-[11px] font-bold uppercase tracking-widest text-[#F2F0E9]/60">
@@ -50,7 +50,7 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
 
                     {/* Column 3 */}
                     <div>
-                        <h4 className="font-mono text-[9px] font-black uppercase tracking-[0.4em] mb-10 text-[#CC5833]">
+                        <h4 className="font-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#CC5833]">
                             Intelligence
                         </h4>
                         <ul className="space-y-4 font-heading text-[11px] font-bold uppercase tracking-widest text-[#F2F0E9]/60">
@@ -62,7 +62,7 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
 
                     {/* Column 4 - Legal */}
                     <div>
-                        <h4 className="font-mono text-[9px] font-black uppercase tracking-[0.4em] mb-10 text-[#CC5833]">
+                        <h4 className="font-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#CC5833]">
                             Compliance
                         </h4>
                         <ul className="space-y-4 font-heading text-[11px] font-bold uppercase tracking-widest text-[#F2F0E9]/60">
@@ -78,12 +78,12 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
                         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#F2F0E9]/40">
                             © 2026 <Link href="https://www.linkedin.com/in/alainbertrand/" target="_blank" className="text-[#CC5833] hover:underline underline-offset-4 decoration-[#CC5833]/30">Alain Bertrand</Link> — The Bureau v2.4.1
                         </p>
-                        <p className="font-mono text-[8px] uppercase tracking-widest text-[#F2F0E9]/20">
+                        <p className="font-mono text-[10px] uppercase tracking-widest text-[#F2F0E9]/20">
                             All Rights Reserved // Institutional Intelligence Division
                         </p>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-8 text-[9px] font-mono font-bold uppercase tracking-[0.3em] text-[#F2F0E9]/30">
+                    <div className="flex flex-col md:flex-row items-center gap-8 text-[11px] font-mono font-bold uppercase tracking-[0.3em] text-[#F2F0E9]/30">
                         <span className="flex items-center gap-3">
                             <Activity size={12} className="text-[#CC5833]" />
                             System Audit: <time dateTime="2026-02-22T21:21:45+04:00">FEB 22, 2026</time>

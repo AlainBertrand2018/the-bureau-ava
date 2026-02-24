@@ -32,7 +32,7 @@ export default function GenesisSection() {
                 </Reveal>
 
                 <div className="mt-16 text-center">
-                    <p className="font-mono text-[9px] text-[#F2F0E9]/20 uppercase tracking-[0.4em]">
+                    <p className="font-mono text-[11px] text-[#F2F0E9]/20 uppercase tracking-[0.4em]">
                         // INITIALIZING_ARCHITECT_SUBSYSTEM // CALIBRATION_PHASE_01
                     </p>
                 </div>

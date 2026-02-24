@@ -441,14 +441,14 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                                 <div className="w-2 h-2 rounded-full bg-amber-400/50" />
                                                 <div className="w-2 h-2 rounded-full bg-emerald-400/50" />
                                             </div>
-                                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-4">
+                                            <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-4">
                                                 Genesis Protocol — Deployment Logs
                                             </span>
                                         </div>
                                         {logs.length > 0 && (
                                             <div className="flex items-center gap-2">
                                                 <Activity size={10} className="text-teal-500 animate-pulse" />
-                                                <span className="text-[8px] font-bold text-teal-500 uppercase tracking-tighter">Live Stream</span>
+                                                <span className="text-[10px] font-bold text-teal-500 uppercase tracking-tighter">Live Stream</span>
                                             </div>
                                         )}
                                     </div>
@@ -499,10 +499,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                                     {/* Terminal Footer */}
                                     <div className="px-4 py-2 bg-slate-900/50 flex items-center justify-between">
-                                        <p className="text-[8px] font-bold text-slate-600 uppercase">
+                                        <p className="text-[10px] font-bold text-slate-600 uppercase">
                                             Buffer: {logs.length} Chunks
                                         </p>
-                                        <p className="text-[8px] font-bold text-slate-600 uppercase">
+                                        <p className="text-[10px] font-bold text-slate-600 uppercase">
                                             Status: {view === 'processing' ? 'Active Generation' : 'Halted'}
                                         </p>
                                     </div>
@@ -644,7 +644,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                                     <div className="space-y-6">
                                         <div>
-                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-3">Deployment Best Practices</p>
+                                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-3">Deployment Best Practices</p>
                                             <ul className="space-y-2">
                                                 {(result?.field_manual?.deployment_best_practices || []).map((bp: string, i: number) => (
                                                     <li key={i} className="flex gap-2 text-[11px] text-slate-500 font-medium">
@@ -656,7 +656,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         </div>
 
                                         <div className="pt-4 border-t border-slate-200">
-                                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Predicted Data Outcomes</p>
+                                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Predicted Data Outcomes</p>
                                             <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
                                                 {result?.field_manual?.potential_outcomes || "High-fidelity research data anticipated."}
                                             </p>
@@ -666,7 +666,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                                 {/* Scientific Disclosure Footer Card */}
                                 <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-100">
-                                    <p className="text-[8px] font-bold text-emerald-400 uppercase tracking-[0.2em] leading-relaxed">
+                                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.2em] leading-relaxed">
                                         {result?.field_manual?.scientific_disclosure || "Bureau Certified Methodology Statement"}
                                     </p>
                                 </div>
@@ -684,13 +684,13 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Executive Summary</p>
+                                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3">Executive Summary</p>
                                         <p className="text-xs text-slate-600 leading-relaxed">
                                             {result.simulation_report.executive_summary}
                                         </p>
                                     </div>
                                     <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Field Deployment Protocol</p>
+                                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3">Field Deployment Protocol</p>
                                         <ul className="space-y-2">
                                             {(result.simulation_report.field_deployment_protocol || result.simulation_report.next_steps || []).slice(0, 3).map((step: any, i: number) => (
                                                 <li key={i} className="flex gap-2 text-[10px] text-slate-600 font-medium">
@@ -701,12 +701,12 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         </ul>
                                     </div>
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-                                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">Demographic Validation</p>
+                                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-3">Demographic Validation</p>
                                         <div className="space-y-3">
                                             {(result.simulation_report.demographic_insights || []).slice(0, 2).map((insight: any, i: number) => (
                                                 <div key={i}>
                                                     <p className="text-[10px] font-bold text-teal-600">{insight.segment}</p>
-                                                    <p className="text-[9px] text-slate-500 mt-0.5">{insight.finding}</p>
+                                                    <p className="text-[11px] text-slate-500 mt-0.5">{insight.finding}</p>
                                                 </div>
                                             ))}
                                         </div>

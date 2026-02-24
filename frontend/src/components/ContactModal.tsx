@@ -89,11 +89,11 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                     <div className="space-y-4 pt-10">
                                         <div className="flex items-center gap-3 text-white/20 hover:text-[#CC5833] transition-colors cursor-pointer">
                                             <Globe size={14} />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">Global Ops</span>
+                                            <span className="text-[11px] font-black uppercase tracking-widest">Global Ops</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-white/20 hover:text-[#CC5833] transition-colors cursor-pointer">
                                             <Briefcase size={14} />
-                                            <span className="text-[9px] font-black uppercase tracking-widest">HQ Sector 7</span>
+                                            <span className="text-[11px] font-black uppercase tracking-widest">HQ Sector 7</span>
                                         </div>
                                     </div>
                                 </div>
@@ -108,7 +108,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Identity</label>
+                                                    <label className="text-[11px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Identity</label>
                                                     <input
                                                         required
                                                         type="text"
@@ -119,7 +119,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Communication</label>
+                                                    <label className="text-[11px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Communication</label>
                                                     <input
                                                         required
                                                         type="email"
@@ -133,7 +133,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Organization</label>
+                                                    <label className="text-[11px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Organization</label>
                                                     <input
                                                         required
                                                         type="text"
@@ -144,7 +144,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <label className="text-[9px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Secure Line</label>
+                                                    <label className="text-[11px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Secure Line</label>
                                                     <input
                                                         type="tel"
                                                         value={formData.phone}
@@ -156,7 +156,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <label className="text-[9px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Mission Query</label>
+                                                <label className="text-[11px] font-black uppercase tracking-widest text-[#CC5833] ml-1">Mission Query</label>
                                                 <textarea
                                                     required
                                                     rows={4}
@@ -185,7 +185,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                                                 </>
                                             )}
                                         </button>
-                                        <p className="text-center text-[8px] font-mono text-white/20 uppercase tracking-[0.2em]">
+                                        <p className="text-center text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">
                                             Secure E2E Encrypted Transmission Mode Active
                                         </p>
                                     </form>

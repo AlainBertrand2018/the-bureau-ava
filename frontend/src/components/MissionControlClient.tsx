@@ -802,7 +802,7 @@ export default function MissionControlClient() {
                                                 <p className="text-xs text-slate-400 leading-relaxed line-clamp-3 mb-3">{persona.background}</p>
                                                 <div className="flex flex-wrap gap-1">
                                                     {persona.traits && persona.traits.split(',').slice(0, 2).map((t: string, k: number) => (
-                                                        <span key={k} className="px-1.5 py-0.5 bg-slate-800 rounded text-[9px] text-slate-500 uppercase tracking-wide">{t.trim()}</span>
+                                                        <span key={k} className="px-1.5 py-0.5 bg-slate-800 rounded text-[11px] text-slate-500 uppercase tracking-wide">{t.trim()}</span>
                                                     ))}
                                                 </div>
                                             </div>

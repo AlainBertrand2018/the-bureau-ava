@@ -346,7 +346,7 @@ export default function QuestionsStep({
                     <div className="flex-1">
                         <h3 className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-2">
                             Don't have questions yet?
-                            <span className="text-[9px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+                            <span className="text-[11px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
                                 Pro
                             </span>
                         </h3>

@@ -81,17 +81,17 @@ export default function WhoItsFor({ onProtocolOpen }: WhoItsForProps) {
                                         <div className="p-3 bg-[#2E4036]/5 text-[#2E4036] rounded-lg group-hover:bg-[#CC5833] group-hover:text-white transition-all">
                                             {item.icon}
                                         </div>
-                                        <span className="font-mono text-[9px] text-[#2E4036]/50 uppercase tracking-[0.3em]">REF_{item.id}</span>
+                                        <span className="font-mono text-[11px] text-[#2E4036]/50 uppercase tracking-[0.3em]">REF_{item.id}</span>
                                     </div>
                                     <h4 className="text-xl md:text-2xl font-heading font-black text-[#2E4036] mb-4 uppercase tracking-tighter">{item.title}</h4>
                                     <p className="text-[#2E4036]/80 text-sm font-sans leading-relaxed mb-10 group-hover:text-[#2E4036] transition-colors">{item.desc}</p>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <span className="font-mono text-[8px] text-[#CC5833] font-black uppercase tracking-[0.2em] block mb-2">Enabled Protocols:</span>
+                                    <span className="font-mono text-[10px] text-[#CC5833] font-black uppercase tracking-[0.2em] block mb-2">Enabled Protocols:</span>
                                     <div className="flex flex-wrap gap-2">
                                         {item.protocols.map((p, idx) => (
-                                            <span key={idx} className="px-2 py-1 bg-[#2E4036]/5 border border-[#2E4036]/5 text-[#2E4036]/60 text-[8px] font-mono uppercase tracking-widest group-hover:bg-[#CC5833]/10 group-hover:border-[#CC5833]/20 group-hover:text-[#CC5833] transition-all">
+                                            <span key={idx} className="px-2 py-1 bg-[#2E4036]/5 border border-[#2E4036]/5 text-[#2E4036]/60 text-[10px] font-mono uppercase tracking-widest group-hover:bg-[#CC5833]/10 group-hover:border-[#CC5833]/20 group-hover:text-[#CC5833] transition-all">
                                                 {p}
                                             </span>
                                         ))}

@@ -69,14 +69,14 @@ export default function Intelligence() {
                                     <Activity size={32} className="text-[#F2F0E9]/20" />
                                 </div>
                                 <div className="absolute top-6 left-6">
-                                    <span className="bg-[#CC5833] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">
+                                    <span className="bg-[#CC5833] text-white text-[11px] font-black px-4 py-2 rounded-full uppercase tracking-widest shadow-lg">
                                         {post.category}
                                     </span>
                                 </div>
                             </div>
 
                             <div className="p-10 flex flex-col flex-1">
-                                <div className="flex items-center gap-6 text-[9px] font-mono font-bold tracking-widest text-[#2E4036]/40 uppercase mb-6">
+                                <div className="flex items-center gap-6 text-[11px] font-mono font-bold tracking-widest text-[#2E4036]/40 uppercase mb-6">
                                     <span className="flex items-center gap-2">
                                         <Calendar size={12} className="text-[#CC5833]" /> {post.date}
                                     </span>
@@ -93,7 +93,7 @@ export default function Intelligence() {
                                     {post.excerpt}
                                 </p>
 
-                                <div className="flex items-center gap-2 text-[#CC5833] text-[9px] font-mono font-bold tracking-[0.2em] uppercase group-hover:gap-4 transition-all">
+                                <div className="flex items-center gap-2 text-[#CC5833] text-[11px] font-mono font-bold tracking-[0.2em] uppercase group-hover:gap-4 transition-all">
                                     Access File <ArrowRight size={14} />
                                 </div>
                             </div>

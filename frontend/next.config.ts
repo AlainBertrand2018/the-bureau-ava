@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
     turbopack: {
         root: path.resolve(process.cwd(), '..'),
     },
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+        reactRemoveProperties: process.env.NODE_ENV === 'production',
+    },
+    compress: true,
     logging: {
         fetches: {
             fullUrl: true,

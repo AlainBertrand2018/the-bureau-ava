@@ -307,7 +307,7 @@ export default function SimulationStep({
                                             <span className="text-xs font-black text-slate-900">
                                                 {log.persona}
                                             </span>
-                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider truncate max-w-[200px]">
+                                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate max-w-[200px]">
                                                 re: {log.question}...
                                             </span>
                                         </div>
@@ -318,13 +318,13 @@ export default function SimulationStep({
                                         {log.latency_ms && (
                                             <div className="flex items-center gap-3 mt-1.5">
                                                 {log.latency_ms ? (
-                                                    <span className="text-[8px] font-bold text-slate-400 flex items-center gap-1">
+                                                    <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
                                                         <Clock size={8} />
                                                         {log.latency_ms}ms
                                                     </span>
                                                 ) : null}
 
-                                                <span className="text-[8px] font-bold text-emerald-600 flex items-center gap-1">
+                                                <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1">
                                                     <Cpu size={8} />
                                                     AVA Proprietary Core
                                                 </span>
@@ -360,7 +360,7 @@ export default function SimulationStep({
                         ].map((item, i) => (
                             <div key={i} className="text-center">
                                 <p className={`text-sm font-black ${item.color}`}>{item.value}</p>
-                                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.label}</p>
+                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{item.label}</p>
                             </div>
                         ))}
                     </div>

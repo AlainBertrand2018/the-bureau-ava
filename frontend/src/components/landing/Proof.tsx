@@ -54,7 +54,7 @@ export default function Proof({ pubStats }: ProofProps) {
                     ].map((stat, i) => (
                         <div key={i}>
                             <div className="card-artifact p-10 bg-white border-[#2E4036]/5 hover:border-[#CC5833]/30 transition-all text-center">
-                                <span className="font-mono text-[8px] text-[#2E4036]/30 uppercase tracking-[0.3em] block mb-6">{stat.id}</span>
+                                <span className="font-mono text-[10px] text-[#2E4036]/30 uppercase tracking-[0.3em] block mb-6">{stat.id}</span>
                                 <div className="text-6xl font-heading font-black text-[#2E4036] mb-4 tracking-tighter">
                                     <AnimatedCounter target={stat.target} suffix={stat.suffix} className="font-mono" />
                                 </div>
@@ -78,7 +78,7 @@ export default function Proof({ pubStats }: ProofProps) {
                         <div className="flex flex-col md:flex-row items-center justify-between gap-8 opacity-40">
                             <div className="flex items-center gap-3">
                                 <Activity size={14} className="text-[#2E4036]" />
-                                <span className="font-mono text-[9px] uppercase font-bold tracking-[0.2em] text-[#2E4036]">Verified_Logic_Streams</span>
+                                <span className="font-mono text-[11px] uppercase font-bold tracking-[0.2em] text-[#2E4036]">Verified_Logic_Streams</span>
                             </div>
                             <p className="text-[#2E4036] text-[10px] font-bold uppercase tracking-widest text-center md:text-right">
                                 Structural flaws identified and neutralised <span className="text-[#CC5833]">pre-deployment.</span>

@@ -33,38 +33,31 @@ function useTypewriter(text: string, speed = 40, delay = 300) {
     return { displayed, done };
 }
 
-/* ─── Floating Particles (client-only) ─── */
+/* ─── Floating Particles (CSS-only, no JS animation loops) ─── */
 function Particles({ dark }: { dark: boolean }) {
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     if (!mounted) return null;
 
-    const seeds = Array.from({ length: 30 }, (_, i) => ({
-        left: ((i * 37 + 13) % 100),
-        top: ((i * 53 + 7) % 100),
-        dur: 4 + (i % 7),
-        delay: (i * 0.17) % 5,
-        drift: ((i % 2 === 0 ? 1 : -1) * ((i * 11) % 30)),
-    }));
-
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {seeds.map((s, i) => (
-                <motion.div
+            <style>{`
+                @keyframes particle-float {
+                    0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+                    20% { opacity: ${dark ? 0.5 : 0.3}; }
+                    80% { opacity: ${dark ? 0.5 : 0.3}; }
+                    50% { transform: translateY(-40px) translateX(var(--drift)); opacity: ${dark ? 0.6 : 0.4}; }
+                }
+            `}</style>
+            {Array.from({ length: 20 }, (_, i) => (
+                <div
                     key={i}
                     className={`absolute w-1 h-1 rounded-full ${dark ? "bg-emerald-500/20" : "bg-emerald-500/15"}`}
-                    style={{ left: `${s.left}%`, top: `${s.top}%` }}
-                    animate={{
-                        y: [0, -30 - (i % 6) * 10, 0],
-                        x: [0, s.drift, 0],
-                        opacity: [0, dark ? 0.6 : 0.4, 0],
-                        scale: [0.5, 1.2, 0.5],
-                    }}
-                    transition={{
-                        duration: s.dur,
-                        repeat: Infinity,
-                        delay: s.delay,
-                        ease: "easeInOut",
+                    style={{
+                        left: `${((i * 37 + 13) % 100)}%`,
+                        top: `${((i * 53 + 7) % 100)}%`,
+                        ['--drift' as string]: `${((i % 2 === 0 ? 1 : -1) * ((i * 11) % 25))}px`,
+                        animation: `particle-float ${4 + (i % 5)}s ease-in-out ${(i * 0.2) % 4}s infinite`,
                     }}
                 />
             ))}
@@ -379,7 +372,7 @@ export default function AVAGatewayClient() {
             </AnimatePresence>
 
             {/* ─── CONTENT CONTAINER ─── */}
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 xl:gap-24 w-full max-w-7xl mx-auto px-6 lg:px-12">
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 xl:gap-24 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
 
                 {/* ─── LEFT: AVA PORTRAIT ─── */}
                 <motion.div
@@ -520,7 +513,7 @@ export default function AVAGatewayClient() {
                                     href="/landing"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`group flex flex-1 items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[320px] ${dark
+                                    className={`group flex flex-1 items-center justify-center gap-3 sm:gap-4 px-6 sm:px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[280px] ${dark
                                         ? "border border-[#F2F0E9]/30 bg-[#F2F0E9]/10 hover:border-[#F2F0E9]/50 hover:bg-[#F2F0E9]/20"
                                         : "border border-slate-200 bg-[#F2F0E9] shadow-sm hover:border-slate-300 hover:bg-[#E8E6DB]"
                                         }`}
@@ -545,7 +538,7 @@ export default function AVAGatewayClient() {
                                 {/* CTA: Access Survey OS */}
                                 <button
                                     onClick={() => router.push("/os")}
-                                    className={`group relative flex-1 flex items-center justify-center gap-4 px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[320px] ${dark
+                                    className={`group relative flex-1 flex items-center justify-center gap-3 sm:gap-4 px-6 sm:px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[280px] ${dark
                                         ? "border border-emerald-500/30 bg-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/20 hover:shadow-2xl hover:shadow-emerald-500/20"
                                         : "border border-emerald-500 bg-emerald-600 text-white hover:bg-emerald-500 hover:shadow-2xl hover:shadow-emerald-500/30 shadow-lg shadow-emerald-100"
                                         }`}

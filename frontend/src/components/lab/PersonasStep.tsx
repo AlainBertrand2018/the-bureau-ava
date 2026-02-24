@@ -256,7 +256,7 @@ export default function PersonasStep({
                                             .map((trait, j) => (
                                                 <span
                                                     key={j}
-                                                    className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${traitColor(
+                                                    className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${traitColor(
                                                         trait.trim()
                                                     )}`}
                                                 >

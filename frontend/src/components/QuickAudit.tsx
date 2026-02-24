@@ -224,7 +224,7 @@ export default function QuickAudit() {
                                     <div className={`text-4xl font-black ${scoreColor(auditResult.quality_score)}`}>
                                         {auditResult.quality_score}
                                     </div>
-                                    <div className={`text-[9px] font-bold uppercase tracking-widest ${scoreColor(auditResult.quality_score)}`}>
+                                    <div className={`text-[11px] font-bold uppercase tracking-widest ${scoreColor(auditResult.quality_score)}`}>
                                         {scoreLabel(auditResult.quality_score)}
                                     </div>
                                 </div>
@@ -238,14 +238,14 @@ export default function QuickAudit() {
 
                             {auditResult.issues.length > 0 && (
                                 <div className="mb-6">
-                                    <h4 className="text-[9px] font-bold uppercase tracking-widest text-red-500 mb-3 flex items-center gap-2">
+                                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-red-500 mb-3 flex items-center gap-2">
                                         <AlertTriangle size={10} />
                                         Issues Found
                                     </h4>
                                     <div className="space-y-2">
                                         {auditResult.issues.map((issue, k) => (
                                             <div key={k} className="flex items-start gap-3">
-                                                <span className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 mt-0.5 ${issueBadge(issue.type)}`}>
+                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shrink-0 mt-0.5 ${issueBadge(issue.type)}`}>
                                                     {issue.type.replace(/_/g, " ")}
                                                 </span>
                                                 <span className="text-sm text-slate-600 font-medium">{issue.detail}</span>
@@ -256,7 +256,7 @@ export default function QuickAudit() {
                             )}
 
                             <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-5">
-                                <h4 className="text-[9px] font-bold uppercase tracking-widest text-emerald-600 mb-2 flex items-center gap-2">
+                                <h4 className="text-[11px] font-bold uppercase tracking-widest text-emerald-600 mb-2 flex items-center gap-2">
                                     <CheckCircle2 size={10} />
                                     My Recommended Rewrite
                                 </h4>

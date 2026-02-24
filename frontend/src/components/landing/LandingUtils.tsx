@@ -47,7 +47,7 @@ export function Reveal({
 }
 
 /* ─── Animated Counter ─── */
-export function AnimatedCounter({
+export const AnimatedCounter = React.memo(function AnimatedCounter({
     target,
     suffix = "",
     className = "",
@@ -60,11 +60,12 @@ export function AnimatedCounter({
 }) {
     const [count, setCount] = useState(0);
     const countRef = useRef<HTMLSpanElement>(null);
-    const obj = { value: 0 };
+    const obj = useRef({ value: 0 });
 
     useEffect(() => {
+        obj.current.value = 0;
         const ctx = gsap.context(() => {
-            gsap.to(obj, {
+            gsap.to(obj.current, {
                 value: target,
                 duration: duration,
                 ease: "power3.out",
@@ -73,7 +74,7 @@ export function AnimatedCounter({
                     start: "top 90%",
                 },
                 onUpdate: () => {
-                    setCount(Math.round(obj.value));
+                    setCount(Math.round(obj.current.value));
                 },
             });
         });
@@ -85,4 +86,4 @@ export function AnimatedCounter({
             {count.toLocaleString()}{suffix}
         </span>
     );
-}
+});

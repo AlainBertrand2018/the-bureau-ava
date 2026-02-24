@@ -18,42 +18,36 @@ import QuickAudit from "@/components/QuickAudit";
 import GDPRConsent from "@/components/GDPRConsent";
 import Footer from "@/components/Footer";
 
+// Above-the-fold: eagerly loaded
 import Hero from "@/components/landing/Hero";
-import WhoItsFor from "@/components/landing/WhoItsFor";
-import PainPoints from "@/components/landing/PainPoints";
-import Solution from "@/components/landing/Solution";
-import Proof from "@/components/landing/Proof";
-import MeetAva from "@/components/landing/MeetAva";
-import HowItWorks from "@/components/landing/HowItWorks";
-import AgentCapabilities from "@/components/landing/AgentCapabilities";
-import Demo from "@/components/landing/Demo";
-import SurveyMechanics from "@/components/landing/SurveyMechanics";
-import PricingSection from "@/components/landing/PricingSection";
-import FAQSection from "@/components/landing/FAQSection";
-import FinalCTASection from "@/components/landing/FinalCTASection";
 import Navbar from "@/components/landing/Navbar";
 import EntityDefinition from "@/components/landing/EntityDefinition";
 import BilateralShadowProtocol from "@/components/landing/BilateralShadowProtocol";
+
+// Below-the-fold: lazy-loaded for faster initial paint
+const WhoItsFor = dynamic(() => import("@/components/landing/WhoItsFor"));
+const PainPoints = dynamic(() => import("@/components/landing/PainPoints"));
+const Solution = dynamic(() => import("@/components/landing/Solution"));
+const Proof = dynamic(() => import("@/components/landing/Proof"));
+const MeetAva = dynamic(() => import("@/components/landing/MeetAva"));
+const HowItWorks = dynamic(() => import("@/components/landing/HowItWorks"));
+const AgentCapabilities = dynamic(() => import("@/components/landing/AgentCapabilities"));
+const Demo = dynamic(() => import("@/components/landing/Demo"));
+const SurveyMechanics = dynamic(() => import("@/components/landing/SurveyMechanics"));
+const PricingSection = dynamic(() => import("@/components/landing/PricingSection"));
+const FAQSection = dynamic(() => import("@/components/landing/FAQSection"));
+const FinalCTASection = dynamic(() => import("@/components/landing/FinalCTASection"));
 
 import {
   ArrowRight,
   Zap,
   Shield,
   ShieldCheck,
-  AlertTriangle,
   Users,
   BarChart3,
   FileText,
-  CheckCircle2,
   Sparkles,
   Target,
-  TrendingUp,
-  Clock,
-  Globe,
-  Building2,
-  GraduationCap,
-  Briefcase,
-  Megaphone,
   Loader2,
   Cpu,
   X,
@@ -212,7 +206,7 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.95, y: 20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                  className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden shadow-blue-500/10 border border-white/20"
+                  className="relative w-full max-w-4xl bg-white rounded-2xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden shadow-blue-500/10 border border-white/20"
                 >
                   <button
                     onClick={() => setShowEntryModal(false)}
@@ -270,7 +264,7 @@ export default function Home() {
                             </div>
                             <div>
                               <div className="text-[11px] font-black text-slate-900 uppercase tracking-tighter">{step.title}</div>
-                              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{step.desc}</div>
+                              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{step.desc}</div>
                             </div>
                           </motion.div>
                         ))}
@@ -317,7 +311,7 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.95, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                  className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden shadow-blue-500/10 border border-white/20 p-8 md:p-12"
+                  className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden shadow-blue-500/10 border border-white/20 p-6 md:p-12"
                 >
                   <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
                     <div className="flex items-center gap-3">
@@ -340,12 +334,12 @@ export default function Home() {
                   <QuickAudit />
 
                   <div className="mt-8 pt-8 border-t border-slate-100 flex items-center justify-between">
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
                       Powered by The Bureau / Scientific Intelligence
                     </p>
                     <div className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Calculated Live</span>
+                      <span className="text-[11px] font-black text-emerald-600 uppercase tracking-widest">Calculated Live</span>
                     </div>
                   </div>
                 </motion.div>
@@ -369,7 +363,7 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative w-full max-w-2xl bg-white rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-600/20 border border-blue-50/50"
+                className="relative w-full max-w-2xl bg-white rounded-3xl sm:rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-600/20 border border-blue-50/50"
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
 

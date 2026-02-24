@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useCurrency } from "@/context/CurrencyContext";
+import { usePathname } from "next/navigation";
 
 interface Message {
     role: "user" | "assistant";
@@ -38,7 +39,7 @@ interface AVAChatProps {
 
 export default function AVAChat({ }: AVAChatProps = {}) {
     const { isChatOpen: isOpen, setIsChatOpen: setIsOpen } = useChat();
-
+    const pathname = usePathname();
 
     const [messages, setMessages] = useState<Message[]>([
         { role: "assistant", content: AVA_GREETING }
@@ -119,6 +120,8 @@ export default function AVAChat({ }: AVAChatProps = {}) {
         }
     };
 
+    if (pathname === '/') return null;
+
     return (
         <>
             {/* ─── FLOATING BUTTON ─── */}
@@ -131,7 +134,7 @@ export default function AVAChat({ }: AVAChatProps = {}) {
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         onClick={() => { setIsOpen(true); setHasUnread(false); }}
-                        className="fixed bottom-6 right-6 z-[90] w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-2xl shadow-emerald-500/30 flex items-center justify-center hover:scale-110 transition-transform duration-300 group cursor-pointer"
+                        className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6 z-[90] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 shadow-2xl shadow-emerald-500/30 flex items-center justify-center hover:scale-110 transition-transform duration-300 group cursor-pointer"
                         aria-label="Chat with AVA"
                     >
                         {/* AVA mini avatar */}
@@ -172,7 +175,7 @@ export default function AVAChat({ }: AVAChatProps = {}) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 40, scale: 0.9 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="fixed bottom-6 right-6 z-[90] w-[400px] h-[560px] rounded-2xl overflow-hidden flex flex-col shadow-2xl shadow-black/50"
+                        className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 sm:bottom-6 sm:right-6 z-[90] w-[calc(100vw-2rem)] sm:w-[400px] h-[calc(100vh-5rem)] max-h-[560px] sm:h-[560px] rounded-2xl overflow-hidden flex flex-col shadow-2xl shadow-black/50"
                         style={{
                             background: "linear-gradient(165deg, rgba(15,23,42,0.98) 0%, rgba(5,15,30,0.99) 100%)",
                             border: "1px solid rgba(255,255,255,0.08)",
@@ -284,7 +287,7 @@ export default function AVAChat({ }: AVAChatProps = {}) {
                                     )}
                                 </button>
                             </div>
-                            <p className="text-[9px] text-slate-600 text-center mt-2 tracking-wide">
+                            <p className="text-[11px] text-slate-600 text-center mt-2 tracking-wide">
                                 BUREAU INTELLIGENCE · CONFIDENTIAL
                             </p>
                         </div>

@@ -112,7 +112,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[#2E4036] font-black text-sm tracking-[0.2em] uppercase leading-none">The Bureau</span>
-                        <span className="text-[#2E4036]/40 text-[8px] font-bold uppercase tracking-[0.3em] mt-1">Instrument Validation</span>
+                        <span className="text-[#2E4036]/40 text-[10px] font-bold uppercase tracking-[0.3em] mt-1">Instrument Validation</span>
                     </div>
                 </Link>
 
@@ -156,7 +156,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                                                                 sub.onClick!();
                                                                 setOpenDropdown(null);
                                                             }}
-                                                            className="w-full text-left block px-6 py-3 text-[9px] font-bold uppercase tracking-[0.1em] text-[#2E4036]/60 hover:text-[#CC5833] hover:bg-[#2E4036]/5 transition-all"
+                                                            className="w-full text-left block px-6 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2E4036]/60 hover:text-[#CC5833] hover:bg-[#2E4036]/5 transition-all"
                                                         >
                                                             {sub.title}
                                                         </button>
@@ -167,7 +167,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                                                         key={sIdx}
                                                         href={sub.href || "#"}
                                                         onClick={(e) => scrollToId(e, sub.href || "#")}
-                                                        className="block px-6 py-3 text-[9px] font-bold uppercase tracking-[0.1em] text-[#2E4036]/60 hover:text-[#CC5833] hover:bg-[#2E4036]/5 transition-all"
+                                                        className="block px-6 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#2E4036]/60 hover:text-[#CC5833] hover:bg-[#2E4036]/5 transition-all"
                                                     >
                                                         {sub.title}
                                                     </Link>
@@ -193,14 +193,14 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                     </Link>
 
                     <button
-                        className="p-2 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
+                        className="p-3 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
                         title="Login / Signup"
                     >
                         <UserCircle size={24} />
                     </button>
 
                     <button
-                        className="lg:hidden p-2 text-[#2E4036]"
+                        className="lg:hidden p-3 text-[#2E4036]"
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
                         {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -216,7 +216,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: "100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                        className="fixed inset-0 z-[90] bg-[#F2F0E9] lg:hidden flex flex-col p-10 pt-32"
+                        className="fixed inset-0 z-[90] bg-[#F2F0E9] lg:hidden flex flex-col p-6 sm:p-10 pt-[calc(6rem+env(safe-area-inset-top))]"
                     >
                         <div className="space-y-6 overflow-y-auto pb-20">
                             {menuItems.map((item, idx) => (

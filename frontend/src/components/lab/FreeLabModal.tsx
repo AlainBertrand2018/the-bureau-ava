@@ -464,7 +464,7 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
                                                     <p className="text-sm font-bold text-slate-900 leading-relaxed mb-2">{qa.original_question}</p>
                                                     <div className="flex flex-wrap gap-2">
                                                         {qa.issues_identified.map((issue, j) => (
-                                                            <span key={j} className="text-[9px] font-black text-rose-500 bg-rose-50 border border-rose-100 px-2 py-1 rounded-full flex items-center gap-1">
+                                                            <span key={j} className="text-[11px] font-black text-rose-500 bg-rose-50 border border-rose-100 px-2 py-1 rounded-full flex items-center gap-1">
                                                                 <AlertTriangle size={8} /> {issue}
                                                             </span>
                                                         ))}
@@ -581,15 +581,15 @@ export default function FreeLabModal({ isOpen, onClose }: FreeLabModalProps) {
 
                         {/* Footer Info */}
                         <div className="px-8 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between shrink-0">
-                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Frictionless Trial Protocol v1.0</span>
+                            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Frictionless Trial Protocol v1.0</span>
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                    <span className="text-[9px] font-bold text-slate-400">Live Diagnostics</span>
+                                    <span className="text-[11px] font-bold text-slate-400">Live Diagnostics</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                    <span className="text-[9px] font-bold text-slate-400">AVA Grounded</span>
+                                    <span className="text-[11px] font-bold text-slate-400">AVA Grounded</span>
                                 </div>
                             </div>
                         </div>

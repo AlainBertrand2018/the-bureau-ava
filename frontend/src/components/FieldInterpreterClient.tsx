@@ -163,7 +163,7 @@ export default function FieldInterpreterClient() {
                                                 <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest block mb-1">Bureau Variable</span>
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-white font-bold">{m.to}</span>
-                                                    <span className="px-2 py-0.5 bg-slate-800 text-slate-400 text-[9px] rounded font-bold uppercase">{m.type}</span>
+                                                    <span className="px-2 py-0.5 bg-slate-800 text-slate-400 text-[11px] rounded font-bold uppercase">{m.type}</span>
                                                 </div>
                                             </div>
                                         </div>

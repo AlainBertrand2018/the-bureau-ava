@@ -72,7 +72,7 @@ function FeatureCard({ index, title, desc, ui }: { index: number; title: string;
                     {ui}
                 </div>
                 <div className="mt-auto">
-                    <span className="font-mono text-[9px] font-bold text-[#CC5833] uppercase tracking-[0.2em] mb-2 block">Module 0{index}</span>
+                    <span className="font-mono text-[11px] font-bold text-[#CC5833] uppercase tracking-[0.2em] mb-2 block">Module 0{index}</span>
                     <h3 className="text-xl font-black text-[#2E4036] mb-3 uppercase tracking-tight">{title}</h3>
                     <p className="text-xs font-medium text-[#2E4036]/60 leading-relaxed font-sans">
                         {desc}
@@ -160,7 +160,7 @@ function TelemetryTypewriter() {
         <div className="absolute inset-0 p-6 flex flex-col justify-center bg-[#1A1A1A]">
             <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 rounded-full bg-[#CC5833] animate-pulse" />
-                <span className="font-mono text-[8px] font-bold text-[#CC5833] uppercase tracking-widest">Live Audit Feed</span>
+                <span className="font-mono text-[10px] font-bold text-[#CC5833] uppercase tracking-widest">Live Audit Feed</span>
             </div>
             <p className="font-mono text-[11px] text-[#F2F0E9]/90 leading-relaxed min-h-[40px]">
                 {text}
@@ -195,14 +195,14 @@ function CursorProtocolScheduler() {
             <div ref={gridRef} className="grid grid-cols-7 gap-1 mb-4 w-full">
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
                     <div key={i} className="flex flex-col items-center gap-1">
-                        <span className="font-mono text-[8px] text-[#2E4036]/40">{day}</span>
+                        <span className="font-mono text-[10px] text-[#2E4036]/40">{day}</span>
                         <div className="grid-cell w-full aspect-square border border-[#2E4036]/10 rounded-sm bg-[#2E4036]/5" />
                     </div>
                 ))}
             </div>
             <div className="save-btn w-full py-2 border border-[#2E4036]/20 rounded-lg flex items-center justify-center gap-2">
                 <Search size={10} />
-                <span className="font-mono text-[8px] font-bold uppercase tracking-widest">Execute Protocol</span>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest">Execute Protocol</span>
             </div>
             {/* SVG Cursor */}
             <svg

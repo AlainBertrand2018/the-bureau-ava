@@ -71,9 +71,9 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                 {/* Additional Modules */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                     <div className="relative h-full group">
-                        {/* Featured Ribbon/Badge - Outside the overflow container to avoid truncation */}
-                        <div className="absolute -top-3 -right-3 z-20">
-                            <div className="bg-[#2E4036] text-white text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2 rounded-lg shadow-xl shadow-black/20 flex items-center gap-2">
+                        {/* Featured Ribbon/Badge */}
+                        <div className="absolute top-0 right-0 sm:-top-3 sm:-right-3 z-20">
+                            <div className="bg-[#2E4036] text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 sm:px-6 rounded-bl-lg sm:rounded-lg shadow-xl shadow-black/20 flex items-center gap-2">
                                 <Sparkles size={12} className="text-[#CC5833]" />
                                 Featured Offer
                             </div>
@@ -105,7 +105,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
 
                     <div className="card-artifact p-10 bg-[#F2F0E9] flex flex-col justify-between h-full border-[#2E4036]/10">
                         <div>
-                            <span className="font-mono text-[9px] font-bold text-[#2E4036]/40 uppercase tracking-[0.2em] mb-4 block">Managed Bureau Allowance</span>
+                            <span className="font-mono text-[11px] font-bold text-[#2E4036]/40 uppercase tracking-[0.2em] mb-4 block">Managed Bureau Allowance</span>
                             <h3 className="text-4xl font-black text-[#2E4036] uppercase tracking-tighter mb-4">Enterprise</h3>
                             <p className="text-[#2E4036]/60 text-sm font-sans mb-8 leading-relaxed max-w-sm">
                                 High-volume tactical access for institutional research teams. Continuous validation and priority support.
@@ -128,7 +128,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                 </div>
 
                 <div className="text-center mt-12">
-                    <p className="text-[#2E4036]/30 font-mono text-[8px] uppercase tracking-widest">
+                    <p className="text-[#2E4036]/30 font-mono text-[10px] uppercase tracking-widest">
                         Rates adjusted for regional economic indexes. Institutional access required for high-volume deployments.
                     </p>
                 </div>
@@ -140,7 +140,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
 function PricingCard({ title, price, badge, desc, features, cta, onAction, featured, accent }: any) {
     return (
         <div className={`card-artifact p-8 h-full flex flex-col border ${featured ? 'border-[#CC5833]/30 shadow-xl shadow-[#CC5833]/5' : 'border-[#2E4036]/5'} bg-[#F8F7F2]`}>
-            <span className={`font-mono text-[9px] font-bold uppercase tracking-[0.2em] mb-4 ${accent}`}>{badge}</span>
+            <span className={`font-mono text-[11px] font-bold uppercase tracking-[0.2em] mb-4 ${accent}`}>{badge}</span>
             <h3 className="text-2xl font-black text-[#2E4036] uppercase tracking-tighter mb-1">{title}</h3>
             <div className="text-3xl font-black text-[#2E4036] mb-4">{price}</div>
             <p className="text-xs text-[#2E4036]/60 font-sans leading-relaxed mb-8">

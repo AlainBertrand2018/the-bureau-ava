@@ -63,16 +63,16 @@ export default function PainPoints({ onAuditClick }: PainPointsProps) {
                                     <div className="w-10 h-10 rounded-lg bg-[#2E4036]/5 text-[#2E4036] flex items-center justify-center group-hover:bg-[#CC5833] group-hover:text-white transition-all">
                                         {item.icon}
                                     </div>
-                                    <span className="font-mono text-[8px] text-[#2E4036]/40 uppercase tracking-[0.3em]">{item.id}</span>
+                                    <span className="font-mono text-[10px] text-[#2E4036]/40 uppercase tracking-[0.3em]">{item.id}</span>
                                 </div>
 
-                                <span className="font-mono text-[9px] text-[#CC5833] font-bold uppercase tracking-widest mb-2 block">{item.tag}</span>
+                                <span className="font-mono text-[11px] text-[#CC5833] font-bold uppercase tracking-widest mb-2 block">{item.tag}</span>
                                 <h3 className="text-2xl font-heading font-black text-[#2E4036] uppercase tracking-tighter mb-4">{item.title}</h3>
                                 <p className="text-[#2E4036]/60 text-xs font-sans leading-relaxed mb-12 flex-grow">{item.desc}</p>
 
                                 <div className="pt-6 border-t border-[#2E4036]/5 flex items-center gap-3">
                                     <Activity size={12} className="text-[#CC5833] opacity-40" />
-                                    <span className="font-mono text-[9px] text-[#2E4036]/30 uppercase font-bold tracking-widest">Diagnosis: {item.diagnosis}</span>
+                                    <span className="font-mono text-[11px] text-[#2E4036]/30 uppercase font-bold tracking-widest">Diagnosis: {item.diagnosis}</span>
                                 </div>
                             </div>
                         </div>
@@ -99,7 +99,7 @@ export default function PainPoints({ onAuditClick }: PainPointsProps) {
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="flex flex-col items-end">
-                                    <span className="font-mono text-[9px] text-[#CC5833] font-bold uppercase tracking-widest">System Status</span>
+                                    <span className="font-mono text-[11px] text-[#CC5833] font-bold uppercase tracking-widest">System Status</span>
                                     <span className="font-mono text-[11px] text-[#F2F0E9] font-bold uppercase">Active_Calibration</span>
                                 </div>
                                 <div className="w-px h-10 bg-white/10" />

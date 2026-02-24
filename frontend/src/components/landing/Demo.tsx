@@ -43,7 +43,7 @@ export default function Demo({ onProtocolOpen }: DemoProps) {
                         <div className="card-artifact bg-white/[0.03] border-white/10 p-2 h-full min-h-[500px] overflow-hidden group hover:border-[#CC5833]/30 transition-all duration-700">
                             <div className="absolute top-4 left-6 flex items-center gap-2 z-20">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#CC5833] animate-pulse" />
-                                <span className="font-mono text-[9px] text-[#F2F0E9]/40 uppercase tracking-widest">LIVE_DIAGNOSTIC_FEED</span>
+                                <span className="font-mono text-[11px] text-[#F2F0E9]/40 uppercase tracking-widest">LIVE_DIAGNOSTIC_FEED</span>
                             </div>
                             <AnimatedReportCard />
                         </div>
@@ -52,7 +52,7 @@ export default function Demo({ onProtocolOpen }: DemoProps) {
                     <Reveal delay={0.2} className="h-full">
                         <div className="card-artifact bg-white/[0.03] border-white/10 p-2 h-full min-h-[500px] overflow-hidden group hover:border-[#CC5833]/30 transition-all duration-700">
                             <div className="absolute top-4 right-6 flex items-center gap-2 z-20">
-                                <span className="font-mono text-[9px] text-[#F2F0E9]/40 uppercase tracking-widest">NEURAL_CALIBRATION_GRID</span>
+                                <span className="font-mono text-[11px] text-[#F2F0E9]/40 uppercase tracking-widest">NEURAL_CALIBRATION_GRID</span>
                                 <Activity size={10} className="text-[#CC5833]" />
                             </div>
                             <RotatingDashboard />

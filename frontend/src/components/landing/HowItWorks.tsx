@@ -120,23 +120,23 @@ export default function HowItWorks() {
                 </div>
 
                 {/* Central Kinetic Process Map */}
-                <div className="flex-grow flex items-center justify-center status-timeline-wrap">
-                    <div className="flex items-start justify-center gap-4 md:gap-8 max-w-5xl w-full px-6">
+                <div className="flex-grow flex items-center justify-center status-timeline-wrap pt-8 sm:pt-0">
+                    <div className="flex items-start justify-center gap-2 sm:gap-4 md:gap-8 max-w-5xl w-full px-2 sm:px-6">
                         {statuses.map((s, i) => (
                             <React.Fragment key={i}>
                                 {/* The Node */}
                                 <div className="step-node flex flex-col items-center">
-                                    <div className="w-16 h-16 md:w-24 md:h-24 rounded-full border-2 border-[#2E4036] flex items-center justify-center mb-6 bg-[#F2F0E9] shadow-xl shadow-[#2E4036]/5">
-                                        <span className="text-2xl md:text-4xl font-heading font-black text-[#2E4036]">{s.num}</span>
+                                    <div className="w-12 h-12 md:w-24 md:h-24 rounded-full border-2 border-[#2E4036] flex items-center justify-center mb-4 md:mb-6 bg-[#F2F0E9] shadow-xl shadow-[#2E4036]/5">
+                                        <span className="text-xl md:text-4xl font-heading font-black text-[#2E4036]">{s.num}</span>
                                     </div>
-                                    <h4 className="text-[10px] md:text-xs font-heading font-black text-[#2E4036] uppercase tracking-tighter text-center whitespace-nowrap">
+                                    <h4 className="text-[10px] md:text-xs font-heading font-black text-[#2E4036] uppercase tracking-tighter text-center max-w-[80px] md:max-w-none">
                                         {s.name}
                                     </h4>
                                 </div>
 
                                 {/* The Arrow (Vertically Centered with Circle) */}
                                 {i < statuses.length - 1 && (
-                                    <div className="step-arrow flex-grow max-w-[100px] h-16 md:h-24 flex items-center">
+                                    <div className="step-arrow flex-grow max-w-[100px] h-12 md:h-24 flex items-center shrink">
                                         <div className="h-[2px] w-full bg-[#CC5833] relative">
                                             <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-[#CC5833]" />
                                         </div>
@@ -165,7 +165,7 @@ export default function HowItWorks() {
                             <ChevronDown size={16} />
                         </motion.div>
                     </div>
-                    <span className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#2E4036]/40">Explore Protocol</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#2E4036]/40">Explore Protocol</span>
                 </div>
             </div>
 
@@ -177,11 +177,11 @@ export default function HowItWorks() {
                     >
                         <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center pt-[20vh]">
                             <div className="relative z-10 order-2 lg:order-1">
-                                <span className="font-mono text-[14px] font-bold text-[#CC5833] uppercase tracking-[0.4em] mb-4 block">Archive Step {s.step}</span>
-                                <h3 className="text-4xl md:text-6xl font-black text-[#2E4036] mb-6 uppercase tracking-tight">
+                                <span className="font-mono text-[12px] md:text-[14px] font-bold text-[#CC5833] uppercase tracking-[0.4em] mb-4 block">Archive Step {s.step}</span>
+                                <h3 className="text-3xl sm:text-4xl md:text-6xl font-black text-[#2E4036] mb-4 md:mb-6 uppercase tracking-tight">
                                     {s.title}
                                 </h3>
-                                <p className="text-xl text-[#2E4036]/60 leading-relaxed font-sans max-w-md">
+                                <p className="text-lg md:text-xl text-[#2E4036]/60 leading-relaxed font-sans max-w-md">
                                     {s.desc}
                                 </p>
                             </div>
@@ -247,7 +247,7 @@ function ScanningLaser() {
                 <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-transparent via-[#CC5833]/10 to-transparent animate-[scan_3s_ease-in-out_infinite]" />
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-[#CC5833] shadow-[0_0_15px_#CC5833] animate-[scan_3s_ease-in-out_infinite]" />
 
-                <div className="absolute bottom-4 right-4 font-mono text-[8px] text-[#2E4036]/40 uppercase tracking-widest">
+                <div className="absolute bottom-4 right-4 font-mono text-[10px] text-[#2E4036]/40 uppercase tracking-widest">
                     Pattern_Recognition_Active
                 </div>
             </div>
@@ -282,7 +282,7 @@ function PulsingWaveform() {
                     />
                 </svg>
 
-                <div className="absolute top-4 left-4 font-mono text-[8px] text-[#2E4036]/40 uppercase tracking-widest">
+                <div className="absolute top-4 left-4 font-mono text-[10px] text-[#2E4036]/40 uppercase tracking-widest">
                     Signal_Veracity_Stable
                 </div>
             </div>

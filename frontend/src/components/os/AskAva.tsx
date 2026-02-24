@@ -325,14 +325,14 @@ const AskAva: React.FC = () => {
                             </div>
                             <div className="flex items-center justify-between px-4 pb-2 pt-2 border-t border-white/5">
                                 <div className="flex items-center gap-3">
-                                    <div className={`px-2 py-1 rounded-md border text-[9px] font-semibold uppercase tracking-[0.3em] flex items-center gap-1 ${isLight ? 'border-slate-200 text-slate-400' : 'border-white/10 text-white/30'
+                                    <div className={`px-2 py-1 rounded-md border text-[11px] font-semibold uppercase tracking-[0.3em] flex items-center gap-1 ${isLight ? 'border-slate-200 text-slate-400' : 'border-white/10 text-white/30'
                                         }`}>
                                         <Command className="w-2.5 h-2.5" />
                                         <span>AVA v2.4</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <span className={`hidden md:block text-[9px] font-semibold uppercase tracking-[0.3em] ${isLight ? 'text-slate-400' : 'text-white/20'
+                                    <span className={`hidden md:block text-[11px] font-semibold uppercase tracking-[0.3em] ${isLight ? 'text-slate-400' : 'text-white/20'
                                         }`}>
                                         Neural Link Active
                                     </span>

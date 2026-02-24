@@ -47,7 +47,7 @@ export default function Hero() {
                             <span className="bg-primary/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.2em] uppercase border border-primary/30">The Elite Choice</span>
                             <span className="text-slate-400 text-xs font-bold tracking-widest uppercase">Used by Leading Mauritian Brands</span>
                         </div>
-                        <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-6 leading-[1.0] max-w-2xl">
+                        <h1 className="text-hero text-white mb-6 leading-[1.0] max-w-2xl">
                             I Secure Success Before Launching <span className="text-blue-500">Surveys</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed font-light tracking-wide">

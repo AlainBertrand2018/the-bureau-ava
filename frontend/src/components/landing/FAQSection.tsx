@@ -190,7 +190,7 @@ export default function FAQSection({ items, isFullPage = false, onProtocolOpen }
                 </div>
 
                 <div className="flex justify-center flex-col items-center gap-6">
-                    <p className="font-mono text-[9px] text-[#F2F0E9]/30 uppercase tracking-[0.4em] font-bold">
+                    <p className="font-mono text-[11px] text-[#F2F0E9]/30 uppercase tracking-[0.4em] font-bold">
                         {isFullPage ? "// STILL_UNCERTAIN? // ACCESS_INSTITUTIONAL_SUPPORT" : "// NEED_TECHNICAL_DEPTH? // ACCESS_FULL_MANIFEST"}
                     </p>
                     {isFullPage ? (

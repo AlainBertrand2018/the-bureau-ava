@@ -63,7 +63,7 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
                     {/* Badge */}
                     <div ref={badgeRef} className="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-[#2E4036]/20 bg-[#2E4036]/5">
                         <Sparkles size={12} className="text-[#CC5833]" />
-                        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-[#2E4036]">
+                        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-[#2E4036]">
                             The Elite Choice.
                         </span>
                     </div>

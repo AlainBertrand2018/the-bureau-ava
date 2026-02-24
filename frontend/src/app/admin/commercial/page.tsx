@@ -121,7 +121,7 @@ export default function CommercialPage() {
                     <div key={i} className="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl relative overflow-hidden group hover:border-slate-700 transition-all">
                         <div className="flex items-center justify-between mb-4">
                             <div className={`p-2 rounded-lg bg-slate-800 ${item.color}`}>{item.icon}</div>
-                            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{item.change}</div>
+                            <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest">{item.change}</div>
                         </div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">{item.label}</p>
                         <p className="text-2xl font-black text-white tracking-tighter">{item.value}</p>
@@ -218,7 +218,7 @@ export default function CommercialPage() {
                             <span className="text-white font-black flex-1 tracking-tight">{tx.client}</span>
                             <span className="text-slate-400 hidden md:block">{tx.service}</span>
                             <span className="text-blue-500 font-black">{tx.amount}</span>
-                            <span className={`px-2 py-1 rounded text-[9px] font-black tracking-widest ${tx.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>{tx.status}</span>
+                            <span className={`px-2 py-1 rounded text-[11px] font-black tracking-widest ${tx.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>{tx.status}</span>
                         </div>
                     ))}
                 </div>

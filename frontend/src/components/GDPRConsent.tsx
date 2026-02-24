@@ -44,7 +44,7 @@ export default function GDPRConsent() {
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-6 left-6 right-6 z-[100] max-w-4xl mx-auto"
+                        className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-4 right-4 sm:left-6 sm:right-6 z-[100] max-w-4xl mx-auto"
                     >
                         <div className="bg-white border border-slate-200 shadow-2xl rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
                             {/* Decorative glow */}
@@ -159,7 +159,7 @@ export default function GDPRConsent() {
                 initial={{ x: -100 }}
                 animate={{ x: isVisible ? -100 : 0 }}
                 onClick={() => setIsVisible(true)}
-                className="fixed bottom-6 left-6 z-50 p-4 bg-white/80 backdrop-blur-md border border-slate-200 shadow-xl rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2 group"
+                className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-6 z-50 p-4 bg-white/80 backdrop-blur-md border border-slate-200 shadow-xl rounded-2xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2 group"
             >
                 <Shield size={18} />
                 <span className="text-[10px] font-black uppercase tracking-widest overflow-hidden w-0 group-hover:w-16 transition-all duration-300">

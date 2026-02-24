@@ -89,7 +89,7 @@ export default function AnimatedReportCard() {
                             </div>
                             <div>
                                 <h4 className="text-[10px] font-bold tracking-widest text-slate-800 uppercase">Sample Audit Report</h4>
-                                <p className="text-[9px] font-semibold text-slate-400">Customer Satisfaction Survey</p>
+                                <p className="text-[11px] font-semibold text-slate-400">Customer Satisfaction Survey</p>
                             </div>
                         </div>
                         <motion.div
@@ -100,7 +100,7 @@ export default function AnimatedReportCard() {
                                         "bg-emerald-50 border-emerald-100 text-emerald-600"
                                 }`}
                         >
-                            <span className="text-[9px] font-bold uppercase tracking-wider">{report.issues}</span>
+                            <span className="text-[11px] font-bold uppercase tracking-wider">{report.issues}</span>
                         </motion.div>
                     </div>
 
@@ -118,7 +118,7 @@ export default function AnimatedReportCard() {
                                 <span className="text-lg font-black">{report.score}</span>
                             </motion.div>
                             <div className="flex-1">
-                                <p className={`text-[9px] font-bold uppercase tracking-wider ${report.score < 50 ? "text-red-500" :
+                                <p className={`text-[11px] font-bold uppercase tracking-wider ${report.score < 50 ? "text-red-500" :
                                         report.score < 80 ? "text-amber-600" :
                                             "text-emerald-600"
                                     }`}>{report.quality}</p>
@@ -135,7 +135,7 @@ export default function AnimatedReportCard() {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.2 + i * 0.1 }}
-                                    className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${flag.bg} ${flag.color} ${flag.border}`}
+                                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${flag.bg} ${flag.color} ${flag.border}`}
                                 >
                                     {flag.label}
                                 </motion.span>
@@ -147,7 +147,7 @@ export default function AnimatedReportCard() {
                     <div className={`p-5 mt-auto transition-colors duration-500 ${report.score >= 90 ? "bg-emerald-50/30" : "bg-white"}`}>
                         <div className="flex items-center gap-1.5 mb-2">
                             <CheckCircle2 size={12} className="text-emerald-500" />
-                            <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">
+                            <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">
                                 {report.score >= 90 ? "AVA's Certification" : "AVA'S REWRITE"}
                             </span>
                         </div>

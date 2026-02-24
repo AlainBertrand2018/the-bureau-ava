@@ -106,9 +106,9 @@ export default function AgentsIndexPage() {
                                         <div className="flex flex-col items-end">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">{agent.status}</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">{agent.status}</span>
                                             </div>
-                                            <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">v2.4.1</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">v2.4.1</span>
                                         </div>
                                     </div>
 

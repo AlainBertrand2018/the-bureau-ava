@@ -434,7 +434,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                 <h4 className="text-xs font-black uppercase tracking-widest text-emerald-600">
                                     Benchmark Detection Accuracy
                                 </h4>
-                                <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
                                     Tested against known-flaw question battery
                                 </p>
                             </div>
@@ -464,7 +464,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                             <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">
                                 Client Validation Rate
                             </h4>
-                            <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                            <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
                                 Your feedback improves our accuracy
                             </p>
                         </div>
@@ -518,11 +518,11 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                         <div className="min-w-0 flex-1">
                                             <p className="text-slate-900 font-bold text-sm leading-relaxed">{qa.original_question}</p>
                                             <div className="flex flex-wrap items-center gap-2 mt-2">
-                                                <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${getRiskBg(qa.risk_level)} ${getRiskColor(qa.risk_level)}`}>
+                                                <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${getRiskBg(qa.risk_level)} ${getRiskColor(qa.risk_level)}`}>
                                                     {qa.risk_level} Risk
                                                 </span>
                                                 {(qa.issues_identified || []).slice(0, 2).map((issue: string, j: number) => (
-                                                    <span key={j} className="text-[9px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-2 py-1 rounded-full">
+                                                    <span key={j} className="text-[11px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-2 py-1 rounded-full">
                                                         {issue.slice(0, 30)}{issue.length > 30 ? "..." : ""}
                                                     </span>
                                                 ))}
@@ -564,7 +564,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                                                     <span className="flex-1">{issue}</span>
                                                                     <div className="flex items-center gap-1.5 shrink-0">
                                                                         {alreadySent ? (
-                                                                            <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${alreadySent === "AGREE" ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>
+                                                                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${alreadySent === "AGREE" ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>
                                                                                 {alreadySent === "AGREE" ? "✓ Confirmed" : "✗ Flagged"}
                                                                             </span>
                                                                         ) : (
@@ -622,13 +622,13 @@ export default function ReportStep({ context, results, questions, personas }: Re
                                                 {/* Before / After */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <div className="bg-rose-50 border border-rose-100 rounded-xl p-4">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-600 block mb-2">Before</span>
+                                                        <span className="text-[11px] font-black uppercase tracking-widest text-rose-600 block mb-2">Before</span>
                                                         <p className="text-sm text-slate-400 font-medium line-through decoration-rose-200">
                                                             {qa.original_question}
                                                         </p>
                                                     </div>
                                                     <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 block mb-2">After</span>
+                                                        <span className="text-[11px] font-black uppercase tracking-widest text-emerald-600 block mb-2">After</span>
                                                         <p className="text-sm text-slate-900 font-medium">{qa.rewritten_question}</p>
                                                     </div>
                                                 </div>
@@ -659,7 +659,7 @@ export default function ReportStep({ context, results, questions, personas }: Re
                         >
                             <div className="flex items-start justify-between gap-3 mb-3">
                                 <h4 className="text-slate-900 font-black text-sm tracking-tight">{rec.title}</h4>
-                                <span className={`text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shrink-0 ${getPriorityColor(rec.priority)}`}>
+                                <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shrink-0 ${getPriorityColor(rec.priority)}`}>
                                     {rec.priority}
                                 </span>
                             </div>

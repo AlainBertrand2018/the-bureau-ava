@@ -87,7 +87,7 @@ export default function RotatingDashboard() {
                                 {activeView.label}
                             </motion.h4>
                         </AnimatePresence>
-                        <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">AVA Audit Engine</p>
+                        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">AVA Audit Engine</p>
                     </div>
                 </div>
                 <div className="flex gap-1.5">
@@ -177,7 +177,7 @@ export default function RotatingDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="px-5 pb-4 flex items-center justify-between text-[9px] font-bold tracking-widest text-slate-400 uppercase">
+            <div className="px-5 pb-4 flex items-center justify-between text-[11px] font-bold tracking-widest text-slate-400 uppercase">
                 <span className="flex items-center gap-1.5">
                     <Activity size={10} className="text-emerald-500" />
                     <span className="text-emerald-600">Live</span> Analysis

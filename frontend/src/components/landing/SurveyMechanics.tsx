@@ -52,12 +52,12 @@ export default function SurveyMechanics({ currency, onProtocolOpen }: SurveyMech
                                 {/* Visible Tip */}
                                 <div className="relative z-20 flex flex-col items-center mb-10">
                                     <div className="w-48 py-4 bg-[#F2F0E9] border border-[#2E4036]/20 rounded-t-xl text-center shadow-lg">
-                                        <span className="font-mono text-[8px] text-[#2E4036]/50 uppercase tracking-widest block mb-1">Surface Protocol</span>
+                                        <span className="font-mono text-[10px] text-[#2E4036]/50 uppercase tracking-widest block mb-1">Surface Protocol</span>
                                         <h4 className="text-[#2E4036] font-black text-xs uppercase tracking-tighter mb-1">Design Fees</h4>
                                         <span className="text-[#CC5833] font-mono text-xs font-bold">{currency.icebergDesign}</span>
                                     </div>
                                     <div className="w-full h-px bg-[#CC5833]/40 mt-[-1px] relative">
-                                        <div className="absolute right-0 top-0 translate-y-[-50%] px-4 py-1 bg-white border border-[#CC5833]/40 rounded-full font-mono text-[8px] text-[#CC5833] font-black uppercase tracking-widest shadow-sm">Visible Cost Line</div>
+                                        <div className="absolute right-0 top-0 translate-y-[-50%] px-4 py-1 bg-white border border-[#CC5833]/40 rounded-full font-mono text-[10px] text-[#CC5833] font-black uppercase tracking-widest shadow-sm">Visible Cost Line</div>
                                     </div>
                                 </div>
 
@@ -77,7 +77,7 @@ export default function SurveyMechanics({ currency, onProtocolOpen }: SurveyMech
                                     <div className="pt-16 text-center">
                                         <div className="inline-flex items-center gap-2 mb-4 px-4 py-1 bg-[#CC5833]/10 border border-[#CC5833]/20 rounded-full">
                                             <AlertTriangle size={12} className="text-[#CC5833]" />
-                                            <span className="font-mono text-[9px] text-[#CC5833] font-black uppercase tracking-[0.2em]">Danger_Zone: Risk Exposure</span>
+                                            <span className="font-mono text-[11px] text-[#CC5833] font-black uppercase tracking-[0.2em]">Danger_Zone: Risk Exposure</span>
                                         </div>
                                         <h4 className="text-4xl md:text-6xl font-black text-[#2E4036] tracking-tighter mb-4">{currency.riskRange}</h4>
                                         <button
@@ -109,7 +109,7 @@ export default function SurveyMechanics({ currency, onProtocolOpen }: SurveyMech
                                         </p>
                                     </div>
                                     <div className="pt-8 mt-12 border-t border-[#2E4036]/5 group-hover:border-white/10 flex items-center justify-between transition-colors">
-                                        <span className="font-mono text-[9px] text-[#CC5833] group-hover:text-white uppercase font-bold tracking-widest">Read Article</span>
+                                        <span className="font-mono text-[11px] text-[#CC5833] group-hover:text-white uppercase font-bold tracking-widest">Read Article</span>
                                         <ChevronRight size={16} className="text-[#CC5833] group-hover:text-white" />
                                     </div>
                                 </div>

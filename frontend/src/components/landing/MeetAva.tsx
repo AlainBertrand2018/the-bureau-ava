@@ -83,7 +83,7 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                                 </motion.div>
                             </div>
                             <h3 className="text-[#2E4036] font-heading font-black text-xl tracking-tight uppercase">AVA</h3>
-                            <p className="font-mono text-[#CC5833] text-[9px] font-bold uppercase tracking-[0.2em] mt-2">
+                            <p className="font-mono text-[#CC5833] text-[11px] font-bold uppercase tracking-[0.2em] mt-2">
                                 Autonomous Validation Analyst
                             </p>
                             <div className="mt-6 py-4 border-t border-[#2E4036]/10">
@@ -105,7 +105,7 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                         <div>
                             <div className="mb-8">
                                 <h4 className="text-[#F2F0E9] font-heading font-extrabold text-lg uppercase tracking-widest mb-1">Knowledge Pillars</h4>
-                                <p className="text-[#F2F0E9]/40 font-mono text-[8px] uppercase tracking-widest">Disciplines forming the analytical core</p>
+                                <p className="text-[#F2F0E9]/40 font-mono text-[10px] uppercase tracking-widest">Disciplines forming the analytical core</p>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {pillars.map((pillar, i) => (
@@ -117,7 +117,7 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                                                 </div>
                                                 <div>
                                                     <h5 className="text-[#F2F0E9] text-xs font-bold uppercase tracking-widest mb-1 group-hover:text-[#CC5833] transition-colors">{pillar.title}</h5>
-                                                    <p className="text-[#F2F0E9]/30 text-[9px] font-mono leading-relaxed">{pillar.sources}</p>
+                                                    <p className="text-[#F2F0E9]/30 text-[11px] font-mono leading-relaxed">{pillar.sources}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -130,7 +130,7 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                         <div>
                             <div className="mb-8">
                                 <h4 className="text-[#F2F0E9] font-heading font-extrabold text-lg uppercase tracking-widest mb-1">Intelligence Units</h4>
-                                <p className="text-[#F2F0E9]/40 font-mono text-[8px] uppercase tracking-widest">Specialized agents deployed on missions</p>
+                                <p className="text-[#F2F0E9]/40 font-mono text-[10px] uppercase tracking-widest">Specialized agents deployed on missions</p>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {agents.map((agent, i) => (
@@ -139,7 +139,7 @@ export default function MeetAva({ onProtocolOpen }: MeetAvaProps) {
                                             <div className="flex items-center gap-3 mb-4">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-[#CC5833] shadow-[0_0_8px_#CC5833]" />
                                                 <span className="text-[#F2F0E9] text-sm font-black uppercase tracking-tighter">{agent.name}</span>
-                                                <span className="ml-auto text-[#F2F0E9]/30 font-mono text-[8px] uppercase tracking-widest">{agent.role}</span>
+                                                <span className="ml-auto text-[#F2F0E9]/30 font-mono text-[10px] uppercase tracking-widest">{agent.role}</span>
                                             </div>
                                             <p className="text-[#F2F0E9]/50 text-xs leading-relaxed font-sans">{agent.desc}</p>
                                         </div>

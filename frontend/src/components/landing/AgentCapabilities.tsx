@@ -20,7 +20,7 @@ const ModuleItem = ({ agent, index, activeIndex, setActiveIndex }: { agent: Agen
             >
                 <div className="flex items-start justify-between gap-6">
                     <div>
-                        <span className="font-mono text-[9px] text-[#2E4036]/40 uppercase tracking-[0.3em] block mb-2">Protocol_Module_0{index + 1}</span>
+                        <span className="font-mono text-[11px] text-[#2E4036]/40 uppercase tracking-[0.3em] block mb-2">Protocol_Module_0{index + 1}</span>
                         <h3 className={`text-xl md:text-3xl font-heading font-black tracking-tighter uppercase transition-colors duration-400 ${isOpen ? 'text-[#CC5833]' : 'text-[#2E4036] group-hover:text-[#CC5833]'}`}>
                             {agent.name} <span className="text-[#2E4036]/20">/</span> {agent.role}
                         </h3>
@@ -70,11 +70,11 @@ const ModuleItem = ({ agent, index, activeIndex, setActiveIndex }: { agent: Agen
                             <div className="flex items-center gap-6 pt-6 border-t border-[#2E4036]/10">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-[#CC5833] animate-pulse" />
-                                    <span className="font-mono text-[9px] font-bold text-[#2E4036]/40 uppercase tracking-widest">Calibrated_Active</span>
+                                    <span className="font-mono text-[11px] font-bold text-[#2E4036]/40 uppercase tracking-widest">Calibrated_Active</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <ShieldCheck size={12} className="text-[#CC5833]" />
-                                    <span className="font-mono text-[9px] font-bold text-[#2E4036]/40 uppercase tracking-widest">Security_Protocol_V4</span>
+                                    <span className="font-mono text-[11px] font-bold text-[#2E4036]/40 uppercase tracking-widest">Security_Protocol_V4</span>
                                 </div>
                             </div>
                         </div>
