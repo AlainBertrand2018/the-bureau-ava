@@ -53,15 +53,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
     // Blog dynamic routes from Sanity
-    const blogQuery = `*[_type == "post"] { "slug": slug.current, _updatedAt }`;
-    const sanePosts = await client.fetch(blogQuery);
+    let blogRoutes: any[] = [];
+    try {
+        const blogQuery = `*[_type == "post"] { "slug": slug.current, _updatedAt }`;
+        const sanePosts = await client.fetch(blogQuery);
 
-    const blogRoutes = sanePosts.map((post: any) => ({
-        url: `${baseUrl}/blog/${post.slug}`,
-        lastModified: new Date(post._updatedAt),
-        changeFrequency: 'weekly' as const,
-        priority: 0.85,
-    }));
+        blogRoutes = sanePosts.map((post: any) => ({
+            url: `${baseUrl}/blog/${post.slug}`,
+            lastModified: new Date(post._updatedAt),
+            changeFrequency: 'weekly' as const,
+            priority: 0.85,
+        }));
+    } catch (error) {
+        console.error("Sitemap: Failed to fetch blog posts from Sanity", error);
+        // Fallback to empty blog routes to allow build to continue
+    }
 
     return [...staticRoutes, ...glossaryRoutes, ...agentRoutes, ...blogRoutes];
 }

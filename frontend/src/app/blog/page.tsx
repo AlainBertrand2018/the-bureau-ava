@@ -14,12 +14,17 @@ export const metadata: Metadata = {
 };
 
 async function getPosts() {
-    const query = `*[_type == "post"] | order(publishedAt desc) {
-        ...,
-        author->,
-        categories[]->
-    }`;
-    return await client.fetch(query);
+    try {
+        const query = `*[_type == "post"] | order(publishedAt desc) {
+            ...,
+            author->,
+            categories[]->
+        }`;
+        return await client.fetch(query);
+    } catch (e) {
+        console.error("fetchPosts error:", e);
+        return [];
+    }
 }
 
 export default async function BlogPage() {

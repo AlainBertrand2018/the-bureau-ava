@@ -9,12 +9,17 @@ type Props = {
 };
 
 async function getPost(slug: string) {
-    const query = `*[_type == "post" && slug.current == $slug][0] {
-        ...,
-        author->,
-        categories[]->
-    }`;
-    return await client.fetch(query, { slug });
+    try {
+        const query = `*[_type == "post" && slug.current == $slug][0] {
+            ...,
+            author->,
+            categories[]->
+        }`;
+        return await client.fetch(query, { slug });
+    } catch (e) {
+        console.error("fetchPost error:", e);
+        return null;
+    }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -41,11 +46,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-    const query = `*[_type == "post"] { "slug": slug.current }`;
-    const posts = await client.fetch(query);
-    return posts.map((post: { slug: string }) => ({
-        slug: post.slug,
-    }));
+    try {
+        const query = `*[_type == "post"] { "slug": slug.current }`;
+        const posts = await client.fetch(query);
+        return posts.map((post: { slug: string }) => ({
+            slug: post.slug,
+        }));
+    } catch (e) {
+        console.error("Static Params: Failed to fetch posts", e);
+        return [];
+    }
 }
 
 export default async function BlogPostPage({ params }: Props) {
