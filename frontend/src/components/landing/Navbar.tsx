@@ -104,7 +104,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                 : "py-6 bg-transparent"
                 }`}
         >
-            <div className="max-w-[95rem] mx-auto px-4 sm:px-6 md:px-10 flex items-center justify-between overflow-hidden">
+            <div className="max-w-[95rem] mx-auto px-4 sm:px-6 md:px-10 flex items-center justify-between">
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center gap-4 group">
                     <div className="w-9 h-9 rounded-xl bg-[#2E4036] flex items-center justify-center shadow-2xl shadow-[#2E4036]/20 group-hover:scale-110 transition-transform">
