@@ -60,8 +60,8 @@ export default function BusinessOnboardingModal({ isOpen, onClose }: BusinessOnb
                             <>
                                 <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-[#2E4036]/5">
                                     <div>
-                                        <h2 className="text-lg font-black text-[#2E4036] uppercase tracking-tight">Business Onboarding</h2>
-                                        <p className="text-[10px] font-bold text-[#CC5833] uppercase tracking-widest mt-1">Institutional Integration Protocol</p>
+                                        <h2 className="text-2xl font-black text-[#2E4036] uppercase tracking-tight">Business Onboarding</h2>
+                                        <p className="text-[13px] font-bold text-[#CC5833] uppercase tracking-widest mt-1">Institutional Integration Protocol</p>
                                     </div>
                                     <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 transition-colors">
                                         <X size={20} className="text-slate-400" />
@@ -71,14 +71,14 @@ export default function BusinessOnboardingModal({ isOpen, onClose }: BusinessOnb
                                 <form onSubmit={handleSubmit} className="p-8 space-y-5">
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1.5 block ml-1">Company Entity</label>
+                                            <label className="text-[13px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1">Company Entity</label>
                                             <div className="relative">
                                                 <input
                                                     required
                                                     type="text"
                                                     value={formData.company}
                                                     onChange={e => setFormData({ ...formData, company: e.target.value })}
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-10"
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-base font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-12"
                                                     placeholder="Global Research Corp"
                                                 />
                                                 <Building2 size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -87,27 +87,27 @@ export default function BusinessOnboardingModal({ isOpen, onClose }: BusinessOnb
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1.5 block ml-1">Industry</label>
+                                                <label className="text-[13px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1">Industry</label>
                                                 <div className="relative">
                                                     <input
                                                         required
                                                         type="text"
                                                         value={formData.industry}
                                                         onChange={e => setFormData({ ...formData, industry: e.target.value })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-10"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-base font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-12"
                                                         placeholder="FMCG / Tech"
                                                     />
                                                     <Globe size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1.5 block ml-1">Organization Size</label>
+                                                <label className="text-[13px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1">Organization Size</label>
                                                 <div className="relative">
                                                     <select
                                                         required
                                                         value={formData.size}
                                                         onChange={e => setFormData({ ...formData, size: e.target.value })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-10 appearance-none"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-base font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-12 appearance-none"
                                                     >
                                                         <option value="">Select...</option>
                                                         <option value="1-50">1-50 members</option>
@@ -121,14 +121,14 @@ export default function BusinessOnboardingModal({ isOpen, onClose }: BusinessOnb
                                         </div>
 
                                         <div>
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1.5 block ml-1">Primary Objective</label>
+                                            <label className="text-[13px] font-black uppercase tracking-widest text-slate-500 mb-2 block ml-1">Primary Objective</label>
                                             <div className="relative">
                                                 <textarea
                                                     required
                                                     rows={3}
                                                     value={formData.objective}
                                                     onChange={e => setFormData({ ...formData, objective: e.target.value })}
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-10 resize-none"
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-base font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#CC5833]/20 focus:border-[#CC5833] transition-all pl-12 resize-none"
                                                     placeholder="Structural survey audit / Synthetic panel access..."
                                                 />
                                                 <ClipboardCheck size={16} className="absolute left-3.5 top-5 text-slate-400" />
@@ -139,7 +139,7 @@ export default function BusinessOnboardingModal({ isOpen, onClose }: BusinessOnb
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full py-4 bg-[#2E4036] text-white rounded-xl font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#CC5833] transition-all shadow-lg shadow-[#2E4036]/20 flex items-center justify-center gap-2 group disabled:opacity-70"
+                                        className="w-full py-5 bg-[#2E4036] text-white rounded-xl font-black text-sm uppercase tracking-[0.2em] hover:bg-[#CC5833] transition-all shadow-lg shadow-[#2E4036]/20 flex items-center justify-center gap-2 group disabled:opacity-70"
                                     >
                                         {isSubmitting ? "Initiating..." : "Initiate Onboarding"}
                                         {!isSubmitting && <Send size={16} className="group-hover:translate-x-1 transition-transform" />}

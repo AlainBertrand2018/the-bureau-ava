@@ -18,10 +18,10 @@ load_dotenv()
 # We import the core methodology statement to ensure every report is anchored
 try:
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    docs_path = os.path.join(base_dir, "../docs/scientific_foundations.md")
+    docs_path = os.path.join(base_dir, "assets/scientific_foundations.md")
     if not os.path.exists(docs_path):
-        # Try absolute path fallback just in case
-        docs_path = "c:/Users/USER/Desktop/SOB_SurveyOptimizationBureau/SOB/docs/scientific_foundations.md"
+        # Try relative fallback
+        docs_path = os.path.join(base_dir, "assets", "scientific_foundations.md")
     
     with open(docs_path, "r") as f:
         SCIENTIFIC_FOUNDATION = f.read()
@@ -244,14 +244,17 @@ MANDATORY RULES — EVERY question MUST:
 1. SINGLE CONCEPT ONLY (never double-barreled)
    ❌ WRONG: "How satisfied are you with the price and quality of the product?"
    ✅ RIGHT: "In the past 3 months, how satisfied have you been with the price of this product? (1=Very dissatisfied, 5=Very satisfied)"
+   REF: Tourangeau's Cognitive Model of Question Answering.
 
 2. NEUTRAL, UNBIASED LANGUAGE (no leading or loaded words)
    ❌ WRONG: "Don't you agree that this product is excellent?"
    ✅ RIGHT: "How would you rate this product overall? (1=Very poor, 5=Excellent)"
+   REF: Krosnick's Theory of Satisficing.
 
 3. SPECIFIC TEMPORAL FRAME — Every question MUST anchor to a time period
    ❌ WRONG: "How often do you exercise?"
    ✅ RIGHT: "In the past 4 weeks, how often did you exercise? (Never, 1-2 times, 3-4 times, 5+ times)"
+   REF: Dillman's Tailored Design Method.
 
 4. COMPLETE RESPONSE SCALE in parentheses at the end
    - INTENSITY/SATISFACTION questions: Use Likert scales (1=Low, 5=High)
@@ -263,11 +266,7 @@ MANDATORY RULES — EVERY question MUST:
 
 5. CULTURALLY APPROPRIATE for {target}
    - Use {target}'s local currency in monetary scales
-   - Respect cultural sensitivities
-   - Avoid assumptions about lifestyle or values
-
-6. EVERY question must be DIRECTLY relevant to the research context above.
-   Do NOT include generic template questions, placeholder text like "[Project Name]", or questions about unrelated topics.
+   - Respect cultural sensitivities (Ref: Hofstede's Cultural Axioms)
 
 ══════════════════════════════════════════
 INSTRUMENT STRUCTURE ({count} items total)
@@ -277,11 +276,15 @@ INSTRUMENT STRUCTURE ({count} items total)
 - Phase 3: Behavioral (5-7 questions on actions and habits)
 - Phase 4: Demographic Classification (3-5 questions)
 
-CRITICAL: The "questionnaire" array MUST contain EXACTLY {count} question strings. Delivering fewer is a protocol violation.
-
 OUTPUT FORMAT: Return a JSON object with:
-- "questionnaire": [list of EXACTLY {count} question strings]
-- "strategic_rationale": "one sentence explaining the research design logic for {target}"
+- "questionnaire": [
+    {{
+       "text": "The question string including scale",
+       "scientific_grounding": "Specific reference to Dillman, Krosnick, or Tourangeau principle used",
+       "relevance": "Why this specific question is needed for the {target} market"
+    }}
+  ],
+- "strategic_rationale": "one sentence explaining the overall research design logic"
 """
 
         try:
@@ -295,13 +298,21 @@ OUTPUT FORMAT: Return a JSON object with:
             )
             data = safe_parse_json(response.text)
             
-            # Robustness: if AI returns a list directly, wrap it
-            if isinstance(data, list):
-                data = {"questionnaire": data, "strategic_rationale": f"High-fidelity {target} instrument generated."}
-            
-            # Ensure it's a dict
+            # Robustness: Normalize structure
             if not isinstance(data, dict):
                 data = {"questionnaire": [], "strategic_rationale": "Invalid data format"}
+            
+            raw_questions = data.get("questionnaire", [])
+            
+            # Ensure it's a list of dicts with 'text'
+            final_questions = []
+            for item in raw_questions:
+                if isinstance(item, str):
+                    final_questions.append({"text": item, "scientific_grounding": "General Psychometric Best Practice", "relevance": "Core context measurement"})
+                else:
+                    final_questions.append(item)
+            
+            data["questionnaire"] = final_questions
 
             # ── COUNT ENFORCEMENT ──
             questions = data.get("questionnaire", [])
@@ -320,10 +331,19 @@ Return a JSON array of strings only."""
                         config=types.GenerateContentConfig(response_mime_type='application/json')
                     )
                     extra = safe_parse_json(retry_resp.text)
+                    extra_list = []
                     if isinstance(extra, list):
-                        questions.extend(extra)
+                        extra_list = extra
                     elif isinstance(extra, dict) and "questionnaire" in extra:
-                        questions.extend(extra["questionnaire"])
+                        extra_list = extra["questionnaire"]
+                    
+                    # Normalize extra questions
+                    for item in extra_list:
+                        if isinstance(item, str):
+                            questions.append({"text": item, "scientific_grounding": "General Psychometric Best Practice", "relevance": "Core context measurement"})
+                        elif isinstance(item, dict):
+                            questions.append(item)
+                    
                     data["questionnaire"] = questions[:count]  # Cap at requested count
                 except Exception:
                     pass  # Keep what we have
@@ -363,7 +383,8 @@ Return a JSON array of strings only."""
             perfected = []
             for i, q in enumerate(questions):
                 yield log("AUDITOR", "STRESS_TEST", f"Auditing item {i+1}/{len(questions)} against cultural axioms...")
-                res = await self._perfect_single_question(q, mission=mission, targeting=targeting)
+                q_text = q.get("text", q) if isinstance(q, dict) else q
+                res = await self._perfect_single_question(q_text, mission=mission, targeting=targeting)
                 perfected.append(res)
                 if (i+1) % 5 == 0 or i == len(questions) - 1:
                     yield log("ADJUDICATOR", "SYNC", f"Batch check complete. Progress: {round((i+1)/len(questions)*100)}%")
@@ -386,6 +407,18 @@ Return a JSON array of strings only."""
             # 4. Packaging
             yield log("ARCHITECT", "FINALIZING", "Synthesizing field manual and scientific disclosures.")
             
+            # Map justifications for the report
+            # The report_generator expects question_justifications in simulation_report
+            justifications = []
+            for item in initial.get("questionnaire", []):
+                justifications.append({
+                    "relevance_to_objective": item.get("relevance", "Core Contextual Alignment"),
+                    "psychometric_trustworthiness": item.get("scientific_grounding", "Validated Bureau Quality")
+                })
+            
+            # Update simulation_report with the real justifications
+            simulation_report["question_justifications"] = justifications
+
             package_prompt = f"""
             Given these survey questions: {json.dumps(perfected)}
             Insights: {json.dumps(simulation_report.get('executive_summary', ''))}
@@ -396,7 +429,7 @@ Return a JSON array of strings only."""
                 client=self.client,
                 model=self.model,
                 contents=package_prompt,
-                config=types.GenerateContentConfig(response_mime_type='application/json')
+                config=types.GenerateContentConfig(max_output_tokens=1000, response_mime_type='application/json')
             )
             package_details = safe_parse_json(resp.text)
 
@@ -441,7 +474,8 @@ Return a JSON array of strings only."""
 
         # 2. Perfect via genuine audit
         print(f"[Genesis] Phase 2: Perfecting {len(questions)} questions via Bureau Audit...")
-        perfected = await self.perfect_instrument(questions, mission=mission, targeting=targeting)
+        q_texts = [q.get("text", q) if isinstance(q, dict) else q for q in questions]
+        perfected = await self.perfect_instrument(q_texts, mission=mission, targeting=targeting)
 
         # 3. Validate via simulation
         print(f"[Genesis] Phase 3: Running n=5 simulation for validation...")

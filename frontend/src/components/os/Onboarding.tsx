@@ -45,34 +45,34 @@ const Onboarding: React.FC = () => {
                 >
                     <div className="flex flex-col gap-5">
                         <div className="flex items-center justify-center gap-3 mb-1">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
-                            <span className="text-[11px] font-bold uppercase tracking-[0.5em] opacity-40">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500/50 animate-pulse" />
+                            <span className="text-[14px] font-bold uppercase tracking-[0.5em] opacity-50">
                                 System Initialization
                             </span>
                         </div>
 
-                        <h2 className="text-2xl md:text-3xl font-semibold leading-tight uppercase tracking-[0.15em] opacity-90">
+                        <h2 className="text-3xl md:text-5xl font-black leading-tight uppercase tracking-[0.15em] opacity-90">
                             Welcome to the Bureau
                         </h2>
 
-                        <p className={`text-base md:text-lg font-normal leading-relaxed opacity-70 ${isLight ? 'text-slate-600' : 'text-slate-200'}`}>
-                            This is our <span className="text-emerald-400/80 font-semibold">SURVEY OS</span>—your interface to global market intelligence.
-                            Feel free to explore the interactive widgets, manage field apps via the dock, or simply ask AVA if you need help.
+                        <p className={`text-xl md:text-2xl font-medium leading-relaxed opacity-80 ${isLight ? 'text-slate-600' : 'text-slate-200'}`}>
+                            This is our <span className="text-emerald-400 font-bold">SURVEY OS</span>—your interface to global market intelligence.
+                            Explore interactive widgets, manage field apps, or ask AVA for assistance.
                         </p>
                     </div>
 
                     <button
                         onClick={complete}
-                        className={`w-full py-4 rounded-2xl font-semibold uppercase tracking-[0.3em] transition-all duration-500 backdrop-blur-md border ${isLight
-                            ? 'bg-slate-900/90 text-white border-slate-800 hover:bg-emerald-600/90 shadow-lg'
-                            : 'bg-white/5 text-white/90 border-white/10 hover:bg-white/10 hover:border-white/20 shadow-xl'
+                        className={`w-full py-6 rounded-2xl font-black text-lg uppercase tracking-[0.3em] transition-all duration-500 backdrop-blur-md border ${isLight
+                            ? 'bg-slate-900 text-white border-slate-800 hover:bg-emerald-600 shadow-xl'
+                            : 'bg-white/10 text-white border-white/10 hover:bg-white/20 hover:border-white/30 shadow-2xl'
                             }`}
                     >
                         Initialize Interface
                     </button>
 
-                    <span className="text-[10px] font-bold opacity-30 uppercase tracking-widest">
-                        Neural Link Active • Version 2.4.1
+                    <span className="text-[12px] font-black opacity-40 uppercase tracking-[0.4em]">
+                        Neural Link Active • Protocol V2.4.1
                     </span>
                 </motion.div>
             </div>

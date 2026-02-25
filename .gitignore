@@ -56,5 +56,10 @@ frontend/build_log.txt
 .gemini/
 
 # IP & Experimental Blueprints (Local Only)
-docs/BILATERAL_SHADOW_PROTOCOL.md
-docs/ACTIVE_SIGNAL_INJECTION_BIBLE.md
+docs/
+documents/
+bureau_system.log
+*.log
+calculate_lab_tokens.py
+diagnostics*.py
+test_*.py
