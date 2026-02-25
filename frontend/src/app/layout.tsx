@@ -4,6 +4,7 @@ import "./globals.css";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { MissionProvider } from "@/context/MissionContext";
 import { ChatProvider } from "@/context/ChatContext";
+import { IllustratorProvider } from "@/context/IllustratorContext";
 import AVAChat from "@/components/AVAChat";
 import ClientOnly from "@/components/ClientOnly";
 
@@ -278,10 +279,12 @@ export default function RootLayout({
         <CurrencyProvider>
           <MissionProvider>
             <ChatProvider>
-              {children}
-              <ClientOnly>
-                <AVAChat />
-              </ClientOnly>
+              <IllustratorProvider>
+                {children}
+                <ClientOnly>
+                  <AVAChat />
+                </ClientOnly>
+              </IllustratorProvider>
             </ChatProvider>
           </MissionProvider>
         </CurrencyProvider>
