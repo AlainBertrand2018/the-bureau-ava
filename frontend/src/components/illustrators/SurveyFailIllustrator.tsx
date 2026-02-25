@@ -12,7 +12,6 @@ import {
     PointElement,
     LineElement,
     Title,
-    PieElement,
 } from "chart.js";
 import { Doughnut, Bar, Pie } from "react-chartjs-2";
 
