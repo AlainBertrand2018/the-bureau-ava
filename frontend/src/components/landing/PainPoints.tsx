@@ -47,7 +47,7 @@ export default function PainPoints({ onAuditClick }: PainPointsProps) {
                             Modern Research is <span className="text-[#CC5833]">Compromised.</span>
                         </h2>
                         <div className="max-w-xl">
-                            <p className="text-[#2E4036] font-bold text-xl mb-4 leading-tight">Enterprises lose millions annually to contaminated datasets and flawed instrumentation.</p>
+                            <p className="text-[#2E4036] font-bold text-xl mb-4 leading-tight">94% of failed surveys happen due to lack of Stress Tests. Enterprises lose millions annually to contaminated datasets and flawed instrumentation.</p>
                             <p className="text-[#2E4036]/60 font-sans text-sm leading-relaxed">
                                 Fragmented logic, leading language, and cognitive load issues corrupt respondent integrity, resulting in decision-making based on statistical noise rather than market truth.
                             </p>
