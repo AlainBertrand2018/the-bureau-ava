@@ -15,7 +15,8 @@ import {
     ShieldCheck,
     Lock,
     Star,
-    Sparkles
+    Sparkles,
+    Library
 } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/Footer";
@@ -241,6 +242,39 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
                                 ))}
                             </nav>
                         </div>
+
+                        {post.references && post.references.length > 0 && (
+                            <div className="pt-12 border-t border-[#2E4036]/5">
+                                <h4 className="text-xs font-bold text-[#CC5833] mb-8 flex items-center gap-2 tracking-[0.2em] uppercase">
+                                    <Library size={12} /> References
+                                </h4>
+                                <div className="space-y-6">
+                                    {post.references.map((ref: any, rIdx: number) => (
+                                        <div key={rIdx} className="group">
+                                            {ref.source && (
+                                                <span className="block font-mono text-[9px] text-[#2E4036]/30 uppercase tracking-widest mb-1">
+                                                    {ref.source}
+                                                </span>
+                                            )}
+                                            {ref.url ? (
+                                                <a
+                                                    href={ref.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block text-sm font-medium text-[#2E4036]/60 hover:text-[#CC5833] transition-all leading-snug"
+                                                >
+                                                    {ref.title}
+                                                </a>
+                                            ) : (
+                                                <span className="block text-sm font-medium text-[#2E4036]/60 leading-snug">
+                                                    {ref.title}
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="pt-12 border-t border-[#2E4036]/5">
                             <h4 className="text-xs font-bold text-[#2E4036]/30 mb-8 flex items-center gap-2 tracking-[0.2em] uppercase">

@@ -137,5 +137,34 @@ export const postType = defineType({
             ],
             description: 'If left empty, the standard foundatonal FAQ will be used.',
         }),
+        defineField({
+            name: 'references',
+            title: 'References & Citations',
+            type: 'array',
+            of: [
+                {
+                    type: 'object',
+                    fields: [
+                        {
+                            name: 'title',
+                            title: 'Citation Title/Text',
+                            type: 'string',
+                            validation: (Rule) => Rule.required(),
+                        },
+                        {
+                            name: 'url',
+                            title: 'Reference URL (Optional)',
+                            type: 'url',
+                        },
+                        {
+                            name: 'source',
+                            title: 'Source Name (e.g. Nature, The Lancet)',
+                            type: 'string',
+                        }
+                    ]
+                }
+            ],
+            description: 'Populates the reference list in the sidebar.',
+        }),
     ],
 })
