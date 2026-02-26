@@ -12,7 +12,7 @@ DB_PATH = settings.DATABASE_PATH
 async def init_db():
     bureau_logger.info(f"Initializing database at {DB_PATH}")
     async with aiosqlite.connect(DB_PATH) as conn:
-        # Transactions table for Audit & Health
+        # Transactions table
         await conn.execute('''
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,26 +41,83 @@ async def init_db():
         )
         ''')
 
-        # Audit History for Stats
+        # Audit History
         await conn.execute('''
         CREATE TABLE IF NOT EXISTS audit_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             quality_score INTEGER,
-            issue_types TEXT, -- JSON array of detected issues
+            issue_types TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
         ''')
 
-        # Missions table for persistence
+        # Missions table
         await conn.execute('''
         CREATE TABLE IF NOT EXISTS missions (
             mission_id TEXT PRIMARY KEY,
-            data TEXT, -- JSON serialized mission object
+            data TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
         ''')
 
+        # Users table
+        await conn.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            email TEXT PRIMARY KEY,
+            clearance_level INTEGER DEFAULT 0,
+            is_super_admin BOOLEAN DEFAULT FALSE,
+            credits INTEGER DEFAULT 100,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+
         await conn.commit()
+
+async def set_user_clearance(email: str, level: int, is_super: bool = False):
+    try:
+        async with aiosqlite.connect(DB_PATH) as conn:
+            await conn.execute('''
+                INSERT INTO users (email, clearance_level, is_super_admin, updated_at)
+                VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(email) DO UPDATE SET 
+                    clearance_level=excluded.clearance_level,
+                    is_super_admin=excluded.is_super_admin,
+                    updated_at=CURRENT_TIMESTAMP
+            ''', (email, level, bool(is_super)))
+            await conn.commit()
+    except Exception as e:
+        bureau_logger.error(f"Failed to set user clearance: {e}")
+
+async def get_user_clearance_local(email: str):
+    try:
+        async with aiosqlite.connect(DB_PATH) as conn:
+            conn.row_factory = aiosqlite.Row
+            cursor = await conn.execute("SELECT clearance_level, is_super_admin, credits FROM users WHERE email = ?", (email,))
+            row = await cursor.fetchone()
+            if row:
+                return dict(row)
+            return {"clearance_level": 0, "is_super_admin": False, "credits": 100}
+    except Exception as e:
+        bureau_logger.error(f"Failed to get user clearance: {e}")
+        return {"clearance_level": 0, "is_super_admin": False, "credits": 100}
+
+async def update_user_credits(email: str, amount: int):
+    """Spend or add credits to a user account."""
+    try:
+        async with aiosqlite.connect(DB_PATH) as conn:
+            # We use COALESCE to handle new users if they don't exist yet (default 100)
+            await conn.execute('''
+                INSERT INTO users (email, credits, updated_at) 
+                VALUES (?, 100 + ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(email) DO UPDATE SET 
+                    credits = users.credits + ?,
+                    updated_at = CURRENT_TIMESTAMP
+            ''', (email, amount, amount))
+            await conn.commit()
+            return True
+    except Exception as e:
+        bureau_logger.error(f"Failed to update user credits: {e}")
+        return False
 
 async def log_transaction(endpoint, status, latency_ms, tokens_in=0, tokens_out=0, item_count=0, sample_size=0):
     try:

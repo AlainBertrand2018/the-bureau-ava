@@ -24,6 +24,15 @@ const nextConfig: NextConfig = {
             },
         ];
     },
+    async redirects() {
+        return [
+            {
+                source: '/FAQ',
+                destination: '/faq',
+                permanent: true,
+            },
+        ];
+    },
     images: {
         remotePatterns: [
             {

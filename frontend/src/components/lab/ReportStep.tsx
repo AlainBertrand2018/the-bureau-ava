@@ -25,8 +25,11 @@ import {
     ThumbsDown,
     Award,
     MessageSquareText,
+    ArrowRight
 } from "lucide-react";
 import { useMission } from "@/context/MissionContext";
+import { useClearance } from "@/context/ClearanceContext";
+import { PaywallOverlay } from "../os/PaywallOverlay";
 import type { Persona, SimulationResult } from "./LabShell";
 
 interface ReportStepProps {
@@ -110,9 +113,11 @@ function getPriorityColor(priority: string) {
 
 export default function ReportStep({ context, results, questions, personas }: ReportStepProps) {
     const { currentMission } = useMission();
+    const { credits, spendCredits } = useClearance();
     const [report, setReport] = useState<BureauReport | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [isLocked, setIsLocked] = useState(true); // Locked by default for premium reports
     const [expandedQuestion, setExpandedQuestion] = useState<number | null>(null);
     const reportRef = useRef<HTMLDivElement>(null);
 
@@ -355,415 +360,431 @@ export default function ReportStep({ context, results, questions, personas }: Re
     if (!report) return null;
 
     return (
-        <div className="max-w-6xl mx-auto py-10" ref={reportRef}>
-            {/* Report Header */}
-            <div className="mb-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
-                <div>
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                            <FileText size={18} className="text-emerald-600" />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-black tracking-tight text-slate-900">Bureau Report</h2>
-                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-                                Quality Audit & Mitigation Protocol
-                            </p>
-                        </div>
+        <div className="max-w-6xl mx-auto py-10 relative" ref={reportRef}>
+            <AnimatePresence>
+                {isLocked && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <PaywallOverlay
+                            isLocked={isLocked}
+                            onUnlock={() => setIsLocked(false)}
+                            cost={50}
+                            title="Structural Audit Encrypted"
+                            description="Full AI Audit reports require Bureau processing credits. Allocate 50 credits to decrypt this structural intelligence Dossier."
+                        />
                     </div>
-                </div>
-                <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                        {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-                    </span>
-                    <button
-                        onClick={handleExport}
-                        className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
-                    >
-                        <FileDown size={14} />
-                        Export Report
-                    </button>
-                </div>
-            </div>
+                )}
+            </AnimatePresence>
 
-            {/* Executive Summary */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-50 border border-slate-100 rounded-3xl p-8 md:p-10 mb-8 shadow-sm"
-            >
-                <div className="flex items-center gap-2 mb-4">
-                    <Gavel size={14} className="text-emerald-600" />
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Executive Summary</h3>
-                </div>
-                <p className="text-slate-900 font-medium leading-relaxed text-base md:text-lg mb-6">
-                    {report.executive_summary}
-                </p>
-                <div className="flex flex-wrap gap-4">
-                    <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${getRiskBg(report.overall_risk_level)}`}>
-                        {getRiskIcon(report.overall_risk_level)}
-                        <span className={`text-xs font-black uppercase tracking-widest ${getRiskColor(report.overall_risk_level)}`}>
-                            {report.overall_risk_level} Risk
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-emerald-50 border-emerald-100">
-                        <Target size={14} className="text-emerald-600" />
-                        <span className="text-xs font-black text-emerald-600">{report.quality_score}/100 Quality Score</span>
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-white border-slate-100">
-                        <Users size={14} className="text-slate-400" />
-                        <span className="text-xs font-bold text-slate-400">
-                            n={results.length} respondents • {questions.length} questions
-                        </span>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Trust & Accuracy Badges */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                {benchmarkGrade && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6"
-                    >
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
-                                <Award size={18} className="text-emerald-600" />
+            <div className={isLocked ? "blur-xl pointer-events-none select-none transition-all duration-1000" : "transition-all duration-1000"}>
+                {/* Report Header */}
+                <div className="mb-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+                    <div>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                                <FileText size={18} className="text-emerald-600" />
                             </div>
                             <div>
-                                <h4 className="text-xs font-black uppercase tracking-widest text-emerald-600">
-                                    Benchmark Detection Accuracy
-                                </h4>
-                                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
-                                    Tested against known-flaw question battery
+                                <h2 className="text-2xl font-black tracking-tight text-slate-900">Bureau Report</h2>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                    Quality Audit & Mitigation Protocol
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-end gap-3">
-                            <span className="text-4xl font-black text-emerald-600">{benchmarkAccuracy}%</span>
-                            <span className="text-lg font-black text-emerald-700/60 mb-1">Grade {benchmarkGrade}</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500 font-medium mt-2">
-                            Our engine was tested against 6 intentionally flawed survey questions with documented
-                            structural defects. This score measures how many known flaws the AI correctly detected.
-                        </p>
-                    </motion.div>
-                )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                            {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                        </span>
+                        <button
+                            onClick={handleExport}
+                            className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
+                        >
+                            <FileDown size={14} />
+                            Export Report
+                        </button>
+                    </div>
+                </div>
 
+                {/* Executive Summary */}
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-teal-50 border border-teal-100 rounded-2xl p-6"
+                    className="bg-slate-50 border border-slate-100 rounded-3xl p-8 md:p-10 mb-8 shadow-sm"
                 >
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-xl bg-teal-100 border border-teal-200 flex items-center justify-center">
-                            <MessageSquareText size={18} className="text-teal-600" />
+                    <div className="flex items-center gap-2 mb-4">
+                        <Gavel size={14} className="text-emerald-600" />
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">Executive Summary</h3>
+                    </div>
+                    <p className="text-slate-900 font-medium leading-relaxed text-base md:text-lg mb-6">
+                        {report.executive_summary}
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${getRiskBg(report.overall_risk_level)}`}>
+                            {getRiskIcon(report.overall_risk_level)}
+                            <span className={`text-xs font-black uppercase tracking-widest ${getRiskColor(report.overall_risk_level)}`}>
+                                {report.overall_risk_level} Risk
+                            </span>
                         </div>
-                        <div>
-                            <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">
-                                Client Validation Rate
-                            </h4>
-                            <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
-                                Your feedback improves our accuracy
-                            </p>
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-emerald-50 border-emerald-100">
+                            <Target size={14} className="text-emerald-600" />
+                            <span className="text-xs font-black text-emerald-600">{report.quality_score}/100 Quality Score</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-white border-slate-100">
+                            <Users size={14} className="text-slate-400" />
+                            <span className="text-xs font-bold text-slate-400">
+                                n={results.length} respondents • {questions.length} questions
+                            </span>
                         </div>
                     </div>
-                    {agreementRate !== null ? (
-                        <div className="flex items-end gap-3">
-                            <span className="text-4xl font-black text-teal-600">{agreementRate}%</span>
-                            <span className="text-sm font-bold text-slate-500 mb-1">client agreement</span>
-                        </div>
-                    ) : (
-                        <p className="text-sm text-slate-500 font-medium">
-                            Use the 👍 👎 buttons on each finding below to validate our diagnostics.
-                            Your feedback directly calibrates our engine.
-                        </p>
-                    )}
-                    <p className="text-[10px] text-slate-500 font-medium mt-2">
-                        {Object.keys(feedbackSent).length} finding(s) reviewed this session
-                    </p>
                 </motion.div>
-            </div>
 
-            {/* Question Analysis & Rewrites */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                    <ArrowRightLeft size={16} className="text-primary" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-                        Question Audit & Recommended Rewrites
-                    </h3>
-                </div>
-
-                <div className="space-y-3">
-                    {(report.question_analysis || []).map((qa: QuestionAnalysis, i: number) => {
-                        const isExpanded = expandedQuestion === i;
-                        return (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.05 }}
-                                className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm"
-                            >
-                                {/* Question Header */}
-                                <button
-                                    onClick={() => setExpandedQuestion(isExpanded ? null : i)}
-                                    className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors text-left"
-                                >
-                                    <div className="flex items-start gap-4 flex-1 min-w-0">
-                                        <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
-                                            Q{i + 1}
-                                        </span>
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-slate-900 font-bold text-sm leading-relaxed">{qa.original_question}</p>
-                                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                                                <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${getRiskBg(qa.risk_level)} ${getRiskColor(qa.risk_level)}`}>
-                                                    {qa.risk_level} Risk
-                                                </span>
-                                                {(qa.issues_identified || []).slice(0, 2).map((issue: string, j: number) => (
-                                                    <span key={j} className="text-[11px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-2 py-1 rounded-full">
-                                                        {issue.slice(0, 30)}{issue.length > 30 ? "..." : ""}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 shrink-0 ml-4">
-                                        <span className="text-emerald-600 text-xs font-black">+{qa.predicted_improvement}</span>
-                                        {isExpanded ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
-                                    </div>
-                                </button>
-
-                                {/* Expanded Detail */}
-                                <AnimatePresence>
-                                    {isExpanded && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            className="border-t border-slate-100"
-                                        >
-                                            <div className="p-6 space-y-5">
-                                                {/* Issues with Feedback Buttons */}
-                                                <div>
-                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-600 mb-3 flex items-center gap-2">
-                                                        <AlertTriangle size={12} />
-                                                        Issues Identified — Rate Each Finding
-                                                    </h4>
-                                                    <div className="space-y-2">
-                                                        {(qa.issues_identified || []).map((issue: string, j: number) => {
-                                                            const feedbackKey = `${i}-${j}`;
-                                                            const alreadySent = feedbackSent[feedbackKey];
-                                                            return (
-                                                                <div
-                                                                    key={j}
-                                                                    className="flex items-start gap-3 text-sm text-slate-600 font-medium bg-rose-50 border border-rose-100 rounded-xl p-3"
-                                                                >
-                                                                    <span className="text-rose-600 shrink-0 mt-0.5">•</span>
-                                                                    <span className="flex-1">{issue}</span>
-                                                                    <div className="flex items-center gap-1.5 shrink-0">
-                                                                        {alreadySent ? (
-                                                                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${alreadySent === "AGREE" ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>
-                                                                                {alreadySent === "AGREE" ? "✓ Confirmed" : "✗ Flagged"}
-                                                                            </span>
-                                                                        ) : (
-                                                                            <>
-                                                                                <button
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation();
-                                                                                        submitFeedback(i, qa.original_question, `ISSUE_${j}`, issue, "AGREE");
-                                                                                        setFeedbackSent((prev) => ({ ...prev, [feedbackKey]: "AGREE" }));
-                                                                                    }}
-                                                                                    className="p-1 rounded hover:bg-emerald-100 transition-colors"
-                                                                                    title="This finding is accurate"
-                                                                                >
-                                                                                    <ThumbsUp size={10} className="text-slate-400 hover:text-emerald-600" />
-                                                                                </button>
-                                                                                <button
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation();
-                                                                                        submitFeedback(i, qa.original_question, `ISSUE_${j}`, issue, "DISAGREE");
-                                                                                        setFeedbackSent((prev) => ({ ...prev, [feedbackKey]: "DISAGREE" }));
-                                                                                    }}
-                                                                                    className="p-1 rounded hover:bg-rose-100 transition-colors"
-                                                                                    title="Flag as inaccurate"
-                                                                                >
-                                                                                    <ThumbsDown size={10} className="text-slate-400 hover:text-rose-600" />
-                                                                                </button>
-                                                                            </>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-
-                                                {/* Rewrite */}
-                                                <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-2">
-                                                            <CheckCircle2 size={12} />
-                                                            Recommended Rewrite
-                                                        </h4>
-                                                        <span className="text-emerald-600 text-xs font-black bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full">
-                                                            +{qa.predicted_improvement} predicted improvement
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-slate-900 font-bold text-base leading-relaxed mb-3">
-                                                        &quot;{qa.rewritten_question}&quot;
-                                                    </p>
-                                                    <p className="text-sm text-slate-500 font-medium leading-relaxed">
-                                                        {qa.rewrite_rationale}
-                                                    </p>
-                                                </div>
-
-                                                {/* Before / After */}
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div className="bg-rose-50 border border-rose-100 rounded-xl p-4">
-                                                        <span className="text-[11px] font-black uppercase tracking-widest text-rose-600 block mb-2">Before</span>
-                                                        <p className="text-sm text-slate-400 font-medium line-through decoration-rose-200">
-                                                            {qa.original_question}
-                                                        </p>
-                                                    </div>
-                                                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                                                        <span className="text-[11px] font-black uppercase tracking-widest text-emerald-600 block mb-2">After</span>
-                                                        <p className="text-sm text-slate-900 font-medium">{qa.rewritten_question}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.div>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Strategic Recommendations */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                    <Lightbulb size={16} className="text-amber-600" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Strategic Recommendations</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(report.strategic_recommendations || []).map((rec: Recommendation, i: number) => (
+                {/* Trust & Accuracy Badges */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    {benchmarkGrade && (
                         <motion.div
-                            key={i}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.08 }}
-                            className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-emerald-200 transition-all group shadow-sm"
+                            className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6"
                         >
-                            <div className="flex items-start justify-between gap-3 mb-3">
-                                <h4 className="text-slate-900 font-black text-sm tracking-tight">{rec.title}</h4>
-                                <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shrink-0 ${getPriorityColor(rec.priority)}`}>
-                                    {rec.priority}
-                                </span>
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
+                                    <Award size={18} className="text-emerald-600" />
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-emerald-600">
+                                        Benchmark Detection Accuracy
+                                    </h4>
+                                    <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
+                                        Tested against known-flaw question battery
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-sm text-slate-500 font-medium leading-relaxed mb-4">{rec.description}</p>
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600">
-                                <TrendingUp size={12} />
-                                <span>{rec.expected_impact}</span>
+                            <div className="flex items-end gap-3">
+                                <span className="text-4xl font-black text-emerald-600">{benchmarkAccuracy}%</span>
+                                <span className="text-lg font-black text-emerald-700/60 mb-1">Grade {benchmarkGrade}</span>
                             </div>
+                            <p className="text-[10px] text-slate-500 font-medium mt-2">
+                                Our engine was tested against 6 intentionally flawed survey questions with documented
+                                structural defects. This score measures how many known flaws the AI correctly detected.
+                            </p>
                         </motion.div>
-                    ))}
-                </div>
-            </div>
+                    )}
 
-            {/* Demographic Insights */}
-            {(report.demographic_insights || []).length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-teal-50 border border-teal-100 rounded-2xl p-6"
+                    >
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-xl bg-teal-100 border border-teal-200 flex items-center justify-center">
+                                <MessageSquareText size={18} className="text-teal-600" />
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-black uppercase tracking-widest text-teal-600">
+                                    Client Validation Rate
+                                </h4>
+                                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
+                                    Your feedback improves our accuracy
+                                </p>
+                            </div>
+                        </div>
+                        {agreementRate !== null ? (
+                            <div className="flex items-end gap-3">
+                                <span className="text-4xl font-black text-teal-600">{agreementRate}%</span>
+                                <span className="text-sm font-bold text-slate-500 mb-1">client agreement</span>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-slate-500 font-medium">
+                                Use the 👍 👎 buttons on each finding below to validate our diagnostics.
+                                Your feedback directly calibrates our engine.
+                            </p>
+                        )}
+                        <p className="text-[10px] text-slate-500 font-medium mt-2">
+                            {Object.keys(feedbackSent).length} finding(s) reviewed this session
+                        </p>
+                    </motion.div>
+                </div>
+
+                {/* Question Analysis & Rewrites */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-6">
-                        <Users size={16} className="text-violet-600" />
-                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Demographic Insights</h3>
+                        <ArrowRightLeft size={16} className="text-primary" />
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                            Question Audit & Recommended Rewrites
+                        </h3>
+                    </div>
+
+                    <div className="space-y-3">
+                        {(report.question_analysis || []).map((qa: QuestionAnalysis, i: number) => {
+                            const isExpanded = expandedQuestion === i;
+                            return (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.05 }}
+                                    className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm"
+                                >
+                                    {/* Question Header */}
+                                    <button
+                                        onClick={() => setExpandedQuestion(isExpanded ? null : i)}
+                                        className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors text-left"
+                                    >
+                                        <div className="flex items-start gap-4 flex-1 min-w-0">
+                                            <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">
+                                                Q{i + 1}
+                                            </span>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-slate-900 font-bold text-sm leading-relaxed">{qa.original_question}</p>
+                                                <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                    <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border ${getRiskBg(qa.risk_level)} ${getRiskColor(qa.risk_level)}`}>
+                                                        {qa.risk_level} Risk
+                                                    </span>
+                                                    {(qa.issues_identified || []).slice(0, 2).map((issue: string, j: number) => (
+                                                        <span key={j} className="text-[11px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-2 py-1 rounded-full">
+                                                            {issue.slice(0, 30)}{issue.length > 30 ? "..." : ""}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 shrink-0 ml-4">
+                                            <span className="text-emerald-600 text-xs font-black">+{qa.predicted_improvement}</span>
+                                            {isExpanded ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
+                                        </div>
+                                    </button>
+
+                                    {/* Expanded Detail */}
+                                    <AnimatePresence>
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                className="border-t border-slate-100"
+                                            >
+                                                <div className="p-6 space-y-5">
+                                                    {/* Issues with Feedback Buttons */}
+                                                    <div>
+                                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-600 mb-3 flex items-center gap-2">
+                                                            <AlertTriangle size={12} />
+                                                            Issues Identified — Rate Each Finding
+                                                        </h4>
+                                                        <div className="space-y-2">
+                                                            {(qa.issues_identified || []).map((issue: string, j: number) => {
+                                                                const feedbackKey = `${i}-${j}`;
+                                                                const alreadySent = feedbackSent[feedbackKey];
+                                                                return (
+                                                                    <div
+                                                                        key={j}
+                                                                        className="flex items-start gap-3 text-sm text-slate-600 font-medium bg-rose-50 border border-rose-100 rounded-xl p-3"
+                                                                    >
+                                                                        <span className="text-rose-600 shrink-0 mt-0.5">•</span>
+                                                                        <span className="flex-1">{issue}</span>
+                                                                        <div className="flex items-center gap-1.5 shrink-0">
+                                                                            {alreadySent ? (
+                                                                                <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${alreadySent === "AGREE" ? "text-emerald-600 bg-emerald-50" : "text-rose-600 bg-rose-50"}`}>
+                                                                                    {alreadySent === "AGREE" ? "✓ Confirmed" : "✗ Flagged"}
+                                                                                </span>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                            submitFeedback(i, qa.original_question, `ISSUE_${j}`, issue, "AGREE");
+                                                                                            setFeedbackSent((prev) => ({ ...prev, [feedbackKey]: "AGREE" }));
+                                                                                        }}
+                                                                                        className="p-1 rounded hover:bg-emerald-100 transition-colors"
+                                                                                        title="This finding is accurate"
+                                                                                    >
+                                                                                        <ThumbsUp size={10} className="text-slate-400 hover:text-emerald-600" />
+                                                                                    </button>
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                            submitFeedback(i, qa.original_question, `ISSUE_${j}`, issue, "DISAGREE");
+                                                                                            setFeedbackSent((prev) => ({ ...prev, [feedbackKey]: "DISAGREE" }));
+                                                                                        }}
+                                                                                        className="p-1 rounded hover:bg-rose-100 transition-colors"
+                                                                                        title="Flag as inaccurate"
+                                                                                    >
+                                                                                        <ThumbsDown size={10} className="text-slate-400 hover:text-rose-600" />
+                                                                                    </button>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Rewrite */}
+                                                    <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-600 flex items-center gap-2">
+                                                                <CheckCircle2 size={12} />
+                                                                Recommended Rewrite
+                                                            </h4>
+                                                            <span className="text-emerald-600 text-xs font-black bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full">
+                                                                +{qa.predicted_improvement} predicted improvement
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-slate-900 font-bold text-base leading-relaxed mb-3">
+                                                            &quot;{qa.rewritten_question}&quot;
+                                                        </p>
+                                                        <p className="text-sm text-slate-500 font-medium leading-relaxed">
+                                                            {qa.rewrite_rationale}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Before / After */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="bg-rose-50 border border-rose-100 rounded-xl p-4">
+                                                            <span className="text-[11px] font-black uppercase tracking-widest text-rose-600 block mb-2">Before</span>
+                                                            <p className="text-sm text-slate-400 font-medium line-through decoration-rose-200">
+                                                                {qa.original_question}
+                                                            </p>
+                                                        </div>
+                                                        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                                                            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-600 block mb-2">After</span>
+                                                            <p className="text-sm text-slate-900 font-medium">{qa.rewritten_question}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Strategic Recommendations */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Lightbulb size={16} className="text-amber-600" />
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Strategic Recommendations</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(report.demographic_insights || []).map((insight: DemographicInsight, i: number) => (
+                        {(report.strategic_recommendations || []).map((rec: Recommendation, i: number) => (
                             <motion.div
                                 key={i}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.08 }}
-                                className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm"
+                                className="bg-white border border-slate-100 rounded-2xl p-6 hover:border-emerald-200 transition-all group shadow-sm"
                             >
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
-                                        <Users size={14} className="text-violet-600" />
-                                    </div>
-                                    <h4 className="text-slate-900 font-black text-sm">{insight.segment}</h4>
+                                <div className="flex items-start justify-between gap-3 mb-3">
+                                    <h4 className="text-slate-900 font-black text-sm tracking-tight">{rec.title}</h4>
+                                    <span className={`text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border shrink-0 ${getPriorityColor(rec.priority)}`}>
+                                        {rec.priority}
+                                    </span>
                                 </div>
-                                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-2">
-                                    {typeof insight.finding === 'string' ? insight.finding : JSON.stringify(insight.finding)}
-                                </p>
-                                <p className="text-xs text-slate-400 font-medium leading-relaxed">
-                                    → {typeof insight.implication === 'string' ? insight.implication : JSON.stringify(insight.implication)}
+                                <p className="text-sm text-slate-500 font-medium leading-relaxed mb-4">{rec.description}</p>
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-600">
+                                    <TrendingUp size={12} />
+                                    <span>{rec.expected_impact}</span>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Demographic Insights */}
+                {(report.demographic_insights || []).length > 0 && (
+                    <div className="mb-8">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Users size={16} className="text-violet-600" />
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Demographic Insights</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {(report.demographic_insights || []).map((insight: DemographicInsight, i: number) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.08 }}
+                                    className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm"
+                                >
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
+                                            <Users size={14} className="text-violet-600" />
+                                        </div>
+                                        <h4 className="text-slate-900 font-black text-sm">{insight.segment}</h4>
+                                    </div>
+                                    <p className="text-sm text-slate-500 font-medium leading-relaxed mb-2">
+                                        {typeof insight.finding === 'string' ? insight.finding : JSON.stringify(insight.finding)}
+                                    </p>
+                                    <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                                        → {typeof insight.implication === 'string' ? insight.implication : JSON.stringify(insight.implication)}
+                                    </p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Next Steps */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-6">
+                        <Clock size={16} className="text-emerald-600" />
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recommended Next Steps</h3>
+                    </div>
+                    <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                        {(report.next_steps || []).map((step: string, i: number) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className={`flex items-start gap-4 p-5 ${i < (report.next_steps || []).length - 1 ? "border-b border-slate-100" : ""}`}
+                            >
+                                <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center shrink-0">
+                                    {i + 1}
+                                </span>
+                                <p className="text-slate-900 font-medium text-sm leading-relaxed pt-0.5">
+                                    {typeof step === 'string' ? step : (step as any)?.step || JSON.stringify(step)}
                                 </p>
                             </motion.div>
                         ))}
                     </div>
                 </div>
-            )}
 
-            {/* Next Steps */}
-            <div className="mb-8">
-                <div className="flex items-center gap-3 mb-6">
-                    <Clock size={16} className="text-emerald-600" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Recommended Next Steps</h3>
-                </div>
-                <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
-                    {(report.next_steps || []).map((step: string, i: number) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className={`flex items-start gap-4 p-5 ${i < (report.next_steps || []).length - 1 ? "border-b border-slate-100" : ""}`}
+                {/* Bureau Verdict */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-slate-50 border border-slate-100 rounded-3xl p-10 text-center shadow-sm"
+                >
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                        <Gavel size={16} className="text-emerald-600" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Bureau Verdict</span>
+                    </div>
+                    <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
+                        &quot;{report.bureau_verdict}&quot;
+                    </p>
+                    <div className="mt-8 flex items-center justify-center gap-4">
+                        <button
+                            onClick={handleExport}
+                            className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
                         >
-                            <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-black flex items-center justify-center shrink-0">
-                                {i + 1}
-                            </span>
-                            <p className="text-slate-900 font-medium text-sm leading-relaxed pt-0.5">
-                                {typeof step === 'string' ? step : (step as any)?.step || JSON.stringify(step)}
-                            </p>
-                        </motion.div>
-                    ))}
-                </div>
+                            <FileDown size={14} />
+                            Export Full Report
+                        </button>
+                        <button
+                            onClick={generateReport}
+                            className="flex items-center gap-2 px-6 py-3 text-slate-400 border border-slate-200 rounded-full text-xs font-black uppercase tracking-widest hover:text-slate-900 hover:bg-slate-50 transition-all"
+                        >
+                            <Zap size={14} />
+                            Regenerate
+                        </button>
+                    </div>
+                </motion.div>
             </div>
-
-            {/* Bureau Verdict */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="bg-slate-50 border border-slate-100 rounded-3xl p-10 text-center shadow-sm"
-            >
-                <div className="flex items-center justify-center gap-2 mb-4">
-                    <Gavel size={16} className="text-emerald-600" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Bureau Verdict</span>
-                </div>
-                <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto">
-                    &quot;{report.bureau_verdict}&quot;
-                </p>
-                <div className="mt-8 flex items-center justify-center gap-4">
-                    <button
-                        onClick={handleExport}
-                        className="flex items-center gap-2 px-8 py-3 bg-emerald-600 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
-                    >
-                        <FileDown size={14} />
-                        Export Full Report
-                    </button>
-                    <button
-                        onClick={generateReport}
-                        className="flex items-center gap-2 px-6 py-3 text-slate-400 border border-slate-200 rounded-full text-xs font-black uppercase tracking-widest hover:text-slate-900 hover:bg-slate-50 transition-all"
-                    >
-                        <Zap size={14} />
-                        Regenerate
-                    </button>
-                </div>
-            </motion.div>
         </div>
     );
 }

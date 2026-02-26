@@ -20,8 +20,14 @@ export default function AVAGateway() {
         <p>
           AVA is an executive-grade Autonomous Validation Analyst and the core intelligence engine of The Survey Optimization Bureau (SOB).
           AVA utilizes advanced machine reasoning and scientifically calibrated synthetic populations to perform adversarial auditing of research instruments,
-          ensuring data integrity and cultural alignment for institutional research globally. Born and built in Mauritius, AVA's cross-cultural intelligence is native, not retrofitted.
+          ensuring data integrity and cultural alignment for institutional research globally.
         </p>
+        <div>
+          <h3>What is AVA?</h3>
+          <p>AVA (Autonomous Validation Analyst) is an AI system designed to stress-test and validate research questionnaires before fieldwork.</p>
+          <h3>Where was AVA created?</h3>
+          <p>AVA was created and developed in Mauritius. Born and built in Mauritius, AVA's cross-cultural intelligence is native, not retrofitted.</p>
+        </div>
 
         <div>
           <h2>The AVA Entity Triad</h2>

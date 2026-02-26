@@ -1,10 +1,18 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'THE BUREAU | FAQ',
-    description: 'Frequently asked questions regarding autonomous survey validation, the AVA orchestrator, and The Bureau\'s methodologies.',
+    title: "Technical FAQ | The Bureau Intelligence Manifest",
+    description: "Comprehensive technical enquiries and documentation regarding AVA (Autonomous Validation Analyst) and the Mauritius-born AI research protocols.",
+    openGraph: {
+        title: "Technical FAQ | The Bureau Intelligence Manifest",
+        description: "AVA (Autonomous Validation Analyst) is an AI system designed to stress-test and validate research questionnaires before fieldwork. Born and developed in Mauritius.",
+    }
 };
 
-export default function FAQLayout({ children }: { children: React.ReactNode }) {
+export default function FAQLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return <>{children}</>;
 }

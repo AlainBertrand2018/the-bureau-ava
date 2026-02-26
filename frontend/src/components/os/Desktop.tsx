@@ -3,7 +3,7 @@ import React from 'react';
 import { useOS } from '@/context/OSContext';
 import Window from './Window';
 import Dock from './Dock';
-import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget } from './Widgets';
+import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget, IntelligencePulseWidget } from './Widgets';
 import Onboarding from './Onboarding';
 import AskAva from './AskAva';
 import { HelpCircle, Book, Users } from 'lucide-react';
@@ -69,6 +69,7 @@ const Desktop: React.FC = () => {
                 <WidgetContainer>
                     <TimeWidget />
                     <CountryWidget />
+                    <IntelligencePulseWidget />
                     <BureauFeedWidget />
                 </WidgetContainer>
             )}
@@ -164,6 +165,8 @@ function renderAppContent(id: string) {
         genesis: '/genesis',
         lab: '/lab',
         interpreter: '/field-interpreter', // Assuming this is the route
+        kernel: '/python',
+        illustrator: '/illustrator',
         bureau: '/landing'
     };
 

@@ -16,6 +16,10 @@ import {
     Lock,
     ChevronDown,
     ChevronUp,
+    Activity,
+    Globe,
+    Target,
+    Zap
 } from "lucide-react";
 
 import { useMission } from "@/context/MissionContext";
@@ -42,6 +46,28 @@ export default function QuestionsStep({
     const [showUpsell, setShowUpsell] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [rationale, setRationale] = useState("");
+
+    // Preview Insights State
+    const [previewData, setPreviewData] = useState<any>(null);
+    const [isPreviewing, setIsPreviewing] = useState(false);
+
+    const generatePreview = async () => {
+        setIsPreviewing(true);
+        try {
+            const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/preview`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ questions, context })
+            });
+            if (!resp.ok) throw new Error("Failed to generate preview");
+            const data = await resp.json();
+            setPreviewData(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setIsPreviewing(false);
+        }
+    };
 
     const addQuestion = () => {
         if (newQuestion.trim()) {
@@ -332,6 +358,73 @@ export default function QuestionsStep({
                     <AlertTriangle size={14} />
                     Add at least 2 questions to proceed to the diagnostic lab.
                 </motion.div>
+            )}
+
+            {/* Preview Insights Section */}
+            {questions.length >= 2 && (
+                <div className="mb-8 border border-emerald-100 bg-emerald-50/50 rounded-3xl p-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/10 blur-3xl rounded-full pointer-events-none" />
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                                <Activity size={18} />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black text-slate-900 tracking-tight">Diagnostic Preview</h3>
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500">Surface scan for critical methodology flaws</p>
+                            </div>
+                        </div>
+
+                        {!previewData ? (
+                            <button
+                                onClick={generatePreview}
+                                disabled={isPreviewing}
+                                className="w-full sm:w-auto px-8 py-3 rounded-full bg-slate-900 text-white font-black uppercase tracking-widest text-xs hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-xl shadow-slate-900/20"
+                            >
+                                {isPreviewing ? <Loader2 size={14} className="animate-spin" /> : <Zap size={14} className="text-amber-400" />}
+                                {isPreviewing ? "Analyzing Methodology..." : "Run Free Context Scan"}
+                            </button>
+                        ) : (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><FileQuestion size={10} />Items</div>
+                                        <div className="text-2xl font-black text-slate-900">{previewData.questionCount}</div>
+                                    </div>
+                                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Globe size={10} />Languages</div>
+                                        <div className="text-sm font-black text-slate-900 leading-tight pt-1">
+                                            {previewData.languages?.map((l: string) => <span key={l} className="block">{l}</span>)}
+                                        </div>
+                                    </div>
+                                    <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5"><AlertTriangle size={10} />Structural Flaws</div>
+                                        <div className="text-2xl font-black text-red-500">{previewData.issuesDetected}</div>
+                                    </div>
+                                    <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-200 shadow-sm shadow-emerald-500/10">
+                                        <div className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest mb-1 flex items-center gap-1.5"><Target size={10} />ROI Estimate</div>
+                                        <div className="text-2xl font-black text-emerald-700">{previewData.roiEstimate}</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                                            <Lock size={12} className="text-slate-400" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-slate-900">Unlock Full Diagnostic</p>
+                                            <p className="text-xs text-slate-500 font-medium">Proceed to the next phase to continue with the full lab report.</p>
+                                        </div>
+                                    </div>
+                                    <div className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center shrink-0 ${previewData.riskLevel === 'Critical' ? 'bg-red-100 text-red-700' : previewData.riskLevel === 'High' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                        Risk Level: {previewData.riskLevel}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </div>
+                </div>
             )}
 
             {/* Upsell: AI Question Drafting */}

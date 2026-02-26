@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type AppId = 'sentinel' | 'genesis' | 'lab' | 'interpreter' | 'bureau' | 'settings';
+export type AppId = 'sentinel' | 'genesis' | 'lab' | 'interpreter' | 'bureau' | 'settings' | 'kernel' | 'illustrator';
 
 export interface WindowState {
     id: AppId;

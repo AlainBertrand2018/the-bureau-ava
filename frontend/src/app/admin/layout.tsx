@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useClearance } from "@/context/ClearanceContext";
 import {
     LayoutDashboard,
     Activity,
@@ -9,7 +11,8 @@ import {
     ShieldCheck,
     Settings,
     ArrowLeft,
-    PenTool
+    PenTool,
+    LogOut
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -17,6 +20,40 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const { isSuperAdmin, clearanceLevel, isAuthenticated, isLoaded, logout } = useClearance();
+    const router = useRouter();
+
+    React.useEffect(() => {
+        if (isLoaded) {
+            if (!isAuthenticated) {
+                router.push("/login");
+            } else if (!isSuperAdmin) {
+                router.push("/");
+            }
+        }
+    }, [isSuperAdmin, isAuthenticated, isLoaded, router]);
+
+    // Show loading or restricted access
+    if (!isLoaded || !isAuthenticated || !isSuperAdmin) {
+        return (
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <div className="text-center">
+                    {!isLoaded || !isAuthenticated ? (
+                        <div className="flex flex-col items-center gap-4">
+                            <div className="w-12 h-12 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                            <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Verifying Identity...</p>
+                        </div>
+                    ) : (
+                        <>
+                            <h2 className="text-2xl font-black text-red-500 uppercase tracking-tighter mb-4">Access Denied</h2>
+                            <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Clearance Level 10 Required for Operations Oversight</p>
+                        </>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-200 flex">
             {/* Sidebar */}
@@ -56,6 +93,16 @@ export default function AdminLayout({
                         <ArrowLeft size={18} />
                         Exit to Site
                     </Link>
+                    <button
+                        onClick={() => {
+                            logout();
+                            router.push("/login");
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all border border-transparent"
+                    >
+                        <LogOut size={18} />
+                        Terminate Session
+                    </button>
                     <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-900 transition-all border border-transparent">
                         <Settings size={18} />
                         Settings

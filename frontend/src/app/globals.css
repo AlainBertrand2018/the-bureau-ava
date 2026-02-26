@@ -70,7 +70,7 @@ body {
 
 @keyframes scan {
   0% {
-    top: 0%;
+    transform: translateY(-10vh);
     opacity: 0;
   }
 
@@ -83,7 +83,7 @@ body {
   }
 
   100% {
-    top: 100%;
+    transform: translateY(110vh);
     opacity: 0;
   }
 }
@@ -111,6 +111,19 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--primary);
   border-radius: 10px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* ─── Fluid Typography ─── */

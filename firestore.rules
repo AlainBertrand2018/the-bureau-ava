@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default: Allow read/write for development. AVA will tighten this.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+    
+    // The "Clearance" match
+    match /visual_assets/{assetId} {
+      allow read: if request.auth != null; // Will tighten based on tier later
+    }
+  }
+}

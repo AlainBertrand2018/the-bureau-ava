@@ -18,6 +18,7 @@ from config import settings
 from logger import bureau_logger
 from ai_utils import generate_with_retry, safe_parse_json
 from services.announcer import announcer
+from firebase_manager import bureau_vault
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -642,6 +643,234 @@ async def trigger_push_signals(urls: Optional[List[str]] = None):
     except Exception as e:
         bureau_logger.error(f"PUSH_SIGNAL_TRIGGER_FAILED: {str(e)}")
         raise HTTPException(status_code=500, detail="Push sequence failed")
+
+# ── NEW: AI Illustrator Engine ──
+
+class IllustrationRequest(BaseModel):
+    prompt: str
+    aspect_ratio: Optional[str] = "16:9"
+    tier: Optional[str] = "FREE" # "FREE" or "PREMIUM"
+
+class PreviewRequest(BaseModel):
+    questions: List[str]
+    context: str
+
+@app.post("/ai/preview")
+async def generate_preview(req: PreviewRequest):
+    """Generates a fast, lightweight preview to hook the user."""
+    try:
+        if not req.questions:
+             return {"questionCount": 0, "issuesDetected": 0, "roiEstimate": "$0", "riskLevel": "None", "languages": []}
+
+        prompt = f"""
+        Analyze these survey questions quickly.
+        Context: {req.context}
+        Questions: {json.dumps(req.questions)}
+        
+        Return ONLY a JSON object with:
+        - languages: list of strings (e.g. ["English"])
+        - issuesDetected: integer (estimated number of structural flaws)
+        - riskLevel: string ("Low", "Medium", "High", "Critical")
+        - roiEstimate: integer (monetary savings by fixing them, roughly $150 per critical flaw)
+        """
+        
+        from google import genai
+        client = genai.Client()
+        resp = await generate_with_retry(
+             client=client,
+             model="gemini-2.0-flash",
+             contents=prompt,
+             config={"response_mime_type": "application/json"}
+        )
+        data = safe_parse_json(resp.text, {"languages": ["English"], "issuesDetected": len(req.questions), "riskLevel": "High", "roiEstimate": len(req.questions)*150})
+        
+        data["questionCount"] = len(req.questions)
+        if isinstance(data.get("roiEstimate"), (int, float)):
+             data["roiEstimate"] = f"${int(data['roiEstimate']):,}"
+             
+        # Add latency/logging
+        await log_transaction(endpoint="/ai/preview", status="SUCCESS", latency_ms=0, item_count=len(req.questions), sample_size=0)
+        return data
+    except Exception as e:
+        await log_transaction(endpoint="/ai/preview", status="ERROR", latency_ms=0)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ai/illustrate")
+async def generate_illustration(req: IllustrationRequest):
+    """
+    AVA's Visual Branding Engine. Generates SVG-based infographics and mission patches.
+    Saves the result to the Bureau Vault for persistent access and sellable product delivery.
+    """
+    try:
+        from google import genai
+        client = genai.Client()
+        
+        system_prompt = f"""
+        You are the 'Bureau Intelligence Architect'. You generate 'Visual Decision Packages' that are sellable premium products.
+        
+        TIER: {req.tier}
+
+        - If TIER is 'FREE': Output a simplified, watermark-heavy version. The SVG should have a large 'BUREAU UNVERIFIED' text overlay. Only 1 generic fact. 'decision_brief' should be '[LOCKED: PURCHASE CREDITS]'.
+        - If TIER is 'PREMIUM': Output the 'Executive Masterpiece'. Complexity 10/10. Kinetic motion (<animate> tags) is MANDATORY. 3-4 deep intelligence facts. Clear 'decision_brief'.
+
+        For every request, you must output a JSON object containing:
+        1. 'svg': A high-end, minimalist technical SVG. If PREMIUM, include subtle CSS/SVG animations.
+        2. 'facts': A list of data-driven intelligence points. 
+        3. 'decision_brief': Executive recommendation.
+
+        Output ONLY valid JSON.
+        """
+        
+        prompt = f"Develop a {req.tier} Visual Decision Package for: {req.prompt}."
+        
+        resp = await generate_with_retry(
+            client=client,
+            model="gemini-2.0-flash",
+            contents=prompt,
+            config={
+                "system_instruction": system_prompt,
+                "response_mime_type": "application/json"
+            }
+        )
+        
+        result_pkg = safe_parse_json(resp.text, default={"svg": "", "facts": [], "decision_brief": ""})
+        # Ensure it's a mapping, not a list
+        if isinstance(result_pkg, list) and len(result_pkg) > 0:
+            result_pkg = result_pkg[0]
+        elif not isinstance(result_pkg, dict):
+            result_pkg = {"svg": resp.text, "facts": ["Intelligence captured."], "decision_brief": "Review visual audit."}
+
+        # COMMIT TO THE BUREAU VAULT (PLUMBING)
+        asset_id = await bureau_vault.save_visual_asset(result_pkg, tier=req.tier)
+        
+        return {
+            **result_pkg, 
+            "id": asset_id,
+            "tier": req.tier, 
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        bureau_logger.error(f"ILLUSTRATOR_FAILED: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/ai/illustrate/{asset_id}")
+async def get_illustration(asset_id: str):
+    """Retrieves a certified asset from the Vault."""
+    asset = await bureau_vault.get_visual_asset(asset_id)
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found in Bureau Vault")
+    return asset
+
+@app.get("/conductor/clearance")
+async def get_clearance_status(email: str):
+    """Retrieves current clearance and credits for the Conductor."""
+    vault_data = await bureau_vault.check_clearance(email)
+    return {"email": email, **vault_data}
+
+@app.post("/conductor/credits")
+async def spend_credits(data: Dict[str, Any]):
+    """Deduct credits for report unlocking."""
+    email = data.get("email")
+    amount = data.get("amount", 0)
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+    
+    await bureau_vault.update_user_credits(email, -amount)
+    return {"status": "SUCCESS", "email": email, "deducted": amount}
+
+@app.post("/conductor/clearance")
+async def update_clearance(data: Dict[str, Any]):
+    """Conductor Lever: Physically update user clearance in Firebase."""
+    email = data.get("email")
+    level = data.get("level", 0)
+    if not email:
+        raise HTTPException(status_code=400, detail="Email required")
+    
+    await bureau_vault.update_user_clearance(email, level)
+    return {"status": "SUCCESS", "email": email, "clearance_level": level}
+
+# ── NEW: Python Kernel Engine ──
+
+class PythonExecuteRequest(BaseModel):
+    code: str
+    globals_reset: Optional[bool] = False
+
+# In-memory session for the kernel
+kernel_globals = {
+    "__name__": "__main__",
+    "os": os,
+    "json": json,
+    "time": time,
+    "pd": None,
+    "plt": None
+}
+
+try:
+    import pandas as pd
+    kernel_globals["pd"] = pd
+except ImportError:
+    pass
+
+@app.post("/python/execute")
+async def execute_python(req: PythonExecuteRequest):
+    """
+    AVA Kernel execution endpoint. 
+    Allows the 'Interpreter' app to run real data analysis logic.
+    """
+    import sys
+    import io
+    from contextlib import redirect_stdout
+
+    global kernel_globals
+    if req.globals_reset:
+        kernel_globals = {"__name__": "__main__", "os": os, "json": json, "time": time}
+
+    stdout = io.StringIO()
+    error = None
+    
+    try:
+        # Add backend to path so users can import project modules
+        if os.getcwd() not in sys.path:
+            sys.path.append(os.getcwd())
+            
+        with redirect_stdout(stdout):
+            # We use exec for multi-line support
+            exec(req.code, kernel_globals)
+    except Exception as e:
+        error = str(e)
+    
+    output_text = stdout.getvalue()
+    neural_insight = None
+    
+    if output_text.strip() or error:
+        try:
+            from google import genai
+            client = genai.Client()
+            insight_prompt = f"""
+            SYSTEM: You are the 'Bureau Field Interpreter'. 
+            Analyze the following Python execution output and provide a 2-sentence 'Neural Insight' for an executive decider.
+            Focus on what this data means for THEIR mission. 
+            If there is an error, explain it as a 'Neural Blockage' and suggest a fix.
+
+            OUTPUT: {output_text}
+            ERROR: {error}
+            """
+            
+            resp = await generate_with_retry(
+                client=client,
+                model="gemini-2.0-flash",
+                contents=insight_prompt
+            )
+            neural_insight = resp.text.strip()
+        except:
+            neural_insight = "Neural analysis unavailable. Proceed with raw data verification."
+
+    return {
+        "stdout": output_text,
+        "error": error,
+        "neural_insight": neural_insight,
+        "timestamp": time.time()
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

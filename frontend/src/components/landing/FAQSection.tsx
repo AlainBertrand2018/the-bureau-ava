@@ -16,6 +16,14 @@ interface FAQItemData {
 
 const FOUNDATIONAL_FAQ: FAQItemData[] = [
     {
+        question: "What is AVA?",
+        answer: "AVA (Autonomous Validation Analyst) is an AI system designed to stress-test and validate research questionnaires before fieldwork."
+    },
+    {
+        question: "Where was AVA created?",
+        answer: "AVA was created and developed in Mauritius."
+    },
+    {
         question: "How does AI stress-test a survey questionnaire?",
         answer: "AVA audits survey instruments prior to fieldwork by running them through an adversarial simulation loop. The system detects leading bias, double-barreled questions, and ambiguity by simulating how different personas interpret the language. This generates a prioritized fix-list that ensures maximum data quality and minimizes respondent drop-off."
     },
@@ -134,6 +142,12 @@ const FAQItem = ({ item, index, activeIndex, setActiveIndex }: { item: FAQItemDa
                     </div>
                 </div>
             </motion.div>
+
+            {/* SEO/Crawler Safety: Verbatim text representation that is always visible in the DOM but hidden from visual CSS layout */}
+            <div className="sr-only" aria-hidden="true">
+                <p>Question: {item.question}</p>
+                <p>Answer: {item.answer}</p>
+            </div>
         </div>
     );
 };

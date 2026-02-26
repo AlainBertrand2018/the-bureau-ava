@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useMission } from '@/context/MissionContext';
 import { useOS } from '@/context/OSContext';
-import { Clock, Globe, Users, TrendingUp, BookOpen, Linkedin, Twitter, MessageSquare } from 'lucide-react';
+import { Clock, Globe, Users, TrendingUp, BookOpen, Linkedin, Twitter, MessageSquare, Activity } from 'lucide-react';
 
 export const WidgetContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <div className="fixed top-12 left-4 md:top-[3vh] md:left-[1.5vw] w-[calc(100vw-2rem)] md:w-[15.5vw] flex flex-col gap-4 md:gap-[2vh] pointer-events-none z-10">
-        <div className="flex flex-col gap-4 md:gap-[2vh]">
+    <div className="fixed top-12 left-4 md:top-[4vh] md:left-[1.5vw] w-[calc(100vw-2rem)] md:w-[17vw] h-[calc(100vh-10vh)] overflow-y-auto no-scrollbar pointer-events-auto z-10">
+        <div className="flex flex-col gap-4 md:gap-[2.5vh] pb-[15vh]">
             {children}
         </div>
     </div>
@@ -343,3 +343,83 @@ export const BureauFeedWidget = () => {
 };
 
 
+/* ─── Widget 4: Intelligence Pulse (Facts & Motion) ─── */
+export const IntelligencePulseWidget = () => {
+    const { wallpaper } = useOS();
+    const isLight = wallpaper === 'clinical-white';
+
+    const [stats, setStats] = useState({
+        throughput: '1.2 GB/s',
+        uptime: '99.98%',
+        neuralLoad: 24,
+        missions: 128
+    });
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setStats(prev => ({
+                ...prev,
+                neuralLoad: Math.floor(Math.random() * 40) + 10,
+                throughput: (Math.random() * 0.5 + 1.1).toFixed(2) + ' GB/s'
+            }));
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    return (
+        <WidgetWrapper delay={0.8} id="pulse">
+            <div className="flex flex-col gap-4 md:gap-[1vw]">
+                <div className={`flex items-center gap-2 md:gap-[0.5vw] ${isLight ? 'text-rose-600' : 'text-rose-400'}`}>
+                    <Activity className="w-4 h-4 md:w-[1vw] md:h-[1vw]" />
+                    <span className="text-[10px] md:text-[clamp(10px,0.55vw,12px)] font-black uppercase tracking-[0.2em]">Intelligence Pulse</span>
+                </div>
+
+                {/* Kinetic Motion Element */}
+                <div className="relative h-12 md:h-[4vw] flex items-end gap-1 px-1 overflow-hidden">
+                    {[...Array(12)].map((_, i) => (
+                        <motion.div
+                            key={i}
+                            animate={{
+                                height: [`${20 + Math.random() * 60}%`, `${30 + Math.random() * 70}%`, `${20 + Math.random() * 60}%`],
+                            }}
+                            transition={{
+                                duration: 1.5 + Math.random(),
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className={`flex-1 rounded-t-full ${isLight ? 'bg-rose-500/30' : 'bg-rose-500/40 shadow-[0_0_8px_rgba(244,63,94,0.3)]'}`}
+                        />
+                    ))}
+                    <div className="absolute inset-x-0 bottom-0 h-[1px] bg-white/10" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 md:gap-[1vw]">
+                    <div>
+                        <div className="text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">Throughput</div>
+                        <div className={`text-xs md:text-[clamp(11px,0.6vw,14px)] font-bold ${isLight ? 'text-slate-800' : 'text-white'}`}>{stats.throughput}</div>
+                    </div>
+                    <div>
+                        <div className="text-[8px] md:text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none mb-1">AVA Uptime</div>
+                        <div className={`text-xs md:text-[clamp(11px,0.6vw,14px)] font-bold ${isLight ? 'text-slate-800' : 'text-white'}`}>{stats.uptime}</div>
+                    </div>
+                </div>
+
+                <div className={`pt-3 md:pt-[0.8vw] mt-1 md:mt-[0.2vw] border-t ${isLight ? 'border-slate-200' : 'border-white/5'}`}>
+                    <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Neural Load</span>
+                        <div className="flex items-center gap-2">
+                            <div className="w-16 h-1 bg-white/5 rounded-full overflow-hidden">
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${stats.neuralLoad}%` }}
+                                    className="h-full bg-rose-500"
+                                />
+                            </div>
+                            <span className="text-[9px] font-bold text-rose-500">{stats.neuralLoad}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </WidgetWrapper>
+    );
+};

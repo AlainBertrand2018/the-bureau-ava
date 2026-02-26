@@ -35,7 +35,7 @@ const AgentCapabilities = dynamic(() => import("@/components/landing/AgentCapabi
 const Demo = dynamic(() => import("@/components/landing/Demo"));
 const SurveyMechanics = dynamic(() => import("@/components/landing/SurveyMechanics"));
 const PricingSection = dynamic(() => import("@/components/landing/PricingSection"));
-const FAQSection = dynamic(() => import("@/components/landing/FAQSection"));
+import FAQSection from "@/components/landing/FAQSection";
 const FinalCTASection = dynamic(() => import("@/components/landing/FinalCTASection"));
 
 import {
