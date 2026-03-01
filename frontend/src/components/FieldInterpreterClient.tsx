@@ -339,27 +339,67 @@ export default function FieldInterpreterClient() {
                                 </motion.div>
                             )}
 
-                            {/* ── PROCESSING STEP ── */}
-                            {step === 'processing' && (
-                                <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                                    <div className="p-6 bg-slate-900/40 border border-emerald-500/20 rounded-3xl">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <Loader2 className="w-5 h-5 text-emerald-500 animate-spin" />
-                                            <h3 className="text-lg font-bold">Intelligent Grid Processing</h3>
+                            {/* ── PROCESSING MODAL (Glassbox) ── */}
+                            <AnimatePresence>
+                                {step === 'processing' && (
+                                    <motion.div
+                                        key="processing-modal"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+                                        transition={{ duration: 0.8, ease: "circOut" }}
+                                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-2xl p-4 md:p-8"
+                                    >
+                                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                                            <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-emerald-500/10 blur-[120px] rounded-full animate-pulse" />
+                                            <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-blue-500/10 blur-[120px] rounded-full animate-pulse" />
                                         </div>
-                                        <p className="text-slate-400 text-sm">
-                                            The 5-phase pipeline is analyzing <span className="text-emerald-400 font-bold">{file?.name}</span>. Each agent will report in real-time below.
-                                        </p>
-                                        <div className="mt-4 w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-                                            <motion.div
-                                                className="h-full bg-gradient-to-r from-emerald-500 to-blue-500"
-                                                animate={{ x: ['-100%', '100%'] }}
-                                                transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
-                                            />
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
+
+                                        <motion.div
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            className="relative w-full max-w-2xl bg-slate-950/50 border border-emerald-500/20 rounded-[40px] p-8 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.8)] overflow-hidden"
+                                        >
+                                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+
+                                            <div className="flex flex-col items-center text-center mb-10">
+                                                <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4 ring-1 ring-emerald-500/30 animate-pulse">
+                                                    <Activity className="w-8 h-8 text-emerald-500" />
+                                                </div>
+                                                <h2 className="text-2xl font-black text-white tracking-tight mb-2">Executing Intelligent Grid</h2>
+                                                <div className="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
+                                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                                                    Analyzing: {file?.name}
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {phases.map((phase) => (
+                                                    <div key={phase.id} className="relative">
+                                                        <AgentCard phase={phase} />
+                                                        {phase.status === 'working' && (
+                                                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-full blur-sm" />
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className="mt-10 pt-8 border-t border-slate-900 flex justify-between items-end">
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Pipeline Status</p>
+                                                    <p className="text-sm text-emerald-400 font-bold">
+                                                        {phases.filter(p => p.status === 'done').length} / {phases.length} Nodes Secured
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Engine</p>
+                                                    <p className="text-xs text-white font-bold tracking-tight">AVA OS v2.4.1</p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             {/* ── RESULTS STEP ── */}
                             {step === 'results' && analysis && (
