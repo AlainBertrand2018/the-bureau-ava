@@ -5,35 +5,35 @@
 services:
   # ─── BACKEND: THE BUREAU CORE ENGINE (Python FastAPI) ───
   - type: web
-    name: the-bureau-backend
+    name: the-bureau-ava-backend
     runtime: python
-    region: frankfurt # Preferred region (choose ohio, oregon, frankfurt, or singapore)
-    root: backend # Build context is relative to the repository root
+    region: singapore
+    rootDir: backend # Build context is relative to the repository root
     buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
     startCommand: "python -m uvicorn main:app --host 0.0.0.0 --port 10000"
     healthCheckPath: /health
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
       - key: PORT
         value: 10000
       - key: DATABASE_MODE
         value: SQLITE
-      - key: NEXT_PUBLIC_API_URL
-        value: https://the-bureau-backend-0shi.onrender.com
       - key: GOOGLE_API_KEY
         sync: false # Must be set manually in the Render dashboard
 
   # ─── FRONTEND: THE BUREAU INTERFACE (Next.js) ───
   - type: web
-    name: the-bureau-frontend
+    name: the-bureau-ava-frontend
     runtime: node
-    region: frankfurt
-    root: frontend # Build context is relative to the repository root
+    region: singapore
+    rootDir: frontend # Build context is relative to the repository root
     buildCommand: "npm install && npm run build"
     startCommand: "npm run start"
     envVars:
       - key: NODE_VERSION
         value: 20
       - key: NEXT_PUBLIC_API_URL
-        value: https://the-bureau-backend-0shi.onrender.com/api
+        value: https://the-bureau-ava-backend.onrender.com/api # Placeholder until backend is deployment
       - key: BACKEND_URL # Used by our internal rewrites
-        value: https://the-bureau-backend-0shi.onrender.com
+        value: https://the-bureau-ava-backend.onrender.com
