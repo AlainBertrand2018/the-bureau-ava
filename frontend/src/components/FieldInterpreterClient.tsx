@@ -286,6 +286,7 @@ export default function FieldInterpreterClient() {
                                     <div
                                         onDrop={handleDrop}
                                         onDragOver={(e) => e.preventDefault()}
+                                        onClick={() => { if (!file) fileInputRef.current?.click(); }}
                                         className={`relative h-[320px] rounded-3xl border-2 border-dashed ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-slate-800 bg-slate-900/20 hover:bg-slate-900/40 hover:border-emerald-500/50'} transition-all flex flex-col items-center justify-center p-12 cursor-pointer overflow-hidden group`}
                                     >
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
