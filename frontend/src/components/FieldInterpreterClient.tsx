@@ -160,8 +160,14 @@ export default function FieldInterpreterClient() {
                 });
 
                 if (!response.ok) {
-                    let errorMsg = 'Analysis failed';
-                    try { const ed = await response.json(); errorMsg = ed.detail || errorMsg; } catch { errorMsg = `HTTP ${response.status}`; }
+                    let errorMsg = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const ed = await response.json();
+                        errorMsg = ed.detail || errorMsg;
+                    } catch {
+                        // Fallback to verbose status if JSON parse fails
+                        errorMsg = `Endpoint ${baseApiUrl}/interpreter/process failed with status ${response.status} (${response.statusText})`;
+                    }
                     throw new Error(errorMsg);
                 }
 

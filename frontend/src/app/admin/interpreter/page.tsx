@@ -85,8 +85,8 @@ export default function InterpreterPage() {
                 setIsProcessing(false);
             };
             reader.readAsText(file);
-        } catch (err) {
-            setError("AUTHORIZATION ERROR: DATA INTERPRETATION FAILED.");
+        } catch (err: any) {
+            setError(err.message || "AUTHORIZATION ERROR: DATA INTERPRETATION FAILED.");
             setIsProcessing(false);
         }
     };

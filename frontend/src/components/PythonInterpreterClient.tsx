@@ -34,7 +34,10 @@ export default function PythonInterpreterClient() {
                 body: JSON.stringify({ code })
             });
 
-            if (!response.ok) throw new Error('Kernel Communication Failed');
+            if (!response.ok) {
+                console.error(`Kernel failure at ${apiUrl}/python/execute - Status: ${response.status}`);
+                throw new Error(`Kernel Communication Failed: HTTP ${response.status} (${response.statusText}) at ${apiUrl}/python/execute`);
+            }
 
             const result = await response.json();
 
