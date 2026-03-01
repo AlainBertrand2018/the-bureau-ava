@@ -27,6 +27,20 @@ async def init_db():
         )
         ''')
         
+        # --- SELF-HEALING MIGRATION: Ensure token tracking columns exist ---
+        # SQLite doesn't have an easy "IF NOT EXISTS" for ADD COLUMN, so we check pragma
+        cursor = await conn.execute("PRAGMA table_info(transactions)")
+        columns = [row[1] for row in await cursor.fetchall()]
+        
+        if "tokens_in" not in columns:
+            await conn.execute("ALTER TABLE transactions ADD COLUMN tokens_in INTEGER DEFAULT 0")
+        if "tokens_out" not in columns:
+            await conn.execute("ALTER TABLE transactions ADD COLUMN tokens_out INTEGER DEFAULT 0")
+        if "item_count" not in columns:
+            await conn.execute("ALTER TABLE transactions ADD COLUMN item_count INTEGER DEFAULT 0")
+        if "sample_size" not in columns:
+            await conn.execute("ALTER TABLE transactions ADD COLUMN sample_size INTEGER DEFAULT 0")
+        
         # Feedback table
         await conn.execute('''
         CREATE TABLE IF NOT EXISTS feedback (

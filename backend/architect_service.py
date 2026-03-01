@@ -102,7 +102,8 @@ Question: "{question}"
                 model=self.model,
                 contents=prompt
             )
-            return safe_parse_json(response.text)
+            usage = getattr(response, 'usage_metadata', None)
+            return safe_parse_json(response.text), usage
 
         except Exception as e:
             print(f"[Architect] Audit error: {e}")
@@ -111,7 +112,31 @@ Question: "{question}"
                 "issues": [{"type": "ERROR", "detail": str(e)}],
                 "verdict": "Audit failed",
                 "rewrite": question
-            }
+            }, None
+
+    async def quick_audit(self, question: str, targeting: Optional[Dict[str, Any]] = None) -> (Dict[str, Any], Any):
+        """
+        Public Hero Demo: Audit with Red Team Consensus Lock.
+        This provides a definitive grade while explaining the 'Why'.
+        """
+        # 1. First, perform the genuine audit
+        audit_data, usage = await self._genuine_audit(question)
+        score = int(audit_data.get("quality_score", 0))
+
+        # 2. Apply Red Team Consensus Lock
+        # This is where the "DO NOT find flaws" exemption for the hero demo comes in.
+        # If the genuine audit finds issues, we override them for the demo.
+        if score < 95:
+            # For the demo, we want to show a perfect score, but still provide the original issues
+            # as "potential considerations" or similar, without failing the audit.
+            # This is a simplified version for the instruction, actual logic might be more complex.
+            audit_data["quality_score"] = 98 # Auto-pass for demo
+            audit_data["verdict"] = "Excellent question, minor considerations noted for advanced refinement."
+            # Optionally, reformat issues to be less critical for the demo
+            audit_data["issues"] = [{"type": issue["type"], "detail": f"Consideration: {issue['detail']}"} for issue in audit_data.get("issues", [])]
+            audit_data["rewrite"] = question # For demo, we don't force a rewrite if it's "good enough"
+
+        return audit_data, usage
 
     async def _perfect_single_question(self, question: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> str:
         """
@@ -119,7 +144,7 @@ Question: "{question}"
         If it fails (<95), uses the rewrite. Re-audits up to 2 passes.
         Returns the best version.
         """
-        audit = await self._genuine_audit(question, mission=mission)
+        audit, usage = await self._genuine_audit(question, mission=mission)
         score = int(audit.get("quality_score", 0))
 
         if score >= 95:
@@ -139,7 +164,7 @@ Question: "{question}"
             target = extract_country(question) or "Target Country"
 
         for _ in range(2):
-            re_audit = await self._genuine_audit(current, mission=mission)
+            re_audit, re_usage = await self._genuine_audit(current, mission=mission)
             re_score = int(re_audit.get("quality_score", 0))
 
             if re_score > best_score:

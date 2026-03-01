@@ -271,10 +271,11 @@ class MarketSimulator:
                 )
             )
             data = safe_parse_json(response.text)
-            return data if isinstance(data, list) else [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}]
+            usage = getattr(response, 'usage_metadata', None)
+            return data if isinstance(data, list) else [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}], usage
         except Exception as e:
             print(f"Error generating validation personas: {e}")
-            return [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}]
+            return [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}], None
 
     async def run_simulation(self, demographics: List[Dict], questions: List[str], mode: str = "diagnostic", mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None):
         """Runs simulation with FULL parallelization across all persona×question pairs.
@@ -371,10 +372,11 @@ class MarketSimulator:
                     temperature=0.8
                 )
             )
-            return json.loads(response.text)
+            usage = getattr(response, 'usage_metadata', None)
+            return json.loads(response.text), usage
         except Exception as e:
             print(f"Error generating personas: {e}")
-            return [{"name": "Generic User", "age": 30, "location": "Urban Area", "occupation": "Professional", "traits": "Neutral baseline respondent"}]
+            return [{"name": "Generic User", "age": 30, "location": "Urban Area", "occupation": "Professional", "traits": "Neutral baseline respondent"}], None
 
     async def generate_questions(self, context: str, count: int = 5, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict:
         """[UPSELL] AI-drafted questionnaire — generates optimised questions based on context."""
@@ -423,10 +425,11 @@ class MarketSimulator:
                     temperature=0.7
                 )
             )
-            return safe_parse_json(response.text)
+            usage = getattr(response, 'usage_metadata', None)
+            return safe_parse_json(response.text), usage
         except Exception as e:
             print(f"Error generating questions: {e}")
-            return {"questions": ["Q1: What do you think?"], "rationale": "Error generating suggestions."}
+            return {"questions": ["Q1: What do you think?"], "rationale": "Error generating suggestions."}, None
 
     async def generate_report(self, context: str, questions: List[str], results: List[Dict], mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict:
         """Generates a structured quality audit report with mitigation, redressment, and quality scores."""
@@ -541,7 +544,8 @@ Return ONLY valid JSON. Be honest, balanced, and specific."""
                     temperature=0.6
                 )
             )
-            return safe_parse_json(response.text)
+            usage = getattr(response, 'usage_metadata', None)
+            return safe_parse_json(response.text), usage
         except Exception as e:
             print(f"Error generating report: {e}")
             return {
@@ -553,7 +557,7 @@ Return ONLY valid JSON. Be honest, balanced, and specific."""
                 "demographic_insights": [],
                 "next_steps": ["Retry report generation"],
                 "bureau_verdict": "Insufficient data for a verdict."
-            }
+            }, None
 
     # ──────────────────────────────────────────────────────────
     # VALIDATION REPORT — Authoritative (for Architect only)
@@ -658,7 +662,8 @@ Return ONLY valid JSON. Be authoritative, professional, and confident."""
                 )
             )
             data = safe_parse_json(response.text)
-            return data if isinstance(data, dict) else {"executive_summary": "Instrument validation complete.", "error": "Invalid format from AI"}
+            usage = getattr(response, 'usage_metadata', None)
+            return (data if isinstance(data, dict) else {"executive_summary": "Instrument validation complete.", "error": "Invalid format from AI"}), usage
         except Exception as e:
             print(f"Error generating validation report: {e}")
             return {
@@ -670,7 +675,7 @@ Return ONLY valid JSON. Be authoritative, professional, and confident."""
                 "demographic_insights": [],
                 "next_steps": ["Proceed with fieldwork using the certified instrument"],
                 "bureau_verdict": "This instrument meets The Bureau's quality standards."
-            }
+            }, None
 
     # ──────────────────────────────────────────────────────────
     # BENCHMARK VALIDATION SUITE

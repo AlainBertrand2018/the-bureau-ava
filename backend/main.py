@@ -188,7 +188,7 @@ async def simulate(req: SimulationRequest):
             "provenance": provenance
         }
     except Exception as e:
-        await log_transaction(endpoint="/simulate", status="ERROR", latency_ms=0)
+        await log_transaction(endpoint="/simulate", status="ERROR", latency_ms=0, tokens_in=0, tokens_out=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/generate_personas")
@@ -196,9 +196,19 @@ async def generate_personas(req: PersonaRequest):
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
         targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
-        personas = await simulator.generate_personas(req.count, req.context, mission=mission, targeting=targeting)
+        personas, usage = await simulator.generate_personas(req.count, req.context, mission=mission, targeting=targeting)
+        
+        await log_transaction(
+            endpoint="/generate_personas",
+            status="SUCCESS",
+            latency_ms=0,
+            tokens_in=usage.prompt_token_count if usage else 0,
+            tokens_out=usage.candidates_token_count if usage else 0,
+            item_count=req.count
+        )
         return personas
     except Exception as e:
+        await log_transaction(endpoint="/generate_personas", status="ERROR", latency_ms=0, tokens_in=0, tokens_out=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/generate_questions")
@@ -206,19 +216,41 @@ async def generate_questions(req: QuestionRequest):
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
         targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
-        data = await simulator.generate_questions(req.context, req.count, mission=mission, targeting=targeting)
+        data, usage = await simulator.generate_questions(req.context, req.count, mission=mission, targeting=targeting)
+        
+        await log_transaction(
+            endpoint="/generate_questions",
+            status="SUCCESS",
+            latency_ms=0,
+            tokens_in=usage.prompt_token_count if usage else 0,
+            tokens_out=usage.candidates_token_count if usage else 0,
+            item_count=req.count or 5
+        )
         return data
     except Exception as e:
+        await log_transaction(endpoint="/generate_questions", status="ERROR", latency_ms=0, tokens_in=0, tokens_out=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/analyze_results")
 async def analyze_results(req: AnalysisRequest):
+    start_time = time.time()
     try:
         mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        targeting = req.targeting_refinement.dict() if req.targeting_refinement else None
-        report = await simulator.generate_report(req.context, req.questions, req.results, mission=mission, targeting=targeting)
+        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        report, usage = await simulator.generate_report(req.context, req.questions, req.results, mission=mission, targeting=targeting)
+        latency = (time.time() - start_time) * 1000
+        
+        await log_transaction(
+            endpoint="/analyze_results",
+            status="SUCCESS",
+            latency_ms=latency,
+            tokens_in=usage.prompt_token_count if usage else 0,
+            tokens_out=usage.candidates_token_count if usage else 0,
+            item_count=len(req.questions)
+        )
         return report
     except Exception as e:
+        await log_transaction(endpoint="/analyze_results", status="ERROR", latency_ms=0, tokens_in=0, tokens_out=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 
