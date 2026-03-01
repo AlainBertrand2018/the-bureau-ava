@@ -20,7 +20,7 @@ class SynthesisService:
         if not self.api_key:
             raise ValueError("GOOGLE_API_KEY required for Synthesis Agent.")
         self.client = genai.Client(api_key=self.api_key)
-        self.model = "gemini-3-flash"
+        self.model = "gemini-flash-latest"
 
     async def code_qualitative_responses(self, responses: List[str]) -> Dict[str, Any]:
         """

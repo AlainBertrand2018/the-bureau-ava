@@ -124,7 +124,7 @@ def main():
     with st.sidebar:
         st.header("Terminal Config")
         st.session_state.api_key = st.text_input("G-Core API Key", type="password", value=st.session_state.api_key)
-        model_choice = st.selectbox("LLM Core", ["gemini-flash-latest", "gemini-3-flash"])
+        model_choice = st.selectbox("LLM Core", ["gemini-flash-latest", "gemini-flash-latest"])
         if st.button("Reset Terminal"):
             st.session_state.step = "brief"
             st.session_state.questions = []

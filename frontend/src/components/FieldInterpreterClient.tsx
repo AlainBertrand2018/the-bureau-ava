@@ -132,9 +132,8 @@ export default function FieldInterpreterClient() {
         reader.onload = async (e) => {
             try {
                 const csvContent = e.target?.result as string;
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-                const response = await fetch(`${apiUrl}/interpreter/process`, {
+                const baseApiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+                const response = await fetch(`${baseApiUrl}/interpreter/process`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ csv_content: csvContent, filename: file.name })

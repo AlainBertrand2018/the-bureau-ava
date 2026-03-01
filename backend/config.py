@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DATABASE_PATH: str = "the_bureau.db"
     
     # Global AI Settings
-    DEFAULT_MODEL: str = "gemini-3-flash"
+    DEFAULT_MODEL: str = "gemini-flash-latest"
     MAX_CONCURRENCY: int = 5
     
     # Environment
