@@ -839,7 +839,17 @@ async def process_field_data(req: InterpreterRequest):
         if req.mission_id:
             mission = await load_mission(req.mission_id)
             if mission:
-                mission_context = f"Mission ID: {req.mission_id}\nObjective: {mission.get('config', {}).get('objective')}"
+                config = mission.get('config', {})
+                dossier = mission.get('dossier', {})
+                mission_context = f"""
+MISSION MISSION_ID: {req.mission_id}
+RESEARCH TOPIC: {config.get('research_topic')}
+TARGET AUDIENCE: {config.get('target_audience')}
+MISSION OBJECTIVE: {config.get('objective')}
+
+EXISTING BENCHMARKS (GROUND TRUTH):
+{json.dumps(dossier, indent=2)}
+"""
 
         tokens_in = 0
         tokens_out = 0

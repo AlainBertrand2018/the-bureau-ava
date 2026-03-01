@@ -136,7 +136,7 @@ class FieldDataInterpreter:
             # ── PHASE 4: INTELLIGENT COLUMN (Sentinel) ──
             yield self._event("phase_start", "sentinel", {"message": "Validating findings against raw data and checking for hallucinations..."})
 
-            validation_data, tokens = await self._phase_sentinel(data_context, analysis_data)
+            validation_data, tokens = await self._phase_sentinel(data_context, analysis_data, context_data)
             total_tokens_in += tokens[0]
             total_tokens_out += tokens[1]
 
@@ -240,6 +240,10 @@ STANDARD: McKinsey Benchmarking & Qualtrics XM Protocol
 
 TASK: Enrich the analysis with industry benchmarks, thematic coding for qualitative responses,
 and cohort-specific context. This is the "intelligent cell" where every data point gets meaning.
+
+CRITICAL INSTRUCTION: If EXISTING BENCHMARKS (GROUND TRUTH) are provided in the MISSION CONTEXT,
+YOU MUST use those specific values (demographics, economic indicators, socio-metrics) as your
+primary vetting standard. Comparison against these benchmarks is mandatory.
 
 DISCOVERY DATA:
 {json.dumps(discovery, indent=2)}
@@ -374,19 +378,23 @@ OUTPUT (strict JSON):
 """
         return await self._call_agent_with_tokens(prompt, "Challenger")
 
-    async def _phase_sentinel(self, data_ctx: Dict, analysis: Dict) -> tuple:
+    async def _phase_sentinel(self, data_ctx: Dict, analysis: Dict, context: Dict) -> tuple:
         """Phase 4: Intelligent Column — Statistical validation and quant↔qual fusion."""
         prompt = f"""
 AGENT ROLE: THE SENTINEL (Phase 4 — Intelligent Column)
 STANDARD: Statistical Validation & Quant↔Qual Correlation Protocol
 
 TASK: You are the statistical integrity gate. Verify EVERY finding from the Challenger against
-the raw data statistics. Catch hallucinated percentages, invented correlations, or claims
-unsupported by the sample size.
+the raw data statistics AND industry benchmarks. Catch hallucinated percentages, invented correlations,
+or claims unsupported by the ground truth or sample size.
 
 RAW DATA STATISTICS (ground truth):
 - Rows: {data_ctx['row_count']}, Columns: {data_ctx['col_count']}
 {data_ctx['stats']}
+
+INDUSTRY BENCHMARKS & CONTEXT (ground truth):
+{json.dumps(context.get('industry_benchmarks', {}), indent=2)}
+{context.get('market_realities', 'N/A')}
 
 ANALYSIS TO VALIDATE:
 {json.dumps(analysis, indent=2)}
@@ -394,9 +402,10 @@ ANALYSIS TO VALIDATE:
 VALIDATION RULES:
 1. Percentages MUST sum correctly (≤ 100% for distributions)
 2. Claims about "significant" trends MUST be plausible given the sample size ({data_ctx['row_count']} rows)
-3. Cross-tabulation claims MUST reference variables that actually exist in the data
-4. Sentiment claims MUST be grounded in the actual thematic content
-5. Regression claims MUST be plausible given the variable types and distributions
+3. Comparisons to benchmarks MUST be accurate based on the provided ground truth context above
+4. Cross-tabulation claims MUST reference variables that actually exist in the data
+5. Sentiment claims MUST be grounded in the actual thematic content
+6. Regression claims MUST be plausible given the variable types and distributions
 
 OUTPUT (strict JSON):
 {{
