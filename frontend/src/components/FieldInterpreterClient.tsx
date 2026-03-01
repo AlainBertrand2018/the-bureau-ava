@@ -289,29 +289,32 @@ export default function FieldInterpreterClient() {
                                         onClick={() => { if (!file) fileInputRef.current?.click(); }}
                                         className={`relative h-[320px] rounded-3xl border-2 border-dashed ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-slate-800 bg-slate-900/20 hover:bg-slate-900/40 hover:border-emerald-500/50'} transition-all flex flex-col items-center justify-center p-12 cursor-pointer overflow-hidden group`}
                                     >
-                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
                                         {file ? (
-                                            <>
+                                            <div className="relative z-10 flex flex-col items-center">
                                                 <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4">
                                                     <FileText className="w-8 h-8 text-emerald-500" />
                                                 </div>
                                                 <h3 className="text-xl font-bold mb-1 text-emerald-400">{file.name}</h3>
                                                 <p className="text-slate-500 text-sm mb-6">{(file.size / 1024).toFixed(1)} KB</p>
-                                                <div className="flex gap-4">
+                                                <div className="flex gap-4 relative z-50">
                                                     <button
-                                                        onClick={startAnalysis}
-                                                        className="px-8 py-3 bg-emerald-500 text-white font-black rounded-xl hover:bg-emerald-400 transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                                                        onClick={(e) => { e.stopPropagation(); startAnalysis(); }}
+                                                        className="px-8 py-3 bg-emerald-500 text-white font-black rounded-xl hover:bg-emerald-400 transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)] pointer-events-auto"
                                                     >
                                                         START ANALYSIS <ArrowRight className="w-5 h-5" />
                                                     </button>
-                                                    <button onClick={() => setFile(null)} className="px-6 py-3 bg-slate-800 text-slate-300 font-bold rounded-xl hover:bg-slate-700">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); setFile(null); }}
+                                                        className="px-6 py-3 bg-slate-800 text-slate-300 font-bold rounded-xl hover:bg-slate-700 pointer-events-auto"
+                                                    >
                                                         CHANGE FILE
                                                     </button>
                                                 </div>
-                                            </>
+                                            </div>
                                         ) : (
-                                            <>
+                                            <div className="relative z-10 flex flex-col items-center">
                                                 <div className="w-20 h-20 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                                     <Upload className="w-10 h-10 text-emerald-500" />
                                                 </div>
@@ -323,7 +326,7 @@ export default function FieldInterpreterClient() {
                                                 >
                                                     Browse Files <ArrowRight className="w-5 h-5" />
                                                 </button>
-                                            </>
+                                            </div>
                                         )}
 
                                         <input

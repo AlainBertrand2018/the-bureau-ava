@@ -38,7 +38,7 @@ def stress_test_agentic_flow():
 
     try:
         response_research = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model="gemini-3-flash", 
             contents=research_prompt,
             config={
                 "tools": [{"google_search": {}}]
@@ -92,7 +92,7 @@ def stress_test_agentic_flow():
 
     try:
         response_synthesis = client.models.generate_content(
-            model="gemini-1.5-flash", 
+            model="gemini-3-flash", 
             contents=synthesis_prompt,
             config={
                 "response_mime_type": "application/json"

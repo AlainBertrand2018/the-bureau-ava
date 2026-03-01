@@ -20,7 +20,7 @@ class SentinelService:
         if not self.api_key:
             raise ValueError("GOOGLE_API_KEY required for Sentinel Inference.")
         self.client = genai.Client(api_key=self.api_key)
-        self.model = "gemini-1.5-flash"
+        self.model = "gemini-3-flash"
 
     async def ingest_file(self, file_path: str) -> pd.DataFrame:
         """Parses a file into a pandas DataFrame."""

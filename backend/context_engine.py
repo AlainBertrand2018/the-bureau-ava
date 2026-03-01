@@ -420,7 +420,7 @@ Be exhaustive. Every section must have at least 2 data points. No section may be
             # Asynchronous call with retry to handle 429
             response_research = await generate_with_retry(
                 client=self.client,
-                model="gemini-1.5-flash", 
+                model="gemini-3-flash", 
                 contents=research_prompt,
                 config=types.GenerateContentConfig(
                     tools=[types.Tool(google_search=types.GoogleSearch())]
@@ -550,7 +550,7 @@ Return ONLY the JSON object. No markdown, no commentary.
         try:
             response_synthesis = await generate_with_retry(
                 client=self.client,
-                model="gemini-1.5-flash", 
+                model="gemini-3-flash", 
                 contents=synthesis_prompt,
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json"
