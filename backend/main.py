@@ -364,7 +364,7 @@ Question: "{question}"
     
     response = await generate_with_retry(
         client=simulator.client,
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash",
         contents=prompt
     )
     
@@ -446,7 +446,7 @@ async def quick_audit(req: QuickAuditRequest):
             """
             ref_resp = await generate_with_retry(
                 client=simulator.client,
-                model="gemini-2.0-flash",
+                model="gemini-1.5-flash",
                 contents=refinement_prompt
             )
             current_candidate = ref_resp.text.strip().strip('"').strip("'")
@@ -646,7 +646,7 @@ async def chat_with_ava(req: ChatRequest):
         )
 
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=dynamic_system_prompt,
@@ -712,7 +712,7 @@ async def generate_preview(req: PreviewRequest):
         client = genai.Client()
         resp = await generate_with_retry(
              client=client,
-             model="gemini-2.0-flash",
+             model="gemini-1.5-flash",
              contents=prompt,
              config={"response_mime_type": "application/json"}
         )
@@ -759,7 +759,7 @@ async def generate_illustration(req: IllustrationRequest):
         
         resp = await generate_with_retry(
             client=client,
-            model="gemini-2.0-flash",
+            model="gemini-1.5-flash",
             contents=prompt,
             config={
                 "system_instruction": system_prompt,
