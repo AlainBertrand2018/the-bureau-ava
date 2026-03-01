@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 import json
+import base64
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
@@ -19,6 +20,7 @@ from logger import bureau_logger
 from ai_utils import generate_with_retry, safe_parse_json
 from services.announcer import announcer
 from firebase_manager import bureau_vault
+from interpreter_service import field_interpreter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -788,6 +790,60 @@ async def update_clearance(data: Dict[str, Any]):
     
     await bureau_vault.update_user_clearance(email, level)
     return {"status": "SUCCESS", "email": email, "clearance_level": level}
+
+class InterpreterRequest(BaseModel):
+    csv_content: str
+    filename: Optional[str] = "Bureau Groundwork Dataset"
+    mission_id: Optional[str] = None
+    generate_visual: Optional[bool] = False
+
+@app.post("/interpreter/process")
+async def process_field_data(req: InterpreterRequest):
+    """
+    AVA Result Interpreter: Deep psychographic and narrative analysis of field data.
+    Takes raw CSV, performs AI analysis, and generates a downloadable PDF.
+    """
+    try:
+        mission_context = ""
+        if req.mission_id:
+            mission = await load_mission(req.mission_id)
+            if mission:
+                mission_context = f"Mission ID: {req.mission_id}\nObjective: {mission.get('config', {}).get('objective')}"
+
+        # 1. AI Analysis
+        analysis = await field_interpreter.analyze_csv(req.csv_content, mission_context, filename=req.filename or "Bureau Groundwork Dataset")
+        
+        # 2. PDF Generation
+        pdf_bytes = field_interpreter.generate_pdf(analysis)
+        pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
+        
+        # 3. Optional Infographic
+        infographic_svg = None
+        if req.generate_visual:
+            infographic_svg = await field_interpreter.generate_infographic(analysis)
+        
+        # 4. Persistence & Logging
+        await log_transaction(
+            endpoint="/interpreter/process",
+            status="SUCCESS",
+            latency_ms=0,
+            tokens_in=analysis.get("tokens_in", 0),
+            tokens_out=analysis.get("tokens_out", 0),
+            item_count=analysis.get("row_count")
+        )
+
+        return {
+            "analysis": analysis,
+            "pdf_base64": pdf_base64,
+            "infographic_svg": infographic_svg
+        }
+        
+    except Exception as e:
+        err_msg = str(e)
+        bureau_logger.error(f"INTERPRETER_ENDPOINT_FAILED: {err_msg}")
+        if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
+            raise HTTPException(status_code=429, detail="SYSTEM_ERROR: AI Quota Exceeded (429). Please try again later.")
+        raise HTTPException(status_code=500, detail=err_msg)
 
 # ── NEW: Python Kernel Engine ──
 

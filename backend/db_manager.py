@@ -89,6 +89,10 @@ async def set_user_clearance(email: str, level: int, is_super: bool = False):
         bureau_logger.error(f"Failed to set user clearance: {e}")
 
 async def get_user_clearance_local(email: str):
+    # DEV OVERRIDE: Hardcode Super Admin for the owner
+    if email == "bertrand.chagal@gmail.com":
+        return {"clearance_level": 10, "is_super_admin": True, "credits": 88000}
+
     try:
         async with aiosqlite.connect(DB_PATH) as conn:
             conn.row_factory = aiosqlite.Row

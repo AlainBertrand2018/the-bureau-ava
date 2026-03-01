@@ -563,23 +563,6 @@ export default function AVAGatewayClient() {
                         )}
                     </AnimatePresence>
 
-                    {/* Sovereign Command Link */}
-                    <AnimatePresence>
-                        {showCTAs && (
-                            <motion.button
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 0.4 }}
-                                whileHover={{ opacity: 1, y: -2 }}
-                                transition={{ delay: 1.2, duration: 0.8 }}
-                                onClick={() => router.push("/sovereign")}
-                                className={`mt-8 flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[9px] font-black uppercase tracking-[0.3em] cursor-pointer transition-all ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}
-                            >
-                                <Lock size={10} />
-                                Sovereign Command Access
-                                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                            </motion.button>
-                        )}
-                    </AnimatePresence>
 
                     {/* Powered by line */}
                     <AnimatePresence>

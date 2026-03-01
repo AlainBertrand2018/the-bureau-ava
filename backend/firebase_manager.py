@@ -1,5 +1,9 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
+try:
+    import firebase_admin
+    from firebase_admin import credentials, firestore
+    HAS_FIREBASE = True
+except ImportError:
+    HAS_FIREBASE = False
 import os
 import time
 from typing import Optional, Dict, Any
@@ -16,6 +20,11 @@ class BureauFirebaseManager:
         self._initialize_firebase()
 
     def _initialize_firebase(self):
+        if not HAS_FIREBASE:
+            bureau_logger.info("Bureau Vault (Firebase) Context: UNAVAILABLE (Library not installed)")
+            self.db = None
+            return
+
         try:
             # The Bureau's High-Resolution Truth Layer (Firebase)
             # In a local development context, we stabilize the context even if keys are virtual.

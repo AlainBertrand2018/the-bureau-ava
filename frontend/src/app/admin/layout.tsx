@@ -4,15 +4,26 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useClearance } from "@/context/ClearanceContext";
 import {
-    LayoutDashboard,
-    Activity,
-    DollarSign,
+    Upload,
+    FileText,
+    Zap,
+    CheckCircle2,
+    Download,
     BarChart3,
+    BrainCircuit,
     ShieldCheck,
-    Settings,
-    ArrowLeft,
-    PenTool,
-    LogOut
+    Loader2,
+    Eye,
+    ChevronRight,
+    Lock,
+    AlertCircle,
+    LayoutDashboard, // Kept as it's used
+    Activity, // Kept as it's used
+    DollarSign, // Kept as it's used
+    Settings, // Kept as it's used
+    ArrowLeft, // Kept as it's used
+    PenTool, // Kept as it's used
+    LogOut // Kept as it's used
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -73,6 +84,7 @@ export default function AdminLayout({
                         { icon: <DollarSign size={18} />, label: "Commercial", href: "/admin/commercial" },
                         { icon: <PenTool size={18} />, label: "Create Content", href: "/studio" },
                         { icon: <BarChart3 size={18} />, label: "Audit Stats", href: "/admin/stats" },
+                        { icon: <BrainCircuit size={18} />, label: "Data Interpreter", href: "/admin/interpreter" },
                     ].map((item) => (
                         <Link
                             key={item.label}

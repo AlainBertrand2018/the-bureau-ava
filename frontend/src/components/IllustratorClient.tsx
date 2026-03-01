@@ -25,7 +25,8 @@ export default function IllustratorClient() {
         const activeTier = targetTier || tier;
 
         try {
-            const response = await fetch('http://localhost:8000/ai/illustrate', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const response = await fetch(`${apiUrl}/ai/illustrate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt, tier: activeTier })

@@ -41,8 +41,6 @@ export default function AVAChat({ }: AVAChatProps = {}) {
     const { isChatOpen: isOpen, setIsChatOpen: setIsOpen } = useChat();
     const pathname = usePathname();
 
-    if (pathname === '/os') return null;
-
     const [messages, setMessages] = useState<Message[]>([
         { role: "assistant", content: AVA_GREETING }
     ]);
@@ -122,7 +120,9 @@ export default function AVAChat({ }: AVAChatProps = {}) {
         }
     };
 
-    if (pathname === '/') return null;
+    // Gate rendering AFTER all hooks (React 19 requires hooks to always run in the same order)
+    if (pathname === '/os' || pathname === '/') return null;
+
 
     return (
         <>

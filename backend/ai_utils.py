@@ -26,23 +26,22 @@ async def generate_with_retry(
             )
         except Exception as e:
             err_str = str(e).upper()
-            # 429 = Rate Limit, 500/503 = Server Overloaded
-            if any(code in err_str for code in ["429", "RESOURCE_EXHAUSTED", "503", "SERVICE_UNAVAILABLE"]):
+            
+            # Use exponential backoff for rate limits or overloaded servers
+            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "503" in err_str or "SERVICE_UNAVAILABLE" in err_str:
                 if attempt < retries - 1:
-                    # Exponential backoff: 2, 4, 8, 16... + jitter
                     base_wait = (2 ** (attempt + 1))
                     jitter = random.uniform(0, 1.0)
                     wait_time = base_wait + jitter
                     
-                    msg = f"AI API Overloaded ({err_str[:20]}...). Retrying in {wait_time:.2f}s... (Attempt {attempt+1}/{retries})"
+                    msg = f"AI API Overloaded/Quota Exceeded. Retrying in {wait_time:.2f}s... (Attempt {attempt+1}/{retries})"
                     if log_func:
                         log_func(msg)
-                    bureau_logger.warning(f"AI_RETRY: {msg}")
+                    bureau_logger.warning(f"AI_RETRY: {msg} | Detail: {err_str[:100]}")
                         
                     await asyncio.sleep(wait_time)
                     continue
             
-            # Log specific error before raising
             if log_func:
                 log_func(f"AI FATAL ERROR: {str(e)}")
             bureau_logger.error(f"AI_FATAL: {str(e)}")
@@ -79,16 +78,29 @@ def extract_country(context: str) -> str:
 def safe_parse_json(text: str, default: Any = None) -> Any:
     """
     Robustly attempts to parse JSON, including regex fallback for embedded objects.
+    Flattens single-element lists if a dictionary is expected.
     """
     cleaned = clean_json_text(text)
+    data = None
     try:
-        return json.loads(cleaned)
+        data = json.loads(cleaned)
     except json.JSONDecodeError:
         # Fallback: try to find the first { ... } or [ ... ]
         try:
             match = re.search(r'(\{.*\}|\[.*\])', text, re.DOTALL)
             if match:
-                return json.loads(match.group(0))
+                data = json.loads(match.group(0))
         except:
-            pass
+            data = None
+            
+    # PROJECT-WIDE FIX: If we expected an object (default is a dict or None) but got a list, take the first element.
+    if data is not None and isinstance(data, list) and (default is None or isinstance(default, dict)):
+        if len(data) > 0:
+            data = data[0]
+        else:
+            data = {} if default is None else default
+    
+    if data is not None:
+        return data
+        
     return default if default is not None else {}

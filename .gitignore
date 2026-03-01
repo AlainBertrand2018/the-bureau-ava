@@ -63,3 +63,17 @@ bureau_system.log
 calculate_lab_tokens.py
 diagnostics*.py
 test_*.py
+
+# Bureau Stress Test & Live Genesis Outputs
+LIVE_GENESIS_*.html
+STRESS_TEST_*.html
+BUREAU_CERTIFICATE_DEMO.html
+SOVEREIGN_DASHBOARD.html
+THE_BUREAU_PITCH.html
+stress_test_full_suite.py
+run_live_genesis.py
+generate_demo_output.py
+count_loc.py
+bureau_system_audit.py
+debug_ai_response.log
+the_bureau.db
