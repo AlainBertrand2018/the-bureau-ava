@@ -827,6 +827,7 @@ class InterpreterRequest(BaseModel):
     csv_content: str
     filename: Optional[str] = "Bureau Groundwork Dataset"
     mission_id: Optional[str] = None
+    research_meta: Optional[Dict[str, str]] = None
 
 @app.post("/interpreter/process")
 async def process_field_data(req: InterpreterRequest):
@@ -835,6 +836,11 @@ async def process_field_data(req: InterpreterRequest):
     Yields real-time progress as each agent in the 5-phase Intelligent Grid completes.
     """
     async def stream_generator():
+        # Build baseline context
+        base_meta_context = ""
+        if req.research_meta:
+            base_meta_context = "\nRESEARCH SPECIFICATIONS (USER PROVIDED):\n" + json.dumps(req.research_meta, indent=2)
+
         mission_context = ""
         if req.mission_id:
             mission = await load_mission(req.mission_id)
@@ -850,6 +856,9 @@ MISSION OBJECTIVE: {config.get('objective')}
 EXISTING BENCHMARKS (GROUND TRUTH):
 {json.dumps(dossier, indent=2)}
 """
+        
+        # Combine provided metadata with mission context
+        full_context = base_meta_context + "\n" + mission_context
 
         tokens_in = 0
         tokens_out = 0
@@ -857,8 +866,9 @@ EXISTING BENCHMARKS (GROUND TRUTH):
 
         async for event in field_interpreter.analyze_csv_stream(
             req.csv_content,
-            mission_context,
-            filename=req.filename or "Bureau Groundwork Dataset"
+            full_context,
+            filename=req.filename or "Bureau Groundwork Dataset",
+            research_meta=req.research_meta
         ):
             yield event
             # Capture token totals from the final report event for logging

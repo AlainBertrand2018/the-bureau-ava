@@ -35,7 +35,7 @@ class FieldDataInterpreter:
     # PUBLIC API: Streaming Analysis
     # ══════════════════════════════════════════════════════════════════
 
-    async def analyze_csv_stream(self, csv_content: str, mission_context: str = "", filename: str = "Bureau Groundwork Dataset") -> AsyncGenerator[str, None]:
+    async def analyze_csv_stream(self, csv_content: str, mission_context: str = "", filename: str = "Bureau Groundwork Dataset", research_meta: Dict = None) -> AsyncGenerator[str, None]:
         """
         Main entry point. Async generator yielding NDJSON events per phase.
         Event types: phase_start, phase_complete, report, error
@@ -165,7 +165,8 @@ class FieldDataInterpreter:
             # ── FINAL ASSEMBLY ──
             final_report = self._assemble_report(
                 discovery_data, context_data, analysis_data, validation_data, arbiter_data,
-                chain_of_thought, filename, row_count, col_count, total_tokens_in, total_tokens_out
+                chain_of_thought, filename, row_count, col_count, total_tokens_in, total_tokens_out,
+                research_meta=research_meta
             )
 
             # Generate outputs
@@ -478,11 +479,12 @@ OUTPUT (strict JSON):
     # ══════════════════════════════════════════════════════════════════
 
     def _assemble_report(self, discovery, context, analysis, validation, arbiter,
-                         chain, filename, rows, cols, tokens_in, tokens_out) -> Dict:
+                         chain, filename, rows, cols, tokens_in, tokens_out, research_meta=None) -> Dict:
         """Assembles the final report object from all pipeline outputs."""
         report = {
             # Identity
-            "report_title": discovery.get("report_title", "Bureau Intelligence Report"),
+            "report_title": research_meta.get("survey_title") if research_meta and research_meta.get("survey_title") else discovery.get("report_title", "Bureau Intelligence Report"),
+            "research_meta": research_meta,
             "primary_theme": discovery.get("primary_theme", "General Analysis"),
             "subject": discovery.get("subject", ""),
             "target_market": discovery.get("target_market", ""),
@@ -767,6 +769,19 @@ OUTPUT (strict JSON):
             <p class="org">Survey Optimization Bureau</p>
             <h1>{title}</h1>
             <p class="theme">{theme}</p>
+            
+            {f"""
+            <div style="margin: 20px auto; max-width: 600px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 11px;">
+                    <div><strong style="color: #64748b; text-transform: uppercase; font-size: 9px;">Target Audience:</strong><br/>{html.escape(str(report['research_meta'].get('target_audience', 'N/A')))}</div>
+                    <div><strong style="color: #64748b; text-transform: uppercase; font-size: 9px;">Sample Size:</strong><br/>{html.escape(str(report['research_meta'].get('sample_size', 'N/A')))}</div>
+                    <div style="grid-column: span 2;"><strong style="color: #64748b; text-transform: uppercase; font-size: 9px;">Research Context:</strong><br/>{html.escape(str(report['research_meta'].get('context', 'N/A')))}</div>
+                    <div><strong style="color: #64748b; text-transform: uppercase; font-size: 9px;">Started:</strong> {html.escape(str(report['research_meta'].get('date_started', 'N/A')))}</div>
+                    <div><strong style="color: #64748b; text-transform: uppercase; font-size: 9px;">Finalized:</strong> {html.escape(str(report['research_meta'].get('date_generated', 'N/A')))}</div>
+                </div>
+            </div>
+            """ if report.get('research_meta') else ""}
+
             <div class="meta-row">
                 <div>Document <span>{doc_id}</span></div>
                 <div>Certified by <span>AVA Lead Architect v2.0</span></div>
