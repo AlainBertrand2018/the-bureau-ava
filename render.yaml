@@ -1,0 +1,39 @@
+# Render Blueprint (render.yaml) for The Bureau
+# This file automates the deployment of both services with their specific build contexts.
+# To trigger a clean deploy: Import this repository to Render as a "Blueprint".
+
+services:
+  # ─── BACKEND: THE BUREAU CORE ENGINE (Python FastAPI) ───
+  - type: web
+    name: the-bureau-backend
+    runtime: python
+    region: frankfurt # Preferred region (choose ohio, oregon, frankfurt, or singapore)
+    root: backend # Build context is relative to the repository root
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "python -m uvicorn main:app --host 0.0.0.0 --port 10000"
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: DATABASE_MODE
+        value: SQLITE
+      - key: NEXT_PUBLIC_API_URL
+        value: https://the-bureau-backend-0shi.onrender.com
+      - key: GOOGLE_API_KEY
+        sync: false # Must be set manually in the Render dashboard
+
+  # ─── FRONTEND: THE BUREAU INTERFACE (Next.js) ───
+  - type: web
+    name: the-bureau-frontend
+    runtime: node
+    region: frankfurt
+    root: frontend # Build context is relative to the repository root
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start"
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_PUBLIC_API_URL
+        value: https://the-bureau-backend-0shi.onrender.com/api
+      - key: BACKEND_URL # Used by our internal rewrites
+        value: https://the-bureau-backend-0shi.onrender.com
