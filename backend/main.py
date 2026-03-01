@@ -827,55 +827,54 @@ class InterpreterRequest(BaseModel):
     csv_content: str
     filename: Optional[str] = "Bureau Groundwork Dataset"
     mission_id: Optional[str] = None
-    generate_visual: Optional[bool] = False
 
 @app.post("/interpreter/process")
 async def process_field_data(req: InterpreterRequest):
     """
-    AVA Result Interpreter: Deep psychographic and narrative analysis of field data.
-    Takes raw CSV, performs AI analysis, and generates a downloadable PDF.
+    AVA Field Interpreter v2.0 — Streaming NDJSON endpoint.
+    Yields real-time progress as each agent in the 5-phase Intelligent Grid completes.
     """
-    try:
+    async def stream_generator():
         mission_context = ""
         if req.mission_id:
             mission = await load_mission(req.mission_id)
             if mission:
                 mission_context = f"Mission ID: {req.mission_id}\nObjective: {mission.get('config', {}).get('objective')}"
 
-        # 1. AI Analysis
-        analysis = await field_interpreter.analyze_csv(req.csv_content, mission_context, filename=req.filename or "Bureau Groundwork Dataset")
-        
-        # 2. PDF Generation
-        pdf_bytes = field_interpreter.generate_pdf(analysis)
-        pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
-        
-        # 3. Optional Infographic
-        infographic_svg = None
-        if req.generate_visual:
-            infographic_svg = await field_interpreter.generate_infographic(analysis)
-        
-        # 4. Persistence & Logging
-        await log_transaction(
-            endpoint="/interpreter/process",
-            status="SUCCESS",
-            latency_ms=0,
-            tokens_in=analysis.get("tokens_in", 0),
-            tokens_out=analysis.get("tokens_out", 0),
-            item_count=analysis.get("row_count")
-        )
+        tokens_in = 0
+        tokens_out = 0
+        row_count = 0
 
-        return {
-            "analysis": analysis,
-            "pdf_base64": pdf_base64,
-            "infographic_svg": infographic_svg
-        }
-        
-    except Exception as e:
-        err_msg = str(e)
-        bureau_logger.error(f"INTERPRETER_ENDPOINT_FAILED: {err_msg}")
-        if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
-            raise HTTPException(status_code=429, detail="SYSTEM_ERROR: AI Quota Exceeded (429). Please try again later.")
-        raise HTTPException(status_code=500, detail=err_msg)
+        async for event in field_interpreter.analyze_csv_stream(
+            req.csv_content,
+            mission_context,
+            filename=req.filename or "Bureau Groundwork Dataset"
+        ):
+            yield event
+            # Capture token totals from the final report event for logging
+            try:
+                parsed = json.loads(event)
+                if parsed.get("type") == "report":
+                    tokens_in = parsed.get("data", {}).get("tokens_in", 0)
+                    tokens_out = parsed.get("data", {}).get("tokens_out", 0)
+                    row_count = parsed.get("data", {}).get("analysis", {}).get("row_count", 0)
+            except Exception:
+                pass
+
+        # Log after stream completes
+        try:
+            await log_transaction(
+                endpoint="/interpreter/process",
+                status="SUCCESS",
+                latency_ms=0,
+                tokens_in=tokens_in,
+                tokens_out=tokens_out,
+                item_count=row_count
+            )
+        except Exception as log_err:
+            bureau_logger.warning(f"INTERPRETER_LOG_FAILED: {str(log_err)}")
+
+    return StreamingResponse(stream_generator(), media_type="application/x-ndjson")
 
 # ── NEW: Python Kernel Engine ──
 
@@ -911,32 +910,45 @@ async def execute_python(req: PythonExecuteRequest):
 
     global kernel_globals
     if req.globals_reset:
-        kernel_globals = {"__name__": "__main__", "os": os, "json": json, "time": time}
+        kernel_globals = {
+            "__name__": "__main__", 
+            "os": os, 
+            "json": json, 
+            "time": time,
+            "BUREAU_CONTEXT": "KERNEL_ACTIVE" # Allows scripts to detect they are running in-kernel
+        }
 
     stdout = io.StringIO()
     error = None
     
     try:
-        # Add backend to path so users can import project modules
-        if os.getcwd() not in sys.path:
-            sys.path.append(os.getcwd())
+        # Prevent recursive uvicorn starts
+        if "uvicorn.run" in req.code or "app.run" in req.code:
+            raise Exception("RECURSION_BLOCK: The Bureau Kernel prevents starting internal servers. Execute logic directly instead.")
+
+        # Ensure project modules are importable
+        current_dir = os.getcwd()
+        if current_dir not in sys.path:
+            sys.path.append(current_dir)
             
         with redirect_stdout(stdout):
-            # We use exec for multi-line support
+            # Execute with restricted globals to avoid system-level side effects where possible
             exec(req.code, kernel_globals)
     except Exception as e:
         error = str(e)
+        bureau_logger.error(f"KERNEL_EXECUTION_FAILED: {error}")
     
     output_text = stdout.getvalue()
     neural_insight = None
     
+    # Only generate insight if there was output or an error
     if output_text.strip() or error:
         try:
-            from google import genai
-            client = genai.Client()
+            # Crucial: Initialize client with settings.GOOGLE_API_KEY for production 
+            client = genai.Client(api_key=settings.GOOGLE_API_KEY)
             insight_prompt = f"""
             SYSTEM: You are the 'Bureau Field Interpreter'. 
-            Analyze the following Python execution output and provide a 2-sentence 'Neural Insight' for an executive decider.
+            Analyze the following Python execution output and provide a 1-sentence 'Neural Insight' for an executive decider.
             Focus on what this data means for THEIR mission. 
             If there is an error, explain it as a 'Neural Blockage' and suggest a fix.
 
@@ -946,18 +958,20 @@ async def execute_python(req: PythonExecuteRequest):
             
             resp = await generate_with_retry(
                 client=client,
-                model="gemini-2.0-flash",
+                model=settings.DEFAULT_MODEL,
                 contents=insight_prompt
             )
             neural_insight = resp.text.strip()
-        except:
+        except Exception as ai_err:
+            bureau_logger.warning(f"KERNEL_INSIGHT_FAILED: {str(ai_err)}")
             neural_insight = "Neural analysis unavailable. Proceed with raw data verification."
 
     return {
         "stdout": output_text,
         "error": error,
         "neural_insight": neural_insight,
-        "timestamp": time.time()
+        "timestamp": time.time(),
+        "status": "COMPLETED" if not error else "FAILED"
     }
 
 if __name__ == "__main__":

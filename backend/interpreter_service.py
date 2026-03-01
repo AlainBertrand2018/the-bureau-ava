@@ -1,247 +1,860 @@
+"""
+AVA Field Data Interpreter v2.0
+===============================
+Industry-standard survey analysis pipeline (Kantar/McKinsey/Qualtrics grade).
+5-Phase Intelligent Grid: Clean at Source → Intelligent Cell → Intelligent Row → Intelligent Column → Intelligent Grid.
+"""
+
 import pandas as pd
 import json
 import os
 import base64
 import datetime
 import io
-from typing import Dict, Any, List, Optional
+import re
+import html
+from typing import Dict, Any, List, Optional, AsyncGenerator
 from logger import bureau_logger
 from ai_utils import generate_with_retry, safe_parse_json
 from config import settings
 from google import genai
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER, TA_LEFT
-import html
+
 
 class FieldDataInterpreter:
     """
-    AVA Field Data Interpreter v1.0. 
-    Converts raw CSV survey data into high-intelligence report dossiers.
+    AVA Field Data Interpreter v2.0.
+    Converts raw CSV survey data into Kantar/McKinsey-grade intelligence dossiers
+    via a 5-phase Intelligent Grid pipeline.
     """
-    
+
     def __init__(self):
         self.client = genai.Client(api_key=settings.GOOGLE_API_KEY)
-        self.model = "gemini-2.0-flash"
+        self.model = settings.DEFAULT_MODEL
 
-    async def analyze_csv(self, csv_content: str, mission_context: str = "", filename: str = "Bureau Groundwork Dataset") -> Dict[str, Any]:
+    # ══════════════════════════════════════════════════════════════════
+    # PUBLIC API: Streaming Analysis
+    # ══════════════════════════════════════════════════════════════════
+
+    async def analyze_csv_stream(self, csv_content: str, mission_context: str = "", filename: str = "Bureau Groundwork Dataset") -> AsyncGenerator[str, None]:
         """
-        AVA 5-Stage Multi-Agent Orchestration Pipeline.
-        Sequential chain of command: Discoverer -> Contextualizer -> Challenger -> Sentinel -> AVA.
+        Main entry point. Async generator yielding NDJSON events per phase.
+        Event types: phase_start, phase_complete, report, error
         """
+        total_tokens_in = 0
+        total_tokens_out = 0
+        chain_of_thought = []
+
         try:
-            # 0. Robust CSV Parsing
+            # ── PHASE 0: LOCAL INGESTION ──
+            yield self._event("phase_start", "ingestion", {"message": "Parsing and structuring raw data..."})
+
             df = self._parse_csv(csv_content)
-            bureau_logger.info(f"PIPELINE_START: {len(df)} rows | {filename}")
-            
-            # Sanitization: Ensure object columns don't contain unhashable types (like dicts)
+            row_count = len(df)
+            col_count = len(df.columns)
+            columns = list(df.columns)
+
+            if row_count == 0:
+                yield self._event("error", "ingestion", {"message": "CSV contains no data rows."})
+                return
+
+            # Sanitize object columns
             for col in df.select_dtypes(include=['object']).columns:
                 df[col] = df[col].apply(lambda x: str(x) if x is not None else "")
 
-            summary_stats = df.describe(include='all').to_json()
-            sample_data = df.head(15).to_json()
-            columns = list(df.columns)
-            row_count = len(df)
-            
-            total_tokens_in = 0
-            total_tokens_out = 0
-            chain_of_thought = []
-            
-            # --- STAGE 1: THE DISCOVERER (Discovery Agent) ---
-            discovery_prompt = f"""
-            AGENT ROLE: THE DISCOVERER
-            TASK: Identify the raw DNA of this dataset. Start with a VIRGIN SLATE.
-            
-            DATA PARAMETERS:
-            - Filename: {filename}
-            - Records: {row_count}
-            - Fields: {columns}
-            
-            SAMPLE DATA & STATS:
-            {sample_data}
-            {summary_stats}
-            
-            OUTPUT (JSON):
-            {{
-                "subject": "Clear statement of what this data is about",
-                "target_market": "Geography/Demographic/Sector",
-                "age_cohorts_identified": ["List of identified age groups like Boomers, Gen Z, etc."],
-                "primary_theme": "High-level category (e.g. Climate Change, Retail, Healthcare)",
-                "report_title": "Professional title for this intelligence report",
-                "questions_discovered": "List of key questions or variables mapping",
-                "scoring_standards": "Relevant industry scoring metrics for this specific domain"
-            }}
-            """
-            discovery_res, usage = await self._call_agent(discovery_prompt, "Discovery Agent")
-            if usage:
-                total_tokens_in += usage.prompt_token_count
-                total_tokens_out += usage.candidates_token_count
-            discovery_data = safe_parse_json(discovery_res)
-            
-            chain_of_thought.append({"agent": "Discoverer", "status": "COMPLETED", "output": discovery_data.get("subject", "N/A")})
-            bureau_logger.info(f"DISCOVERY_COMPLETE: Subject={discovery_data.get('subject', 'N/A')}")
+            # Build data context for agents
+            stats_json = df.describe(include='all').to_json()
+            sample_head = df.head(15).to_json()
+            sample_tail = df.tail(5).to_json()
+            null_counts = df.isnull().sum().to_dict()
+            unique_counts = {col: int(df[col].nunique()) for col in columns}
+            dtypes = {col: str(df[col].dtype) for col in columns}
 
-            # --- STAGE 2: THE CONTEXTUALIZER (Staging Agent) ---
-            staging_prompt = f"""
-            AGENT ROLE: THE CONTEXTUALIZER
-            TASK: Establish external realities and global benchmarks for the discovered subject.
-            
-            DISCOVERY DATA:
-            {json.dumps(discovery_data, indent=2)}
-            
-            MISSION CONTEXT:
-            {mission_context}
-            
-            OUTPUT (JSON):
-            {{
-                "market_realities": "Current facts/truths about {discovery_data.get('target_market', 'the market')} in 2025/2026",
-                "cohort_benchmarks": "Generation-specific (Boomer, Gen Z, etc) global benchmarks and socio-economic realities for {discovery_data.get('age_cohorts_identified', [])}",
-                "global_benchmarks": "Industry standards or competitive references relevant to {discovery_data.get('primary_theme', 'the theme')}",
-                "semantic_reference_data": "Key technical terms and definitions to use for analysis"
-            }}
-            """
-            staging_res, usage = await self._call_agent(staging_prompt, "Staging Agent")
-            if usage:
-                total_tokens_in += usage.prompt_token_count
-                total_tokens_out += usage.candidates_token_count
-            staging_data = safe_parse_json(staging_res)
-            chain_of_thought.append({"agent": "Contextualizer", "status": "COMPLETED", "output": "Environment Staged"})
+            data_context = {
+                "filename": filename,
+                "row_count": row_count,
+                "col_count": col_count,
+                "columns": columns,
+                "dtypes": dtypes,
+                "null_counts": null_counts,
+                "unique_counts": unique_counts,
+                "stats": stats_json,
+                "sample_head": sample_head,
+                "sample_tail": sample_tail,
+            }
 
-            # --- STAGE 3: THE CHALLENGER (Analysis Agent) ---
-            analysis_prompt = f"""
-            AGENT ROLE: THE CHALLENGER
-            TASK: Analyze results against market realities and global benchmarks. Challenge hallucinations.
-            
-            RAW DATA SUMMARY:
-            {summary_stats}
-            
-            DISCOVERY & REALITIES:
-            - Subject: {discovery_data.get('subject', 'N/A')}
-            - Benchmarks: {staging_data.get('global_benchmarks', 'N/A')}
-            - Market Realities: {staging_data.get('market_realities', 'N/A')}
-            
-            INSTRUCTIONS:
-            - Map insights into the Bureau standard pillars.
-            - Challenge the data: find where responses deviate from realities.
-            - CROSS-COHORT SENTIMENT: Analyze how discovered age groups differ in sentiment and anticipated actions based on their specific cohort benchmarks.
-            
-            OUTPUT (JSON):
-            {{
-                "executive_pulse": {{ "growth_verdict": "string", "agentic_insights": "string", "value_gap": "string" }},
-                "key_findings": [{{ "label": "string", "value": "string", "context": "string" }}],
-                "market_landscape": {{ "economic_resilience": "string", "geopolitical_risk": "string", "regulatory_watch": "string" }},
-                "consumer_behavior": {{
-                    "primary_influencers": "string",
-                    "engagement_patterns": "string",
-                    "stakeholder_perception": "string"
-                }},
-                "competitive_deep_dive": {{ "sector_performance": "string", "impact_analysis": "string", "resource_mapping": "string" }},
-                "operational_readiness": {{ "data_hygiene_score": 0-100, "supply_chain_resilience": "string", "inventory_visibility": "string" }},
-                "roadmap": {{ "short_term": "string", "mid_term": "string", "long_term": "string" }},
-                "forecast_data": {{ "forecast_unit": "string", "2025_actual": "string", "2026_forecast": "string", "2030_projected": "string" }},
-                "conclusion": "string",
-                "benchmarks": {{ "metric": "value" }}
-            }}
-            """
-            analysis_res, usage = await self._call_agent(analysis_prompt, "Analysis Agent")
-            if usage:
-                total_tokens_in += usage.prompt_token_count
-                total_tokens_out += usage.candidates_token_count
-            analysis_data = safe_parse_json(analysis_res)
-            chain_of_thought.append({"agent": "Challenger", "status": "COMPLETED", "output": "Analysis Synthesized"})
+            yield self._event("phase_complete", "ingestion", {
+                "message": f"Ingested {row_count} records across {col_count} fields.",
+                "row_count": row_count,
+                "col_count": col_count,
+                "columns": columns
+            })
+            chain_of_thought.append({"agent": "Ingestion", "status": "COMPLETED", "output": f"{row_count} rows, {col_count} fields parsed"})
 
-            # --- STAGE 4: THE SENTINEL (Validation Agent) ---
-            validation_prompt = f"""
-            AGENT ROLE: THE SENTINEL
-            TASK: Test the analysis against verified truths and statistical logic.
-            
-            ANALYSIS DRAFT:
-            {json.dumps(analysis_data, indent=2)}
-            
-            VERIFICATION TASK:
-            - Check for logical hallucinations.
-            - Ensure forecast consistency.
-            - Verify that {discovery_data.get('primary_theme', 'the theme')} context was maintained.
-            
-            OUTPUT (JSON):
-            {{
-                "integrity_score": 0-100,
-                "validation_report": "Direct feedback on accuracy",
-                "verdict": "VERIFIED or FLAGGED",
-                "corrections": "Required adjustments if flagged"
-            }}
-            """
-            validation_res, usage = await self._call_agent(validation_prompt, "Validation Agent")
-            if usage:
-                total_tokens_in += usage.prompt_token_count
-                total_tokens_out += usage.candidates_token_count
-            validation_data = safe_parse_json(validation_res)
-            chain_of_thought.append({"agent": "Sentinel", "status": "COMPLETED", "output": f"Integrity: {validation_data.get('integrity_score', 'N/A')}%"})
+            bureau_logger.info(f"PIPELINE_START: {row_count} rows | {col_count} cols | {filename}")
 
-            # --- STAGE 5: AVA (The Arbiter) ---
-            arbiter_prompt = f"""
-            AGENT ROLE: AVA (THE ARBITER)
-            TASK: Final quality gate. Decide on publication or recount.
-            
-            FULL PIPELINE SUMMARY:
-            {json.dumps(chain_of_thought, indent=2)}
-            
-            VERDICT FROM SENTINEL:
-            {validation_data.get('verdict', 'N/A')} - {validation_data.get('validation_report', 'N/A')}
-            
-            OUTPUT (JSON):
-            {{
-                "final_approval": true/false,
-                "precision_audit": "Detailed audit statement",
-                "action": "PUBLISH or RECOUNT"
-            }}
-            """
-            arbiter_res, usage = await self._call_agent(arbiter_prompt, "AVA")
-            if usage:
-                total_tokens_in += usage.prompt_token_count
-                total_tokens_out += usage.candidates_token_count
-            arbiter_data = safe_parse_json(arbiter_res)
-            
-            # --- FINAL ASSEMBLY ---
-            final_report = analysis_data
-            final_report["report_title"] = discovery_data.get("report_title", "Untitled Report")
-            final_report["primary_theme"] = discovery_data.get("primary_theme", "General Analysis")
-            final_report["age_cohorts_identified"] = discovery_data.get("age_cohorts_identified", [])
-            final_report["source_citation"] = f"Source: {filename} | Records: {row_count} rows | Analyzed: {datetime.datetime.now().strftime('%Y-%m-%d')}"
-            final_report["methodology_score"] = validation_data.get("integrity_score", 50)
-            final_report["verdict"] = validation_data.get("verdict", "UNKNOWN")
-            final_report["verdict_reasoning"] = validation_data.get("validation_report", "No reasoning provided.")
-            final_report["precision_audit"] = arbiter_data.get("precision_audit", "No audit performed.")
-            final_report["chain_of_thought"] = chain_of_thought
-            final_report["row_count"] = row_count
-            final_report["col_count"] = len(columns)
-            final_report["timestamp"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            final_report["source_filename"] = filename
-            final_report["tokens_in"] = total_tokens_in
-            final_report["tokens_out"] = total_tokens_out
-            
-            # Run final santization just in case
-            final_report = self._validate_and_sanitize(final_report, row_count, len(columns))
+            # ── PHASE 1: CLEAN AT SOURCE (Discoverer) ──
+            yield self._event("phase_start", "discoverer", {"message": "Identifying data DNA and structural classification..."})
 
-            if arbiter_data.get("action") == "RECOUNT":
-                bureau_logger.warning("AVA requested a RECOUNT. This implementation proceeds with the current report.")
-            
-            bureau_logger.info(f"PIPELINE_COMPLETE: Action={arbiter_data.get('action', 'N/A')} | Score={validation_data.get('integrity_score', 'N/A')}")
-            
-            return final_report
+            discovery_data, tokens = await self._phase_discoverer(data_context)
+            total_tokens_in += tokens[0]
+            total_tokens_out += tokens[1]
+
+            chain_of_thought.append({"agent": "Discoverer", "status": "COMPLETED", "output": discovery_data.get("subject", "Subject identified")})
+            yield self._event("phase_complete", "discoverer", {
+                "message": discovery_data.get("subject", "Data DNA extracted"),
+                "subject": discovery_data.get("subject"),
+                "scoring_standard": discovery_data.get("scoring_standard"),
+                "report_title": discovery_data.get("report_title"),
+            })
+
+            # ── PHASE 2: INTELLIGENT CELL (Contextualizer) ──
+            yield self._event("phase_start", "contextualizer", {"message": "Enriching cells with sentiment, themes, and benchmarks..."})
+
+            context_data, tokens = await self._phase_contextualizer(data_context, discovery_data, mission_context)
+            total_tokens_in += tokens[0]
+            total_tokens_out += tokens[1]
+
+            chain_of_thought.append({"agent": "Contextualizer", "status": "COMPLETED", "output": "Benchmarks and thematic context established"})
+            yield self._event("phase_complete", "contextualizer", {
+                "message": "Industry benchmarks, sentiment themes, and cohort context established.",
+            })
+
+            # ── PHASE 3: INTELLIGENT ROW (Challenger) ──
+            yield self._event("phase_start", "challenger", {"message": "Cross-tabulating respondent journeys and regression modelling..."})
+
+            analysis_data, tokens = await self._phase_challenger(data_context, discovery_data, context_data)
+            total_tokens_in += tokens[0]
+            total_tokens_out += tokens[1]
+
+            findings_count = len(analysis_data.get("key_findings", []))
+            chain_of_thought.append({"agent": "Challenger", "status": "COMPLETED", "output": f"{findings_count} key findings synthesized"})
+            yield self._event("phase_complete", "challenger", {
+                "message": f"{findings_count} key findings with cross-tabulation and regression analysis complete.",
+                "findings_count": findings_count,
+            })
+
+            # ── PHASE 4: INTELLIGENT COLUMN (Sentinel) ──
+            yield self._event("phase_start", "sentinel", {"message": "Validating findings against raw data and checking for hallucinations..."})
+
+            validation_data, tokens = await self._phase_sentinel(data_context, analysis_data)
+            total_tokens_in += tokens[0]
+            total_tokens_out += tokens[1]
+
+            integrity_score = validation_data.get("integrity_score", 0)
+            chain_of_thought.append({"agent": "Sentinel", "status": "COMPLETED", "output": f"Integrity: {integrity_score}% — {validation_data.get('verdict', 'N/A')}"})
+            yield self._event("phase_complete", "sentinel", {
+                "message": f"Integrity Score: {integrity_score}/100 — Verdict: {validation_data.get('verdict', 'PENDING')}",
+                "integrity_score": integrity_score,
+                "verdict": validation_data.get("verdict"),
+            })
+
+            # ── PHASE 5: INTELLIGENT GRID (AVA) ──
+            yield self._event("phase_start", "ava", {"message": "Final arbitration and consultant-grade report composition..."})
+
+            arbiter_data, tokens = await self._phase_ava(chain_of_thought, analysis_data, validation_data, discovery_data)
+            total_tokens_in += tokens[0]
+            total_tokens_out += tokens[1]
+
+            chain_of_thought.append({"agent": "AVA", "status": "COMPLETED", "output": f"Action: {arbiter_data.get('action', 'PUBLISH')} | Grade: {arbiter_data.get('report_grade', 'A')}"})
+            yield self._event("phase_complete", "ava", {
+                "message": f"Report Grade: {arbiter_data.get('report_grade', 'A')} — Action: {arbiter_data.get('action', 'PUBLISH')}",
+                "action": arbiter_data.get("action"),
+                "report_grade": arbiter_data.get("report_grade"),
+            })
+
+            # ── FINAL ASSEMBLY ──
+            final_report = self._assemble_report(
+                discovery_data, context_data, analysis_data, validation_data, arbiter_data,
+                chain_of_thought, filename, row_count, col_count, total_tokens_in, total_tokens_out
+            )
+
+            # Generate outputs
+            report_html = self.generate_report_html(final_report)
+            pdf_base64 = base64.b64encode(report_html.encode('utf-8')).decode('utf-8')
+
+            bureau_logger.info(f"PIPELINE_COMPLETE: Grade={arbiter_data.get('report_grade', 'N/A')} | Score={integrity_score}")
+
+            yield self._event("report", "complete", {
+                "analysis": final_report,
+                "pdf_base64": pdf_base64,
+                "tokens_in": total_tokens_in,
+                "tokens_out": total_tokens_out,
+            })
 
         except Exception as e:
             err_msg = str(e)
             bureau_logger.error(f"PIPELINE_FAILED: {err_msg}")
-            # Ensure rate limit errors are clearly communicated to the front end
-            if "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg:
-                raise Exception("SYSTEM_ERROR: AI Quota Exceeded (429). Please try again later.")
-            raise Exception(f"Agentic Pipeline failed: {err_msg}")
+            yield self._event("error", "pipeline", {
+                "message": err_msg,
+                "is_quota": "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg
+            })
+
+    # ══════════════════════════════════════════════════════════════════
+    # PHASE IMPLEMENTATIONS
+    # ══════════════════════════════════════════════════════════════════
+
+    async def _phase_discoverer(self, data_ctx: Dict) -> tuple:
+        """Phase 1: Clean at Source — Data DNA & Structural Audit."""
+        prompt = f"""
+AGENT ROLE: THE DISCOVERER (Phase 1 — Clean at Source)
+STANDARD: Kantar/Qualtrics Survey Analysis Protocol
+
+TASK: Perform a structural audit of this dataset. Classify every column and identify the survey's DNA.
+
+DATA PARAMETERS:
+- Filename: {data_ctx['filename']}
+- Records: {data_ctx['row_count']} rows, {data_ctx['col_count']} columns
+- Columns: {json.dumps(data_ctx['columns'])}
+- Data Types: {json.dumps(data_ctx['dtypes'])}
+- Null Counts: {json.dumps(data_ctx['null_counts'])}
+- Unique Values Per Column: {json.dumps(data_ctx['unique_counts'])}
+
+SAMPLE DATA (first 15 rows):
+{data_ctx['sample_head']}
+
+STATISTICAL SUMMARY:
+{data_ctx['stats']}
+
+OUTPUT (strict JSON):
+{{
+    "subject": "Clear 1-sentence statement of what this survey measures",
+    "target_market": "Geography / Demographic / Sector identified from the data",
+    "primary_theme": "High-level industry category (e.g., Financial Services, Healthcare, Retail, Education)",
+    "report_title": "Professional consultant-grade title for the intelligence report",
+    "age_cohorts_identified": ["List of age groups or generational cohorts found in the data"],
+    "scoring_standard": "Detected scoring methodology: NPS / CSAT / CES / Likert-5 / Likert-7 / Custom / Mixed",
+    "column_classification": {{
+        "column_name": "demographic | likert_scale | open_ended | multiple_choice | numeric | timestamp | identifier | weight"
+    }},
+    "data_quality_notes": "Assessment of data completeness, null rates, and structural issues",
+    "respondent_segments": ["Identified respondent segments or subgroups"]
+}}
+"""
+        return await self._call_agent_with_tokens(prompt, "Discoverer")
+
+    async def _phase_contextualizer(self, data_ctx: Dict, discovery: Dict, mission_context: str) -> tuple:
+        """Phase 2: Intelligent Cell — Per-cell enrichment, benchmarks, sentiment themes."""
+        prompt = f"""
+AGENT ROLE: THE CONTEXTUALIZER (Phase 2 — Intelligent Cell)
+STANDARD: McKinsey Benchmarking & Qualtrics XM Protocol
+
+TASK: Enrich the analysis with industry benchmarks, thematic coding for qualitative responses,
+and cohort-specific context. This is the "intelligent cell" where every data point gets meaning.
+
+DISCOVERY DATA:
+{json.dumps(discovery, indent=2)}
+
+MISSION CONTEXT:
+{mission_context or 'No specific mission context provided.'}
+
+RAW DATA SUMMARY:
+{data_ctx['stats']}
+
+SAMPLE DATA:
+{data_ctx['sample_head']}
+
+OUTPUT (strict JSON):
+{{
+    "industry_benchmarks": {{
+        "benchmark_name": "value with source",
+        "global_average": "relevant global average for the scoring standard",
+        "sector_average": "sector-specific benchmark"
+    }},
+    "market_realities": "2025/2026 market conditions relevant to this survey's subject and target market",
+    "thematic_codes": [
+        {{"theme": "Theme Name", "description": "What this theme captures", "sentiment": "positive/negative/neutral"}}
+    ],
+    "cohort_context": {{
+        "cohort_name": "Behavioral and socio-economic context specific to this cohort"
+    }},
+    "sentiment_framework": "How sentiment should be interpreted for this specific survey type",
+    "weighting_notes": "Whether sample weights are needed and why",
+    "scoring_interpretation": {{
+        "scale": "The scoring scale detected",
+        "excellent_threshold": "Score range considered excellent",
+        "poor_threshold": "Score range considered poor",
+        "benchmark_comparison": "How this survey's scores compare to benchmarks"
+    }}
+}}
+"""
+        return await self._call_agent_with_tokens(prompt, "Contextualizer")
+
+    async def _phase_challenger(self, data_ctx: Dict, discovery: Dict, context: Dict) -> tuple:
+        """Phase 3: Intelligent Row — Respondent journey analysis, cross-tab, regression."""
+        prompt = f"""
+AGENT ROLE: THE CHALLENGER (Phase 3 — Intelligent Row)
+STANDARD: Full Kantar/McKinsey analytical methodology
+
+TASK: Perform the CORE ANALYSIS. Cross-tabulate subgroups, identify statistical relationships,
+summarize respondent journeys, and produce key findings with evidence-impact-recommendation format.
+
+DATA CONTEXT:
+- Rows: {data_ctx['row_count']}, Columns: {data_ctx['col_count']}
+- Column Classification: {json.dumps(discovery.get('column_classification', {}))}
+- Scoring Standard: {discovery.get('scoring_standard', 'Unknown')}
+- Respondent Segments: {json.dumps(discovery.get('respondent_segments', []))}
+
+STATISTICAL SUMMARY:
+{data_ctx['stats']}
+
+SAMPLE DATA:
+{data_ctx['sample_head']}
+
+INDUSTRY BENCHMARKS:
+{json.dumps(context.get('industry_benchmarks', {}), indent=2)}
+
+THEMATIC CODES:
+{json.dumps(context.get('thematic_codes', []), indent=2)}
+
+INSTRUCTIONS:
+- Produce an executive summary suitable for a C-suite presentation
+- Each key finding MUST include: the finding, supporting evidence from the data, business impact, and a recommendation
+- Cross-tabulate at least 3 subgroup comparisons (e.g., age × satisfaction, gender × loyalty)
+- Identify regression-style insights (which variables drive key outcomes)
+- Analyze sentiment from open-ended responses if present
+- Flag any statistical risks (low sample sizes, response bias, outliers)
+
+OUTPUT (strict JSON):
+{{
+    "executive_summary": "2-3 paragraph C-suite briefing summarizing the most critical findings and their strategic implications",
+    "key_findings": [
+        {{
+            "finding": "Clear statement of the finding",
+            "evidence": "Specific data points or statistics supporting this",
+            "impact": "Business impact or strategic implication",
+            "recommendation": "Actionable next step",
+            "priority": "HIGH / MEDIUM / LOW"
+        }}
+    ],
+    "cross_tabulations": [
+        {{
+            "variables": "Variable A × Variable B",
+            "insight": "What the cross-tabulation reveals",
+            "significance": "Statistical or practical significance"
+        }}
+    ],
+    "respondent_profile": {{
+        "total_respondents": {data_ctx['row_count']},
+        "segments": {json.dumps(discovery.get('respondent_segments', []))},
+        "demographic_breakdown": "Summary of demographic distribution across segments",
+        "completion_rate": "Estimated completion rate and data quality"
+    }},
+    "sentiment_analysis": {{
+        "overall_sentiment": "positive / negative / mixed / neutral",
+        "sentiment_distribution": "Approximate % breakdown",
+        "top_positive_themes": ["Theme driving positive sentiment"],
+        "top_negative_themes": ["Theme driving negative sentiment"],
+        "by_segment": {{"segment": "sentiment summary"}}
+    }},
+    "statistical_deep_dive": {{
+        "descriptive_statistics": "Key means, medians, standard deviations for core metrics",
+        "regression_insights": [
+            {{
+                "predictor": "Variable name",
+                "outcome": "What it predicts",
+                "relationship": "Direction and strength description",
+                "interpretation": "What this means for decision-making"
+            }}
+        ],
+        "outlier_analysis": "Notable outliers or anomalies in the data"
+    }},
+    "strategic_recommendations": {{
+        "short_term": ["Immediate actions (0-3 months)"],
+        "mid_term": ["Medium-term initiatives (3-12 months)"],
+        "long_term": ["Long-term strategic shifts (12+ months)"]
+    }},
+    "risk_flags": [
+        {{
+            "flag": "Description of the risk or limitation",
+            "severity": "HIGH / MEDIUM / LOW",
+            "mitigation": "How to address it"
+        }}
+    ]
+}}
+"""
+        return await self._call_agent_with_tokens(prompt, "Challenger")
+
+    async def _phase_sentinel(self, data_ctx: Dict, analysis: Dict) -> tuple:
+        """Phase 4: Intelligent Column — Statistical validation and quant↔qual fusion."""
+        prompt = f"""
+AGENT ROLE: THE SENTINEL (Phase 4 — Intelligent Column)
+STANDARD: Statistical Validation & Quant↔Qual Correlation Protocol
+
+TASK: You are the statistical integrity gate. Verify EVERY finding from the Challenger against
+the raw data statistics. Catch hallucinated percentages, invented correlations, or claims
+unsupported by the sample size.
+
+RAW DATA STATISTICS (ground truth):
+- Rows: {data_ctx['row_count']}, Columns: {data_ctx['col_count']}
+{data_ctx['stats']}
+
+ANALYSIS TO VALIDATE:
+{json.dumps(analysis, indent=2)}
+
+VALIDATION RULES:
+1. Percentages MUST sum correctly (≤ 100% for distributions)
+2. Claims about "significant" trends MUST be plausible given the sample size ({data_ctx['row_count']} rows)
+3. Cross-tabulation claims MUST reference variables that actually exist in the data
+4. Sentiment claims MUST be grounded in the actual thematic content
+5. Regression claims MUST be plausible given the variable types and distributions
+
+OUTPUT (strict JSON):
+{{
+    "integrity_score": 0-100,
+    "verdict": "VERIFIED | FLAGGED",
+    "verified_findings": [
+        {{
+            "finding_index": 0,
+            "finding_summary": "Brief summary of the finding",
+            "verdict": "CONFIRMED | ADJUSTED | FLAGGED",
+            "reason": "Why this verdict was given"
+        }}
+    ],
+    "corrections": [
+        {{
+            "original": "The original claim",
+            "corrected": "The corrected version",
+            "reason": "Why the correction was needed"
+        }}
+    ],
+    "quant_qual_correlations": [
+        {{
+            "quantitative_metric": "The numeric variable",
+            "qualitative_theme": "The thematic finding it correlates with",
+            "correlation_insight": "How they relate"
+        }}
+    ],
+    "validation_report": "2-3 sentence summary of overall data integrity and analytical quality",
+    "confidence_level": "HIGH / MEDIUM / LOW — based on sample size, data quality, and analytical rigour"
+}}
+"""
+        return await self._call_agent_with_tokens(prompt, "Sentinel")
+
+    async def _phase_ava(self, chain: List, analysis: Dict, validation: Dict, discovery: Dict) -> tuple:
+        """Phase 5: Intelligent Grid — Final arbiter and report composer."""
+        prompt = f"""
+AGENT ROLE: AVA — THE ARBITER (Phase 5 — Intelligent Grid)
+STANDARD: Executive Decision Protocol
+
+TASK: You are the final quality gate. Review the entire pipeline, make a PUBLISH or RECOUNT
+decision, assign a report grade, and write the precision audit statement.
+
+FULL PIPELINE CHAIN OF THOUGHT:
+{json.dumps(chain, indent=2)}
+
+SENTINEL VERDICT:
+{validation.get('verdict', 'N/A')} — Integrity Score: {validation.get('integrity_score', 0)}/100
+{validation.get('validation_report', 'No report available.')}
+
+CORRECTIONS APPLIED:
+{json.dumps(validation.get('corrections', []), indent=2)}
+
+CONFIDENCE LEVEL: {validation.get('confidence_level', 'MEDIUM')}
+
+REPORT TITLE: {discovery.get('report_title', 'Bureau Intelligence Report')}
+
+OUTPUT (strict JSON):
+{{
+    "action": "PUBLISH | RECOUNT",
+    "report_grade": "A+ | A | A- | B+ | B | B- | C",
+    "precision_audit": "3-5 sentence executive audit statement summarizing data quality, analytical rigour, and confidence in findings",
+    "executive_addendum": "Any additional context AVA wants to add to the executive summary",
+    "final_approval": true
+}}
+"""
+        return await self._call_agent_with_tokens(prompt, "AVA")
+
+    # ══════════════════════════════════════════════════════════════════
+    # REPORT ASSEMBLY & HTML GENERATION
+    # ══════════════════════════════════════════════════════════════════
+
+    def _assemble_report(self, discovery, context, analysis, validation, arbiter,
+                         chain, filename, rows, cols, tokens_in, tokens_out) -> Dict:
+        """Assembles the final report object from all pipeline outputs."""
+        report = {
+            # Identity
+            "report_title": discovery.get("report_title", "Bureau Intelligence Report"),
+            "primary_theme": discovery.get("primary_theme", "General Analysis"),
+            "subject": discovery.get("subject", ""),
+            "target_market": discovery.get("target_market", ""),
+            "scoring_standard": discovery.get("scoring_standard", ""),
+            "age_cohorts_identified": discovery.get("age_cohorts_identified", []),
+            "respondent_segments": discovery.get("respondent_segments", []),
+            "column_classification": discovery.get("column_classification", {}),
+            "data_quality_notes": discovery.get("data_quality_notes", ""),
+
+            # Context
+            "industry_benchmarks": context.get("industry_benchmarks", {}),
+            "market_realities": context.get("market_realities", ""),
+            "thematic_codes": context.get("thematic_codes", []),
+            "cohort_context": context.get("cohort_context", {}),
+            "scoring_interpretation": context.get("scoring_interpretation", {}),
+
+            # Core Analysis
+            "executive_summary": analysis.get("executive_summary", ""),
+            "key_findings": analysis.get("key_findings", []),
+            "cross_tabulations": analysis.get("cross_tabulations", []),
+            "respondent_profile": analysis.get("respondent_profile", {}),
+            "sentiment_analysis": analysis.get("sentiment_analysis", {}),
+            "statistical_deep_dive": analysis.get("statistical_deep_dive", {}),
+            "strategic_recommendations": analysis.get("strategic_recommendations", {}),
+            "risk_flags": analysis.get("risk_flags", []),
+
+            # Validation
+            "integrity_score": validation.get("integrity_score", 0),
+            "verdict": validation.get("verdict", "PENDING"),
+            "validation_report": validation.get("validation_report", ""),
+            "confidence_level": validation.get("confidence_level", "MEDIUM"),
+            "corrections": validation.get("corrections", []),
+            "quant_qual_correlations": validation.get("quant_qual_correlations", []),
+
+            # Arbiter
+            "report_grade": arbiter.get("report_grade", "B"),
+            "precision_audit": arbiter.get("precision_audit", ""),
+            "executive_addendum": arbiter.get("executive_addendum", ""),
+
+            # Metadata
+            "source_filename": filename,
+            "row_count": rows,
+            "col_count": cols,
+            "chain_of_thought": chain,
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "tokens_in": tokens_in,
+            "tokens_out": tokens_out,
+        }
+        return report
+
+    def generate_report_html(self, report: Dict) -> str:
+        """Generates a consultant-grade HTML dossier in the Bureau report_generator.py pattern."""
+        timestamp = report.get("timestamp", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        doc_id = f"FDI-{abs(hash(timestamp)) % 100000000:08d}"
+        title = html.escape(report.get("report_title", "Bureau Intelligence Report"))
+        theme = html.escape(report.get("primary_theme", "Survey Analysis"))
+        exec_summary = html.escape(report.get("executive_summary", ""))
+        precision_audit = html.escape(report.get("precision_audit", ""))
+        addendum = html.escape(report.get("executive_addendum", ""))
+
+        # Build findings rows
+        findings_html = ""
+        for i, f in enumerate(report.get("key_findings", [])):
+            if isinstance(f, dict):
+                priority_colors = {"HIGH": "#ef4444", "MEDIUM": "#f59e0b", "LOW": "#10b981"}
+                p = f.get("priority", "MEDIUM")
+                color = priority_colors.get(p, "#64748b")
+                findings_html += f"""
+                <tr>
+                    <td class="find-num" style="color: {color};">{i+1:02d}</td>
+                    <td class="find-body">
+                        <div class="find-title">{html.escape(str(f.get('finding', '')))}</div>
+                        <div class="find-row"><strong>EVIDENCE:</strong> {html.escape(str(f.get('evidence', '')))}</div>
+                        <div class="find-row"><strong>IMPACT:</strong> {html.escape(str(f.get('impact', '')))}</div>
+                        <div class="find-row"><strong>RECOMMENDATION:</strong> {html.escape(str(f.get('recommendation', '')))}</div>
+                        <span class="priority-badge" style="background: {color}20; color: {color}; border: 1px solid {color}40;">{p}</span>
+                    </td>
+                </tr>"""
+
+        # Build cross-tabulation section
+        crosstab_html = ""
+        for ct in report.get("cross_tabulations", []):
+            if isinstance(ct, dict):
+                crosstab_html += f"""
+                <div class="crosstab-card">
+                    <strong>{html.escape(str(ct.get('variables', '')))}</strong>
+                    <p>{html.escape(str(ct.get('insight', '')))}</p>
+                    <span class="sig-badge">{html.escape(str(ct.get('significance', '')))}</span>
+                </div>"""
+
+        # Build recommendations
+        recs = report.get("strategic_recommendations", {})
+        recs_html = ""
+        for period, label, color in [("short_term", "SHORT-TERM (0-3 Months)", "#10b981"), ("mid_term", "MID-TERM (3-12 Months)", "#3b82f6"), ("long_term", "LONG-TERM (12+ Months)", "#8b5cf6")]:
+            items = recs.get(period, [])
+            if isinstance(items, list):
+                items_html = "".join([f"<li>{html.escape(str(item))}</li>" for item in items])
+            else:
+                items_html = f"<li>{html.escape(str(items))}</li>"
+            recs_html += f"""
+            <div class="rec-card" style="border-left: 4px solid {color};">
+                <span class="rec-label" style="color: {color};">{label}</span>
+                <ul>{items_html}</ul>
+            </div>"""
+
+        # Build risk flags
+        risk_html = ""
+        for rf in report.get("risk_flags", []):
+            if isinstance(rf, dict):
+                sev = rf.get("severity", "LOW")
+                sev_color = {"HIGH": "#ef4444", "MEDIUM": "#f59e0b", "LOW": "#10b981"}.get(sev, "#64748b")
+                risk_html += f"""
+                <div class="risk-item">
+                    <div class="risk-header">
+                        <span class="risk-badge" style="background: {sev_color}20; color: {sev_color};">{sev}</span>
+                        <span class="risk-flag">{html.escape(str(rf.get('flag', '')))}</span>
+                    </div>
+                    <p class="risk-mitigation">Mitigation: {html.escape(str(rf.get('mitigation', '')))}</p>
+                </div>"""
+
+        # Sentiment
+        sentiment = report.get("sentiment_analysis", {})
+        sentiment_html = ""
+        if sentiment:
+            pos_themes = ", ".join(sentiment.get("top_positive_themes", [])) or "N/A"
+            neg_themes = ", ".join(sentiment.get("top_negative_themes", [])) or "N/A"
+            sentiment_html = f"""
+            <div class="sentiment-grid">
+                <div class="sentiment-card">
+                    <label>Overall Sentiment</label>
+                    <div class="value">{html.escape(str(sentiment.get('overall_sentiment', 'N/A')).upper())}</div>
+                </div>
+                <div class="sentiment-card">
+                    <label>Distribution</label>
+                    <div class="value small">{html.escape(str(sentiment.get('sentiment_distribution', 'N/A')))}</div>
+                </div>
+                <div class="sentiment-card positive">
+                    <label>Top Positive Themes</label>
+                    <div class="value small">{html.escape(pos_themes)}</div>
+                </div>
+                <div class="sentiment-card negative">
+                    <label>Top Negative Themes</label>
+                    <div class="value small">{html.escape(neg_themes)}</div>
+                </div>
+            </div>"""
+
+        # Benchmarks
+        benchmarks = report.get("industry_benchmarks", {})
+        bench_html = ""
+        if benchmarks:
+            for k, v in benchmarks.items():
+                bench_html += f"""
+                <div class="bench-card">
+                    <label>{html.escape(str(k).replace('_', ' ').title())}</label>
+                    <div class="value">{html.escape(str(v))}</div>
+                </div>"""
+
+        # Statistical deep dive
+        stats_dive = report.get("statistical_deep_dive", {})
+        stats_html = ""
+        if stats_dive:
+            desc_stats = html.escape(str(stats_dive.get("descriptive_statistics", "")))
+            outliers = html.escape(str(stats_dive.get("outlier_analysis", "")))
+            regression_items = ""
+            for ri in stats_dive.get("regression_insights", []):
+                if isinstance(ri, dict):
+                    regression_items += f"""
+                    <div class="regression-card">
+                        <strong>{html.escape(str(ri.get('predictor', '')))} → {html.escape(str(ri.get('outcome', '')))}</strong>
+                        <p>{html.escape(str(ri.get('relationship', '')))}</p>
+                        <p class="interp">{html.escape(str(ri.get('interpretation', '')))}</p>
+                    </div>"""
+            stats_html = f"""
+            <p class="body-text">{desc_stats}</p>
+            {regression_items}
+            <div class="outlier-box">
+                <label>Outlier Analysis</label>
+                <p>{outliers}</p>
+            </div>"""
+
+        doc_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} — Bureau Dossier {doc_id}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: 'Inter', sans-serif; background: #fff; color: #1e293b; line-height: 1.7; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+        .container {{ max-width: 900px; margin: 0 auto; padding: 60px; }}
+
+        /* Header */
+        .header {{ text-align: center; border-bottom: 3px solid #10b981; padding-bottom: 40px; margin-bottom: 48px; }}
+        .header .org {{ font-size: 14px; font-weight: 900; letter-spacing: 0.35em; text-transform: uppercase; color: #10b981; margin-bottom: 12px; }}
+        .header h1 {{ font-size: 36px; font-weight: 900; letter-spacing: -0.02em; color: #0f172a; margin-bottom: 8px; }}
+        .header .theme {{ font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 24px; }}
+        .meta-row {{ display: flex; justify-content: center; gap: 40px; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }}
+
+        /* Grade Badge */
+        .grade-card {{ display: flex; align-items: center; justify-content: center; gap: 32px; padding: 24px; margin-bottom: 48px; border: 2px solid #10b981; border-radius: 16px; background: #f0fdf4; }}
+        .grade-card .grade {{ font-size: 48px; font-weight: 900; color: #10b981; }}
+        .grade-card .details {{ text-align: left; }}
+        .grade-card .details label {{ font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.15em; display: block; }}
+        .grade-card .details .score {{ font-size: 20px; font-weight: 800; color: #0f172a; }}
+
+        /* Sections */
+        .section {{ margin-bottom: 48px; }}
+        .section h2 {{ font-size: 16px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; color: #10b981; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }}
+        .body-text {{ font-size: 15px; color: #334155; line-height: 1.8; margin-bottom: 16px; }}
+
+        /* Findings Table */
+        .findings-table {{ width: 100%; border-collapse: collapse; }}
+        .findings-table tr {{ border-bottom: 1px solid #f1f5f9; }}
+        .find-num {{ width: 50px; padding: 20px 12px; font-size: 20px; font-weight: 900; vertical-align: top; text-align: right; }}
+        .find-body {{ padding: 20px; }}
+        .find-title {{ font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }}
+        .find-row {{ font-size: 13px; color: #475569; margin-bottom: 6px; line-height: 1.6; }}
+        .find-row strong {{ font-size: 10px; color: #10b981; letter-spacing: 0.1em; display: block; margin-bottom: 2px; }}
+        .priority-badge {{ display: inline-block; padding: 2px 10px; font-size: 9px; font-weight: 900; letter-spacing: 0.15em; border-radius: 100px; margin-top: 8px; }}
+
+        /* Cross-tab */
+        .crosstab-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
+        .crosstab-card {{ padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }}
+        .crosstab-card strong {{ font-size: 13px; color: #10b981; display: block; margin-bottom: 6px; }}
+        .crosstab-card p {{ font-size: 13px; color: #475569; line-height: 1.6; }}
+        .sig-badge {{ font-size: 10px; color: #64748b; font-weight: 700; margin-top: 8px; display: inline-block; }}
+
+        /* Sentiment */
+        .sentiment-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }}
+        .sentiment-card {{ padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; }}
+        .sentiment-card label {{ font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 6px; }}
+        .sentiment-card .value {{ font-size: 18px; font-weight: 800; color: #0f172a; }}
+        .sentiment-card .value.small {{ font-size: 13px; font-weight: 600; }}
+        .sentiment-card.positive {{ border-color: #10b981; background: #f0fdf4; }}
+        .sentiment-card.negative {{ border-color: #ef4444; background: #fef2f2; }}
+
+        /* Recommendations */
+        .rec-card {{ padding: 16px; margin-bottom: 16px; border-radius: 12px; background: #f8fafc; }}
+        .rec-label {{ font-size: 11px; font-weight: 900; letter-spacing: 0.15em; display: block; margin-bottom: 8px; }}
+        .rec-card ul {{ padding-left: 20px; }}
+        .rec-card li {{ font-size: 14px; color: #334155; margin-bottom: 6px; line-height: 1.6; }}
+
+        /* Risk */
+        .risk-item {{ padding: 12px 16px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; }}
+        .risk-header {{ display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }}
+        .risk-badge {{ font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.1em; }}
+        .risk-flag {{ font-size: 13px; font-weight: 600; color: #0f172a; }}
+        .risk-mitigation {{ font-size: 12px; color: #64748b; }}
+
+        /* Benchmarks */
+        .bench-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }}
+        .bench-card {{ padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center; }}
+        .bench-card label {{ font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px; }}
+        .bench-card .value {{ font-size: 16px; font-weight: 700; color: #0f172a; }}
+
+        /* Stats */
+        .regression-card {{ padding: 16px; border-left: 3px solid #3b82f6; background: #f0f9ff; border-radius: 0 12px 12px 0; margin-bottom: 12px; }}
+        .regression-card strong {{ font-size: 13px; color: #1e40af; }}
+        .regression-card p {{ font-size: 13px; color: #475569; margin-top: 4px; }}
+        .regression-card .interp {{ font-style: italic; color: #64748b; }}
+        .outlier-box {{ padding: 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; margin-top: 16px; }}
+        .outlier-box label {{ font-size: 10px; font-weight: 800; color: #d97706; text-transform: uppercase; display: block; margin-bottom: 6px; }}
+        .outlier-box p {{ font-size: 13px; color: #92400e; }}
+
+        /* Footer */
+        .footer {{ text-align: center; border-top: 1px solid #e2e8f0; padding-top: 32px; margin-top: 48px; }}
+        .footer .seal {{ font-size: 12px; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; color: #10b981; margin-bottom: 8px; }}
+        .footer .org-footer {{ font-size: 12px; font-weight: 700; color: #475569; letter-spacing: 0.2em; text-transform: uppercase; }}
+        .disclosure {{ margin-top: 24px; padding: 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; }}
+        .disclosure p {{ font-size: 11px; color: #166534; font-weight: 600; letter-spacing: 0.05em; line-height: 1.8; }}
+
+        @media print {{
+            .container {{ padding: 40px 32px; }}
+            .grade-card {{ border-color: #10b981 !important; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <p class="org">Survey Optimization Bureau</p>
+            <h1>{title}</h1>
+            <p class="theme">{theme}</p>
+            <div class="meta-row">
+                <div>Document <span>{doc_id}</span></div>
+                <div>Certified by <span>AVA Lead Architect v2.0</span></div>
+                <div>Generated <span>{timestamp}</span></div>
+            </div>
+        </header>
+
+        <div class="grade-card">
+            <div class="grade">{html.escape(str(report.get('report_grade', 'A')))}</div>
+            <div class="details">
+                <label>Report Grade</label>
+                <div class="score">Integrity: {report.get('integrity_score', 0)}/100</div>
+                <label style="margin-top:8px;">Verdict: {html.escape(str(report.get('verdict', 'VERIFIED')))}</label>
+            </div>
+        </div>
+
+        <section class="section">
+            <h2>I. Executive Summary</h2>
+            <p class="body-text">{exec_summary}</p>
+            {"<p class='body-text'><em>" + addendum + "</em></p>" if addendum else ""}
+        </section>
+
+        <section class="section">
+            <h2>II. Methodology &amp; Data Quality</h2>
+            <p class="body-text"><strong>Source:</strong> {html.escape(report.get('source_filename', 'N/A'))} | <strong>Records:</strong> {report.get('row_count', 0)} | <strong>Fields:</strong> {report.get('col_count', 0)}</p>
+            <p class="body-text"><strong>Scoring Standard:</strong> {html.escape(str(report.get('scoring_standard', 'N/A')))}</p>
+            <p class="body-text"><strong>Data Quality:</strong> {html.escape(str(report.get('data_quality_notes', 'N/A')))}</p>
+            <p class="body-text"><strong>Confidence Level:</strong> {html.escape(str(report.get('confidence_level', 'MEDIUM')))}</p>
+        </section>
+
+        <section class="section">
+            <h2>III. Respondent Profile</h2>
+            <p class="body-text">{html.escape(str(report.get('respondent_profile', {}).get('demographic_breakdown', 'N/A')))}</p>
+        </section>
+
+        <section class="section">
+            <h2>IV. Key Findings</h2>
+            <table class="findings-table">{findings_html}</table>
+        </section>
+
+        <section class="section">
+            <h2>V. Cross-Tabulation Analysis</h2>
+            <div class="crosstab-grid">{crosstab_html}</div>
+        </section>
+
+        <section class="section">
+            <h2>VI. Sentiment &amp; Thematic Analysis</h2>
+            {sentiment_html}
+        </section>
+
+        <section class="section">
+            <h2>VII. Statistical Deep Dive</h2>
+            {stats_html}
+        </section>
+
+        <section class="section">
+            <h2>VIII. Industry Benchmarking</h2>
+            <p class="body-text">{html.escape(str(report.get('market_realities', '')))}</p>
+            <div class="bench-grid">{bench_html}</div>
+        </section>
+
+        <section class="section">
+            <h2>IX. Strategic Recommendations</h2>
+            {recs_html}
+        </section>
+
+        <section class="section">
+            <h2>X. Risk Assessment &amp; Limitations</h2>
+            {risk_html}
+        </section>
+
+        <section class="section">
+            <h2>Precision Audit Statement</h2>
+            <div class="disclosure">
+                <p>{precision_audit}</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p class="seal">AVA Certified — Bureau Gold Standard</p>
+            <p class="org-footer">Survey Optimization Bureau — Field Data Interpreter v2.0</p>
+            <div class="disclosure" style="margin-top: 16px;">
+                <p><strong>PRIVACY:</strong> The Bureau operates on a zero-PII architecture. All data is anonymized or aggregated.</p>
+                <p><strong>DISCLAIMER:</strong> While engineered for peak analytical integrity, The Bureau does not guarantee specific market outcomes.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>"""
+        return doc_html
+
+    # ══════════════════════════════════════════════════════════════════
+    # UTILITIES
+    # ══════════════════════════════════════════════════════════════════
 
     def _parse_csv(self, csv_content: str) -> pd.DataFrame:
-        """Helper to parse CSV content robustly."""
+        """Robust CSV parsing with multiple fallback strategies."""
         try:
             return pd.read_csv(io.StringIO(csv_content), on_bad_lines='skip')
         except Exception:
@@ -250,496 +863,37 @@ class FieldDataInterpreter:
                 dialect = csv_mod.Sniffer().sniff(csv_content[:2048])
                 return pd.read_csv(io.StringIO(csv_content), sep=dialect.delimiter, on_bad_lines='skip')
             except Exception:
-                # Last resort: try tab-separated or treat as single-column
                 try:
                     return pd.read_csv(io.StringIO(csv_content), sep='\t', on_bad_lines='skip')
                 except Exception:
                     return pd.DataFrame({"raw_data": csv_content.split('\n')})
 
-    async def _call_agent(self, prompt: str, agent_name: str) -> (str, Any):
-        """Helper to invoke a specific agent within the pipeline."""
+    async def _call_agent_with_tokens(self, prompt: str, agent_name: str) -> tuple:
+        """Calls an agent and returns (parsed_data, (tokens_in, tokens_out))."""
         bureau_logger.info(f"CALLING_AGENT: {agent_name}")
-        response = await generate_with_retry(
-            client=self.client,
-            model=self.model,
-            contents=prompt,
-            config={"response_mime_type": "application/json"}
-        )
-        return response.text, response.usage_metadata if hasattr(response, 'usage_metadata') else None
-
-    def _validate_and_sanitize(self, analysis: Dict[str, Any], row_count: int, col_count: int) -> Dict[str, Any]:
-        """
-        Post-AI Validation Gate.
-        Cross-checks all critical data fields before publishing to frontend/PDF.
-        Flags and auto-corrects hallucinated or malformed values.
-        """
-        flags: List[str] = []
-        
-        # ── 0. REPORT IDENTITY: Ensure dynamic title and theme exist ──
-        if not analysis.get("report_title") or not isinstance(analysis.get("report_title"), str):
-            fallback_title = f"{analysis.get('source_filename', 'BUREAU')[:20]} ANALYSIS 2026"
-            flags.append(f"TITLE_MISSING → generated '{fallback_title}'")
-            analysis["report_title"] = fallback_title
-        
-        if not analysis.get("primary_theme") or not isinstance(analysis.get("primary_theme"), str):
-            flags.append("THEME_MISSING → defaulted to BUREAU ARCHITECTURE")
-            analysis["primary_theme"] = "BUREAU ARCHITECTURE"
-
-        # Sanitize: Strip any whitespace or extra characters
-        analysis["report_title"] = str(analysis["report_title"]).strip()
-        analysis["primary_theme"] = str(analysis["primary_theme"]).strip()
-
-        # ── 1. METHODOLOGY SCORE: Must be 0-100 integer ──
-        score = analysis.get("methodology_score")
-        if score is not None:
-            try:
-                score = int(float(str(score)))
-                if score < 0 or score > 100:
-                    flags.append(f"SCORE_OUT_OF_RANGE: {score} → clamped to 0-100")
-                    score = max(0, min(100, score))
-                analysis["methodology_score"] = score
-            except (ValueError, TypeError):
-                flags.append(f"SCORE_INVALID: '{score}' → defaulted to 50")
-                analysis["methodology_score"] = 50
-        else:
-            flags.append("SCORE_MISSING → defaulted to 50")
-            analysis["methodology_score"] = 50
-        
-        # ── 2. FORECAST DATA: Must be concise human-readable strings ──
-        forecast = analysis.get("forecast_data", {})
-        if isinstance(forecast, dict):
-            for key in ["2025_actual", "2026_forecast", "2030_projected"]:
-                val = forecast.get(key)
-                if val is not None:
-                    val_str = str(val)
-                    # Check if it's a raw large number (hallucination indicator)
-                    try:
-                        num = float(val_str.replace(",", ""))
-                        if num > 1e6 and not any(c in val_str.upper() for c in ['T', 'B', 'M', 'K']):
-                            # Auto-format the hallucinated number
-                            if num >= 1e12:
-                                corrected = f"{num / 1e12:.1f}T"
-                            elif num >= 1e9:
-                                corrected = f"{num / 1e9:.1f}B"
-                            elif num >= 1e6:
-                                corrected = f"{num / 1e6:.1f}M"
-                            else:
-                                corrected = f"{num:.0f}"
-                            flags.append(f"FORECAST_CORRECTED: {key} raw '{val}' → '{corrected}'")
-                            forecast[key] = corrected
-                    except (ValueError, TypeError):
-                        pass  # It's already a string like "6.3T", which is fine
-                    
-                    # Final length check: if value is absurdly long, truncate
-                    if len(str(forecast.get(key, ""))) > 10:
-                        flags.append(f"FORECAST_TRUNCATED: {key} too long → trimmed")
-                        forecast[key] = str(forecast[key])[:10]
-            analysis["forecast_data"] = forecast
-        else:
-            flags.append("FORECAST_DATA_MISSING → set to N/A defaults")
-            analysis["forecast_data"] = {"2025_actual": "N/A", "2026_forecast": "N/A", "2030_projected": "N/A"}
-        
-        # ── 3. DATA HYGIENE SCORE: Must be 0-100 ──
-        op_readiness = analysis.get("operational_readiness", {})
-        if isinstance(op_readiness, dict):
-            dh_score = op_readiness.get("data_hygiene_score")
-            if dh_score is not None:
-                try:
-                    dh_score = int(float(str(dh_score)))
-                    if dh_score < 0 or dh_score > 100:
-                        flags.append(f"HYGIENE_SCORE_CLAMPED: {dh_score}")
-                        dh_score = max(0, min(100, dh_score))
-                    op_readiness["data_hygiene_score"] = dh_score
-                except (ValueError, TypeError):
-                    flags.append(f"HYGIENE_SCORE_INVALID: '{dh_score}' → 50")
-                    op_readiness["data_hygiene_score"] = 50
-            analysis["operational_readiness"] = op_readiness
-        
-        # ── 4. KEY FINDINGS: Must be list of {label, value, context} objects ──
-        findings = analysis.get("key_findings", [])
-        if isinstance(findings, list):
-            sanitized_findings = []
-            for i, f in enumerate(findings):
-                if isinstance(f, str):
-                    # AI returned plain strings instead of structured objects
-                    flags.append(f"FINDING_{i}_RESTRUCTURED: plain string → object")
-                    sanitized_findings.append({"label": f"Finding {i+1}", "value": "—", "context": f})
-                elif isinstance(f, dict):
-                    # Ensure all required keys exist
-                    sanitized_findings.append({
-                        "label": str(f.get("label", f"KPI {i+1}")),
-                        "value": str(f.get("value", "N/A")),
-                        "context": str(f.get("context", "No context provided"))
-                    })
-                else:
-                    flags.append(f"FINDING_{i}_INVALID: type={type(f).__name__}")
-            analysis["key_findings"] = sanitized_findings
-        else:
-            flags.append("KEY_FINDINGS_MISSING → empty list")
-            analysis["key_findings"] = []
-        
-        # ── 5. REQUIRED SECTIONS: Ensure all pillars exist ──
-        required_sections = {
-            "executive_pulse": {"growth_verdict": "Awaiting verdict", "agentic_insights": "Synthesizing", "value_gap": "Analyzing disparities"},
-            "market_landscape": {"economic_resilience": "Not assessed", "geopolitical_risk": "Not assessed", "regulatory_watch": "Not assessed"},
-            "consumer_behavior": {"primary_influencers": "Not assessed", "engagement_patterns": "Not assessed", "stakeholder_perception": "Not assessed"},
-            "competitive_deep_dive": {"sector_performance": "Not assessed", "impact_analysis": "Not assessed", "resource_mapping": "Not assessed"},
-            "roadmap": {"short_term": "Pending", "mid_term": "Pending", "long_term": "Pending"},
-        }
-        for section, defaults in required_sections.items():
-            if not isinstance(analysis.get(section), dict):
-                flags.append(f"SECTION_MISSING: {section} → populated with defaults")
-                analysis[section] = defaults
-            else:
-                # Fill in any missing sub-keys
-                for key, default_val in defaults.items():
-                    if not analysis[section].get(key):
-                        analysis[section][key] = default_val
-
-        # ── 6. BENCHMARKS: Must be a dict ──
-        if not isinstance(analysis.get("benchmarks"), dict):
-            flags.append("BENCHMARKS_MISSING → empty dict")
-            analysis["benchmarks"] = {}
-        
-        # ── 7. LIST FIELDS: Ensuring specific arrays exist ──
-        if not isinstance(analysis.get("age_cohorts_identified"), list):
-            analysis["age_cohorts_identified"] = []
-
-        # ── 8. STRING FIELDS: Ensure they exist ──
-        for field in ["conclusion", "verdict", "verdict_reasoning", "source_citation", "report_title", "primary_theme"]:
-            if not analysis.get(field) or not isinstance(analysis.get(field), str):
-                analysis[field] = str(analysis.get(field, "Not provided")) or "Not provided"
-        
-        # ── LOG VALIDATION RESULTS ──
-        analysis["validation_flags"] = flags
-        analysis["validation_passed"] = len(flags) == 0
-        
-        if flags:
-            bureau_logger.warning(f"VALIDATION_FLAGS ({len(flags)}): {flags}")
-        else:
-            bureau_logger.info("VALIDATION_PASSED: All AI outputs verified clean")
-        
-        return analysis
-
-    def generate_pdf(self, analysis_results: Dict[str, Any]) -> bytes:
-        """
-        Generates a premium Bureau PDF report.
-        """
-        buffer = io.BytesIO()
-        doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=72, leftMargin=72, topMargin=72, bottomMargin=72)
-        styles = getSampleStyleSheet()
-        
-        # Define Premium Styles
-        title_style = ParagraphStyle(
-            'BureauTitle',
-            parent=styles['Heading1'],
-            fontSize=28,
-            textColor=colors.HexColor("#0f172a"),
-            alignment=TA_CENTER,
-            spaceAfter=30,
-            fontName='Helvetica-Bold'
-        )
-        
-        subtitle_style = ParagraphStyle(
-            'BureauSubtitle',
-            parent=styles['Normal'],
-            fontSize=10,
-            textColor=colors.HexColor("#10b981"),
-            alignment=TA_CENTER,
-            letterSpacing=2,
-            spaceAfter=50,
-            fontName='Helvetica-Bold'
-        )
-        
-        heading_style = ParagraphStyle(
-            'BureauHeading',
-            parent=styles['Heading2'],
-            fontSize=16,
-            textColor=colors.HexColor("#10b981"),
-            spaceBefore=20,
-            spaceAfter=15,
-            fontName='Helvetica-Bold'
-        )
-        
-        body_style = ParagraphStyle(
-            'BureauBody',
-            parent=styles['Normal'],
-            fontSize=11,
-            textColor=colors.HexColor("#475569"),
-            leading=16,
-            spaceAfter=12
-        )
-        
-        story = []
-        
-        # Header
-        report_title = analysis_results.get("report_title", "2026 INTELLIGENCE DOSSIER").upper()
-        primary_theme = analysis_results.get("primary_theme", "BUREAU ARCHITECTURE").upper()
-        
-        story.append(Paragraph("SURVEY OPTIMIZATION BUREAU", subtitle_style))
-        story.append(Paragraph(report_title, title_style))
-        
-        # 0. RESEARCH FOUNDATION
-        story.append(Paragraph("I. RESEARCH FOUNDATION & SOURCE CITATION", heading_style))
-        
-        citation_text = analysis_results.get("source_citation", f"Source: {analysis_results.get('source_filename')} | Records: {analysis_results.get('row_count')} | Fields: {analysis_results.get('col_count')}")
-        story.append(Paragraph(f"<b>OFFICIAL CITATION:</b> {citation_text}", body_style))
-        story.append(Spacer(1, 10))
-
-        # Helper to create wrapped cell content
-        def wrap_cell(text):
-            return Paragraph(html.escape(str(text)), ParagraphStyle(
-                'CellBody',
-                parent=styles['Normal'],
-                fontSize=8,
-                textColor=colors.HexColor("#475569"),
-                leading=10
-            ))
-
-        summary_grid = [
-            ["SOURCE DATA", wrap_cell(analysis_results.get("source_filename", "BUREAU GROUNDWORK DATASET"))],
-            ["ANALYSIS TYPE", wrap_cell(primary_theme)],
-            ["INTEGRITY SCORE", wrap_cell(f"{analysis_results.get('methodology_score')}/100 - {analysis_results.get('verdict', 'VERIFIED')}")]
-        ]
-        st = Table(summary_grid, colWidths=[120, 330])
-        st.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor("#f1f5f9")),
-            ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor("#475569")),
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-            ('PADDING', (0, 0), (-1, -1), 8),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ]))
-        story.append(st)
-        story.append(Spacer(1, 25))
-
-        # 0.1 STRATEGIC KPI DASHBOARD (Visual at-a-glance)
-        story.append(Paragraph("STRATEGIC KPI DASHBOARD (ON-GLANCE VIEW)", ParagraphStyle(
-            'KpiTitle', parent=heading_style, fontSize=12, textColor=colors.HexColor("#0f172a")
-        )))
-        
-        kpi_data = []
-        findings = analysis_results.get("key_findings", [])[:4] # Take top 4 for the dashboard
-        
-        for i in range(0, len(findings), 2):
-            row = []
-            for j in range(2):
-                if i + j < len(findings):
-                    f = findings[i+j]
-                    cell_content = [
-                        Paragraph(html.escape(f.get("label", "KPI")).upper(), ParagraphStyle('KLabel', fontSize=7, textColor=colors.HexColor("#64748b"), fontName='Helvetica-Bold')),
-                        Paragraph(html.escape(f.get("value", "N/A")), ParagraphStyle('KValue', fontSize=18, textColor=colors.HexColor("#10b981"), fontName='Helvetica-Bold', spaceBefore=5)),
-                        Paragraph(html.escape(f.get("context", "")), ParagraphStyle('KContext', fontSize=8, textColor=colors.HexColor("#475569"), leading=9, spaceBefore=5))
-                    ]
-                    row.append(cell_content)
-                else:
-                    row.append("")
-            kpi_data.append(row)
-            
-        kt = Table(kpi_data, colWidths=[225, 225])
-        kt.setStyle(TableStyle([
-            ('GRID', (0, 0), (-1, -1), 1, colors.HexColor("#f1f5f9")),
-            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#ffffff")),
-            ('PADDING', (0, 0), (-1, -1), 12),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ]))
-        story.append(kt)
-        story.append(PageBreak())
-
-        # 1. EXECUTIVE INTELLIGENCE PULSE
-        story.append(Paragraph("II. EXECUTIVE INTELLIGENCE PULSE", heading_style))
-        pulse = analysis_results.get("executive_pulse", {})
-        story.append(Paragraph(f"<b>THE GROWTH VERDICT:</b> {html.escape(pulse.get('growth_verdict', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>'AGENTIC' INSIGHTS:</b> {html.escape(pulse.get('agentic_insights', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>THE VALUE GAP:</b> {html.escape(pulse.get('value_gap', 'N/A'))}", body_style))
-        
-        # KEY FINDINGS AS KPI GRID
-        story.append(Paragraph("<b>SURVEY METRICS & KEY FINDINGS</b>", body_style))
-        findings = analysis_results.get("key_findings", [])
-        if findings:
-            findings_table_data = []
-            for i in range(0, len(findings), 2):
-                row = []
-                for j in range(2):
-                    if i + j < len(findings):
-                        f = findings[i+j]
-                        label = html.escape(f.get('label', 'KPI')).upper()
-                        val = html.escape(f.get('value', 'N/A'))
-                        ctx = html.escape(f.get('context', ''))
-                        cell_content = f"<b>{label}: <font color='#10b981'>{val}</font></b><br/><font size='8'>{ctx}</font>"
-                        row.append(Paragraph(cell_content, ParagraphStyle('KPICell', parent=body_style, fontSize=10, leading=11)))
-                    else:
-                        row.append("")
-                findings_table_data.append(row)
-            
-            ft = Table(findings_table_data, colWidths=[225, 225])
-            ft.setStyle(TableStyle([
-                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor("#f8fafc")),
-                ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-                ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-                ('PADDING', (0, 0), (-1, -1), 10),
-            ]))
-            story.append(ft)
-            story.append(Spacer(1, 15))
-
-        story.append(PageBreak())
-
-        # 2. MARKET LANDSCAPE
-        story.append(Paragraph("III. MARKET LANDSCAPE: MACRO-INTELLIGENCE SHIFT", heading_style))
-        landscape = analysis_results.get("market_landscape", {})
-        story.append(Paragraph(f"<b>ECONOMIC RESILIENCE:</b> {html.escape(landscape.get('economic_resilience', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>GEOPOLITICAL RISK:</b> {html.escape(landscape.get('geopolitical_risk', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>REGULATORY WATCH:</b> {html.escape(landscape.get('regulatory_watch', 'N/A'))}", body_style))
-
-        # 3. STAKEHOLDER JOURNEY
-        story.append(Paragraph("IV. STAKEHOLDER & INTERACTION JOURNEY", heading_style))
-        consumer = analysis_results.get("consumer_behavior", {})
-        story.append(Paragraph(f"<b>PRIMARY INFLUENCERS:</b> {html.escape(consumer.get('primary_influencers', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>ENGAGEMENT PATTERNS:</b> {html.escape(consumer.get('engagement_patterns', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>STAKEHOLDER PERCEPTION:</b> {html.escape(consumer.get('stakeholder_perception', 'N/A'))}", body_style))
-
-        # 4. COMPETITIVE DEEP DIVE
-        story.append(Paragraph("V. REGIONAL & SECTOR DEEP DIVE", heading_style))
-        comp = analysis_results.get("competitive_deep_dive", {})
-        story.append(Paragraph(f"<b>SECTOR PERFORMANCE:</b> {html.escape(comp.get('sector_performance', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>ANALYSIS OF DIRECT IMPACTS:</b> {html.escape(comp.get('impact_analysis', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>RESOURCE & VALUE MAPPING:</b> {html.escape(comp.get('resource_mapping', 'N/A'))}", body_style))
-
-        story.append(PageBreak())
-
-        # 5. OPERATIONAL READINESS
-        story.append(Paragraph("VI. OPERATIONAL INFRASTRUCTURE & AI READINESS", heading_style))
-        ops = analysis_results.get("operational_readiness", {})
-        story.append(Paragraph(f"<b>DATA HYGIENE SCORE:</b> {ops.get('data_hygiene_score', 'N/A')}/100", body_style))
-        story.append(Paragraph(f"<b>SUPPLY CHAIN RESILIENCE:</b> {html.escape(ops.get('supply_chain_resilience', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>INVENTORY VISIBILITY:</b> {html.escape(ops.get('inventory_visibility', 'N/A'))}", body_style))
-
-        # 6. ROADMAP
-        story.append(Paragraph("VII. ROADMAP: STRATEGIC EXECUTION", heading_style))
-        roadmap = analysis_results.get("roadmap", {})
-        story.append(Paragraph(f"<b>SHORT-TERM (Q1-Q2):</b> {html.escape(roadmap.get('short_term', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>MID-TERM (2026-2027):</b> {html.escape(roadmap.get('mid_term', 'N/A'))}", body_style))
-        story.append(Paragraph(f"<b>LONG-TERM (2028+):</b> {html.escape(roadmap.get('long_term', 'N/A'))}", body_style))
-
-        # 7. FORECAST DATA
-        forecast = analysis_results.get("forecast_data", {})
-        unit = forecast.get('forecast_unit', 'Units')
-        story.append(Paragraph(f"VIII. STRATEGIC {primary_theme} FORECAST ({unit})", heading_style))
-        forecast_table_data = [
-            ["YEAR", f"PROJECTION ({unit})"],
-            ["2025 (ACTUAL)", f"{forecast.get('2025_actual', 'N/A')}"],
-            ["2026 (FORECAST)", f"{forecast.get('2026_forecast', 'N/A')}"],
-            ["2030 (PROJECTED)", f"{forecast.get('2030_projected', 'N/A')}"]
-        ]
-        ftt = Table(forecast_table_data, colWidths=[200, 250])
-        ftt.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0f172a")),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor("#ffffff")),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
-            ('PADDING', (0, 0), (-1, -1), 10),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ]))
-        story.append(ftt)
-
-        # CONCLUSION
-        story.append(Spacer(1, 20))
-        story.append(Paragraph("<b>CONCLUSION & SYNTHESIS</b>", body_style))
-        story.append(Paragraph(html.escape(analysis_results.get("conclusion", "")), body_style))
-        
-        # Footer Disclosure
-        story.append(Spacer(1, 40))
-        disclosure = "PROPRIETARY BUREAU ENCRYPTION APPLIED. THIS DOCUMENT IS CLASSIFIED."
-        story.append(Paragraph(disclosure, ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey, alignment=TA_CENTER)))
-        
-        doc.build(story)
-        pdf_bytes = buffer.getvalue()
-        buffer.close()
-        
-        # Apply Bureau Encryption using pypdf
         try:
-            from pypdf import PdfReader, PdfWriter
-            reader = PdfReader(io.BytesIO(pdf_bytes))
-            writer = PdfWriter()
-            for page in reader.pages:
-                writer.add_page(page)
-            
-            # Simple encryption for "Bureau" level security
-            writer.encrypt("ab@280765") # Using the provided dev admin password
-            
-            encrypted_buffer = io.BytesIO()
-            writer.write(encrypted_buffer)
-            pdf_bytes = encrypted_buffer.getvalue()
-            encrypted_buffer.close()
-        except Exception as e:
-            bureau_logger.warning(f"PDF_ENCRYPTION_SKIPPED: {str(e)}")
-            
-        return pdf_bytes
-
-    async def generate_infographic(self, analysis_results: Dict[str, Any]) -> str:
-        """
-        Returns a high-end SVG infographic based on the analysis.
-        Uses a custom "Tactical Intelligence Dashboard" layout.
-        """
-        try:
-            stats = analysis_results.get('suggested_infographic_data', {})
-            kpix = analysis_results.get('deep_dive', {}).get('kpix', [])
-            score = analysis_results.get('methodology_score', 0)
-            
-            prompt = f"""
-            Generate a high-tier 'Tactical Intelligence Overview' SVG Dashboard.
-            User needs an "Interesting Visualization" that translates 'KPI reality' into 'Business Impact'.
-            Title: {analysis_results.get('source_filename', 'Bureau Intelligence')}
-            Data Context: {analysis_results.get('executive_summary')}
-            Primary Score (Integrity): {score}/100
-            Core Metrics: {stats}
-            Cross-Impact (KPIx): {kpix}
-            
-            Visual Architecture Requirements (Columnar Dashboard):
-            - Layout: Use a 1000x600 coordinate system (viewBox="0 0 1000 600").
-            - Background: Solid Slate-900 (#0f172a).
-            - Accents: Emerald-500 (#10b981), Slate-400 (#94a3b8), Sapphire-500 (#3b82f6), Amber-400 (#fbbf24).
-            
-            Structure (3-Column Elite Layout):
-            1. LEFT (30%): 'Integrity Core'
-               - A large, prominent, glowing circular gauge showing {score}%.
-               - Include supporting text: "BUREAU VERIFICATION STATUS: HIGH INTEGRITY".
-               - Add subtle circuit-line textures in the background.
-            2. CENTER (40%): 'Deep Insight Radar'
-               - A complex, multi-layered radar chart or circular data map showing {kpix}.
-               - Each KPI node must be a visible glowing circle with a label.
-               - Connect nodes with dashed 'data flow' lines (<animate> these).
-               - Overlay a hexagonal grid pattern for tech-aesthetic.
-            3. RIGHT (30%): 'Metric Velocity Grid'
-               - A vertical grid of 3-4 cards showing 'Top 4 Finding': {analysis_results.get('key_findings')[:4]}.
-               - Each card: Name, Large Value, and a small trend sparkline.
-            
-            Style & Fidelity: 
-            - NO empty spaces. Fill every region with professional data abstractions.
-            - High-contrast typography for readability.
-            - Use <defs> for glows and gradients to make it feel premium.
-            - Final SVG must feel like a "Mission Control" readout.
-            
-            Output ONLY valid JSON with 'svg' key containing the markup.
-            """
-            
-            sys_prompt = "You are the 'Senior Bureau Visualization Architect'. Your goal is to generate a comprehensive, visually rich, and data-dense SVG 'Mission Control' dashboard. NO minimalist designs; use complex shapes, gradients, and animations to represent consulting data at the highest fidelity. Output ONLY valid JSON with 'svg' key."
-            
             response = await generate_with_retry(
                 client=self.client,
                 model=self.model,
                 contents=prompt,
-                config={
-                    "system_instruction": sys_prompt,
-                    "response_mime_type": "application/json"
-                }
+                config={"response_mime_type": "application/json"}
             )
-            
-            res = safe_parse_json(response.text)
-            return res.get("svg", "<svg></svg>")
-        except Exception as e:
-            bureau_logger.error(f"INFOGRAPHIC_FAILED: {str(e)}")
-            return "<svg><text>Error generating visual</text></svg>"
+            tokens_in = 0
+            tokens_out = 0
+            if hasattr(response, 'usage_metadata') and response.usage_metadata:
+                tokens_in = getattr(response.usage_metadata, 'prompt_token_count', 0) or 0
+                tokens_out = getattr(response.usage_metadata, 'candidates_token_count', 0) or 0
 
+            data = safe_parse_json(response.text)
+            return data, (tokens_in, tokens_out)
+        except Exception as e:
+            bureau_logger.error(f"AGENT_{agent_name}_FAILED: {str(e)}")
+            raise
+
+    def _event(self, event_type: str, agent: str, data: Dict) -> str:
+        """Creates an NDJSON event string."""
+        return json.dumps({"type": event_type, "agent": agent, "data": data, "ts": datetime.datetime.now().isoformat()}) + "\n"
+
+
+# Singleton
 field_interpreter = FieldDataInterpreter()
