@@ -108,7 +108,14 @@ export default function FieldInterpreterClient() {
                     if (response.status === 429) {
                         throw new Error('SYSTEM_ERROR: AI Quota Exceeded (429). Please try again later.');
                     }
-                    throw new Error('Analysis failed');
+                    let errorMessage = 'Analysis failed';
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.message || errorMessage;
+                    } catch (e) {
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    throw new Error(errorMessage);
                 }
 
                 const data = await response.json();
