@@ -69,7 +69,7 @@ export default function InterpreterPage() {
             reader.onload = async (e) => {
                 const csvContent = e.target?.result as string;
 
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+                const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "/api").replace(/\/$/, '');
                 const response = await fetch(`${apiUrl}/interpreter/process`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

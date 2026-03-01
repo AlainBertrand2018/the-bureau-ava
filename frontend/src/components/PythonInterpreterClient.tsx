@@ -27,7 +27,7 @@ export default function PythonInterpreterClient() {
         setStatus('running');
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
             const response = await fetch(`${apiUrl}/python/execute`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

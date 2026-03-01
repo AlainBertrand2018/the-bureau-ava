@@ -38,7 +38,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
 
         const fetchClearance = async () => {
             try {
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
                 const response = await fetch(`${apiUrl}/conductor/clearance?email=${userEmail}`);
                 if (response.ok) {
                     const data = await response.json();
@@ -55,7 +55,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     const updateClearance = async (level: number) => {
         setIsSyncing(true);
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
             await fetch(`${apiUrl}/conductor/clearance`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -89,7 +89,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
         if (credits < amount) return false;
 
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
             const response = await fetch(`${apiUrl}/conductor/credits`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

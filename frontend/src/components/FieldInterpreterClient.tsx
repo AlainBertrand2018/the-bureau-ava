@@ -8,6 +8,8 @@ import {
     PieChart, Pie, Cell, Legend, RadialBarChart, RadialBar, Radar, RadarChart,
     PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from 'recharts';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
@@ -146,7 +148,7 @@ export default function FieldInterpreterClient() {
         reader.onload = async (e) => {
             try {
                 const csvContent = e.target?.result as string;
-                const baseApiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+                const baseApiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
                 const response = await fetch(`${baseApiUrl}/interpreter/process`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -905,115 +907,162 @@ const InfographicDashboard = ({ analysis }: { analysis: any }) => {
         { subject: 'Clarity', A: 90, fullMark: 100 },
     ];
 
+    const dashboardRef = useRef<HTMLDivElement>(null);
+
+    const downloadPDF = async () => {
+        if (!dashboardRef.current) return;
+
+        try {
+            const element = dashboardRef.current;
+            const canvas = await html2canvas(element, {
+                scale: 2, // High resolution
+                backgroundColor: '#000000', // Ensure dark background
+                useCORS: true,
+                logging: false,
+                onclone: (clonedDoc) => {
+                    // Ensure the cloned element fits the page and hides things we don't want
+                    const clonedEl = clonedDoc.querySelector('[data-infographic-container]') as HTMLElement;
+                    if (clonedEl) {
+                        clonedEl.style.padding = '40px';
+                        clonedEl.style.borderRadius = '0px';
+                    }
+                }
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save(`BUREAU_INFOGRAPHIC_${Date.now()}.pdf`);
+        } catch (err) {
+            console.error('PDF Export failed:', err);
+        }
+    };
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* SENTIMENT DONUT */}
-            <div className="lg:col-span-1 bg-black/40 border border-slate-800 rounded-[30px] p-6 flex flex-col items-center justify-center min-h-[350px]">
-                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2 w-full text-center">Sentiment Distribution</h3>
-                <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                        <Pie
-                            data={sentimentData.length > 0 ? sentimentData : [{ name: 'N/A', value: 1, color: '#1e293b' }]}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={8}
-                            dataKey="value"
-                        >
-                            {sentimentData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold' }}
-                            itemStyle={{ color: '#fff' }}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
-                <div className="flex gap-4 mt-4">
-                    {sentimentData.map((d, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
-                            <span className="text-[10px] font-bold text-slate-300">{d.name} {d.value}%</span>
-                        </div>
-                    ))}
-                </div>
+        <div className="flex flex-col gap-6">
+            <div className="flex justify-end">
+                <button
+                    onClick={downloadPDF}
+                    className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                >
+                    <Download className="w-3 h-3" /> Download Infographic PDF
+                </button>
             </div>
 
-            {/* BENCHMARK BARCHART */}
-            <div className="md:col-span-1 lg:col-span-2 bg-black/40 border border-slate-800 rounded-[30px] p-6 min-h-[350px]">
-                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2 w-full text-center">Intelligence Benchmarks</h3>
-                <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={benchData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#64748b', fontWeight: 900 }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#64748b' }} domain={[0, 100]} />
-                        <Tooltip cursor={{ fill: '#ffffff05' }} contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }} />
-                        <Bar
-                            dataKey="score"
-                            fill="#3b82f6"
-                            radius={[10, 10, 0, 0]}
-                            barSize={40}
-                        >
-                            {benchData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.score > avgBenchmark ? '#10b981' : '#3b82f6'} />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-4 flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                    <span>Performance vs. Industry Standard</span>
-                    <span className="text-emerald-500">Above Cutoff</span>
-                </div>
-            </div>
-
-            {/* RADAR CHART */}
-            <div className="lg:col-span-1 bg-black/40 border border-slate-800 rounded-[30px] p-6 flex flex-col items-center justify-center min-h-[350px]">
-                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2 w-full text-center">Analytical Precision</h3>
-                <ResponsiveContainer width="100%" height={250}>
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
-                        <PolarGrid stroke="#334155" />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: '#64748b', fontWeight: 900 }} />
-                        <Radar
-                            name="Bureau Metrics"
-                            dataKey="A"
-                            stroke="#10b981"
-                            fill="#10b981"
-                            fillOpacity={0.4}
-                        />
-                    </RadarChart>
-                </ResponsiveContainer>
-            </div>
-
-            {/* STATISTICAL SUMMARY */}
-            <div className="lg:col-span-2 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-[30px] p-8 min-h-[350px] relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4">
-                    <Award className="w-12 h-12 text-emerald-500/20" />
-                </div>
-                <h3 className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-6">Expert Executive Findings</h3>
-                <div className="space-y-6">
-                    <div>
-                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-2">Primary Intelligence Grade</span>
-                        <div className="flex items-baseline gap-4">
-                            <span className="text-6xl font-black text-white">{analysis.report_grade || 'A'}</span>
-                            <span className="text-emerald-400 font-black text-xl">{analysis.integrity_score || 0}/100</span>
-                        </div>
+            <div ref={dashboardRef} data-infographic-container className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-black p-4 rounded-[40px]">
+                {/* SENTIMENT DONUT */}
+                <div className="lg:col-span-1 bg-black/40 border border-slate-800 rounded-[30px] p-6 flex flex-col items-center justify-center min-h-[350px]">
+                    <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2 w-full text-center">Sentiment Distribution</h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                            <Pie
+                                data={sentimentData.length > 0 ? sentimentData : [{ name: 'N/A', value: 1, color: '#1e293b' }]}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={80}
+                                paddingAngle={8}
+                                dataKey="value"
+                            >
+                                {sentimentData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />
+                                ))}
+                            </Pie>
+                            <Tooltip
+                                contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', fontSize: '10px', fontWeight: 'bold' }}
+                                itemStyle={{ color: '#fff' }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <div className="flex gap-4 mt-4">
+                        {sentimentData.map((d, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
+                                <span className="text-[10px] font-bold text-slate-300">{d.name} {d.value}%</span>
+                            </div>
+                        ))}
                     </div>
-                    <div className="grid grid-cols-2 gap-8">
-                        <div>
-                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Integrity Verdict</span>
-                            <p className="text-sm font-bold text-slate-200">{analysis.verdict || 'VERIFIED'}</p>
-                        </div>
-                        <div>
-                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Ground Truth Match</span>
-                            <p className="text-sm font-bold text-blue-400">EXCELLENT</p>
-                        </div>
+                </div>
+
+                {/* BENCHMARK BARCHART */}
+                <div className="md:col-span-1 lg:col-span-2 bg-black/40 border border-slate-800 rounded-[30px] p-6 min-h-[350px]">
+                    <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2 w-full text-center">Intelligence Benchmarks</h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={benchData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#64748b', fontWeight: 900 }} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: '#64748b' }} domain={[0, 100]} />
+                            <Tooltip cursor={{ fill: '#ffffff05' }} contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }} />
+                            <Bar
+                                dataKey="score"
+                                fill="#3b82f6"
+                                radius={[10, 10, 0, 0]}
+                                barSize={40}
+                            >
+                                {benchData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.score > avgBenchmark ? '#10b981' : '#3b82f6'} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                    <div className="mt-4 flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                        <span>Performance vs. Industry Standard</span>
+                        <span className="text-emerald-500">Above Cutoff</span>
                     </div>
-                    <div className="pt-6 border-t border-white/5">
-                        <p className="text-sm text-slate-300 leading-relaxed italic">
-                            &quot;{analysis.executive_summary?.slice(0, 180)}...&quot;
-                        </p>
+                </div>
+
+                {/* RADAR CHART */}
+                <div className="lg:col-span-1 bg-black/40 border border-slate-800 rounded-[30px] p-6 flex flex-col items-center justify-center min-h-[350px]">
+                    <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2 w-full text-center">Analytical Precision</h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                            <PolarGrid stroke="#334155" />
+                            <PolarAngleAxis dataKey="subject" tick={{ fontSize: 9, fill: '#64748b', fontWeight: 900 }} />
+                            <Radar
+                                name="Bureau Metrics"
+                                dataKey="A"
+                                stroke="#10b981"
+                                fill="#10b981"
+                                fillOpacity={0.4}
+                            />
+                        </RadarChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* STATISTICAL SUMMARY */}
+                <div className="lg:col-span-2 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-[30px] p-8 min-h-[350px] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4">
+                        <Award className="w-12 h-12 text-emerald-500/20" />
+                    </div>
+                    <h3 className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-6">Expert Executive Findings</h3>
+                    <div className="space-y-6">
+                        <div>
+                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-2">Primary Intelligence Grade</span>
+                            <div className="flex items-baseline gap-4">
+                                <span className="text-6xl font-black text-white">{analysis.report_grade || 'A'}</span>
+                                <span className="text-emerald-400 font-black text-xl">{analysis.integrity_score || 0}/100</span>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-8">
+                            <div>
+                                <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Integrity Verdict</span>
+                                <p className="text-sm font-bold text-slate-200">{analysis.verdict || 'VERIFIED'}</p>
+                            </div>
+                            <div>
+                                <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Ground Truth Match</span>
+                                <p className="text-sm font-bold text-blue-400">EXCELLENT</p>
+                            </div>
+                        </div>
+                        <div className="pt-6 border-t border-white/5">
+                            <p className="text-sm text-slate-300 leading-relaxed italic">
+                                &quot;{analysis.executive_summary?.slice(0, 180)}...&quot;
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
