@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
+import { useClearance } from '@/context/ClearanceContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileText, ArrowRight, Loader2, CheckCircle2, AlertCircle, ShieldCheck, Download, Eye, X, Activity, Search, BarChart3, Shield, Award, PieChart as PieIcon, TrendingUp } from 'lucide-react';
 import {
@@ -84,6 +85,7 @@ const AgentCard = ({ phase }: { phase: AgentPhase }) => {
    ═══════════════════════════════════════════════════════════════ */
 
 export default function FieldInterpreterClient() {
+    const { credits, consumeCredits } = useClearance();
     const [step, setStep] = useState<'upload' | 'processing' | 'results'>('upload');
     const [file, setFile] = useState<File | null>(null);
     const [result, setResult] = useState<{ analysis: any; pdf_base64: string } | null>(null);
@@ -223,6 +225,9 @@ export default function FieldInterpreterClient() {
                 updatePhase(event.agent, { status: 'done', message: event.data.message });
                 break;
             case 'report':
+                if (event.data.analysis.credits_consumed) {
+                    consumeCredits(event.data.analysis.credits_consumed);
+                }
                 setResult({
                     analysis: event.data.analysis,
                     pdf_base64: event.data.pdf_base64,
@@ -231,11 +236,7 @@ export default function FieldInterpreterClient() {
                 break;
             case 'error':
                 updatePhase(event.agent, { status: 'error', message: event.data.message });
-                if (event.data.is_quota) {
-                    setError('AI Quota Exceeded (429). Please try again later.');
-                } else {
-                    setError(event.data.message);
-                }
+                setError(event.data.message || 'Phase failed');
                 setStep('upload');
                 break;
         }
@@ -395,9 +396,15 @@ export default function FieldInterpreterClient() {
                                                 <div className="flex gap-4 relative z-50">
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); startAnalysis(); }}
-                                                        className="px-8 py-3 bg-emerald-500 text-white font-black rounded-xl hover:bg-emerald-400 transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)] pointer-events-auto"
+                                                        disabled={credits < 240000}
+                                                        className={`px-8 py-3 font-black rounded-xl transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)] pointer-events-auto ${credits >= 240000
+                                                            ? "bg-emerald-500 text-white hover:bg-emerald-400"
+                                                            : "bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed"
+                                                            }`}
                                                     >
-                                                        START ANALYSIS <ArrowRight className="w-5 h-5" />
+                                                        <Activity className="w-5 h-5" />
+                                                        {credits >= 300000 ? "Initialize 5-Phase Analysis (Up to: 300,000 CR)" : "Insufficient Credits"}
+                                                        <ArrowRight className="w-5 h-5" />
                                                     </button>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); setFile(null); }}
@@ -724,10 +731,22 @@ export default function FieldInterpreterClient() {
                                     <Activity className="w-4 h-4" /> Telemetry
                                 </h3>
                                 <div className="space-y-3 text-xs">
-                                    <div className="flex justify-between"><span className="text-slate-500">Tokens In</span><span className="font-mono text-emerald-400">{analysis.tokens_in?.toLocaleString() || 0}</span></div>
-                                    <div className="flex justify-between"><span className="text-slate-500">Tokens Out</span><span className="font-mono text-emerald-400">{analysis.tokens_out?.toLocaleString() || 0}</span></div>
-                                    <div className="flex justify-between"><span className="text-slate-500">Report Grade</span><span className="font-mono text-white font-bold">{analysis.report_grade || 'N/A'}</span></div>
-                                    <div className="flex justify-between"><span className="text-slate-500">Integrity</span><span className="font-mono text-emerald-400">{analysis.integrity_score || 0}/100</span></div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Sovereign Credits</span>
+                                        <span className="font-mono text-emerald-400 font-bold">-{analysis.credits_consumed?.toLocaleString() || 1000}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Standard Price</span>
+                                        <span className="font-mono text-white/50">$399.00</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Report Grade</span>
+                                        <span className="font-mono text-white font-bold">{analysis.report_grade || 'N/A'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">Integrity</span>
+                                        <span className="font-mono text-emerald-400">{analysis.integrity_score || 0}/100</span>
+                                    </div>
                                 </div>
                             </div>
                         )}

@@ -557,11 +557,11 @@ AVA_SYSTEM_PROMPT = """You are AVA — Autonomous Validation Analyst and virtual
 6. **Simulate respondents** — Census-weighted synthetic panels to stress-test before fieldwork
 
 ## YOUR SERVICES & PRICING
-- Sentinel: FREE — Tactical Market Reconnaissance and Persona Synthesis
-- Genesis Protocol: €378 — Full Questionnaire Generation + Scientific Internal Audit
-- The Lab: €300 — Individual Instrument Stress Testing and Adversarial Simulation
-- Result Interpreter: €240 — Deep Narrative Reporting and Psychographic Insights
-- Enterprise Membership: €600/month — 60,000 Bureau Credits per month allowance for high-volume deployments
+- Sentinel Protocol: FREE (Up to: 50,000 CR) — Strategic Market Reconnaissance and Persona Synthesis (The Entry Point)
+- Genesis Protocol: Up to: €60.00 — Full Questionnaire Generation + Scientific Internal Audit
+- The Lab: Up to: €270.00 — Individual Instrument Stress Testing and Adversarial Simulation
+- Result Interpreter: Up to: €180.00 — Deep Narrative Reporting and Psychographic Insights
+- Enterprise Membership: €600.00/month — 1,000,000 Bureau Credits per month allowance for high-volume deployments
 
 ## CONVERSATIONAL STYLE
 - Be concise but substantive — no fluff
@@ -620,14 +620,14 @@ async def chat_with_ava(req: ChatRequest):
                 "genesis": "Rs 18,900",
                 "lab": "Rs 15,000",
                 "interpreter": "Rs 12,000",
-                "enterprise": "Rs 30,000/month (60k Credits)"
+                "enterprise": "Rs 30,000/month (600k Credits)"
             },
             "EUR": {
                 "sentinel": "FREE",
                 "genesis": "€378",
                 "lab": "€300",
                 "interpreter": "€240",
-                "enterprise": "€600/month (60k Credits)"
+                "enterprise": "€600/month (600k Credits)"
             }
         }
         curr = req.currency if req.currency in pricing_map else "EUR"

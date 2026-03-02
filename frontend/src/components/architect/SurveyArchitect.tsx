@@ -17,10 +17,12 @@ import {
     FlaskConical,
     Eye,
     Printer,
-    ClipboardList
+    ClipboardList,
+    Zap,
 } from "lucide-react";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
 import { useCurrency } from "@/context/CurrencyContext";
+import { useClearance } from "@/context/ClearanceContext";
 import AudienceConfigurator from "../shared/AudienceConfigurator";
 
 const DEFAULT_TARGETING: AudienceTargeting = {
@@ -43,6 +45,7 @@ interface SurveyArchitectProps {
 export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectProps) {
     const { currentMission } = useMission();
     const { currency } = useCurrency();
+    const { credits, consumeCredits } = useClearance();
     const [view, setView] = useState<"explainer" | "onboarding" | "processing" | "results">(mode === "app" ? "onboarding" : "explainer");
     const [isPaywallOpen, setIsPaywallOpen] = useState(false);
     const [loadingPhase, setLoadingPhase] = useState(0);
@@ -74,6 +77,8 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
     const handlePaywallSuccess = () => {
         setIsPaywallOpen(false);
+        // Requirement for Genesis: 100,000 Credits
+        consumeCredits(100000);
         startGeneration();
     };
 
@@ -208,10 +213,9 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                         <div className="flex flex-col md:flex-row items-center gap-8 bg-slate-800/50 p-6 rounded-3xl border border-white/5">
                             <div className="text-left">
-                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">One-Time Access Fee</p>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Standard Run Cost</p>
                                 <div className="text-3xl font-black text-white">
-                                    {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
-                                    {currency.tiers.genesis.price.toLocaleString()}
+                                    378,000 <span className="text-emerald-500 text-sm">Credits</span>
                                 </div>
                             </div>
                             <div className="w-px h-12 bg-white/10 hidden md:block" />
@@ -777,20 +781,30 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                                 <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-6">
                                     <div className="flex justify-between items-center mb-1">
-                                        <span className="text-sm font-bold text-slate-600">One-time Access</span>
+                                        <span className="text-sm font-bold text-slate-600">Architect Credits</span>
                                         <span className="text-2xl font-black text-slate-900">
-                                            {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
-                                            {currency.tiers.genesis.price.toLocaleString()}
+                                            378,000
                                         </span>
                                     </div>
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Instant Delivery</div>
+                                    <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest mt-2 pt-2 border-t border-slate-100">
+                                        <span className="text-slate-400">Your Balance</span>
+                                        <span className={credits >= 100000 ? "text-emerald-600" : "text-red-500"}>
+                                            {credits.toLocaleString()} Credits
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <button
                                     onClick={handlePaywallSuccess}
-                                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-[0.2em] hover:bg-emerald-600 transition-colors shadow-lg shadow-slate-900/20"
+                                    disabled={credits < 100000}
+                                    className={`w-full py-4 rounded-xl font-bold uppercase tracking-[0.2em] transition-all shadow-lg flex items-center justify-center gap-2 group ${credits >= 100000
+                                        ? "bg-slate-900 text-white hover:bg-emerald-600 shadow-slate-900/20"
+                                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                                        }`}
                                 >
-                                    Proceed to Payment
+                                    <Zap className="w-5 h-5" />
+                                    {credits >= 100000 ? "Authorize Genesis Access (Up to: 100,000 Credits)" : "Insufficient Credits"}
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-all" />
                                 </button>
 
                                 <button

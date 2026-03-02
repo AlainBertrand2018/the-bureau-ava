@@ -9,9 +9,17 @@ interface PricingSectionProps {
 }
 
 export default function PricingSection({ currency, onContactClick }: PricingSectionProps) {
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const handleLaunchApp = (appId: string) => {
         window.open(`/os?app=${appId}`, '_blank');
     };
+
+    if (!mounted) return null;
 
     return (
         <section id="pricing" className="section-full bg-white relative">
@@ -30,10 +38,12 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    {/* Sentinel - FREE */}
+                    {/* Sentinel - FREE Trojan Horse Entry Point */}
                     <PricingCard
+                        id="sentinel-card"
                         title="Sentinel Protocol"
                         price="FREE"
+                        credits="50,000 CR"
                         badge="Module 01: Recon"
                         desc="Open-source intelligence (OSINT) scanning to synthesize real-time profiles of target market landscapes."
                         features={["Target Market Recon", "Demographic Synthesis", "Persona Archetypes", "Trend Prediction"]}
@@ -46,6 +56,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                     <PricingCard
                         title="Interpreter"
                         price={`${currency.code === 'MUR' ? 'Rs ' : currency.symbol}${currency.tiers.interpreter.price.toLocaleString()}`}
+                        credits="300,000 CR"
                         badge="Module 02: Analysis"
                         desc="Post-fieldwork data audit and executive briefing generation for high-density psychographic reporting."
                         features={["Field Result Processing", "Narrative Synthesis", "Psychological Insights", "Boardroom Visuals"]}
@@ -58,6 +69,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                     <PricingCard
                         title="The Lab"
                         price={`${currency.code === 'MUR' ? 'Rs ' : currency.symbol}${currency.tiers.lab.price.toLocaleString()}`}
+                        credits="450,000 CR"
                         badge="Module 03: Stress-Test"
                         desc="Rigorous neural auditing of existing instruments using targeted synthetic respondent populations."
                         features={["Neural Audit Loop", "Bias Detection", "Cognitive Load Audit", "Flaw Heatmap"]}
@@ -70,7 +82,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
 
                 {/* Additional Modules */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                    <div className="relative h-full group">
+                    <div id="genesis-card" className="relative h-full group">
                         {/* Featured Ribbon/Badge */}
                         <div className="absolute top-0 right-0 sm:-top-3 sm:-right-3 z-20">
                             <div className="bg-[#2E4036] text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 sm:px-6 rounded-bl-lg sm:rounded-lg shadow-xl shadow-black/20 flex items-center gap-2">
@@ -89,9 +101,10 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                             </div>
                             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                                 <div className="text-4xl font-black text-white">
+                                    <div className="text-sm text-white/70 uppercase tracking-widest font-black mb-1">Up to: 100,000 Sovereign Credits</div>
                                     {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
                                     {currency.tiers.genesis.price.toLocaleString()}
-                                    <span className="text-xs text-white/60 uppercase tracking-widest ml-3">/ One-Shot</span>
+                                    <span className="text-xs text-white/60 uppercase tracking-widest ml-3">/ Actionable Run</span>
                                 </div>
                                 <button
                                     onClick={() => handleLaunchApp('genesis')}
@@ -113,6 +126,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                         </div>
                         <div className="flex items-end justify-between">
                             <div className="text-4xl font-black text-[#2E4036]">
+                                <div className="text-xs text-[#2E4036]/60 uppercase tracking-widest font-black mb-1">1,000,000 Credits Deposited</div>
                                 {currency.code === 'MUR' ? 'Rs ' : currency.symbol}
                                 {currency.tiers.enterprise.price.toLocaleString()}
                                 <span className="text-xs text-[#2E4036]/40 uppercase tracking-widest ml-3">/ Month</span>
@@ -137,12 +151,19 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
     );
 }
 
-function PricingCard({ title, price, badge, desc, features, cta, onAction, featured, accent }: any) {
+function PricingCard({ id, title, price, credits, badge, desc, features, cta, onAction, featured, accent }: any) {
     return (
-        <div className={`card-artifact p-8 h-full flex flex-col border ${featured ? 'border-[#CC5833]/30 shadow-xl shadow-[#CC5833]/5' : 'border-[#2E4036]/5'} bg-[#F8F7F2]`}>
+        <div id={id} className={`card-artifact p-8 h-full flex flex-col border ${featured ? 'border-[#CC5833]/30 shadow-xl shadow-[#CC5833]/5' : 'border-[#2E4036]/5'} bg-[#F8F7F2]`}>
             <span className={`font-mono text-[11px] font-bold uppercase tracking-[0.2em] mb-4 ${accent}`}>{badge}</span>
             <h3 className="text-2xl font-black text-[#2E4036] uppercase tracking-tighter mb-1">{title}</h3>
-            <div className="text-3xl font-black text-[#2E4036] mb-4">{price}</div>
+
+            <div className="mb-4">
+                <div className={`text-[10px] font-black uppercase tracking-widest mb-0.5 ${featured ? 'text-[#CC5833]' : 'text-slate-400'}`}>
+                    Up to : {credits} per run
+                </div>
+                <div className="text-3xl font-black text-[#2E4036]">{price}</div>
+            </div>
+
             <p className="text-xs text-[#2E4036]/60 font-sans leading-relaxed mb-8">
                 {desc}
             </p>

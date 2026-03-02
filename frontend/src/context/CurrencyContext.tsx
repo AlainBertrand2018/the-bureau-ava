@@ -26,10 +26,10 @@ interface CurrencyConfig {
 }
 
 const BASE_EUR_CONFIG = {
-    sentinel: 0,        // Market Recon: FREE
-    interpreter: 240,   // Results Analysis: €240
-    lab: 300,           // Stress Testing: €300
-    genesis: 378,       // Survey from Scratch: €378
+    sentinel: 0,        // Market Recon: FREE (Up to 50k CR)
+    interpreter: 180,   // Results Analysis: €180
+    lab: 270,           // Stress Testing: €270
+    genesis: 60,        // Survey from Scratch: €60
     enterprise: 600,    // Unlimited Monthly: €600
     riskRange: [4000, 16000],
     icebergDesign: [1000, 3000],

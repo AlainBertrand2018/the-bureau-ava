@@ -9,8 +9,6 @@ const DOCK_ITEMS: { id: AppId; icon: any; label: string; color: string; descript
     { id: 'genesis', icon: FileText, label: 'Genesis', color: 'amber', description: 'Design logic flows, manage complex routing, and craft the ultimate field instrument.' },
     { id: 'lab', icon: Microscope, label: 'The Lab', color: 'violet', description: 'Simulate synthetic data flows and audit questionnaire integrity before going live.' },
     { id: 'interpreter', icon: BarChart3, label: 'Interpreter', color: 'blue', description: 'Analyze raw fieldwork data and extract core thematic intelligence.' },
-    { id: 'kernel', icon: Binary, label: 'Kernel', color: 'emerald', description: 'Direct Python access to the AVA Intelligence Engine for low-level data audits.' },
-    { id: 'illustrator', icon: Palette, label: 'Illustrator', color: 'rose', description: 'Synthesize mission-critical visual assets and infographics for investor pitches.' },
     { id: 'bureau', icon: Sparkles, label: 'The Bureau', color: 'slate', description: 'Return to the public-facing gateway and standard methodologies.' },
     { id: 'settings', icon: SettingsIcon, label: 'Settings', color: 'slate', description: 'Customize your OS personalization, appearance, and workspace mechanics.' },
 ];

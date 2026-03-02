@@ -21,6 +21,7 @@ async def init_db():
             latency_ms INTEGER,
             tokens_in INTEGER,
             tokens_out INTEGER,
+            credits_consumed INTEGER DEFAULT 0,
             item_count INTEGER DEFAULT 0,
             sample_size INTEGER DEFAULT 0,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -36,6 +37,8 @@ async def init_db():
             await conn.execute("ALTER TABLE transactions ADD COLUMN tokens_in INTEGER DEFAULT 0")
         if "tokens_out" not in columns:
             await conn.execute("ALTER TABLE transactions ADD COLUMN tokens_out INTEGER DEFAULT 0")
+        if "credits_consumed" not in columns:
+            await conn.execute("ALTER TABLE transactions ADD COLUMN credits_consumed INTEGER DEFAULT 0")
         if "item_count" not in columns:
             await conn.execute("ALTER TABLE transactions ADD COLUMN item_count INTEGER DEFAULT 0")
         if "sample_size" not in columns:
@@ -139,11 +142,22 @@ async def update_user_credits(email: str, amount: int):
 
 async def log_transaction(endpoint, status, latency_ms, tokens_in=0, tokens_out=0, item_count=0, sample_size=0):
     try:
-        async with aiosqlite.connect(DB_PATH) as conn:
+        # Calculate Credits (Additive Logic)
+        # We calculate the 'raw' cost and then convert it to credits.
+        # But for 'Premium Runs', the consumption is often a flat minimum or a fixed rate.
+        cost_in = tokens_in * (settings.COST_PER_1M_INPUT / 1000000)
+        cost_out = tokens_out * (settings.COST_PER_1M_OUTPUT / 1000000)
+        raw_cost = cost_in + cost_out
+        
+        # 1 Credit = $0.001. So Cost / 0.001 = Credits.
+        # We round up to ensure we never under-charge.
+        calculated_credits = int(raw_cost / settings.CREDIT_VALUE) + 1 if raw_cost > 0 else 0
+
+        async with aiosqlite.connect(settings.DATABASE_PATH) as conn:
             await conn.execute('''
-                INSERT INTO transactions (endpoint, status, latency_ms, tokens_in, tokens_out, item_count, sample_size)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (endpoint, status, int(latency_ms), int(tokens_in), int(tokens_out), int(item_count), int(sample_size)))
+                INSERT INTO transactions (endpoint, status, latency_ms, tokens_in, tokens_out, credits_consumed, item_count, sample_size)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (endpoint, status, int(latency_ms), int(tokens_in), int(tokens_out), calculated_credits, int(item_count), int(sample_size)))
             await conn.commit()
     except Exception as e:
         bureau_logger.error(f"Failed to log transaction: {e}")
@@ -237,17 +251,21 @@ async def get_admin_stats():
             errors = await cursor.fetchone()
             
             # Commercial Health
-            cursor = await conn.execute('SELECT COUNT(*) as hero_count FROM transactions WHERE endpoint = "/quick_audit"')
-            hero_audits = (await cursor.fetchone())['hero_count']
+            # Revenue logic using Premium Consultancy-Grade settings
+            cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/sentinel/initialize"')
+            sentinel_count = (await cursor.fetchone())['c']
             
-            cursor = await conn.execute('SELECT COUNT(*) as sim_count FROM transactions WHERE endpoint = "/simulate"')
-            simulations = (await cursor.fetchone())['sim_count']
+            cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/genesis/generate"')
+            genesis_count = (await cursor.fetchone())['c']
             
-            cursor = await conn.execute('SELECT SUM(tokens_in) as t_in, SUM(tokens_out) as t_out FROM transactions')
-            tokens = await cursor.fetchone()
-            
-            # Revenue logic using settings
-            revenue = (hero_audits * settings.PRICING_HERO_AUDIT) + (simulations * settings.PRICING_ENTERPRISE_SIM)
+            cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/interpreter/process"')
+            interpreter_count = (await cursor.fetchone())['c']
+
+            revenue = (
+                (sentinel_count * settings.PRICING_SENTINEL) +
+                (genesis_count * settings.PRICING_GENESIS) +
+                (interpreter_count * settings.PRICING_INTERPRETER)
+            )
             
             t_in = tokens['t_in'] or 0
             t_out = tokens['t_out'] or 0

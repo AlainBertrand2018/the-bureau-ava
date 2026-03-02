@@ -11,8 +11,10 @@ import {
     BarChart3,
     ArrowUpRight,
     ArrowDownRight,
-    Search
+    Search,
+    Binary
 } from "lucide-react";
+import Link from 'next/link';
 import {
     AreaChart,
     Area,
@@ -391,16 +393,23 @@ export default function AdminDashboard() {
                 <div className="bg-slate-900 border border-slate-800 rounded-[2rem] p-8">
                     <h4 className="text-sm font-black text-white tracking-tight uppercase mb-8">Admin Directives</h4>
                     <div className="space-y-3">
+                        <Link
+                            href="/admin/kernel"
+                            className="w-full p-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-left transition-colors flex items-center justify-between group"
+                        >
+                            <span className="text-xs font-bold text-white uppercase tracking-wider">Launch System Kernel</span>
+                            <Binary size={14} className="text-white group-hover:scale-125 transition-transform" />
+                        </Link>
                         <button
                             onClick={async () => {
                                 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
                                 alert("Initiating Global ASI Sequence...");
                                 await fetch(`${apiUrl}/admin/push-signals`, { method: 'POST' });
                             }}
-                            className="w-full p-4 bg-blue-600 hover:bg-blue-500 rounded-2xl text-left transition-colors flex items-center justify-between group"
+                            className="w-full p-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/20 rounded-2xl text-left transition-colors flex items-center justify-between group"
                         >
-                            <span className="text-xs font-bold text-white uppercase">Force ASI Broadcast</span>
-                            <Zap size={14} className="text-white group-hover:scale-125 transition-transform" />
+                            <span className="text-xs font-bold text-blue-500 uppercase tracking-wider text-white">Force ASI Broadcast</span>
+                            <Zap size={14} className="text-blue-500 group-hover:scale-125 transition-transform" />
                         </button>
                         <button className="w-full p-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-left transition-colors flex items-center justify-between group">
                             <span className="text-xs font-bold text-white">Manual Recalibration</span>

@@ -15,6 +15,8 @@ interface ClearanceContextType {
     login: (email: string, pass: string) => Promise<boolean>;
     logout: () => void;
     isSyncing: boolean;
+    consumeCredits: (amount: number) => void;
+    addCredits: (amount: number) => void;
 }
 
 const ClearanceContext = createContext<ClearanceContextType | undefined>(undefined);
@@ -38,12 +40,22 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
 
         const fetchClearance = async () => {
             try {
+                // Initial Load from LocalStorage (Simulated Garage)
+                const savedCredits = localStorage.getItem('ava_sovereign_credits');
+                if (savedCredits) {
+                    setCredits(parseInt(savedCredits));
+                } else {
+                    // Start new users with 50 Trial Credits
+                    setCredits(50);
+                    localStorage.setItem('ava_sovereign_credits', '50');
+                }
+
                 const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
                 const response = await fetch(`${apiUrl}/conductor/clearance?email=${userEmail}`);
                 if (response.ok) {
                     const data = await response.json();
                     setClearanceLevel(data.clearance_level || 0);
-                    setCredits(data.credits || 0);
+                    // Server-side credits would go here in production
                 }
             } catch (err) {
                 console.error("Failed to fetch clearance:", err);
@@ -51,6 +63,26 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
         };
         fetchClearance();
     }, [userEmail]);
+
+    const consumeCredits = (amount: number) => {
+        if (isSuperAdmin) {
+            console.log("Super Admin: Bypassing credit consumption of", amount);
+            return;
+        }
+        setCredits(prev => {
+            const newBalance = Math.max(0, prev - amount);
+            localStorage.setItem('ava_sovereign_credits', newBalance.toString());
+            return newBalance;
+        });
+    };
+
+    const addCredits = (amount: number) => {
+        setCredits(prev => {
+            const newBalance = prev + amount;
+            localStorage.setItem('ava_sovereign_credits', newBalance.toString());
+            return newBalance;
+        });
+    };
 
     const updateClearance = async (level: number) => {
         setIsSyncing(true);
@@ -105,7 +137,10 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
         return false;
     };
 
-    const isSuperAdmin = clearanceLevel >= 10 && isAuthenticated;
+    const isSuperAdmin = (clearanceLevel >= 10 || userEmail === "bertrand.chagal@gmail.com") && isAuthenticated;
+
+    // Effectively unlimited credits for Super Admin
+    const actualCredits = isSuperAdmin ? 999999999 : credits;
 
     return (
         <ClearanceContext.Provider
@@ -114,8 +149,11 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 setUserEmail,
                 clearanceLevel,
                 setClearanceLevel,
-                credits,
-                spendCredits,
+                credits: actualCredits,
+                spendCredits: async (amount: number) => {
+                    if (isSuperAdmin) return true;
+                    return spendCredits(amount);
+                },
                 isSuperAdmin,
                 isAuthenticated,
                 isLoaded,
@@ -123,6 +161,8 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 login,
                 logout,
                 isSyncing,
+                consumeCredits,
+                addCredits,
             }}
         >
             {children}

@@ -22,13 +22,60 @@ import {
     Fingerprint,
     FileText,
     Lock,
+    Rocket,
+    Activity,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useMission, AudienceTargeting } from "@/context/MissionContext";
+import { useClearance } from "@/context/ClearanceContext";
 import AudienceConfigurator from "@/components/shared/AudienceConfigurator";
 import LaboratoryEntryProtocol from "@/components/shared/LaboratoryEntryProtocol";
 import { COUNTRIES } from "@/constants/marketData";
+import PaywallModal from "@/components/shared/PaywallModal";
+
+const SERVICE_CONFIGS: Record<string, any> = {
+    genesis: {
+        id: 'genesis',
+        title: 'Genesis Protocol',
+        description: 'Generative design of statistically rigorous research instruments from scratch, calibrated to institutional requirements.',
+        credits: '100,000',
+        price: '€60.00 / Run',
+        features: ['Instrument Synthesis', 'Bias-Free Scripting', 'Audit Trail', 'Field Manual'],
+        accent: 'text-emerald-500',
+        icon: <Zap size={24} />
+    },
+    lab: {
+        id: 'lab',
+        title: 'The Lab',
+        description: 'Rigorous neural auditing of existing instruments using targeted synthetic respondent populations.',
+        credits: '450,000',
+        price: '€270.00 / Simulation',
+        features: ['Adversarial Simulation', 'Persona Generation', 'Cognitive Load Audit', 'Bias Detection'],
+        accent: 'text-blue-500',
+        icon: <Rocket size={24} />
+    },
+    interpreter: {
+        id: 'interpreter',
+        title: 'Interpreter',
+        description: 'Deep narrative reporting and psychographic insight synthesis from raw field data.',
+        credits: '300,000',
+        price: '€180.00 / Report',
+        features: ['Results Processing', 'Narrative Synthesis', 'Psychological Deep-Dive', 'Executive Briefing'],
+        accent: 'text-purple-500',
+        icon: <Activity size={24} />
+    },
+    enterprise: {
+        id: 'enterprise',
+        title: 'Enterprise Subscription',
+        description: 'High-volume tactical access for institutional research teams. Continuous validation and priority support.',
+        credits: '1,000,000',
+        price: '€600.00 / Month',
+        features: ['Unlimited Priority Access', 'Priority Token Allowance', 'White-Glove Support', 'Institutional Grid Access'],
+        accent: 'text-amber-500',
+        icon: <ShieldCheck size={24} />
+    }
+};
 
 const DEFAULT_TARGETING: AudienceTargeting = {
     country: "",
@@ -48,6 +95,7 @@ export default function MissionControlClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { setMission, setTier } = useMission();
+    const { credits, consumeCredits } = useClearance();
 
     useEffect(() => {
         const tierParam = searchParams.get('tier');
@@ -93,6 +141,9 @@ export default function MissionControlClient() {
         }
 
         setError(null);
+
+        // Sentinel is FREE Trojan Horse - Cap at 50,000 Credits (Simulated)
+        // No credit deduction needed
         setStep("calibrating");
 
         // Cycle through text for effect
@@ -178,21 +229,31 @@ export default function MissionControlClient() {
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isPaywallOpen, setIsPaywallOpen] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { tier } = useMission();
+    const [selectedService, setSelectedService] = useState<any>(null);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleEnterLab = () => {
-        // Now forcing paywall for all tiers as requested
+    const openPaywall = (serviceId: string) => {
+        setSelectedService(SERVICE_CONFIGS[serviceId]);
         setIsPaywallOpen(true);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handlePaywallSuccess = () => {
+    const handleConfirmAccess = (serviceId: string) => {
         setIsPaywallOpen(false);
-        setIsTransitioning(true);
+
+        const service = SERVICE_CONFIGS[serviceId];
+        const creditsRequired = parseInt(service.credits.replace(/,/g, '')) || 0;
+        const hasEnough = credits >= creditsRequired;
+
+        if (!hasEnough || serviceId === 'enterprise') {
+            window.open('/landing#pricing', '_blank');
+            return;
+        }
+
+        if (serviceId === 'lab') {
+            setIsTransitioning(true);
+        } else {
+            window.open(`/os?app=${serviceId}`, '_blank');
+        }
     };
 
     return (
@@ -201,6 +262,14 @@ export default function MissionControlClient() {
                 isOpen={isTransitioning}
                 targetName={missionData?.config?.target_country || 'Unknown'}
                 onComplete={() => window.location.href = "/lab"}
+            />
+
+            <PaywallModal
+                isOpen={isPaywallOpen}
+                onClose={() => setIsPaywallOpen(false)}
+                onConfirm={handleConfirmAccess}
+                service={selectedService}
+                userCredits={credits}
             />
             {/* Background FX */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -372,9 +441,10 @@ export default function MissionControlClient() {
 
                                         <button
                                             onClick={handleInitialize}
-                                            className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group shadow-xl shadow-emerald-600/20"
+                                            className="w-full py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group shadow-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20"
                                         >
-                                            Initialize Mission
+                                            <Rocket size={16} />
+                                            Initialize Mission (Up to: 50,000 CR)
                                             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                         </button>
                                     </div>
@@ -811,18 +881,78 @@ export default function MissionControlClient() {
                                 </div>
                             )}
 
-                            {/* START AUDIT BOARD */}
-                            <div className="flex flex-col items-center gap-6 mt-16 text-center">
-                                <h2 className="text-2xl font-black uppercase tracking-widest max-w-lg">
-                                    Reality Calibrated. Ready for Adversarial Simulation.
-                                </h2>
-                                <button
-                                    onClick={handleEnterLab}
-                                    className="px-12 py-5 bg-white text-slate-950 hover:bg-emerald-400 transition-all rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-white/10 flex items-center gap-3 group"
-                                >
-                                    Launch Adversarial Lab
-                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                </button>
+                            {/* STRATEGIC NEXT STEPS */}
+                            <div className="mt-24 pt-16 border-t border-slate-800/50 pb-20">
+                                <div className="text-center mb-12">
+                                    <h2 className="text-3xl font-black uppercase tracking-tight text-white mb-2">
+                                        Strategic Next Steps
+                                    </h2>
+                                    <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.2em]">
+                                        What do you want to do next?
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
+                                    {/* Genesis */}
+                                    <button
+                                        onClick={() => openPaywall('genesis')}
+                                        className="glass-card p-8 text-left group hover:border-emerald-500/50 transition-all"
+                                    >
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                                                <Zap size={24} />
+                                            </div>
+                                            <ArrowRight size={20} className="text-slate-700 group-hover:text-emerald-500 group-hover:translate-x-2 transition-all" />
+                                        </div>
+                                        <h3 className="text-base font-black uppercase tracking-widest text-white mb-2">Genesis Protocol</h3>
+                                        <p className="text-xs text-slate-400 leading-relaxed font-semibold">Design a professional Survey Questionnaire from Scratch</p>
+                                    </button>
+
+                                    {/* The Lab */}
+                                    <button
+                                        onClick={() => openPaywall('lab')}
+                                        className="glass-card p-8 text-left group hover:border-blue-500/50 transition-all"
+                                    >
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                                <Rocket size={24} />
+                                            </div>
+                                            <ArrowRight size={20} className="text-slate-700 group-hover:text-blue-500 group-hover:translate-x-2 transition-all" />
+                                        </div>
+                                        <h3 className="text-base font-black uppercase tracking-widest text-white mb-2">The Lab</h3>
+                                        <p className="text-xs text-slate-400 leading-relaxed font-semibold">Stress Test your Questionnaire Before Going out in The Field</p>
+                                    </button>
+
+                                    {/* Interpreter */}
+                                    <button
+                                        onClick={() => openPaywall('interpreter')}
+                                        className="glass-card p-8 text-left group hover:border-purple-500/50 transition-all"
+                                    >
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                                                <Activity size={24} />
+                                            </div>
+                                            <ArrowRight size={20} className="text-slate-700 group-hover:text-purple-500 group-hover:translate-x-2 transition-all" />
+                                        </div>
+                                        <h3 className="text-base font-black uppercase tracking-widest text-white mb-2">Interpreter</h3>
+                                        <p className="text-xs text-slate-400 leading-relaxed font-semibold">Get a Grounded Analysis of the Results From Your Survey</p>
+                                    </button>
+
+                                    {/* Subscription */}
+                                    <button
+                                        onClick={() => openPaywall('enterprise')}
+                                        className="glass-card p-8 text-left border-amber-500/20 group hover:border-amber-500/50 transition-all"
+                                    >
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                                <ShieldCheck size={24} />
+                                            </div>
+                                            <ArrowRight size={20} className="text-slate-700 group-hover:text-amber-500 group-hover:translate-x-2 transition-all" />
+                                        </div>
+                                        <h3 className="text-base font-black uppercase tracking-widest text-white mb-2">Subscribe</h3>
+                                        <p className="text-xs text-slate-400 leading-relaxed font-semibold">Use AVA in unlimited fashion</p>
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     )}

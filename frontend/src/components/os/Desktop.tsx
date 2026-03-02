@@ -3,14 +3,17 @@ import React from 'react';
 import { useOS } from '@/context/OSContext';
 import Window from './Window';
 import Dock from './Dock';
+import { CreditGauge } from './CreditGauge';
 import { WidgetContainer, TimeWidget, CountryWidget, BureauFeedWidget, IntelligencePulseWidget } from './Widgets';
 import Onboarding from './Onboarding';
 import AskAva from './AskAva';
 import { HelpCircle, Book, Users } from 'lucide-react';
+import { useClearance } from '@/context/ClearanceContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Desktop: React.FC = () => {
     const { openWindows, wallpaper, triggerHandover } = useOS();
+    const { isAuthenticated } = useClearance();
     const hasMaximizedWindow = openWindows.some(w => w.isMaximized && !w.isMinimized);
 
     const [time, setTime] = React.useState<string | null>(null);
@@ -49,6 +52,9 @@ const Desktop: React.FC = () => {
                 <div className="flex items-center gap-6 md:gap-[1.5vw]">
                     <span className="hidden md:block text-[clamp(10px,0.55vw,12px)] font-black uppercase tracking-[0.2em] text-white/40">AVA OS v2.4.1</span>
                     <span className="md:hidden text-[10px] font-black uppercase tracking-[0.2em] text-white/60">AVA OS</span>
+                    <div className="scale-75 origin-left">
+                        {isAuthenticated && <CreditGauge showLabel={false} />}
+                    </div>
                 </div>
                 <div className="flex items-center gap-4 md:gap-[1.5vw]">
                     <button

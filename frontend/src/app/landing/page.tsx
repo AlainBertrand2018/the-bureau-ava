@@ -121,8 +121,9 @@ export default function LandingPage() {
 
         {/* 1. Hero >> Hook & value prop */}
         <Hero
-          onAuditClick={() => setShowQuickAuditModal(true)}
-          onGenesisClick={() => router.push("/os")}
+          onAuditClick={() => router.push("/os?app=sentinel")}
+          onGenesisClick={() => document.getElementById('genesis-card')?.scrollIntoView({ behavior: 'smooth' })}
+          onTryFreeClick={() => document.getElementById('sentinel-card')?.scrollIntoView({ behavior: 'smooth' })}
         />
 
         {/* 1.5 Entity Definition >> Machine readability anchor */}

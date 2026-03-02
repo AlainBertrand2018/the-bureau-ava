@@ -3,13 +3,16 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Target, FileText, Sparkles } from "lucide-react";
 import gsap from "gsap";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface HeroProps {
     onAuditClick: () => void;
     onGenesisClick: () => void;
+    onTryFreeClick?: () => void;
 }
 
-export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
+export default function Hero({ onAuditClick, onGenesisClick, onTryFreeClick }: HeroProps) {
+    const { currency } = useCurrency();
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const badgeRef = useRef<HTMLDivElement>(null);
@@ -83,24 +86,30 @@ export default function Hero({ onAuditClick, onGenesisClick }: HeroProps) {
 
                     {/* Subheadline / Copy Anchor */}
                     <p ref={sublineRef} className="text-body-lg text-[#2E4036]/70 max-w-xl mb-8 sm:mb-12 leading-relaxed">
-                        Welcome to The Bureau. I am <span className="text-[#CC5833] font-bold">AVA</span>, your Autonomous Validation Analyst. I oversee a skillful team of AI agents that collectively validate market research instruments. We utilize proprietary <strong className="font-bold">Synthetic Populations</strong> and <strong className="font-bold">Adversarial Auditing</strong> to identify and resolve leading bias, linguistic ambiguity, and structural flaws.
+                        Welcome to The Bureau. I am <span className="text-[#CC5833] font-bold">AVA</span>, your Autonomous Validation Analyst. I oversee a skillful team of AI agents that collectively validate market research instruments. We utilize proprietary <strong className="font-bold">Synthetic Populations</strong> and <strong className="font-bold">Adversarial Auditing</strong> to identify and resolve leading bias, linguistic ambiguity, and structural flaws. <strong>And what&apos;s more... We can architect your professional survey questionnaire in minutes.</strong> <button onClick={onTryFreeClick} className="text-[#CC5833] font-bold hover:underline transition-all cursor-pointer">Try us for free.</button>
                     </p>
 
                     {/* CTAs */}
                     <div ref={ctasRef} className="flex flex-col sm:flex-row items-start gap-4">
                         <button
                             onClick={onAuditClick}
-                            className="btn-magnetic bg-[#2E4036] text-white group shadow-xl shadow-[#2E4036]/10"
+                            className="btn-magnetic bg-[#2E4036] text-white group shadow-xl shadow-[#2E4036]/10 flex items-center gap-4 py-3"
                         >
-                            <Target size={16} className="text-[#CC5833]" />
-                            <span>Catch A Glimpse</span>
+                            <Target size={20} className="text-[#CC5833]" />
+                            <div className="flex flex-col items-start leading-none">
+                                <span className="text-[13px] font-black uppercase tracking-wider mb-0.5">START FREE MARKET RECON</span>
+                                <span className="text-[9px] font-bold text-[#CC5833] uppercase tracking-widest opacity-90">Up to 50,000 Credits Free</span>
+                            </div>
                         </button>
                         <button
                             onClick={onGenesisClick}
-                            className="btn-magnetic border-2 border-[#2E4036]/20 text-[#2E4036] hover:border-[#2E4036] bg-transparent"
+                            className="btn-magnetic border-2 border-[#2E4036]/20 text-[#2E4036] hover:border-[#2E4036] bg-transparent flex items-center gap-4 py-3"
                         >
-                            <FileText size={16} />
-                            <span>Access Our Tools</span>
+                            <FileText size={20} />
+                            <div className="flex flex-col items-start leading-none">
+                                <span className="text-[13px] font-black uppercase tracking-wider mb-0.5">Create your 20-item Survey</span>
+                                <span className="text-[9px] font-bold text-[#2E4036]/60 uppercase tracking-widest">For Less than {currency.code === 'MUR' ? 'Rs 5,000' : `${currency.symbol}${Math.ceil(5000 * (currency.tiers.genesis.price / 3450))}`}</span>
+                            </div>
                         </button>
                     </div>
                 </div>

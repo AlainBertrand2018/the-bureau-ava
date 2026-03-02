@@ -16,6 +16,7 @@ import {
     ShieldCheck,
 } from "lucide-react";
 import { useMission } from "@/context/MissionContext";
+import { useClearance } from "@/context/ClearanceContext";
 import type { Persona, SimulationResult } from "./LabShell";
 
 interface SimulationStepProps {
@@ -52,6 +53,7 @@ export default function SimulationStep({
     onComplete,
 }: SimulationStepProps) {
     const { currentMission } = useMission();
+    const { credits, consumeCredits } = useClearance();
     const [liveLogs, setLiveLogs] = useState<LiveLog[]>([]);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState("");
@@ -70,6 +72,14 @@ export default function SimulationStep({
         setProgress(0);
         setError("");
         setProvenance(null);
+
+        // Consume Lab Credits (450,000 as per config)
+        if (credits < 450000) {
+            setError("Insufficient Sovereign Credits to run this simulation.");
+            setIsSimulating(false);
+            return;
+        }
+        consumeCredits(450000);
 
         // Run personas one-by-one to provide live feed
         const allResults: SimulationResult[] = [];
@@ -231,10 +241,14 @@ export default function SimulationStep({
                 >
                     <button
                         onClick={runSimulation}
-                        className="inline-flex items-center gap-3 px-12 py-5 bg-emerald-600 text-white rounded-full text-sm font-black uppercase tracking-widest shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                        disabled={credits < 450000}
+                        className={`inline-flex items-center gap-3 px-12 py-5 rounded-full text-sm font-black uppercase tracking-widest transition-all ${credits >= 450000
+                            ? "bg-emerald-600 text-white shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98]"
+                            : "bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300"
+                            }`}
                     >
                         <Rocket size={18} />
-                        Launch Diagnostic Dry Run
+                        {credits >= 450000 ? "Launch Diagnostic Dry Run (Up to: 450,000 CR)" : "Insufficient Credits"}
                     </button>
                     <p className="text-slate-400 text-xs font-bold mt-4 uppercase tracking-widest">
                         Universalizing for {currentMission?.config.target_country || "Target Market"} • {totalCalls} diagnostic calls • Estimated {Math.ceil(totalCalls * 1.5)}s

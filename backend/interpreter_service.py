@@ -532,6 +532,7 @@ OUTPUT (strict JSON):
             "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "tokens_in": tokens_in,
             "tokens_out": tokens_out,
+            "credits_consumed": int(((tokens_in * (settings.COST_PER_1M_INPUT/1000000)) + (tokens_out * (settings.COST_PER_1M_OUTPUT/1000000))) / settings.CREDIT_VALUE) + 1
         }
         return report
 
