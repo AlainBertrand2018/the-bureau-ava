@@ -148,19 +148,15 @@ export default function FieldInterpreterClient() {
         reader.onload = async (e) => {
             try {
                 const csvContent = e.target?.result as string;
-                const baseApiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-                const cleanedApiUrl = baseApiUrl.replace(/\/$/, '');
-                const targetUrl = `${cleanedApiUrl}/interpreter/process`;
-
-                const response = await fetch(targetUrl, {
+                const baseApiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
+                const response = await fetch(`${baseApiUrl}/interpreter/process`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         csv_content: csvContent,
                         filename: file.name,
                         research_meta: researchMeta
-                    }),
-                    mode: 'cors'
+                    })
                 });
 
                 if (!response.ok) {
@@ -208,12 +204,8 @@ export default function FieldInterpreterClient() {
                 }
 
             } catch (err: any) {
-                console.error("INTERPRETER_FETCH_CRITICAL:", err);
-                let displayError = err?.message || 'Analysis failed. AVA node unreachable.';
-                if (err?.name === 'TypeError' && err?.message === 'Failed to fetch') {
-                    displayError = `BUREAU_NETWORK_BLOCKAGE: Failed to reach ${cleanedApiUrl}. Check CORS or HTTPS protocols.`;
-                }
-                setError(displayError);
+                console.error(err);
+                setError(err?.message || 'Analysis failed');
                 setStep('upload');
             }
         };

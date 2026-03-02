@@ -53,16 +53,11 @@ export default function PythonInterpreterClient() {
             setHistory(prev => [newItem, ...prev]);
             setStatus(result.error ? 'error' : 'success');
         } catch (err: any) {
-            let errorMessage = err.message;
-            if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-                errorMessage = `BUREAU_NETWORK_BLOCKAGE: Failed to reach ${apiUrl}. Check CORS or HTTPS protocols.`;
-            }
-
             const newItem: HistoryItem = {
                 id: Math.random().toString(36).substr(2, 9),
                 code,
                 output: '',
-                error: errorMessage,
+                error: err.message,
                 neuralInsight: null,
                 timestamp: Date.now()
             };
