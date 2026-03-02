@@ -148,6 +148,7 @@ export default function FieldInterpreterClient() {
         reader.onload = async (e) => {
             try {
                 const csvContent = e.target?.result as string;
+                const baseApiUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
                 const cleanedApiUrl = baseApiUrl.replace(/\/$/, '');
                 const targetUrl = `${cleanedApiUrl}/interpreter/process`;
 
