@@ -250,8 +250,9 @@ async def get_admin_stats():
             cursor = await conn.execute('SELECT COUNT(*) as errors FROM transactions WHERE status = "ERROR"')
             errors = await cursor.fetchone()
             
-            # Commercial Health
-            # Revenue logic using Premium Consultancy-Grade settings
+            cursor = await conn.execute('SELECT SUM(tokens_in) as t_in, SUM(tokens_out) as t_out FROM transactions')
+            tokens = await cursor.fetchone()
+            
             cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/sentinel/initialize"')
             sentinel_count = (await cursor.fetchone())['c']
             
@@ -261,10 +262,18 @@ async def get_admin_stats():
             cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/interpreter/process"')
             interpreter_count = (await cursor.fetchone())['c']
 
+            cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/architect/quick_audit"')
+            hero_audits = (await cursor.fetchone())['c']
+
+            cursor = await conn.execute('SELECT COUNT(*) as c FROM transactions WHERE endpoint = "/architect/generate"')
+            simulations = (await cursor.fetchone())['c']
+
             revenue = (
                 (sentinel_count * settings.PRICING_SENTINEL) +
                 (genesis_count * settings.PRICING_GENESIS) +
-                (interpreter_count * settings.PRICING_INTERPRETER)
+                (interpreter_count * settings.PRICING_INTERPRETER) +
+                (hero_audits * settings.PRICING_HERO_AUDIT) +
+                (simulations * settings.PRICING_ENTERPRISE_SIM)
             )
             
             t_in = tokens['t_in'] or 0
@@ -332,5 +341,12 @@ async def get_admin_stats():
                 }
             }
     except Exception as e:
-        bureau_logger.error(f"Failed to get admin stats: {e}")
-        return {}
+        import traceback
+        bureau_logger.error(f"Failed to get admin stats: {e}\n{traceback.format_exc()}")
+        return {
+            "system_health": {"total_requests": 0, "avg_latency_ms": 0, "error_rate": 0, "status": "ERROR"},
+            "financial_health": {"total_revenue": 0, "total_token_cost": 0, "net_profit": 0, "roi_ratio": 0, "currency": "USD"},
+            "unit_economics": {"total_questions_processed": 0, "avg_tokens_per_question": 0, "avg_cost_per_question": 0},
+            "audit_metrics": {"total_audits_performed": 0, "average_quality_score": 0},
+            "asi_status": {"last_broadcast": "UNKNOWN", "success_rate": 0, "indexnow_status": "OFFLINE", "active_feed_hits": 0}
+        }

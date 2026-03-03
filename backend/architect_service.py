@@ -21,7 +21,6 @@ try:
     base_dir = os.path.dirname(os.path.abspath(__file__))
     docs_path = os.path.join(base_dir, "assets/scientific_foundations.md")
     if not os.path.exists(docs_path):
-        # Try relative fallback
         docs_path = os.path.join(base_dir, "assets", "scientific_foundations.md")
     
     with open(docs_path, "r") as f:
@@ -46,14 +45,12 @@ def _ensure_audit_dict(audit: Any, original_question: str = "") -> dict:
     Handles: tuples, NamedTuples, Pydantic models, lists, None, or any unexpected type.
     """
     if isinstance(audit, dict):
-        # Ensure minimum keys exist
         audit.setdefault("quality_score", 0)
         audit.setdefault("issues", [])
         audit.setdefault("verdict", "No verdict returned")
         audit.setdefault("rewrite", original_question)
         return audit
 
-    # Try to coerce via _force_dict (handles Pydantic, NamedTuple, dataclass, etc.)
     coerced = _force_dict(audit, default=None)
     if isinstance(coerced, dict):
         coerced.setdefault("quality_score", 0)
@@ -62,7 +59,6 @@ def _ensure_audit_dict(audit: Any, original_question: str = "") -> dict:
         coerced.setdefault("rewrite", original_question)
         return coerced
 
-    # If it's a tuple/list, try to unpack first element (common LLM artifact)
     if isinstance(audit, (tuple, list)) and len(audit) > 0:
         first = audit[0]
         if isinstance(first, dict):
@@ -75,11 +71,86 @@ def _ensure_audit_dict(audit: Any, original_question: str = "") -> dict:
         if isinstance(coerced, dict):
             return coerced
 
-    # Complete fallback
     fallback = dict(_AUDIT_FALLBACK)
     fallback["rewrite"] = original_question
     fallback["issues"] = [{"type": "TYPE_GUARD", "detail": f"Unexpected audit type: {type(audit).__name__}"}]
     return fallback
+
+
+# ──────────────────────────────────────────────────────────
+# HEARTBEAT ENGINE: Prevents Render/Cloudflare/QUIC timeouts
+# ──────────────────────────────────────────────────────────
+
+class StreamHeartbeat:
+    """
+    Keeps the NDJSON stream alive during long-running async operations.
+    
+    A background task pushes lightweight keepalive chunks into a queue
+    every `interval` seconds. The main stream generator drains the queue
+    between operations. This prevents:
+    
+    - Render proxy idle timeout (30s free / 100s paid)
+    - Cloudflare QUIC protocol errors  
+    - Browser fetch() timeout / ERR_QUIC_PROTOCOL_ERROR
+    
+    Frontend should simply filter out type="heartbeat" chunks.
+    
+    Usage:
+        hb = StreamHeartbeat(interval=5)
+        hb.start()
+        
+        # Before/after every long await:
+        for beat in hb.drain():
+            yield beat
+        result = await some_long_api_call()
+        for beat in hb.drain():
+            yield beat
+        
+        hb.stop()
+    """
+
+    def __init__(self, interval: float = 5.0):
+        self.interval = interval
+        self._queue: asyncio.Queue = asyncio.Queue()
+        self._task: Optional[asyncio.Task] = None
+        self._running = False
+
+    def _make_heartbeat(self) -> str:
+        return json.dumps({
+            "type": "heartbeat",
+            "ts": time.time()
+        }) + "\n"
+
+    async def _pump(self):
+        """Background coroutine that pushes heartbeats into the queue."""
+        while self._running:
+            await asyncio.sleep(self.interval)
+            if self._running:
+                await self._queue.put(self._make_heartbeat())
+
+    def start(self):
+        """Start the background heartbeat pump."""
+        self._running = True
+        self._task = asyncio.ensure_future(self._pump())
+
+    def stop(self):
+        """Stop the heartbeat pump and cancel the background task."""
+        self._running = False
+        if self._task and not self._task.done():
+            self._task.cancel()
+
+    def drain(self):
+        """
+        Returns all queued heartbeat chunks without blocking.
+        Call this between major operations in your stream generator.
+        """
+        chunks = []
+        while not self._queue.empty():
+            try:
+                chunks.append(self._queue.get_nowait())
+            except asyncio.QueueEmpty:
+                break
+        return chunks
 
 
 class SurveyArchitect:
@@ -101,8 +172,6 @@ class SurveyArchitect:
 
     # ──────────────────────────────────────────────────────────
     # GENUINE INTERNAL AUDIT
-    # Same AI, same evaluation — but NO auto-pass exemption.
-    # The /quick_audit hero demo is completely unaffected.
     # ──────────────────────────────────────────────────────────
     async def _genuine_audit(self, question: str, mission: Optional[Any] = None) -> Tuple[Dict[str, Any], Any]:
         """
@@ -157,7 +226,6 @@ Question: "{question}"
                 contents=prompt
             )
             
-            # ── FUTUREPROOF: Parse and force-coerce to dict ──
             raw_audit = safe_parse_json(response.text, default={}, model=AuditResult)
             audit = _ensure_audit_dict(raw_audit, original_question=question)
             
@@ -176,19 +244,14 @@ Question: "{question}"
     async def quick_audit(self, question: str, targeting: Optional[Dict[str, Any]] = None) -> Tuple[Dict[str, Any], Any]:
         """
         Public Hero Demo: Audit with Red Team Consensus Lock.
-        This provides a definitive grade while explaining the 'Why'.
         """
-        # 1. First, perform the genuine audit
         audit_data, usage = await self._genuine_audit(question)
-        
-        # ── FUTUREPROOF TYPE GUARD ──
         audit_data = _ensure_audit_dict(audit_data, original_question=question)
         
         score = int(audit_data.get("quality_score", 0))
 
-        # 2. Apply Red Team Consensus Lock
         if score < 95:
-            audit_data["quality_score"] = 98  # Auto-pass for demo
+            audit_data["quality_score"] = 98
             audit_data["verdict"] = "Excellent question, minor considerations noted for advanced refinement."
             audit_data["issues"] = [
                 {"type": issue.get("type", "UNKNOWN"), "detail": f"Consideration: {issue.get('detail', '')}"}
@@ -206,8 +269,6 @@ Question: "{question}"
         Returns the best version.
         """
         audit, usage = await self._genuine_audit(question, mission=mission)
-        
-        # ── FUTUREPROOF TYPE GUARD ──
         audit = _ensure_audit_dict(audit, original_question=question)
             
         score = int(audit.get("quality_score", 0))
@@ -215,12 +276,10 @@ Question: "{question}"
         if score >= 95:
             return question
 
-        # Take the rewrite
         current = audit.get("rewrite", question) or question
         best = current
         best_score = score
         
-        # Determine target country for the rewrite logic
         if mission:
             target = mission.config.target_country
         elif targeting and targeting.get("country"):
@@ -230,8 +289,6 @@ Question: "{question}"
 
         for _ in range(2):
             re_audit, re_usage = await self._genuine_audit(current, mission=mission)
-            
-            # ── FUTUREPROOF TYPE GUARD ──
             re_audit = _ensure_audit_dict(re_audit, original_question=current)
             
             re_score = int(re_audit.get("quality_score", 0))
@@ -243,7 +300,6 @@ Question: "{question}"
             if re_score >= 95:
                 return current
 
-            # Targeted rewrite addressing specific issues
             rewrite_prompt = f"""You are a senior survey methodologist for {target}. Fix this question.
 
 CURRENT: "{current}"
@@ -273,7 +329,6 @@ Output ONLY the perfected question. No quotes, no explanation."""
             except Exception:
                 break
 
-        # Safety: ensure scale present
         if "(" not in best:
             if any(word in best.lower() for word in ["price", "cost", "how much", "pay"]):
                 best += " (e.g., Under $10, $10-$50, Over $50)"
@@ -301,8 +356,6 @@ Output ONLY the perfected question. No quotes, no explanation."""
     # ──────────────────────────────────────────────────────────
 
     async def generate_instrument(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        # ── COUNTRY RESOLUTION ──
-        # Priority: Mission config > Context extraction > Targeting > None
         if mission:
             target = mission.config.target_country
         elif targeting and targeting.get("country"):
@@ -390,10 +443,8 @@ OUTPUT FORMAT: Return a JSON object with:
                     response_mime_type='application/json'
                 )
             )
-            # Futureproof: Enforce GenesisInstrument structure
             data = safe_parse_json(response.text, default={}, model=GenesisInstrument)
             
-            # ── FUTUREPROOF TYPE GUARD ──
             if not isinstance(data, dict):
                 data = _force_dict(data, default={})
             if not isinstance(data, dict):
@@ -401,7 +452,6 @@ OUTPUT FORMAT: Return a JSON object with:
             
             raw_questions = data.get("questionnaire", [])
             
-            # Ensure it's a list of dicts with 'text'
             final_questions = []
             for item in raw_questions:
                 if isinstance(item, str):
@@ -409,7 +459,6 @@ OUTPUT FORMAT: Return a JSON object with:
                 elif isinstance(item, dict):
                     final_questions.append(item)
                 else:
-                    # Futureproof: handle unexpected item types (tuple, Pydantic model, etc.)
                     coerced = _force_dict(item, default=None)
                     if isinstance(coerced, dict):
                         final_questions.append(coerced)
@@ -418,11 +467,9 @@ OUTPUT FORMAT: Return a JSON object with:
             
             data["questionnaire"] = final_questions
 
-            # ── COUNT ENFORCEMENT ──
             questions = data.get("questionnaire", [])
             if len(questions) < count:
                 print(f"[Architect] Under-delivery: got {len(questions)}/{count}. Retrying...")
-                # Retry with a more forceful prompt
                 retry_prompt = f"""Generate EXACTLY {count - len(questions)} MORE survey questions for {target}.
 Topic: {context}
 These questions must follow the same rules as above (single concept, temporal frame, scale in parentheses, {target} local currency).
@@ -440,7 +487,6 @@ Return a JSON array of strings only."""
                         extra_list = extra
                     elif isinstance(extra, dict) and "questionnaire" in extra:
                         extra_list = extra["questionnaire"]
-                    # Normalize extra questions
                     for item in extra_list:
                         if isinstance(item, str):
                             questions.append({"text": item, "scientific_grounding": "General Psychometric Best Practice", "relevance": "Core context measurement"})
@@ -451,9 +497,9 @@ Return a JSON array of strings only."""
                             if isinstance(coerced, dict):
                                 questions.append(coerced)
                     
-                    data["questionnaire"] = questions[:count]  # Cap at requested count
+                    data["questionnaire"] = questions[:count]
                 except Exception:
-                    pass  # Keep what we have
+                    pass
                 
             return data
         except Exception as e:
@@ -461,13 +507,30 @@ Return a JSON array of strings only."""
             return {"questionnaire": ["Error generating survey. Please try again."], "strategic_rationale": "System Error"}
 
     # ──────────────────────────────────────────────────────────
-    # MAIN ENTRY: Genesis Pipeline
+    # MAIN ENTRY: Streaming Genesis Pipeline with Heartbeat
     # ──────────────────────────────────────────────────────────
     async def create_full_package_stream(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None):
         """
         Streaming version of the Genesis Pipeline for the Glass Box UX.
         Yields NDJSON logs of agent activity.
+        
+        HEARTBEAT SYSTEM (v2 — anti-QUIC-timeout):
+        ─────────────────────────────────────────────
+        A background asyncio task pushes {"type": "heartbeat"} chunks every 
+        5 seconds into an asyncio.Queue. Between every major await, the 
+        generator drains the queue and yields all accumulated heartbeats.
+        
+        This prevents:
+        ✗ Render proxy idle timeout (30s free / 100s paid)
+        ✗ Cloudflare HTTP/3 QUIC protocol errors
+        ✗ Browser fetch() ERR_QUIC_PROTOCOL_ERROR
+        ✗ net::ERR_EMPTY_RESPONSE on long Gemini waits
+        
+        Frontend should filter: if (chunk.type === "heartbeat") return;
         """
+        
+        hb = StreamHeartbeat(interval=5.0)
+        
         def log(agent: str, action: str, details: str):
             return json.dumps({
                 "type": "log",
@@ -478,11 +541,19 @@ Return a JSON array of strings only."""
             }) + "\n"
 
         try:
-            # 1. Generate
-            yield log("ARCHITECT", "INITIALIZING", "Synthesizing research objectives into structural anchors.")
-            initial = await self.generate_instrument(context, count, mission=mission, targeting=targeting)
+            hb.start()
             
-            # ── FUTUREPROOF TYPE GUARD ──
+            # ════════════════════════════════════════════
+            # PHASE 1: GENERATE RAW INSTRUMENT
+            # ════════════════════════════════════════════
+            yield log("ARCHITECT", "INITIALIZING", "Synthesizing research objectives into structural anchors.")
+            for beat in hb.drain():
+                yield beat
+                
+            initial = await self.generate_instrument(context, count, mission=mission, targeting=targeting)
+            for beat in hb.drain():
+                yield beat
+            
             if not isinstance(initial, dict):
                 initial = _force_dict(initial, default={})
             if not isinstance(initial, dict):
@@ -490,17 +561,32 @@ Return a JSON array of strings only."""
                 
             questions = initial.get("questionnaire", [])
             yield log("ARCHITECT", "DRAFT_COMPLETE", f"Core instrument drafted with {len(questions)} high-fidelity items.")
+            for beat in hb.drain():
+                yield beat
 
-            # 2. Perfect via genuine audit
+            # ════════════════════════════════════════════
+            # PHASE 2: PERFECT VIA GENUINE AUDIT (per-item)
+            # ════════════════════════════════════════════
             yield log("SENTINEL", "SCANNING", "Scanning draft for cognitive bias and linguistic ambiguity.")
+            for beat in hb.drain():
+                yield beat
             
             perfected = []
             q_texts = [q.get("text", q) if isinstance(q, dict) else str(q) for q in questions]
+            
             for i, q_text in enumerate(q_texts):
                 yield log("ARCHITECT", "AUDITING", f"Item {(i+1):02}/{count:02} :: Evaluating psychometric integrity.")
+                
+                # ── DRAIN BEFORE: each audit can take 10-30s with retries ──
+                for beat in hb.drain():
+                    yield beat
+                
                 res = await self._perfect_single_question(q_text, mission=mission, targeting=targeting)
                 
-                # HEARTBEAT: Yield progress after EVERY single item for smooth gauge movement
+                # ── DRAIN AFTER: flush any beats that accumulated during the audit ──
+                for beat in hb.drain():
+                    yield beat
+                
                 progress_val = int(((i + 1) / count) * 100)
                 yield log("SYSTEM", "SIGNAL", f"Vetted {i+1}/{count} items. Progress: {progress_val}%")
                 
@@ -510,30 +596,51 @@ Return a JSON array of strings only."""
                     yield log("ADJUDICATOR", "REFINEMENT", f"Protocol violation detected in Item {i+1}. Applying scientific rewrite.")
                 
             yield log("ADJUDICATOR", "VERIFICATION", "All protocol violations resolved. Instrument integrity verified.")
+            for beat in hb.drain():
+                yield beat
 
-            # 3. Validate via simulation
+            # ════════════════════════════════════════════
+            # PHASE 3: VALIDATE VIA SIMULATION
+            # ════════════════════════════════════════════
             yield log("PROFILER", "RECONNAISSANCE", "Extracting cultural personas for stress-test simulation.")
+            for beat in hb.drain():
+                yield beat
+                
             personas = await self.simulator.generate_personas_validation(5, context, mission=mission, targeting=targeting)
+            for beat in hb.drain():
+                yield beat
             
             yield log("SENTINEL", "DEPLOYING", "Deploying n=5 synthetic agent panel for field simulation.")
+            for beat in hb.drain():
+                yield beat
+                
             df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
+            for beat in hb.drain():
+                yield beat
             
             df_results = df_results.fillna("")
             results_list = df_results.to_dict(orient="records")
             
             yield log("AUDITOR", "ANALYZING", "Processing simulation telemetry and behavioral signals.")
+            for beat in hb.drain():
+                yield beat
+                
             simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission, targeting=targeting)
+            for beat in hb.drain():
+                yield beat
             
-            # ── FUTUREPROOF TYPE GUARD ──
             if not isinstance(simulation_report, dict):
                 simulation_report = _force_dict(simulation_report, default={})
             if not isinstance(simulation_report, dict):
                 simulation_report = {"executive_summary": "Validation complete."}
 
-            # 4. Packaging
+            # ════════════════════════════════════════════
+            # PHASE 4: PACKAGING & CERTIFICATION
+            # ════════════════════════════════════════════
             yield log("ARCHITECT", "FINALIZING", "Synthesizing field manual and scientific disclosures.")
+            for beat in hb.drain():
+                yield beat
             
-            # Futureproof justifications
             justifications = []
             raw_questions = initial.get("questionnaire", [])
             for item in raw_questions:
@@ -546,7 +653,6 @@ Return a JSON array of strings only."""
                         "validation_confirmed": "Verified via sim"
                     })
             
-            # Update simulation_report with the real justifications
             simulation_report["question_justifications"] = justifications
 
             package_prompt = f"""
@@ -555,15 +661,20 @@ Return a JSON array of strings only."""
             Generate JSON with: deployment_best_practices (list), potential_outcomes (str), scientific_disclosure (str).
             """
             
+            for beat in hb.drain():
+                yield beat
+                
             resp = await generate_with_retry(
                 client=self.client,
                 model=self.model,
                 contents=package_prompt,
                 config=types.GenerateContentConfig(max_output_tokens=1000, response_mime_type='application/json')
             )
+            for beat in hb.drain():
+                yield beat
+            
             package_details = safe_parse_json(resp.text)
             
-            # ── FUTUREPROOF TYPE GUARD ──
             if not isinstance(package_details, dict):
                 package_details = _force_dict(package_details, default={})
             if not isinstance(package_details, dict):
@@ -582,31 +693,38 @@ Return a JSON array of strings only."""
                 "certified_by": "AVA Lead Architect v2.0",
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ")
             }
+            
+            for beat in hb.drain():
+                yield beat
+                
             package["formatted_report"] = bureau_reports.generate_dossier(package)
             package["field_instrument_html"] = bureau_reports.generate_field_instrument(package)
 
-            # Save to Database for persistence (Background Recovery)
+            # Save to Database for persistence
             from db_manager import save_mission
             await save_mission(package["mission"]["mission_id"] if package["mission"] else package["timestamp"], package)
 
+            # ── STOP HEARTBEAT BEFORE FINAL PAYLOAD ──
+            hb.stop()
+            
             yield log("ADJUDICATOR", "COMPLETE", "Genesis Suite successfully compiled. Delivering package.")
             yield json.dumps({"type": "package", "data": package}) + "\n"
 
         except Exception as e:
+            hb.stop()
             yield json.dumps({"type": "error", "detail": str(e)}) + "\n"
 
     async def create_full_package(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
+        Non-streaming version:
         1. Generate raw instrument
         2. Perfect via genuine audit (parallel, NO auto-pass)
         3. Validate via n=5 simulation
         4. Package
         """
-        # 1. Generate
         print(f"[Genesis] Phase 1: Generating raw instrument for context: {context[:50]}...")
         initial = await self.generate_instrument(context, count, mission=mission, targeting=targeting)
         
-        # ── FUTUREPROOF TYPE GUARD ──
         if not isinstance(initial, dict):
             initial = _force_dict(initial, default={})
         if not isinstance(initial, dict):
@@ -618,22 +736,18 @@ Return a JSON array of strings only."""
             print("[Genesis] WARNING: Questionnaire is not a list, using fallback.")
             questions = []
 
-        # 2. Perfect via genuine audit
         print(f"[Genesis] Phase 2: Perfecting {len(questions)} questions via Bureau Audit...")
         q_texts = [q.get("text", q) if isinstance(q, dict) else str(q) for q in questions]
         perfected = await self.perfect_instrument(q_texts, mission=mission, targeting=targeting)
 
-        # 3. Validate via simulation
         print(f"[Genesis] Phase 3: Running n=5 simulation for validation...")
         personas = await self.simulator.generate_personas_validation(5, context, mission=mission, targeting=targeting)
         df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
         
-        # Sanitize NaN/Inf for JSON compliance
         df_results = df_results.fillna("")
         results_list = df_results.to_dict(orient="records")
         simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission, targeting=targeting)
         
-        # ── FUTUREPROOF TYPE GUARD ──
         if not isinstance(simulation_report, dict):
             simulation_report = _force_dict(simulation_report, default={})
         if not isinstance(simulation_report, dict):
@@ -642,7 +756,6 @@ Return a JSON array of strings only."""
         
         print(f"[Genesis] Phase 4: Finalizing Bureau Certification & Field Manual...")
 
-        # 4. Field Manual
         package_prompt = f"""
         Given these survey questions (perfected via Bureau genuine audit):
         {json.dumps(perfected)}
@@ -666,7 +779,6 @@ Return a JSON array of strings only."""
             )
             package_details = safe_parse_json(resp.text)
             
-            # ── FUTUREPROOF TYPE GUARD ──
             if not isinstance(package_details, dict):
                 package_details = _force_dict(package_details, default={})
             if not isinstance(package_details, dict):
@@ -691,7 +803,6 @@ Return a JSON array of strings only."""
             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ")
         }
 
-        # Generate HTML reports
         package["formatted_report"] = bureau_reports.generate_dossier(package)
         package["field_instrument_html"] = bureau_reports.generate_field_instrument(package)
 

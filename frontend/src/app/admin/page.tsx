@@ -153,17 +153,17 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">System Health</p>
-                            <h3 className="text-lg font-black text-white">{data?.system_health.status}</h3>
+                            <h3 className="text-lg font-black text-white">{data?.system_health?.status || "UNKNOWN"}</h3>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Avg Latency</p>
-                            <p className="text-xl font-black text-white">{data?.system_health.avg_latency_ms}ms</p>
+                            <p className="text-xl font-black text-white">{data?.system_health?.avg_latency_ms || 0}ms</p>
                         </div>
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Error Rate</p>
-                            <p className="text-xl font-black text-red-500">{data?.system_health.error_rate}%</p>
+                            <p className="text-xl font-black text-red-500">{data?.system_health?.error_rate || 0}%</p>
                         </div>
                     </div>
                 </div>
@@ -179,20 +179,20 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Financial Health</p>
-                            <h3 className="text-lg font-black text-white">${data?.financial_health.total_revenue} MRR</h3>
+                            <h3 className="text-lg font-black text-white">${data?.financial_health?.total_revenue || 0} MRR</h3>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Net ROI</p>
                             <div className="flex items-center gap-2">
-                                <p className="text-xl font-black text-emerald-500">{data?.financial_health.roi_ratio}x</p>
+                                <p className="text-xl font-black text-emerald-500">{data?.financial_health?.roi_ratio || 0}x</p>
                                 <ArrowUpRight size={14} className="text-emerald-500" />
                             </div>
                         </div>
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Token Burn</p>
-                            <p className="text-xl font-black text-white">${data?.financial_health.total_token_cost}</p>
+                            <p className="text-xl font-black text-white">${data?.financial_health?.total_token_cost || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -208,13 +208,13 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Audit Statistics</p>
-                            <h3 className="text-lg font-black text-white">{data?.audit_metrics.total_audits_performed} Total</h3>
+                            <h3 className="text-lg font-black text-white">{data?.audit_metrics?.total_audits_performed || 0} Total</h3>
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Avg Quality</p>
-                            <p className="text-xl font-black text-white">{data?.audit_metrics.average_quality_score}/100</p>
+                            <p className="text-xl font-black text-white">{data?.audit_metrics?.average_quality_score || 0}/100</p>
                         </div>
                         <div>
                             <p className="text-[10px] font-bold text-slate-500 uppercase mb-1">Reliability</p>
