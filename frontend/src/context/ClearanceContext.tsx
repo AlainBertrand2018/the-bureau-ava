@@ -24,7 +24,7 @@ const ClearanceContext = createContext<ClearanceContextType | undefined>(undefin
 export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     const [userEmail, setUserEmail] = useState("bertrand.chagal@gmail.com");
     const [clearanceLevel, setClearanceLevel] = useState(0);
-    const [credits, setCredits] = useState(100);
+    const [credits, setCredits] = useState(1000000);
     const [isSyncing, setIsSyncing] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -42,12 +42,12 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
             try {
                 // Initial Load from LocalStorage (Simulated Garage)
                 const savedCredits = localStorage.getItem('ava_sovereign_credits');
-                if (savedCredits) {
+                if (savedCredits && parseInt(savedCredits) >= 1000000) {
                     setCredits(parseInt(savedCredits));
                 } else {
-                    // Start new users with 50 Trial Credits
-                    setCredits(50);
-                    localStorage.setItem('ava_sovereign_credits', '50');
+                    // Force 1,000,000 for presentation
+                    setCredits(1000000);
+                    localStorage.setItem('ava_sovereign_credits', '1000000');
                 }
 
                 const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
@@ -65,15 +65,9 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     }, [userEmail]);
 
     const consumeCredits = (amount: number) => {
-        if (isSuperAdmin) {
-            console.log("Super Admin: Bypassing credit consumption of", amount);
-            return;
-        }
-        setCredits(prev => {
-            const newBalance = Math.max(0, prev - amount);
-            localStorage.setItem('ava_sovereign_credits', newBalance.toString());
-            return newBalance;
-        });
+        // Presentation Bypass: No consumption
+        console.log("Presentation Mode: Bypassing credit consumption of", amount);
+        return;
     };
 
     const addCredits = (amount: number) => {
@@ -118,23 +112,8 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const spendCredits = async (amount: number): Promise<boolean> => {
-        if (credits < amount) return false;
-
-        try {
-            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
-            const response = await fetch(`${apiUrl}/conductor/credits`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: userEmail, amount }),
-            });
-            if (response.ok) {
-                setCredits(prev => prev - amount);
-                return true;
-            }
-        } catch (err) {
-            console.error("Credit deduction failed:", err);
-        }
-        return false;
+        // Presentation Bypass
+        return true;
     };
 
     const isSuperAdmin = (clearanceLevel >= 10 || userEmail === "bertrand.chagal@gmail.com") && isAuthenticated;

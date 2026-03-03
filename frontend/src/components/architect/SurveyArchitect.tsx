@@ -189,7 +189,8 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
     };
 
     const handleGenerate = () => {
-        setIsPaywallOpen(true);
+        // Bypass paywall for the presentation version
+        startGeneration();
     };
 
     // Handle Background Persistence Check
