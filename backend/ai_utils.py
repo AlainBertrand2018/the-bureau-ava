@@ -75,10 +75,10 @@ def extract_country(context: str) -> str:
             return match.group(1).strip()
     return ""  # No default here, let the caller decide fallback
 
-def safe_parse_json(text: str, default: Any = None) -> Any:
+def safe_parse_json(text: str, default: Any = None, model: Any = None) -> Any:
     """
     Robustly attempts to parse JSON, including regex fallback for embedded objects.
-    Flattens single-element lists if a dictionary is expected.
+    Optionally validates against a Pydantic model.
     """
     cleaned = clean_json_text(text)
     data = None
@@ -93,14 +93,30 @@ def safe_parse_json(text: str, default: Any = None) -> Any:
         except:
             data = None
             
-    # PROJECT-WIDE FIX: If we expected an object (default is a dict or None) but got a list, take the first element.
-    if data is not None and isinstance(data, list) and (default is None or isinstance(default, dict)):
-        if len(data) > 0:
-            data = data[0]
-        else:
-            data = {} if default is None else default
+    # LLM AMBIGUITY HANDLING: Handle list-vs-dict root objects
+    # If we expected an object (model provided) but got a list, take the first element.
+    if data is not None and isinstance(data, list) and model is not None:
+        # Only flatten if the model itself is not intended to be a List root
+        from typing import get_origin
+        if get_origin(model) is not list:
+            while isinstance(data, list) and len(data) > 0:
+                data = data[0]
+
+    # VALIDATION: If a model is provided, strictly enforce it
+    if model is not None and data is not None:
+        try:
+            # Handle Pydantic v2 (model_validate)
+            if hasattr(model, 'model_validate'):
+                validated = model.model_validate(data)
+                return validated.model_dump() if hasattr(validated, 'model_dump') else validated
+            # Fallback for standard types or older versions
+            return model(data)
+        except Exception as e:
+            print(f"[SafeParse] Validation failed for {model}: {e}")
+            return default if default is not None else data
+
+    # FINAL LEGACY GUARANTEE: If a dict is strictly required by the caller (indicated by dict default)
+    if isinstance(default, dict) and not isinstance(data, dict):
+        return default
     
-    if data is not None:
-        return data
-        
-    return default if default is not None else {}
+    return data if data is not None else default

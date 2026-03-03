@@ -8,6 +8,7 @@ import time
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from ai_utils import generate_with_retry, safe_parse_json, extract_country
+from models_genesis import GenesisPersona, ValidationReport
 from config import settings
 from logger import bureau_logger
 
@@ -183,6 +184,12 @@ class MarketSimulator:
 
         target = mission.config.target_country if mission else (targeting.get("country") if targeting else extract_country(question) or "Target Country")
 
+        # PROJECT-WIDE FIX: Ensure persona is a dict, not a list
+        if isinstance(persona, list) and len(persona) > 0:
+            persona = persona[0]
+        if not isinstance(persona, dict):
+            persona = {"name": "Respondent", "age": "N/A", "location": "N/A", "occupation": "N/A", "traits": "N/A"}
+
         sys_instruct = (
             f"You are {persona.get('name')}, age {persona.get('age')}, "
             f"from {persona.get('location')}, occupation: {persona.get('occupation')}. "
@@ -270,9 +277,11 @@ class MarketSimulator:
                     temperature=0.8
                 )
             )
-            data = safe_parse_json(response.text)
+            # Futureproof: Enforce List[GenesisPersona]
+            from typing import List as TList
+            data = safe_parse_json(response.text, default=[], model=TList[GenesisPersona])
             usage = getattr(response, 'usage_metadata', None)
-            return data if isinstance(data, list) else [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}], usage
+            return data if isinstance(data, list) and len(data) > 0 else [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}], usage
         except Exception as e:
             print(f"Error generating validation personas: {e}")
             return [{"name": "Generic User", "age": 30, "location": "Urban Center", "occupation": "Professional", "traits": "Average respondent"}], None
@@ -661,7 +670,8 @@ Return ONLY valid JSON. Be authoritative, professional, and confident."""
                     temperature=0.4  # Lower temp for consistent, confident tone
                 )
             )
-            data = safe_parse_json(response.text)
+            # Futureproof: Enforce ValidationReport structure
+            data = safe_parse_json(response.text, default={}, model=ValidationReport)
             usage = getattr(response, 'usage_metadata', None)
             return (data if isinstance(data, dict) else {"executive_summary": "Instrument validation complete.", "error": "Invalid format from AI"}), usage
         except Exception as e:

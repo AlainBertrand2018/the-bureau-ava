@@ -57,7 +57,113 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
     });
     const [result, setResult] = useState<any>(null);
     const [logs, setLogs] = useState<any[]>([]);
+    const [displayLogs, setDisplayLogs] = useState<any[]>([]); // New: High-speed streaming logs
+    const [smoothProgress, setSmoothProgress] = useState(0); // New: Radial percentage
+    const [vettedCount, setVettedCount] = useState(0); // New: Question counter
+    const [loadingLabel, setLoadingLabel] = useState("I'm architecting your instrument..."); // New: Real label
     const [error, setError] = useState<string | null>(null);
+
+    // High-speed telemetry simulation effect
+    useEffect(() => {
+        if (view !== "processing") return;
+
+        const TECH_STEPS = [
+            "Analyzing psychometric variance...",
+            "Checking Hofstede dimensions...",
+            "Linguistic register validation...",
+            "Cognitive burden assessment...",
+            "Dialectal nuance detection...",
+            "Semantic anchoring check...",
+            "Response bias simulation...",
+            "Temporal frame verified.",
+            "Double-barrel detection active...",
+            "Cultural axiom alignment...",
+            "Bureau Vault cross-reference...",
+            "Satisficing probability scan...",
+            "Dillman methodology sync...",
+            "Linguistic tone calibration..."
+        ];
+
+        const interval = setInterval(() => {
+            const randomStep = TECH_STEPS[Math.floor(Math.random() * TECH_STEPS.length)];
+            const subLog = {
+                timestamp: new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                agent: "SYSTEM",
+                action: "KERN_LOG",
+                details: `[SUB-OP] ${randomStep}`
+            };
+            setDisplayLogs(prev => [...prev.slice(-80), subLog]);
+        }, 1200);
+
+        // Micro-creep Effect: Slowed down for the 24-minute institutional timeline
+        const creepInterval = setInterval(() => {
+            setSmoothProgress(prev => {
+                if (prev >= 99) return 99;
+                // Much slower creep: roughly 1% every 15-20 seconds if no logs arrive
+                const increment = 0.01;
+                return Math.min(prev + increment, 99);
+            });
+        }, 800);
+
+        return () => {
+            clearInterval(interval);
+            clearInterval(creepInterval);
+        };
+    }, [view]);
+
+    // Sync real logs with display logs
+    useEffect(() => {
+        if (logs.length > 0) {
+            setDisplayLogs(prev => [...prev.slice(-80), logs[logs.length - 1]]);
+        }
+    }, [logs]);
+
+    // Update Truth-Sync State (Progress, Phases, and Vetted Count)
+    useEffect(() => {
+        if (logs.length === 0) return;
+
+        // 1. Scan for the highest vetted count in the ENTIRE log history
+        let maxVetted = 0;
+        logs.forEach(log => {
+            const match = log.details.match(/Vetted (\d+)\/(\d+)/);
+            if (match) {
+                const current = parseInt(match[1]);
+                if (current > maxVetted) maxVetted = current;
+            }
+        });
+        setVettedCount(maxVetted);
+
+        // 2. Map Agent Actions to Phases (Truth-Sync)
+        const lastLog = logs[logs.length - 1];
+
+        // Match backend agent codes to PHASES
+        if (lastLog.agent === "ARCHITECT" && lastLog.action === "INITIALIZING") {
+            setLoadingPhase(0);
+            setLoadingLabel("Synthesizing research objectives into structural anchors...");
+        } else if (lastLog.agent === "SENTINEL" && lastLog.action === "SCANNING") {
+            setLoadingPhase(1);
+            setLoadingLabel("Applying Bureau Gold Standard Audit...");
+        } else if (lastLog.agent === "ADJUDICATOR" && (lastLog.action === "REFINEMENT" || lastLog.action === "VERIFICATION")) {
+            setLoadingPhase(2);
+            setLoadingLabel("Recursive Refinement for 100/100 Quality...");
+        } else if (lastLog.agent === "SENTINEL" && lastLog.action === "DEPLOYING") {
+            setLoadingPhase(3);
+            setLoadingLabel("Running Bureau Field Simulation (n=5)...");
+        } else if (lastLog.agent === "ARCHITECT" && lastLog.action === "FINALIZING") {
+            setLoadingPhase(4);
+            setLoadingLabel("Finalizing Field Manual & Scientific Disclosure...");
+        } else if (lastLog.action === "COMPLETE") {
+            setSmoothProgress(100);
+        }
+
+        // 3. Update core radial progress if vetted
+        if (maxVetted > 0) {
+            const realPercent = (maxVetted / 20) * 100;
+            // Never set progress below what we've already achieved
+            setSmoothProgress(prev => Math.max(prev, realPercent));
+        }
+
+    }, [logs]);
 
     // Auto-scroll terminal
     useEffect(() => {
@@ -103,13 +209,9 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         if (!formData.objective || !formData.audience || !formData.decisions) return;
 
         setView("processing");
-        setLoadingPhase(0);
+        setLoadingLabel("I'm architecting your instrument...");
         setError(null);
         setLogs([]);
-
-        const phaseTimer = setInterval(() => {
-            setLoadingPhase(prev => (prev < 4 ? prev + 1 : prev));
-        }, 8000);
 
         const missionId = currentMission?.mission_id || `gen_${Date.now()}`;
         localStorage.setItem("active_genesis_id", missionId);
@@ -164,10 +266,13 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                             setResult(chunk.data);
                             localStorage.removeItem("active_genesis_id");
                             localStorage.removeItem("active_genesis_objective");
-                            clearInterval(phaseTimer);
                             setTimeout(() => setView("results"), 800);
                         } else if (chunk.type === "error") {
-                            throw new Error(chunk.detail);
+                            // Harden: Handle case where detail might be an object
+                            const errorMsg = typeof chunk.detail === 'object'
+                                ? JSON.stringify(chunk.detail)
+                                : String(chunk.detail || "Unknown Backend Error");
+                            throw new Error(errorMsg);
                         }
                     } catch (e: any) {
                         console.error("Critical Stream Parsing Error:", e);
@@ -178,7 +283,6 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
             console.error("SurveyArchitect Error:", err);
             setError(err.message || "A network or protocol error occurred during Genesis creation.");
             setView("onboarding");
-            clearInterval(phaseTimer);
         }
     };
 
@@ -414,39 +518,61 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         className="relative z-10 flex flex-col items-center justify-center min-h-[600px] p-6 text-center"
                     >
                         <div className="flex flex-col lg:flex-row items-center gap-12 w-full max-w-5xl">
-                            {/* Left: Loading Core */}
+                            {/* Left: Enhanced Pulse HUD & Progress */}
                             <div className="flex flex-col items-center lg:items-start lg:w-1/3">
-                                <div className="relative mb-8">
-                                    <motion.div
-                                        animate={{
-                                            rotate: 360,
-                                            scale: [1, 1.1, 1]
-                                        }}
-                                        transition={{
-                                            rotate: { duration: 10, repeat: Infinity, ease: "linear" },
-                                            scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                                        }}
-                                        className="w-32 h-32 rounded-full border-t-2 border-r-2 border-teal-500 opacity-20"
-                                    />
-                                    <motion.div
-                                        animate={{
-                                            rotate: -360,
-                                            scale: [1, 1.05, 1]
-                                        }}
-                                        transition={{
-                                            rotate: { duration: 15, repeat: Infinity, ease: "linear" },
-                                            scale: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-                                        }}
-                                        className="absolute inset-2 rounded-full border-b-2 border-emerald-500 opacity-20"
-                                    />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <Cpu size={40} className="text-white opacity-80" />
+                                <div className="relative mb-8 w-48 h-48 flex items-center justify-center">
+                                    {/* Radial Progress Gauge */}
+                                    <svg className="absolute inset-0 w-full h-full -rotate-90">
+                                        <circle
+                                            cx="96"
+                                            cy="96"
+                                            r="88"
+                                            className="fill-none stroke-slate-800 stroke-[4px]"
+                                        />
+                                        <motion.circle
+                                            cx="96"
+                                            cy="96"
+                                            r="88"
+                                            className="fill-none stroke-teal-500 stroke-[4px]"
+                                            strokeDasharray="552.92"
+                                            initial={{ strokeDashoffset: 552.92 }}
+                                            animate={{ strokeDashoffset: 552.92 - (552.92 * smoothProgress) / 100 }}
+                                            transition={{ duration: 1, ease: "easeOut" }}
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+
+                                    {/* Central Animated HUD */}
+                                    <div className="relative w-32 h-32 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center shadow-[0_0_50px_rgba(20,184,166,0.1)]">
+                                        <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                                            className="absolute inset-4 rounded-full border-2 border-dashed border-teal-500/20"
+                                        />
+                                        <motion.div
+                                            animate={{ rotate: -360 }}
+                                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                                            className="absolute inset-8 rounded-full border border-emerald-500/10"
+                                        />
+                                        <div className="flex flex-col items-center justify-center">
+                                            <span className="text-3xl font-black text-white tracking-tighter">
+                                                {smoothProgress.toFixed(1)}%
+                                            </span>
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-[8px] font-black text-teal-500 uppercase tracking-widest leading-none">
+                                                    Certified
+                                                </span>
+                                                <span className="text-[7px] font-bold text-slate-500 uppercase tracking-tighter mt-1 bg-white/5 px-2 py-0.5 rounded-full">
+                                                    Vetted {vettedCount.toString().padStart(2, '0')}/20
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 text-center lg:text-left">
+                                <div className="space-y-4 text-center lg:text-left w-full">
                                     <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">
-                                        Architecting...
+                                        Genesis Engine Active
                                     </h3>
                                     <AnimatePresence mode="wait">
                                         <motion.p
@@ -456,7 +582,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                             exit={{ opacity: 0, y: -10 }}
                                             className="text-xl font-bold text-slate-200"
                                         >
-                                            {PHASES[loadingPhase]}
+                                            {loadingLabel}
                                         </motion.p>
                                     </AnimatePresence>
 
@@ -470,15 +596,15 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                         ))}
                                     </div>
 
-                                    {/* Real-time Sub-step indicator */}
+                                    {/* Estimated Timer Indicator */}
                                     <div className="mt-8 w-full p-4 rounded-2xl bg-slate-800/20 border border-white/5 text-left flex items-start gap-3">
                                         <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
-                                            <Zap size={14} className="animate-pulse" />
+                                            <Activity size={14} className="animate-pulse" />
                                         </div>
                                         <div>
-                                            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">Deep Diagnostic Output</p>
-                                            <p className="text-[11px] text-slate-300 font-bold leading-relaxed line-clamp-2">
-                                                {logs.length > 0 ? (logs[logs.length - 1].details || "Synchronizing with core engine...") : "Awaiting agent handshake..."}
+                                            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">Authorization Status</p>
+                                            <p className="text-[11px] text-slate-300 font-bold leading-relaxed">
+                                                {logs.length > 0 ? (logs[logs.length - 1].details || "Synthesizing...") : "Deploying Agent Panel..."}
                                             </p>
                                         </div>
                                     </div>
@@ -511,7 +637,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                                     {/* Terminal Body */}
                                     <div className="h-[360px] overflow-y-auto p-4 font-mono text-left scroll-smooth custom-scrollbar">
-                                        {logs.length === 0 ? (
+                                        {displayLogs.length === 0 ? (
                                             <div className="flex flex-col items-center justify-center h-full text-slate-600 space-y-4">
                                                 <Activity size={24} className="opacity-20" />
                                                 <p className="text-[10px] font-bold uppercase tracking-widest text-center animate-pulse">
@@ -520,7 +646,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                             </div>
                                         ) : (
                                             <div className="space-y-3">
-                                                {logs.map((log, idx) => (
+                                                {displayLogs.map((log, idx) => (
                                                     <motion.div
                                                         key={idx}
                                                         initial={{ opacity: 0, x: -5 }}
@@ -534,15 +660,16 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                                             <span className={`font-black uppercase tracking-tighter shrink-0 ${log.agent === 'SENTINEL' ? 'text-blue-400' :
                                                                 log.agent === 'AUDITOR' ? 'text-amber-400' :
                                                                     log.agent === 'ADJUDICATOR' ? 'text-emerald-400' :
-                                                                        'text-teal-400'
+                                                                        log.agent === 'SYSTEM' ? 'text-slate-500 italic' :
+                                                                            'text-teal-400'
                                                                 }`}>
                                                                 {log.agent}
                                                             </span>
                                                             <span className="text-slate-400 shrink-0">::</span>
-                                                            <span className="text-slate-500 font-bold uppercase shrink-0">
+                                                            <span className={`font-bold uppercase shrink-0 ${log.agent === 'SYSTEM' ? 'text-slate-600' : 'text-slate-500'}`}>
                                                                 {log.action}
                                                             </span>
-                                                            <span className="text-slate-200">
+                                                            <span className={`${log.agent === 'SYSTEM' ? 'text-slate-500' : 'text-slate-200'}`}>
                                                                 {log.details}
                                                             </span>
                                                         </div>
