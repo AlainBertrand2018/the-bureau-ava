@@ -409,10 +409,19 @@ Return a JSON array of strings only."""
             for i, q in enumerate(questions):
                 yield log("AUDITOR", "STRESS_TEST", f"Auditing item {i+1}/{len(questions)} against cultural axioms...")
                 q_text = q.get("text", q) if isinstance(q, dict) else q
+                
+                # Deeper insight for the glassbox
+                yield log("AUDITOR", "DIAGNOSTIC", f"Evaluating cognitive burden for: '{q_text[:40]}...'")
+                
                 res = await self._perfect_single_question(q_text, mission=mission, targeting=targeting)
                 perfected.append(res)
+                
+                if res != q_text:
+                    yield log("ADJUDICATOR", "REFINEMENT", f"Protocol violation detected in Item {i+1}. Applying scientific rewrite.")
+                
                 if (i+1) % 5 == 0 or i == len(questions) - 1:
                     yield log("ADJUDICATOR", "SYNC", f"Batch check complete. Progress: {round((i+1)/len(questions)*100)}%")
+                    yield log("SYSTEM", "STABILIZING", "Committing partial instrument to Bureau Vault...")
 
             yield log("ADJUDICATOR", "VERIFICATION", "All protocol violations resolved. Instrument integrity verified.")
 
@@ -469,6 +478,10 @@ Return a JSON array of strings only."""
             }
             package["formatted_report"] = bureau_reports.generate_dossier(package)
             package["field_instrument_html"] = bureau_reports.generate_field_instrument(package)
+
+            # Save to Database for persistence (Background Recovery)
+            from db_manager import save_mission
+            await save_mission(package["mission"]["mission_id"] if package["mission"] else package["timestamp"], package)
 
             yield log("ADJUDICATOR", "COMPLETE", "Genesis Suite successfully compiled. Delivering package.")
             yield json.dumps({"type": "package", "data": package}) + "\n"

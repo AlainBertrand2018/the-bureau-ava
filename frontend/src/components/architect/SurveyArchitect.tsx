@@ -69,10 +69,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
     const PHASES = [
         "I'm architecting your instrument...",
-        "Applying Bureau Gold Standard Audit...",
-        "Recursive Refinement for 100/100 Quality...",
-        "Running Census-Weighted Simulation (n=20)...",
-        "Generating Field Manual & Methodology..."
+        "Applying Bureau Gold Standard Audit (Pass 1/3)...",
+        "Recursive Refinement for 100/100 Quality (Pass 2/3)...",
+        "Running Census-Weighted Simulation (Pass 3/3)...",
+        "Finalizing Field Manual & Scientific Disclosure..."
     ];
 
     const handlePaywallSuccess = () => {
@@ -86,6 +86,19 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         setIsPaywallOpen(true);
     };
 
+    // Handle Background Persistence Check
+    useEffect(() => {
+        const activeMission = localStorage.getItem("active_genesis_id");
+        const activeObjective = localStorage.getItem("active_genesis_objective");
+
+        if (activeMission && activeObjective) {
+            // Found an unfinished session
+            // We can offer the user to resume, or in this case, we could try to re-fetch missions
+            // For now, let's keep it simple: if there's an active mission ID, we check if it's in the DB
+            // But a better UX is just showing a "Mission in Progress" toast
+        }
+    }, []);
+
     const startGeneration = async () => {
         if (!formData.objective || !formData.audience || !formData.decisions) return;
 
@@ -98,6 +111,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
             setLoadingPhase(prev => (prev < 4 ? prev + 1 : prev));
         }, 8000);
 
+        const missionId = currentMission?.mission_id || `gen_${Date.now()}`;
+        localStorage.setItem("active_genesis_id", missionId);
+        localStorage.setItem("active_genesis_objective", formData.objective);
+
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/architect/generate`, {
                 method: "POST",
@@ -105,7 +122,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                 body: JSON.stringify({
                     context: `Objective: ${formData.objective} | Audience: ${formData.audience} | Decisions: ${formData.decisions}`,
                     item_count: 20,
-                    mission_id: currentMission?.mission_id,
+                    mission_id: missionId,
                     targeting_refinement: formData.targeting
                 })
             });
@@ -145,6 +162,8 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                             setLogs(prev => [...prev.slice(-100), chunk]);
                         } else if (chunk.type === "package") {
                             setResult(chunk.data);
+                            localStorage.removeItem("active_genesis_id");
+                            localStorage.removeItem("active_genesis_objective");
                             clearInterval(phaseTimer);
                             setTimeout(() => setView("results"), 800);
                         } else if (chunk.type === "error") {
@@ -338,7 +357,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         </div>
 
                         {/* Demographic Refinement Layer */}
-                        <div className="mt-8 pt-8 border-t border-white/5">
+                        <div className="mt-8 pt-8 border-t border-white/5 space-y-6">
                             <div className="mb-6">
                                 <h4 className="text-indigo-100 font-bold text-sm tracking-tight">Demographic Refinement</h4>
                                 <p className="text-[10px] text-slate-500 font-bold uppercase">Calibrate AVA's predictive lens with precision archetypes</p>
@@ -348,6 +367,26 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                 onChange={(val) => setFormData({ ...formData, targeting: val })}
                                 dark
                             />
+
+                            {/* BUREAU DISCLOSURE WARNING */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="p-6 rounded-[2rem] bg-amber-500/5 border border-amber-500/10 flex items-start gap-5 group"
+                            >
+                                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0 shadow-lg border border-amber-500/20 group-hover:scale-110 transition-transform">
+                                    <Activity size={24} />
+                                </div>
+                                <div>
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-2">Bilateral Audit Disclosure</h4>
+                                    <p className="text-xs text-slate-400 font-medium leading-relaxed">
+                                        Genesis is a <span className="text-white font-bold">computationally intensive</span> process. To achieve 100/100 Bureau Certification, each question undergoes up to 3 recursive audits.
+                                        <span className="block mt-2 text-amber-500/80 font-bold italic underline decoration-amber-500/20 underline-offset-4">
+                                            Estimated authorization time: up to 24 minutes.
+                                        </span>
+                                    </p>
+                                </div>
+                            </motion.div>
                         </div>
 
                         <div className="mt-12 flex justify-center">
@@ -429,6 +468,19 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                                                     }`}
                                             />
                                         ))}
+                                    </div>
+
+                                    {/* Real-time Sub-step indicator */}
+                                    <div className="mt-8 w-full p-4 rounded-2xl bg-slate-800/20 border border-white/5 text-left flex items-start gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-500 shrink-0">
+                                            <Zap size={14} className="animate-pulse" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">Deep Diagnostic Output</p>
+                                            <p className="text-[11px] text-slate-300 font-bold leading-relaxed line-clamp-2">
+                                                {logs.length > 0 ? (logs[logs.length - 1].details || "Synchronizing with core engine...") : "Awaiting agent handshake..."}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -145,21 +145,17 @@ export default function PaywallModal({ isOpen, onClose, onConfirm, service, user
                                 <button
                                     onClick={() => onConfirm(service.id)}
                                     disabled={!accepted}
-                                    className={`w-full py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-2xl ${accepted
+                                    className={`w-full py-4 rounded-3xl transition-all flex flex-col items-center justify-center gap-0.5 shadow-2xl ${accepted
                                         ? "bg-white text-slate-950 hover:bg-emerald-400 shadow-white/10"
                                         : "bg-slate-800 text-slate-500 cursor-not-allowed opacity-50"
                                         }`}
                                 >
-                                    {hasEnoughCredits ? <Lock size={16} /> : <Zap size={16} className="text-emerald-500" />}
-                                    {hasEnoughCredits ? "Authorize Mission Deployment" : "Confirm Payment"}
-                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    <div className="flex items-center gap-3">
+                                        <ShieldCheck size={18} className={accepted ? "text-emerald-600" : "text-slate-500"} />
+                                        <span className="text-sm font-black uppercase tracking-[0.2em]">Access Granted</span>
+                                    </div>
+                                    <span className="text-[10px] font-bold opacity-60 uppercase tracking-widest">For Testing Purposes</span>
                                 </button>
-
-                                {!hasEnoughCredits && service.id !== 'enterprise' && (
-                                    <p className="text-[10px] font-bold text-emerald-500/60 uppercase tracking-widest text-center sm:text-left">
-                                        Allocation required to proceed.
-                                    </p>
-                                )}
                             </div>
 
                             <div className="mt-8 text-center">

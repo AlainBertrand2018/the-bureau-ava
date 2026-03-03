@@ -279,7 +279,7 @@ export default function FieldInterpreterClient() {
                             <span className="text-emerald-500 text-xs font-bold tracking-widest uppercase">Intelligent Grid v2.0</span>
                         </div>
                         <div className="px-3 py-1 bg-slate-900 border border-slate-800 rounded-full">
-                            <span className="text-slate-400 text-xs font-bold tracking-widest uppercase">Kantar Protocol</span>
+                            <span className="text-slate-400 text-xs font-bold tracking-widest uppercase">The Bureau Protocol</span>
                         </div>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">

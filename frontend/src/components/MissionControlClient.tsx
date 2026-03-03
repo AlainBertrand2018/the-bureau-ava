@@ -244,10 +244,13 @@ export default function MissionControlClient() {
         const creditsRequired = parseInt(service.credits.replace(/,/g, '')) || 0;
         const hasEnough = credits >= creditsRequired;
 
+        // BYPASS CREDIT CHECK FOR TESTING - ALLOW ROAMING
+        /* 
         if (!hasEnough || serviceId === 'enterprise') {
             window.open('/landing#pricing', '_blank');
             return;
         }
+        */
 
         if (serviceId === 'lab') {
             setIsTransitioning(true);
