@@ -313,6 +313,12 @@ class MarketSimulator:
         # Reassemble results by persona
         persona_rows = {}
         for persona, q, resp in all_responses:
+            # SHIELD: Defensive normalization just before property access
+            if isinstance(persona, list) and len(persona) > 0:
+                persona = persona[0]
+            if not isinstance(persona, dict):
+                persona = {"name": "Respondent", "age": "N/A", "location": "N/A"}
+                
             name = persona.get('name', 'Unknown')
             if name not in persona_rows:
                 persona_rows[name] = {
