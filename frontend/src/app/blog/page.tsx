@@ -9,6 +9,8 @@ import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import BlogGrid from "@/components/blog/BlogGrid";
 
+export const revalidate = 60; // Refresh post list every 60 seconds
+
 export const metadata: Metadata = {
     title: "THE BUREAU | AVA's Blog",
     description: 'Executive briefings on data integrity, synthetic population testing, and the future of autonomous market research.',
@@ -18,20 +20,23 @@ async function getPosts() {
     const token = process.env.SANITY_API_TOKEN;
 
     try {
+        // Use a non-CDN client for the index to ensure we see new posts immediately after revalidation
+        const freshClient = client.withConfig({ useCdn: false });
+
         // Get published posts first
         const query = `*[_type == "post"] | order(publishedAt desc) {
             ...,
             author->,
             categories[]->
         }`;
-        const publishedPosts = await client.fetch(query);
+        const publishedPosts = await freshClient.fetch(query);
 
         // If we have published posts, return them
         if (publishedPosts && publishedPosts.length > 0) {
             return publishedPosts;
         }
 
-        // Fallback: try drafts if no published posts found
+        // Fallback: try drafts if no published posts found (only if token is present)
         if (token) {
             const draftClient = client.withConfig({ token, perspective: 'drafts', useCdn: false });
             return await draftClient.fetch(query);

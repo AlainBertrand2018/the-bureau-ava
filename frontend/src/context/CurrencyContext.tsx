@@ -62,11 +62,14 @@ const generateConfig = (code: CurrencyCode, currentRates: Record<string, number>
     const rate = currentRates[code] || FALLBACK_RATES[code];
     const symbol = SYMBOLS[code];
 
-    const tS = formatPrice(BASE_EUR_CONFIG.sentinel * rate, code);
-    const tI = formatPrice(BASE_EUR_CONFIG.interpreter * rate, code);
-    const tL = formatPrice(BASE_EUR_CONFIG.lab * rate, code);
-    const tG = formatPrice(BASE_EUR_CONFIG.genesis * rate, code);
-    const tE = formatPrice(BASE_EUR_CONFIG.enterprise * rate, code);
+    // Targeted MUR prices provided by Bureau Strategy
+    const isMUR = code === 'MUR';
+
+    const tS = isMUR ? 0 : formatPrice(BASE_EUR_CONFIG.sentinel * rate, code);
+    const tI = isMUR ? 10270 : formatPrice(BASE_EUR_CONFIG.interpreter * rate, code);
+    const tL = isMUR ? 15410 : formatPrice(BASE_EUR_CONFIG.lab * rate, code);
+    const tG = isMUR ? 3420 : formatPrice(BASE_EUR_CONFIG.genesis * rate, code);
+    const tE = isMUR ? 34240 : formatPrice(BASE_EUR_CONFIG.enterprise * rate, code);
 
     const convRange = (range: number[]) => {
         const low = formatPrice(range[0] * rate, code);

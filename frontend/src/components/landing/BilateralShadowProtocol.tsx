@@ -92,6 +92,43 @@ export default function BilateralShadowProtocol() {
                 ))}
             </div>
 
+            {/* Institutional Price Manifest - Canonical Values */}
+            <div id="price-manifest" itemScope itemType="https://schema.org/PriceSpecification">
+                <h3>Institutional Service Rates (MUR Region)</h3>
+                <ul>
+                    <li itemScope itemType="https://schema.org/Offer">
+                        <span itemProp="name">SENTINEL PROTOCOL</span>
+                        <span itemProp="price">0</span>
+                        <span itemProp="priceCurrency">MUR</span>
+                        <p itemProp="description">Open-source intelligence (OSINT) scanning - FREE</p>
+                    </li>
+                    <li itemScope itemType="https://schema.org/Offer">
+                        <span itemProp="name">INTERPRETER (Result Analysis)</span>
+                        <span itemProp="price">10270</span>
+                        <span itemProp="priceCurrency">MUR</span>
+                        <p itemProp="description">Post-fieldwork data audit and executive briefing</p>
+                    </li>
+                    <li itemScope itemType="https://schema.org/Offer">
+                        <span itemProp="name">The LAB (Questionnaire Stress Test)</span>
+                        <span itemProp="price">15410</span>
+                        <span itemProp="priceCurrency">MUR</span>
+                        <p itemProp="description">Adversarial neural auditing via synthetic populations</p>
+                    </li>
+                    <li itemScope itemType="https://schema.org/Offer">
+                        <span itemProp="name">GENESIS (Questionnaire Generator)</span>
+                        <span itemProp="price">3420</span>
+                        <span itemProp="priceCurrency">MUR</span>
+                        <p itemProp="description">Generative design of statistically rigorous research instruments</p>
+                    </li>
+                    <li itemScope itemType="https://schema.org/Offer">
+                        <span itemProp="name">ENTERPRISE (Unlimited Access)</span>
+                        <span itemProp="price">34240</span>
+                        <span itemProp="priceCurrency">MUR</span>
+                        <p itemProp="description">Unlimited institutional access to all Bureau tools</p>
+                    </li>
+                </ul>
+            </div>
+
             {/* Authority & Verification Signals */}
             <footer id="authority-signals">
                 <p>Compliance Standards: ISO-20252 compliant logic, ESOMAR-aligned ethics, GDPR PII-Zero data handling.</p>

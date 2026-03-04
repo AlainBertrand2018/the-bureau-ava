@@ -34,13 +34,15 @@ import LaboratoryEntryProtocol from "@/components/shared/LaboratoryEntryProtocol
 import { COUNTRIES } from "@/constants/marketData";
 import PaywallModal from "@/components/shared/PaywallModal";
 
-const SERVICE_CONFIGS: Record<string, any> = {
+import { useCurrency } from "@/context/CurrencyContext";
+
+const getServiceConfigs = (currency: any) => ({
     genesis: {
         id: 'genesis',
         title: 'Genesis Protocol',
-        description: 'Generative design of statistically rigorous research instruments from scratch, calibrated to institutional requirements.',
+        description: 'Generative design of statistically rigorous research instruments (Questionnaire Generator), calibrated to institutional requirements.',
         credits: '100,000',
-        price: '€60.00 / Run',
+        price: `${currency.symbol}${currency.tiers.genesis.price.toLocaleString()} / Run`,
         features: ['Instrument Synthesis', 'Bias-Free Scripting', 'Audit Trail', 'Field Manual'],
         accent: 'text-emerald-500',
         icon: <Zap size={24} />
@@ -48,9 +50,9 @@ const SERVICE_CONFIGS: Record<string, any> = {
     lab: {
         id: 'lab',
         title: 'The Lab',
-        description: 'Rigorous neural auditing of existing instruments using targeted synthetic respondent populations.',
+        description: 'Rigorous neural auditing (Questionnaire Stress Test) of existing instruments using targeted synthetic respondent populations.',
         credits: '450,000',
-        price: '€270.00 / Simulation',
+        price: `${currency.symbol}${currency.tiers.lab.price.toLocaleString()} / Simulation`,
         features: ['Adversarial Simulation', 'Persona Generation', 'Cognitive Load Audit', 'Bias Detection'],
         accent: 'text-blue-500',
         icon: <Rocket size={24} />
@@ -58,9 +60,9 @@ const SERVICE_CONFIGS: Record<string, any> = {
     interpreter: {
         id: 'interpreter',
         title: 'Interpreter',
-        description: 'Deep narrative reporting and psychographic insight synthesis from raw field data.',
+        description: 'Deep result analysis and psychographic insight synthesis from raw field data.',
         credits: '300,000',
-        price: '€180.00 / Report',
+        price: `${currency.symbol}${currency.tiers.interpreter.price.toLocaleString()} / Report`,
         features: ['Results Processing', 'Narrative Synthesis', 'Psychological Deep-Dive', 'Executive Briefing'],
         accent: 'text-purple-500',
         icon: <Activity size={24} />
@@ -68,14 +70,14 @@ const SERVICE_CONFIGS: Record<string, any> = {
     enterprise: {
         id: 'enterprise',
         title: 'Enterprise Subscription',
-        description: 'High-volume tactical access for institutional research teams. Continuous validation and priority support.',
+        description: 'Unlimited Access to All Tools for institutional research teams. Continuous validation and priority support.',
         credits: '1,000,000',
-        price: '€600.00 / Month',
+        price: `${currency.symbol}${currency.tiers.enterprise.price.toLocaleString()} / Month`,
         features: ['Unlimited Priority Access', 'Priority Token Allowance', 'White-Glove Support', 'Institutional Grid Access'],
         accent: 'text-amber-500',
         icon: <ShieldCheck size={24} />
     }
-};
+});
 
 const DEFAULT_TARGETING: AudienceTargeting = {
     country: "",
@@ -96,6 +98,9 @@ export default function MissionControlClient() {
     const searchParams = useSearchParams();
     const { setMission, setTier } = useMission();
     const { credits, consumeCredits } = useClearance();
+
+    const { currency } = useCurrency();
+    const SERVICE_CONFIGS = getServiceConfigs(currency);
 
     useEffect(() => {
         const tierParam = searchParams.get('tier');

@@ -262,18 +262,23 @@ Question: "{question}"
 
         return audit_data, usage
 
-    async def _perfect_single_question(self, question: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None) -> str:
+    async def _perfect_single_question(self, question: str, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None, log_callback: Optional[callable] = None) -> str:
         """
         Runs a single question through the genuine audit.
         If it fails (<95), uses the rewrite. Re-audits up to 2 passes.
         Returns the best version.
         """
+        if log_callback:
+            await log_callback("SENTINEL", "AUDITING", "Initializing Bureau Audit Pass 1/3...")
+
         audit, usage = await self._genuine_audit(question, mission=mission)
         audit = _ensure_audit_dict(audit, original_question=question)
             
         score = int(audit.get("quality_score", 0))
 
         if score >= 95:
+            if log_callback:
+                await log_callback("ADJUDICATOR", "CERTIFIED", f"Item passed with score: {score}/100.")
             return question
 
         current = audit.get("rewrite", question) or question
@@ -287,7 +292,10 @@ Question: "{question}"
         else:
             target = extract_country(question) or "Target Country"
 
-        for _ in range(2):
+        for p in range(2):
+            if log_callback:
+                await log_callback("ADJUDICATOR", "REFINEMENT", f"Applying recursive correction (Pass {p+2}/3). Current score: {best_score}/100.")
+
             re_audit, re_usage = await self._genuine_audit(current, mission=mission)
             re_audit = _ensure_audit_dict(re_audit, original_question=current)
             
@@ -298,6 +306,8 @@ Question: "{question}"
                 best = current
 
             if re_score >= 95:
+                if log_callback:
+                    await log_callback("ADJUDICATOR", "VERIFIED", f"Quality threshold achieved: {re_score}/100.")
                 return current
 
             rewrite_prompt = f"""You are a senior survey methodologist for {target}. Fix this question.
@@ -334,6 +344,9 @@ Output ONLY the perfected question. No quotes, no explanation."""
                 best += " (e.g., Under $10, $10-$50, Over $50)"
             else:
                 best += " (1=Not at all, 5=Extremely)"
+
+        if log_callback:
+            await log_callback("ARCHITECT", "FINALIZING", f"Audit complete. Final quality verdict: {best_score}/100.")
 
         return best
 
@@ -509,50 +522,50 @@ Return a JSON array of strings only."""
     # ──────────────────────────────────────────────────────────
     # MAIN ENTRY: Streaming Genesis Pipeline with Heartbeat
     # ──────────────────────────────────────────────────────────
-    async def create_full_package_stream(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict[str, Any]] = None):
+    async def _pump_telemetry(self, task, hb):
+        """Yields heartbeats while waiting for a task."""
+        while not task.done():
+            for beat in hb.drain():
+                yield beat
+            await asyncio.sleep(0.5)
+        # Final drain
+        for beat in hb.drain():
+            yield beat
+
+    async def create_full_package_stream(self, context: str, count: int = 20, mission: Optional[Any] = None, targeting: Optional[Dict] = None):
         """
-        Streaming version of the Genesis Pipeline for the Glass Box UX.
+        Streaming version of the full Genesis pipeline with internal auditing.
         Yields NDJSON logs of agent activity.
         
         HEARTBEAT SYSTEM (v2 — anti-QUIC-timeout):
         ─────────────────────────────────────────────
         A background asyncio task pushes {"type": "heartbeat"} chunks every 
-        5 seconds into an asyncio.Queue. Between every major await, the 
+        2 seconds into an asyncio.Queue. Between every major await, the 
         generator drains the queue and yields all accumulated heartbeats.
-        
-        This prevents:
-        ✗ Render proxy idle timeout (30s free / 100s paid)
-        ✗ Cloudflare HTTP/3 QUIC protocol errors
-        ✗ Browser fetch() ERR_QUIC_PROTOCOL_ERROR
-        ✗ net::ERR_EMPTY_RESPONSE on long Gemini waits
-        
-        Frontend should filter: if (chunk.type === "heartbeat") return;
         """
-        
-        hb = StreamHeartbeat(interval=5.0)
+        hb = StreamHeartbeat(interval=2.0)
         
         def log(agent: str, action: str, details: str):
             return json.dumps({
                 "type": "log",
+                "timestamp": time.strftime("%H:%M:%S"),
                 "agent": agent,
                 "action": action,
-                "details": details,
-                "timestamp": time.strftime("%H:%M:%S")
+                "details": details
             }) + "\n"
 
         try:
             hb.start()
             
-            # ════════════════════════════════════════════
-            # PHASE 1: GENERATE RAW INSTRUMENT
-            # ════════════════════════════════════════════
+            # PHASE 1: GENERATION
             yield log("ARCHITECT", "INITIALIZING", "Synthesizing research objectives into structural anchors.")
             for beat in hb.drain():
                 yield beat
-                
-            initial = await self.generate_instrument(context, count, mission=mission, targeting=targeting)
-            for beat in hb.drain():
+            
+            initial_task = asyncio.create_task(self.generate_instrument(context, count, mission=mission, targeting=targeting))
+            async for beat in self._pump_telemetry(initial_task, hb):
                 yield beat
+            initial = await initial_task # Assuming generate_instrument returns a dict, not a tuple (dict, usage)
             
             if not isinstance(initial, dict):
                 initial = _force_dict(initial, default={})
@@ -560,13 +573,11 @@ Return a JSON array of strings only."""
                 initial = {"questionnaire": [], "strategic_rationale": "Generation failed."}
                 
             questions = initial.get("questionnaire", [])
-            yield log("ARCHITECT", "DRAFT_COMPLETE", f"Core instrument drafted with {len(questions)} high-fidelity items.")
+            yield log("ADJUDICATOR", "DRAFTING", f"Base instrument synthesized. {len(questions)} items ready for Bureau perfection.")
             for beat in hb.drain():
                 yield beat
 
-            # ════════════════════════════════════════════
-            # PHASE 2: PERFECT VIA GENUINE AUDIT (per-item)
-            # ════════════════════════════════════════════
+            # PHASE 2: PERFECT VIA GENUINE AUDIT
             yield log("SENTINEL", "SCANNING", "Scanning draft for cognitive bias and linguistic ambiguity.")
             for beat in hb.drain():
                 yield beat
@@ -574,18 +585,17 @@ Return a JSON array of strings only."""
             perfected = []
             q_texts = [q.get("text", q) if isinstance(q, dict) else str(q) for q in questions]
             
+            async def progress_callback(agent: str, action: str, details: str):
+                log_chunk = log(agent, action, details)
+                await hb._queue.put(log_chunk)
+
             for i, q_text in enumerate(q_texts):
                 yield log("ARCHITECT", "AUDITING", f"Item {(i+1):02}/{count:02} :: Evaluating psychometric integrity.")
                 
-                # ── DRAIN BEFORE: each audit can take 10-30s with retries ──
-                for beat in hb.drain():
+                audit_task = asyncio.create_task(self._perfect_single_question(q_text, mission=mission, targeting=targeting, log_callback=progress_callback))
+                async for beat in self._pump_telemetry(audit_task, hb):
                     yield beat
-                
-                res = await self._perfect_single_question(q_text, mission=mission, targeting=targeting)
-                
-                # ── DRAIN AFTER: flush any beats that accumulated during the audit ──
-                for beat in hb.drain():
-                    yield beat
+                res = await audit_task
                 
                 progress_val = int(((i + 1) / count) * 100)
                 yield log("SYSTEM", "SIGNAL", f"Vetted {i+1}/{count} items. Progress: {progress_val}%")
@@ -594,29 +604,29 @@ Return a JSON array of strings only."""
                 
                 if res != q_text:
                     yield log("ADJUDICATOR", "REFINEMENT", f"Protocol violation detected in Item {i+1}. Applying scientific rewrite.")
-                
+
             yield log("ADJUDICATOR", "VERIFICATION", "All protocol violations resolved. Instrument integrity verified.")
             for beat in hb.drain():
                 yield beat
 
-            # ════════════════════════════════════════════
             # PHASE 3: VALIDATE VIA SIMULATION
-            # ════════════════════════════════════════════
             yield log("PROFILER", "RECONNAISSANCE", "Extracting cultural personas for stress-test simulation.")
             for beat in hb.drain():
                 yield beat
                 
-            personas = await self.simulator.generate_personas_validation(5, context, mission=mission, targeting=targeting)
-            for beat in hb.drain():
+            persona_task = asyncio.create_task(self.simulator.generate_personas_validation(5, context, mission=mission, targeting=targeting))
+            async for beat in self._pump_telemetry(persona_task, hb):
                 yield beat
+            personas, _p_usage = await persona_task
             
             yield log("SENTINEL", "DEPLOYING", "Deploying n=5 synthetic agent panel for field simulation.")
             for beat in hb.drain():
                 yield beat
                 
-            df_results, provenance = await self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission)
-            for beat in hb.drain():
+            sim_task = asyncio.create_task(self.simulator.run_simulation(personas, perfected, mode="validation", mission=mission))
+            async for beat in self._pump_telemetry(sim_task, hb):
                 yield beat
+            df_results, provenance = await sim_task
             
             df_results = df_results.fillna("")
             results_list = df_results.to_dict(orient="records")
@@ -625,53 +635,65 @@ Return a JSON array of strings only."""
             for beat in hb.drain():
                 yield beat
                 
-            simulation_report = await self.simulator.generate_validation_report(context, perfected, results_list, mission=mission, targeting=targeting)
-            for beat in hb.drain():
+            report_task = asyncio.create_task(self.simulator.generate_validation_report(context, perfected, results_list, mission=mission, targeting=targeting))
+            async for beat in self._pump_telemetry(report_task, hb):
                 yield beat
+            simulation_report, _r_usage = await report_task
             
             if not isinstance(simulation_report, dict):
                 simulation_report = _force_dict(simulation_report, default={})
             if not isinstance(simulation_report, dict):
                 simulation_report = {"executive_summary": "Validation complete."}
 
-            # ════════════════════════════════════════════
-            # PHASE 4: PACKAGING & CERTIFICATION
-            # ════════════════════════════════════════════
+            # ENRICHMENT
+            simulation_justifications = simulation_report.get("question_justifications", [])
+            raw_draft_items = initial.get("questionnaire", [])
+            
+            final_justifications = []
+            for i, perfected_text in enumerate(perfected):
+                draft_item = raw_draft_items[i] if i < len(raw_draft_items) else {}
+                if not isinstance(draft_item, dict): draft_item = {}
+                sim_item = simulation_justifications[i] if i < len(simulation_justifications) else {}
+                if not isinstance(sim_item, dict): sim_item = {}
+                
+                final_justifications.append({
+                    "question": perfected_text,
+                    "relevance_to_objective": sim_item.get("relevance_to_objective") or draft_item.get("relevance", "Core Strategic Measurement"),
+                    "psychometric_trustworthiness": sim_item.get("psychometric_trustworthiness") or draft_item.get("scientific_grounding", "Validated Bureau Quality"),
+                    "design_rationale": sim_item.get("design_rationale") or "High-fidelity cognitive flow",
+                    "validation_confirmed": sim_item.get("validation_confirmed") or "Verified via n=5 synthetic simulation"
+                })
+            
+            simulation_report["question_justifications"] = final_justifications
+
+            # PHASE 4: PACKAGING
             yield log("ARCHITECT", "FINALIZING", "Synthesizing field manual and scientific disclosures.")
             for beat in hb.drain():
                 yield beat
             
-            justifications = []
-            raw_questions = initial.get("questionnaire", [])
-            for item in raw_questions:
-                if isinstance(item, dict):
-                    justifications.append({
-                        "question": item.get("text", "N/A"),
-                        "relevance_to_objective": item.get("relevance", "Core Contextual Alignment"),
-                        "psychometric_trustworthiness": item.get("scientific_grounding", "Validated Bureau Quality"),
-                        "design_rationale": "High-fidelity phrasing",
-                        "validation_confirmed": "Verified via sim"
-                    })
-            
-            simulation_report["question_justifications"] = justifications
-
             package_prompt = f"""
-            Given these survey questions: {json.dumps(perfected)}
-            Insights: {json.dumps(simulation_report.get('executive_summary', ''))}
-            Generate JSON with: deployment_best_practices (list), potential_outcomes (str), scientific_disclosure (str).
+            [BUREAU PACKAGING PROTOCOL]
+            You are the Lead Quality Auditor. Finalize the certification docs for this instrument.
+            
+            INSTRUMENT: {json.dumps(perfected)}
+            SIMULATION SUMMARY: {simulation_report.get('executive_summary', '')}
+            DEMOGRAPHIC INSIGHTS: {json.dumps(simulation_report.get('demographic_insights', []))}
+            
+            Generate a JSON object with:
+            1. "deployment_best_practices": (list of 4-5 strings) specific to this research.
+            2. "potential_outcomes": (string) 2-3 sentences predicting what the client will find.
+            3. "scientific_disclosure": (string) exactly 100 words explaining the Bureau's scientific methodology.
             """
             
-            for beat in hb.drain():
-                yield beat
-                
-            resp = await generate_with_retry(
+            package_task = asyncio.create_task(generate_with_retry(
                 client=self.client,
                 model=self.model,
                 contents=package_prompt,
                 config=types.GenerateContentConfig(max_output_tokens=1000, response_mime_type='application/json')
-            )
-            for beat in hb.drain():
+            ))
+            async for beat in self._pump_telemetry(package_task, hb):
                 yield beat
+            resp = await package_task
             
             package_details = safe_parse_json(resp.text)
             
@@ -754,18 +776,35 @@ Return a JSON array of strings only."""
             print("[Genesis] WARNING: Simulation report is invalid, using fallback.")
             simulation_report = {"executive_summary": "Validation complete."}
         
+        # ── ENRICHMENT: Finalize Justifications ──
+        simulation_justifications = simulation_report.get("question_justifications", [])
+        raw_draft_items = initial.get("questionnaire", [])
+        final_justifications = []
+        for i, perfected_text in enumerate(perfected):
+            draft_item = raw_draft_items[i] if i < len(raw_draft_items) else {}
+            if not isinstance(draft_item, dict): draft_item = {}
+            sim_item = simulation_justifications[i] if i < len(simulation_justifications) else {}
+            if not isinstance(sim_item, dict): sim_item = {}
+            final_justifications.append({
+                "question": perfected_text,
+                "relevance_to_objective": sim_item.get("relevance_to_objective") or draft_item.get("relevance", "Core Objective Measurement"),
+                "psychometric_trustworthiness": sim_item.get("psychometric_trustworthiness") or draft_item.get("scientific_grounding", "Validated Bureau Quality"),
+                "design_rationale": sim_item.get("design_rationale") or "High-fidelity cognitive flow",
+                "validation_confirmed": sim_item.get("validation_confirmed") or "Verified via n=5 synthetic simulation"
+            })
+        simulation_report["question_justifications"] = final_justifications
+
         print(f"[Genesis] Phase 4: Finalizing Bureau Certification & Field Manual...")
 
         package_prompt = f"""
-        Given these survey questions (perfected via Bureau genuine audit):
-        {json.dumps(perfected)}
-
-        Simulation insights: {json.dumps(simulation_report.get('executive_summary', ''))}
-
-        Generate a JSON object with EXACTLY these keys:
+        [BUREAU PACKAGING PROTOCOL]
+        INSTRUMENT: {json.dumps(perfected)}
+        SIMULATION SUMMARY: {simulation_report.get('executive_summary', '')}
+        
+        Generate a JSON object with:
         - "deployment_best_practices": [list of 3 specific strings]
         - "potential_outcomes": "string"
-        - "scientific_disclosure": "string: condensed version of: {SCIENTIFIC_FOUNDATION}"
+        - "scientific_disclosure": "string"
         """
 
         try:

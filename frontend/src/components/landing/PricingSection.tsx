@@ -54,7 +54,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
 
                     {/* Interpreter */}
                     <PricingCard
-                        title="Interpreter"
+                        title="Interpreter (Result Analysis)"
                         price={`${currency.code === 'MUR' ? 'Rs ' : currency.symbol}${currency.tiers.interpreter.price.toLocaleString()}`}
                         credits="300,000 CR"
                         badge="Module 02: Analysis"
@@ -67,7 +67,7 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
 
                     {/* Lab - Featured */}
                     <PricingCard
-                        title="The Lab"
+                        title="The Lab (Questionnaire Stress Test)"
                         price={`${currency.code === 'MUR' ? 'Rs ' : currency.symbol}${currency.tiers.lab.price.toLocaleString()}`}
                         credits="450,000 CR"
                         badge="Module 03: Stress-Test"
@@ -94,9 +94,9 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                         <div className="p-10 bg-[#CC5833] text-white flex flex-col justify-between h-full rounded-[2.5rem] shadow-2xl shadow-[#CC5833]/40 relative overflow-hidden border-none transition-transform duration-500 group-hover:scale-[1.02]">
                             <div>
                                 <span className="font-mono text-[10px] font-black text-white/70 uppercase tracking-[0.2em] mb-4 block">Institutional Standard</span>
-                                <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-white">Genesis</h3>
+                                <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-white">Genesis (Questionnaire Generator)</h3>
                                 <p className="text-white/90 text-sm font-sans mb-8 leading-relaxed max-w-sm font-medium">
-                                    Generative design of statistically rigorous research instruments from scratch, calibrated to institutional requirements.
+                                    Generative design of statistically rigorous research instruments (Questionnaire Generator) calibrated to institutional requirements.
                                 </p>
                             </div>
                             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
@@ -119,9 +119,9 @@ export default function PricingSection({ currency, onContactClick }: PricingSect
                     <div className="card-artifact p-10 bg-[#F2F0E9] flex flex-col justify-between h-full border-[#2E4036]/10">
                         <div>
                             <span className="font-mono text-[11px] font-bold text-[#2E4036]/40 uppercase tracking-[0.2em] mb-4 block">Managed Bureau Allowance</span>
-                            <h3 className="text-4xl font-black text-[#2E4036] uppercase tracking-tighter mb-4">Enterprise</h3>
+                            <h3 className="text-4xl font-black text-[#2E4036] uppercase tracking-tighter mb-4">Enterprise (Unlimited Access to All Tools)</h3>
                             <p className="text-[#2E4036]/60 text-sm font-sans mb-8 leading-relaxed max-w-sm">
-                                High-volume tactical access for institutional research teams. Continuous validation and priority support.
+                                Unlimited Access to All Tools for institutional research teams. Continuous validation and priority support.
                             </p>
                         </div>
                         <div className="flex items-end justify-between">

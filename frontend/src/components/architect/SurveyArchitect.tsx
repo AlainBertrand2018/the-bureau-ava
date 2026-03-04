@@ -63,39 +63,11 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
     const [loadingLabel, setLoadingLabel] = useState("I'm architecting your instrument..."); // New: Real label
     const [error, setError] = useState<string | null>(null);
 
-    // High-speed telemetry simulation effect
+    // REAL TELEMETRY ONLY: Disable the fake 'KERN_LOG' loop that caused user frustration.
     useEffect(() => {
         if (view !== "processing") return;
 
-        const TECH_STEPS = [
-            "Analyzing psychometric variance...",
-            "Checking Hofstede dimensions...",
-            "Linguistic register validation...",
-            "Cognitive burden assessment...",
-            "Dialectal nuance detection...",
-            "Semantic anchoring check...",
-            "Response bias simulation...",
-            "Temporal frame verified.",
-            "Double-barrel detection active...",
-            "Cultural axiom alignment...",
-            "Bureau Vault cross-reference...",
-            "Satisficing probability scan...",
-            "Dillman methodology sync...",
-            "Linguistic tone calibration..."
-        ];
-
-        const interval = setInterval(() => {
-            const randomStep = TECH_STEPS[Math.floor(Math.random() * TECH_STEPS.length)];
-            const subLog = {
-                timestamp: new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                agent: "SYSTEM",
-                action: "KERN_LOG",
-                details: `[SUB-OP] ${randomStep}`
-            };
-            setDisplayLogs(prev => [...prev.slice(-80), subLog]);
-        }, 1200);
-
-        // Micro-creep Effect: Slowed down for the 24-minute institutional timeline
+        // Keep the micro-creep for the radial progress if needed, but remove the fake SYSTEM logs.
         const creepInterval = setInterval(() => {
             setSmoothProgress(prev => {
                 if (prev >= 99) return 99;
@@ -106,40 +78,25 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         }, 800);
 
         return () => {
-            clearInterval(interval);
             clearInterval(creepInterval);
         };
     }, [view]);
 
-    // Sync real logs with display logs
-    useEffect(() => {
-        if (logs.length > 0) {
-            setDisplayLogs(prev => [...prev.slice(-80), logs[logs.length - 1]]);
-        }
-    }, [logs]);
-
-    // Update Truth-Sync State (Progress, Phases, and Vetted Count)
+    // React to real logs: update progress, vetted counts, and phase labels
     useEffect(() => {
         if (logs.length === 0) return;
-
-        // 1. Scan for the highest vetted count in the ENTIRE log history
-        let maxVetted = 0;
-        logs.forEach(log => {
-            const match = log.details.match(/Vetted (\d+)\/(\d+)/);
-            if (match) {
-                const current = parseInt(match[1]);
-                if (current > maxVetted) maxVetted = current;
-            }
-        });
-        setVettedCount(maxVetted);
-
-        // 2. Map Agent Actions to Phases (Truth-Sync)
         const lastLog = logs[logs.length - 1];
 
-        // Match backend agent codes to PHASES
+        // 1. Sync vetted count for UI counter
+        const signalMatch = lastLog.details.match(/Vetted (\d+)\/\d+/);
+        if (signalMatch && lastLog.agent === "SYSTEM") {
+            setVettedCount(parseInt(signalMatch[1]));
+        }
+
+        // 2. Update phase labels
         if (lastLog.agent === "ARCHITECT" && lastLog.action === "INITIALIZING") {
             setLoadingPhase(0);
-            setLoadingLabel("Synthesizing research objectives into structural anchors...");
+            setLoadingLabel("Synthesizing structural anchors...");
         } else if (lastLog.agent === "SENTINEL" && lastLog.action === "SCANNING") {
             setLoadingPhase(1);
             setLoadingLabel("Applying Bureau Gold Standard Audit...");
@@ -157,6 +114,11 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         }
 
         // 3. Update core radial progress if vetted
+        const maxVetted = logs.reduce((acc, l) => {
+            const m = l.details.match(/Vetted (\d+)/);
+            return m ? Math.max(acc, parseInt(m[1])) : acc;
+        }, 0);
+
         if (maxVetted > 0) {
             const realPercent = (maxVetted / 20) * 100;
             // Never set progress below what we've already achieved
@@ -263,10 +225,16 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         const chunk = JSON.parse(line);
                         if (chunk.type === "log") {
                             setLogs(prev => [...prev.slice(-100), chunk]);
+                            // ── DIRECT TELEMETRY: Update display logs immediately to avoid batching loss ──
+                            setDisplayLogs(prev => [...prev.slice(-100), {
+                                ...chunk,
+                                timestamp: chunk.timestamp || new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                            }]);
                         } else if (chunk.type === "package") {
                             setResult(chunk.data);
                             localStorage.removeItem("active_genesis_id");
                             localStorage.removeItem("active_genesis_objective");
+                            setSmoothProgress(100);
                             setTimeout(() => setView("results"), 800);
                         } else if (chunk.type === "error") {
                             // Harden: Handle case where detail might be an object
@@ -290,7 +258,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
 
     return (
-        <div className={`min-h-[600px] w-full max-w-5xl mx-auto rounded-[2.5rem] border shadow-2xl overflow-hidden relative transition-colors duration-500 ${view === 'results' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
+        <div className={`min-h-[600px] w-full max-w-5xl mx-auto rounded-[2.5rem] border shadow-2xl overflow-y-auto custom-scrollbar relative transition-colors duration-500 ${view === 'results' ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'}`}>
             {/* Ambient Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500/10 rounded-full blur-[120px]" />
@@ -701,7 +669,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                         key="results"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="relative z-10 p-8 md:p-12 flex flex-col h-full max-h-[800px]"
+                        className="relative z-10 p-8 md:p-12 flex flex-col min-h-full"
                     >
                         <div className="flex items-center justify-between mb-8 pb-8 border-b border-white/5">
                             <div className="flex items-center gap-4">
@@ -763,7 +731,7 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 overflow-hidden">
                             {/* Left: Questionnaire */}
-                            <div className="lg:col-span-7 space-y-4 overflow-y-auto pr-4 custom-scrollbar max-h-[500px]">
+                            <div className="lg:col-span-7 space-y-4">
                                 {(result?.instrument || []).map((q: string, i: number) => {
                                     const justification = result?.simulation_report?.question_justifications?.[i];
                                     return (
@@ -921,10 +889,16 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.1);
+                    background: rgba(0, 0, 0, 0.1);
                     border-radius: 10px;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(0, 0, 0, 0.2);
+                }
+                .bg-slate-900.custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+                .bg-slate-900.custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: rgba(255, 255, 255, 0.2);
                 }
             `}</style>

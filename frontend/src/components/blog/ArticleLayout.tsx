@@ -23,12 +23,14 @@ import Footer from "@/components/Footer";
 import FAQSection from "@/components/landing/FAQSection";
 import { urlFor } from "@/sanity/lib/image";
 import { PortableText } from "@portabletext/react";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface ArticleLayoutProps {
     post: any;
 }
 
 const ArticleLayout = ({ post }: ArticleLayoutProps) => {
+    const { currency } = useCurrency();
     const [activeSection, setActiveSection] = useState<string>("");
     const [toc, setToc] = useState<{ id: string; text: string; level: number }[]>([]);
 
@@ -389,13 +391,13 @@ const ArticleLayout = ({ post }: ArticleLayoutProps) => {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 max-w-4xl mx-auto">
                         {[
-                            { label: "Trial Audit", price: "Free" },
-                            { label: "Standard", price: "€280" },
-                            { label: "Deep Sim", price: "€420" },
-                            { label: "Genesis", price: "€350" }
+                            { label: "SENTINEL", price: "Free" },
+                            { label: "INTERPRETER", price: `${currency.symbol}${currency.tiers.interpreter.price.toLocaleString()}` },
+                            { label: "The LAB", price: `${currency.symbol}${currency.tiers.lab.price.toLocaleString()}` },
+                            { label: "GENESIS", price: `${currency.symbol}${currency.tiers.genesis.price.toLocaleString()}` }
                         ].map(plan => (
                             <div key={plan.label} className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm">
-                                <div className="text-xs font-bold text-[#F2F0E9]/40 tracking-widest mb-2">{plan.label}</div>
+                                <div className="text-xs font-bold text-[#F2F0E9]/40 tracking-widest mb-2 uppercase">{plan.label}</div>
                                 <div className="text-2xl font-bold text-[#F2F0E9]">{plan.price}</div>
                             </div>
                         ))}

@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: "The Bureau AVA",
     images: [
       {
-        url: "/og-image.webp",
+        url: "/AVA_OG_1200.webp",
         width: 1200,
         height: 630,
         alt: "AVA — AI Survey Quality Auditor by The Bureau",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     title: "Executive-Grade Survey Optimization & Synthetic Panel Testing",
     description:
       "AVA conducts rigorous adversarial audits using synthetic populations to secure survey data integrity.",
-    images: ["/og-image.webp"],
+    images: ["/AVA_OG_1200.webp"],
   },
 };
 
