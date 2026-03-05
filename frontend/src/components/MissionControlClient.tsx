@@ -238,14 +238,14 @@ export default function MissionControlClient() {
     const [selectedService, setSelectedService] = useState<any>(null);
 
     const openPaywall = (serviceId: string) => {
-        setSelectedService(SERVICE_CONFIGS[serviceId]);
+        setSelectedService(SERVICE_CONFIGS[serviceId as keyof typeof SERVICE_CONFIGS]);
         setIsPaywallOpen(true);
     };
 
     const handleConfirmAccess = (serviceId: string) => {
         setIsPaywallOpen(false);
 
-        const service = SERVICE_CONFIGS[serviceId];
+        const service = SERVICE_CONFIGS[serviceId as keyof typeof SERVICE_CONFIGS];
         const creditsRequired = parseInt(service.credits.replace(/,/g, '')) || 0;
         const hasEnough = credits >= creditsRequired;
 
