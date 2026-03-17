@@ -10,6 +10,7 @@ interface ClearanceContextType {
     setClearanceLevel: (level: number) => void;
     credits: number;
     spendCredits: (amount: number) => Promise<boolean>;
+    consumeCredits: (amount: number) => void;
     isSuperAdmin: boolean;
     isAuthenticated: boolean;
     isLoaded: boolean;
@@ -102,6 +103,20 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
 
     const isSuperAdmin = (clearanceLevel >= 10 || userEmail === "bertrand.chagal@gmail.com") && isAuthenticated;
 
+    const consumeCredits = (amount: number) => {
+        if (isSuperAdmin) return;
+        setCredits(prev => Math.max(0, prev - amount));
+    };
+
+    const spendCredits = async (amount: number): Promise<boolean> => {
+        if (isSuperAdmin) return true;
+        if (credits >= amount) {
+            consumeCredits(amount);
+            return true;
+        }
+        return false;
+    };
+
     return (
         <ClearanceContext.Provider
             value={{
@@ -110,9 +125,8 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 clearanceLevel,
                 setClearanceLevel,
                 credits: isSuperAdmin ? 9999999 : credits,
-                spendCredits: async (amount: number) => {
-                    return credits >= amount || isSuperAdmin;
-                },
+                spendCredits,
+                consumeCredits,
                 isSuperAdmin,
                 isAuthenticated,
                 isLoaded,
