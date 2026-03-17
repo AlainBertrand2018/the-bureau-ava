@@ -25,6 +25,7 @@ import Hero from "@/components/landing/Hero";
 import Navbar from "@/components/landing/Navbar";
 import EntityDefinition from "@/components/landing/EntityDefinition";
 import BilateralShadowProtocol from "@/components/landing/BilateralShadowProtocol";
+import FeatureShowcase from "@/components/landing/FeatureShowcase";
 
 // Below-the-fold: lazy-loaded for faster initial paint
 const WhoItsFor = dynamic(() => import("@/components/landing/WhoItsFor"));
@@ -191,6 +192,22 @@ export default function RootPageClient() {
           onGenesisClick={() => document.getElementById('genesis-card')?.scrollIntoView({ behavior: 'smooth' })}
           onTryFreeClick={() => document.getElementById('sentinel-card')?.scrollIntoView({ behavior: 'smooth' })}
         />
+
+        {/* 2. Glassbox Feature Showcase >> Visual engagement with core tools */}
+        <section id="featureshowcase" className="section-full min-h-screen bg-[#F2F0E9] flex items-center">
+          <div className="max-w-7xl mx-auto px-6 w-full py-12">
+            <div className="text-center mb-16 sm:mb-24">
+              <div className="badge-minimal mb-8 inline-flex items-center gap-2 border-[#2E4036]/20 text-[#2E4036]/60">
+                <Cpu size={12} className="text-[#CC5833]" />
+                <span>Executive Intelligence Engine</span>
+              </div>
+              <h2 className="text-section-title text-[#2E4036] mb-8 uppercase tracking-tighter">
+                THE TOOLS YOU WILL USE <br /><span className="text-[#CC5833]">Logic Unleashed.</span>
+              </h2>
+            </div>
+            <FeatureShowcase items={GLASSBOX_ITEMS} />
+          </div>
+        </section>
 
         {/* 1.5 Entity Definition >> Machine readability anchor */}
         <EntityDefinition />
@@ -502,3 +519,53 @@ export default function RootPageClient() {
     </main>
   );
 }
+
+const GLASSBOX_ITEMS = [
+    {
+        id: "SNL",
+        tabLabel: "Sentinel",
+        title: "STAGE YOUR MARKET RESEARCH INSTRUMENT",
+        description: "You need to know the basic parameters of your target market, but conventionnal reasearch may take days or weeks. Use Sentinel to dimension your target market, refine your instrument parameters from demographics to language. Get a clear picture of how to gear your next market research instrument.",
+        toolPath: "/os?app=sentinel",
+        videoUrl: "/videos/sentinel_60_opt.mp4",
+        features: []
+    },
+    {
+        id: "LAB",
+        tabLabel: "The Lab",
+        title: "STRESS-TEST YOUR QUESTIONNAIRE",
+        description: "You already have a questionnaire, but need to know how it will perform before getting down to field works. Enter your question items and Pressure-test your market research instrument against a synthetic population of up to 200 AI personas to understand how your survey data's integrity actually sits.",
+        toolPath: "/os?app=lab",
+        videoUrl: "/videos/lab 60_opt.mp4",
+        features: [
+            "High-fidelity demographic response mapping",
+            "Structural flaw detection in real-time simulations",
+            "Predictive veracity scoring for every question",
+        ]
+    },
+    {
+        id: "GEN",
+        tabLabel: "Genesis",
+        title: "DESIGN YOUR QUESTIONNAIRE FROM SCRATCH",
+        description: "Don't know where to start but have clear research objectives! Use GENESIS' AI-driven tool to professionally structure, build and stress-test your survey instruments in less than 30 minutes, instead of weeks. Genesis comes with its recommendations of sample size, language preference and field deployment.",
+        toolPath: "/os?app=genesis",
+        features: [
+            "AI-driven questionnaire design frameworks",
+            "Linguistic optimization for maximum response integrity",
+            "Automatic translation with cultural nuance verification",
+        ]
+    },
+    {
+        id: "INT",
+        tabLabel: "Interpreter",
+        title: "ANALYZE YOUR RESULTS",
+        description: "You just received field work results of your 20-item questionnaire from 1000 respondents. Where it would take you days/weeks of meticulous cross-analysis, The Interpreter generates it for you in less than 10 minutes. Just upload your CSV files and Voila! Results are brought to you as a board-room ready report along with recommendations that serve as a basis for further refinement.",
+        toolPath: "/os?app=interpreter",
+        videoUrl: "/videos/interpreter3x_opt.mp4",
+        features: [
+            "Automatic executive summary generation",
+            "Non-obvious trend identification and signal extraction",
+            "Deterministic outcome mapping for stakeholder buy-in",
+        ]
+    }
+];

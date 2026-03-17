@@ -35,6 +35,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
             href: "/",
             subItems: [
                 { title: "To The Bureau", href: "/#hero" },
+                { title: "The Tools", href: "/#featureshowcase" },
                 { title: "What are We", href: "/#whatisthebureau" },
                 { title: "Who is it For", href: "/#who-its-for" },
                 { title: "What We Solve", href: "/#painpoints" },

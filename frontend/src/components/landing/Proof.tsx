@@ -73,7 +73,7 @@ export default function Proof({ pubStats }: ProofProps) {
                         <span>Join 500+ Managed Audits</span>
                         <ArrowRight size={18} className="ml-2" />
                     </button>
-
+                    
                     <div className="w-full pt-12 border-t border-[#2E4036]/10">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-8 opacity-40">
                             <div className="flex items-center gap-3">
