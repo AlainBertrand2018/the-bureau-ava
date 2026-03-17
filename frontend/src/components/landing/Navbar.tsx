@@ -32,16 +32,16 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
     const menuItems = [
         {
             title: "Welcome",
-            href: "/landing",
+            href: "/",
             subItems: [
-                { title: "To The Bureau", href: "/landing#hero" },
-                { title: "What are We", href: "/landing#whatisthebureau" },
-                { title: "Who is it For", href: "/landing#who-its-for" },
-                { title: "What We Solve", href: "/landing#painpoints" },
-                { title: "How We Do", href: "/landing#solution" },
-                { title: "About AVA", href: "/landing#philosophy" },
-                { title: "How it Works", href: "/landing#how-it-works" },
-                { title: "System FAQ", href: "/landing#faq" },
+                { title: "To The Bureau", href: "/#hero" },
+                { title: "What are We", href: "/#whatisthebureau" },
+                { title: "Who is it For", href: "/#who-its-for" },
+                { title: "What We Solve", href: "/#painpoints" },
+                { title: "How We Do", href: "/#solution" },
+                { title: "About AVA", href: "/#philosophy" },
+                { title: "How it Works", href: "/#how-it-works" },
+                { title: "System FAQ", href: "/#faq" },
             ]
         },
         {
@@ -54,7 +54,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
             ]
         },
         { title: "FAQ", href: "/faq" },
-        { title: "Pricing", href: "/landing#pricing" },
+        { title: "Pricing", href: "/#pricing" },
         {
             title: "Blog",
             href: "/blog",
@@ -80,7 +80,7 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
             const [base, id] = href.split("#");
 
             // If we are on the page already, just scroll
-            if (pathname === base || (base === "/landing" && pathname === "/landing") || (base === "" && id)) {
+            if (pathname === base || (base === "/" && pathname === "/") || (base === "" && id)) {
                 e.preventDefault();
                 const element = document.getElementById(id);
                 if (element) {

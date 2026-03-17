@@ -104,7 +104,7 @@ const AskAva: React.FC = () => {
         {
             label: 'Information about The Bureau',
             type: 'link',
-            target: '/landing',
+            target: '/',
             consentQuestion: "I can provide a full briefing on The Bureau's operations. Shall I take you there?",
             costInfo: "Methodology and mission briefings are complimentary."
         },

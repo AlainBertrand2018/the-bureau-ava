@@ -84,7 +84,7 @@ const Desktop: React.FC = () => {
             {!hasMaximizedWindow && (
                 <div className="fixed top-12 md:top-[3vw] right-4 md:right-[1.5vw] flex flex-col gap-4 md:gap-[1.5vw] z-10 py-4 md:py-[1.2vw]">
                     <motion.a
-                        href="/landing#faq"
+                        href="/#faq"
                         target="_blank"
                         rel="noopener noreferrer"
                         initial={{ opacity: 0, x: 20 }}
@@ -173,7 +173,7 @@ function renderAppContent(id: string) {
         interpreter: '/field-interpreter', // Assuming this is the route
         kernel: '/python',
         illustrator: '/illustrator',
-        bureau: '/landing'
+        bureau: '/'
     };
 
     const url = routes[id];

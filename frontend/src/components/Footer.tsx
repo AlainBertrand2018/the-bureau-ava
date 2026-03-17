@@ -42,9 +42,9 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
                         </h4>
                         <ul className="space-y-4 font-heading text-[11px] font-bold uppercase tracking-widest text-[#F2F0E9]/60">
                             <li><Link href="/about" className="hover:text-[#CC5833] transition-colors">About The Bureau</Link></li>
-                            <li><Link href="/landing#who-its-for" className="hover:text-[#CC5833] transition-colors">For Whom</Link></li>
-                            <li><Link href="/landing#proof" className="hover:text-[#CC5833] transition-colors">Why Choose AVA</Link></li>
-                            <li><Link href="/landing#solution" className="hover:text-[#CC5833] transition-colors">The Process</Link></li>
+                            <li><Link href="/#who-its-for" className="hover:text-[#CC5833] transition-colors">For Whom</Link></li>
+                            <li><Link href="/#proof" className="hover:text-[#CC5833] transition-colors">Why Choose AVA</Link></li>
+                            <li><Link href="/#solution" className="hover:text-[#CC5833] transition-colors">The Process</Link></li>
                         </ul>
                     </div>
 
@@ -55,8 +55,8 @@ const Footer: React.FC<FooterProps> = ({ dark = true }) => {
                         </h4>
                         <ul className="space-y-4 font-heading text-[11px] font-bold uppercase tracking-widest text-[#F2F0E9]/60">
                             <li><Link href="/blog" className="hover:text-[#CC5833] transition-colors">Blog Feed</Link></li>
-                            <li><Link href="/landing#philosophy" className="hover:text-[#CC5833] transition-colors">Meet AVA</Link></li>
-                            <li><Link href="/landing#genesis" className="hover:text-[#CC5833] transition-colors">Genesis Suite</Link></li>
+                            <li><Link href="/#philosophy" className="hover:text-[#CC5833] transition-colors">Meet AVA</Link></li>
+                            <li><Link href="/#genesis" className="hover:text-[#CC5833] transition-colors">Genesis Suite</Link></li>
                         </ul>
                     </div>
 

@@ -8,9 +8,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Static routes in the guided journey order
     const staticRoutes = [
-        { route: '', priority: 1.0 },              // Gateway
+        { route: '', priority: 1.0 },              // Main Entry
         { route: '/about', priority: 0.97 },       // Atomic Legibility Unit
-        { route: '/landing', priority: 0.95 },     // Main Landing
         { route: '/agents', priority: 0.9 },       // Logic: Agents
         { route: '/glossary', priority: 0.85 },    // Foundation: Glossary
         { route: '/faq', priority: 0.85 },         // Technical Manifest
@@ -32,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ].map(({ route, priority }) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),
-        changeFrequency: (route === '' || route === '/landing') ? 'daily' as const : 'weekly' as const,
+        changeFrequency: (route === '') ? 'daily' as const : 'weekly' as const,
         priority: priority,
     }));
 

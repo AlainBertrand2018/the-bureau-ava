@@ -216,7 +216,7 @@ const jsonLd = {
           "@type": "ListItem",
           "position": 3,
           "name": "Value Proposition",
-          "item": "https://ava.launchableai.online/landing"
+          "item": "https://ava.launchableai.online/"
         },
         {
           "@type": "ListItem",

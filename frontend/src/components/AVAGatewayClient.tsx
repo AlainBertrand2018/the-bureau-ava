@@ -510,7 +510,7 @@ export default function AVAGatewayClient() {
                             >
                                 {/* NEW CTA: About The Bureau */}
                                 <a
-                                    href="/landing"
+                                    href="/"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={`group flex flex-1 items-center justify-center gap-3 sm:gap-4 px-6 sm:px-10 py-5 rounded-2xl backdrop-blur-md cursor-pointer transition-all duration-500 sm:min-w-[280px] ${dark

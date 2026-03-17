@@ -21,7 +21,7 @@ export default function PlaceholderPage({ title = "Coming Soon" }) {
                         </p>
                     </div>
                     <Link
-                        href="/landing"
+                        href="/"
                         className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600 hover:gap-4 transition-all"
                     >
                         <ArrowLeft size={16} />

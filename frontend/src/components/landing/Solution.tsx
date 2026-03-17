@@ -40,12 +40,12 @@ export default function Solution({ onAuditClick }: { onAuditClick: () => void })
                         ui={<TelemetryTypewriter />}
                     />
 
-                    {/* Card 3: Cursor Protocol Scheduler */}
+                    {/* Card 3: Scientific Principles Validator */}
                     <FeatureCard
                         index={3}
                         title="Scientific Veracity"
-                        desc="Deterministic validation scores using 100% human-centric synthetic simulation."
-                        ui={<CursorProtocolScheduler />}
+                        desc="Deterministic validation scores using 100% human-centric synthetic simulation across Tourangeau, Krosnick and Hofstede frameworks."
+                        ui={<ScientificPrinciplesValidator />}
                     />
                 </div>
 
@@ -170,49 +170,134 @@ function TelemetryTypewriter() {
     );
 }
 
-/* ─── Card 3: Cursor Protocol Scheduler ─── */
-function CursorProtocolScheduler() {
-    const cursorRef = useRef<SVGSVGElement>(null);
-    const gridRef = useRef<HTMLDivElement>(null);
+/* ─── Card 3: Scientific Principles Validator ─── */
+function ScientificPrinciplesValidator() {
+    const [cycle, setCycle] = useState(0);
+    const [step, setStep] = useState(0);
+    const [progress, setProgress] = useState(0);
+    const [isSuccess, setIsSuccess] = useState(true);
+    const [failedIndex, setFailedIndex] = useState(-1);
+    const [validationId, setValidationId] = useState("");
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ repeat: -1 });
-            const cells = gridRef.current?.querySelectorAll('.grid-cell')!;
-
-            tl.to(cursorRef.current, { x: 40, y: 30, duration: 1, delay: 0.5 })
-                .to(cells[2], { backgroundColor: '#CC5833', opacity: 0.8, duration: 0.2 })
-                .to(cursorRef.current, { scale: 0.8, duration: 0.1, yoyo: true, repeat: 1 })
-                .to(cursorRef.current, { x: 100, y: 80, duration: 1, delay: 0.5 })
-                .to('.save-btn', { backgroundColor: '#2E4036', color: 'white', duration: 0.2 })
-                .to(cursorRef.current, { opacity: 0, duration: 0.5, delay: 0.5 });
-        });
-        return () => ctx.revert();
+        setValidationId(Math.floor(1000 + Math.random() * 9000).toString());
     }, []);
 
+    const principles = [
+        { name: "Tourangeau", desc: "Cognitive Integrity" },
+        { name: "Krosnick", desc: "Response Stability" },
+        { name: "Hofstede", desc: "Cultural Context" }
+    ];
+
+    useEffect(() => {
+        // Start of each cycle
+        if (step === 0 && progress === 0) {
+            const success = Math.random() > 0.4;
+            setIsSuccess(success);
+            setFailedIndex(success ? -1 : Math.floor(Math.random() * 3));
+            setValidationId(Math.floor(1000 + Math.random() * 9000).toString());
+        }
+
+        const interval = setInterval(() => {
+            setProgress(p => {
+                if (p >= 100) {
+                    if (step < principles.length - 1) {
+                        setStep(s => s + 1);
+                        return 0;
+                    } else {
+                        // Finished all principles
+                        setStep(principles.length);
+                        clearInterval(interval);
+                        
+                        // Restart cycle after delay
+                        setTimeout(() => {
+                            setStep(0);
+                            setProgress(0);
+                            setCycle(c => c + 1);
+                        }, 4000);
+                        return 100;
+                    }
+                }
+                return p + 4;
+            });
+        }, 40);
+
+        return () => clearInterval(interval);
+    }, [step, cycle, principles.length]);
+
+    const getScore = (idx: number) => {
+        if (idx === failedIndex) return (72 + Math.random() * 5).toFixed(1);
+        return (95 + Math.random() * 3.7).toFixed(1);
+    };
+
+    const isFinal = step === principles.length;
+
     return (
-        <div className="absolute inset-0 p-6 flex flex-col items-center justify-center pointer-events-none">
-            <div ref={gridRef} className="grid grid-cols-7 gap-1 mb-4 w-full">
-                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                    <div key={i} className="flex flex-col items-center gap-1">
-                        <span className="font-mono text-[10px] text-[#2E4036]/40">{day}</span>
-                        <div className="grid-cell w-full aspect-square border border-[#2E4036]/10 rounded-sm bg-[#2E4036]/5" />
+        <div className="absolute inset-0 p-5 flex flex-col justify-center bg-[#FDFDFB]">
+            <div className="space-y-2.5">
+                {principles.map((p, i) => {
+                    const isActive = step === i;
+                    const isDone = step > i;
+                    const score = getScore(i);
+                    const isFailure = i === failedIndex && (isDone || isFinal);
+
+                    return (
+                        <div 
+                            key={p.name} 
+                            className={`flex flex-col gap-1 transition-all duration-500 ${!isActive && !isDone && !isFinal ? 'opacity-20 scale-95' : 'opacity-100 scale-100'}`}
+                        >
+                            <div className="flex justify-between items-end">
+                                <span className="font-mono text-[9px] font-black uppercase tracking-widest text-[#2E4036]">
+                                    {p.name} <span className="text-[#CC5833]/30 ml-1">Protocol</span>
+                                </span>
+                                {isDone || isFinal ? (
+                                    <span className={`font-mono text-[9px] font-bold ${isFailure ? 'text-red-500' : 'text-[#CC5833]'}`}>
+                                        {score}%
+                                    </span>
+                                ) : isActive ? (
+                                    <span className="font-mono text-[8px] font-bold text-[#2E4036]/40 animate-pulse uppercase tracking-tighter">Scanning...</span>
+                                ) : null}
+                            </div>
+                            <div className="h-1 bg-[#2E4036]/5 rounded-full overflow-hidden relative">
+                                {isActive && (
+                                    <div 
+                                        className="absolute inset-0 bg-[#CC5833]"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                )}
+                                {(isDone || isFinal) && (
+                                    <div className={`absolute inset-0 ${isFailure ? 'bg-red-500/30' : 'bg-[#CC5833]/20'}`} />
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+
+                {/* Dynamic Verdict Node */}
+                <div className={`pt-4 border-t border-[#2E4036]/10 mt-1 transition-all duration-700 ${isFinal ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}`}>
+                    <div className={`flex flex-col gap-2 p-2.5 rounded-lg border transition-colors duration-500 ${
+                        isSuccess 
+                        ? 'bg-[#2E4036]/5 border-[#2E4036]/10' 
+                        : 'bg-amber-500/5 border-amber-500/20'
+                    }`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${isSuccess ? 'bg-[#2E4036]' : 'bg-amber-500'}`} />
+                                <span className={`font-mono text-[8px] font-black uppercase tracking-[0.1em] ${isSuccess ? 'text-[#2E4036]' : 'text-amber-600'}`}>
+                                    {isSuccess ? 'Scientific Validation' : 'Conflict Detected'}
+                                </span>
+                            </div>
+                            <span className="font-mono text-[9px] font-bold text-[#2E4036]/60">#{validationId}</span>
+                        </div>
+                        
+                        <p className={`font-mono text-[9px] font-bold leading-tight ${isSuccess ? 'text-[#2E4036]/70' : 'text-amber-800'}`}>
+                            {isSuccess 
+                                ? "» RESPONSE FULLY VALIDATED. DEPLOYMENT READY." 
+                                : "» FRICTION AT Q4. REWRITING FOR CULTURAL PARITY."}
+                        </p>
                     </div>
-                ))}
+                </div>
             </div>
-            <div className="save-btn w-full py-2 border border-[#2E4036]/20 rounded-lg flex items-center justify-center gap-2">
-                <Search size={10} />
-                <span className="font-mono text-[10px] font-bold uppercase tracking-widest">Execute Protocol</span>
-            </div>
-            {/* SVG Cursor */}
-            <svg
-                ref={cursorRef}
-                viewBox="0 0 24 24"
-                className="absolute top-0 left-0 w-5 h-5 text-[#CC5833] fill-current drop-shadow-md"
-                style={{ transform: 'translate(0, 0)' }}
-            >
-                <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.83-4.83 2.3 5.17c.14.33.52.48.85.34l2.27-1.01c.33-.14.48-.52.34-.85l-2.3-5.17 6.46-.61c.45-.04.66-.59.34-.9L6.35 2.85a.5.5 0 0 0-.85.36z" />
-            </svg>
         </div>
     );
 }

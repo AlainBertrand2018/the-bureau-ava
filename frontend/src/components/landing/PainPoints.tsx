@@ -95,7 +95,7 @@ export default function PainPoints({ onAuditClick }: PainPointsProps) {
                         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="max-w-xl text-center md:text-left">
                                 <h4 className="text-2xl font-heading font-black text-[#F2F0E9] uppercase tracking-tighter mb-2">Zero-Veracity Shield.</h4>
-                                <p className="text-[#F2F0E9]/60 text-sm font-sans leading-relaxed">I identify structural flaws before you deploy, securing the integrity of your institutional data against the friction of human cognitive error.</p>
+                                <p className="text-[#F2F0E9]/60 text-sm font-sans leading-relaxed">We identify structural flaws before you deploy, securing the integrity of your institutional data against the friction of human cognitive error.</p>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="flex flex-col items-end">

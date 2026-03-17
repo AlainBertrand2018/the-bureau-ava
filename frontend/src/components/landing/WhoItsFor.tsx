@@ -65,7 +65,7 @@ export default function WhoItsFor({ onProtocolOpen }: WhoItsForProps) {
                         <span>Institutional Reach</span>
                     </div>
                     <h2 className="text-section-title text-[#F2F0E9] mb-4">
-                        Entity Dossiers.
+                        Who The Bureau is Designed For
                     </h2>
                     <p className="text-body-lg text-[#F2F0E9]/70 max-w-xl font-sans leading-relaxed">
                         The Bureau is programmed to secure the research protocols of the world&apos;s most demanding institutional organizations.

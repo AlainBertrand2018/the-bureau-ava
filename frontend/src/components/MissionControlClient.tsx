@@ -252,7 +252,7 @@ export default function MissionControlClient() {
         // BYPASS CREDIT CHECK FOR TESTING - ALLOW ROAMING
         /* 
         if (!hasEnough || serviceId === 'enterprise') {
-            window.open('/landing#pricing', '_blank');
+            window.open('/#pricing', '_blank');
             return;
         }
         */
