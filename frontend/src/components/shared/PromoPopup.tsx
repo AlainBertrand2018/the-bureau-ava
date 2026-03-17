@@ -142,9 +142,10 @@ export default function PromoPopup() {
 
                     {/* Body */}
                     <p className="text-[13px] font-medium text-white/60 leading-relaxed mb-8 max-w-sm">
-                      The Bureau is in its founding phase. Early adopters get full, unrestricted access to AVA&apos;s validation engine — completely{" "}
-                      <span className="text-white font-bold">free for you to test</span>{" "}
-                      until end of April 2026. Your feedback will shape our future.
+                      The Bureau is in its founding phase. Early adopters get a strategic head start with{" "}
+                      <span className="text-white font-bold">3 complimentary uses</span>{" "}
+                      of AVA&apos;s validation engine across any tool — for a total value of up to{" "}
+                      <span className="text-white font-bold">MUR 30,000.</span> Thank you in advance. Your feedback is important as it will shape AVA's future.
                     </p>
 
                     {/* CTA */}
