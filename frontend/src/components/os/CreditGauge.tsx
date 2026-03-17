@@ -33,7 +33,7 @@ export const CreditGauge: React.FC<{ showLabel?: boolean }> = ({ showLabel = tru
                 </AnimatePresence>
                 {showLabel && (
                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30 leading-none mt-1.5 flex items-center gap-1">
-                        {credits <= 10 ? "Founder Runs" : "Sovereign Credits"} <ShieldCheck size={8} className="text-emerald-500/50" />
+                        {credits <= 10 ? "Early Adopter Runs" : "Sovereign Credits"} <ShieldCheck size={8} className="text-emerald-500/50" />
                     </span>
                 )}
             </div>

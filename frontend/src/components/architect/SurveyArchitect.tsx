@@ -45,7 +45,12 @@ interface SurveyArchitectProps {
 export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectProps) {
     const { currentMission } = useMission();
     const { currency } = useCurrency();
-    const { credits, consumeCredits } = useClearance();
+    const { 
+        credits, 
+        consumeCredits, 
+        isAuthenticated, 
+        setIsLoginModalOpen 
+    } = useClearance();
     const [view, setView] = useState<"explainer" | "onboarding" | "processing" | "results">(mode === "app" ? "onboarding" : "explainer");
     const [isPaywallOpen, setIsPaywallOpen] = useState(false);
     const [loadingPhase, setLoadingPhase] = useState(0);
@@ -171,6 +176,12 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
     const startGeneration = async () => {
         if (!formData.objective || !formData.audience || !formData.decisions) return;
+        
+        if (!isAuthenticated) {
+            setIsLoginModalOpen(true);
+            setError("Identity verification required to initialize Genesis Protocol.");
+            return;
+        }
 
         setView("processing");
         setLoadingLabel("I'm architecting your instrument...");
@@ -465,14 +476,19 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
 
                         <div className="mt-12 flex justify-center">
                             <button
-                                onClick={handleGenerate}
-                                disabled={!formData.objective || !formData.audience || !formData.decisions}
-                                className={`group flex items-center gap-3 px-10 py-5 rounded-full text-sm font-black uppercase tracking-[0.2em] transition-all duration-500 ${formData.objective && formData.audience && formData.decisions
+                                onClick={() => {
+                                    if (!isAuthenticated) {
+                                        setIsLoginModalOpen(true);
+                                    } else {
+                                        handleGenerate();
+                                    }
+                                }}
+                                className={`group flex items-center gap-3 px-10 py-5 rounded-full text-sm font-black uppercase tracking-[0.2em] transition-all duration-500 ${(!isAuthenticated || (formData.objective && formData.audience && formData.decisions))
                                     ? "bg-white text-slate-900 shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95"
                                     : "bg-slate-800 text-slate-600 border border-slate-700 cursor-not-allowed opacity-50"
                                     }`}
                             >
-                                Initialize Genesis Protocol
+                                {!isAuthenticated ? "Identify as an Early Adopter to Proceed" : "Initialize Genesis Protocol"}
                                 <ArrowRight size={18} className="translate-x-0 group-hover:translate-x-1 transition-transform" />
                             </button>
                         </div>

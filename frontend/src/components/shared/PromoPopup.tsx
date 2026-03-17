@@ -13,7 +13,7 @@ import { usePathname } from "next/navigation";
 type Phase = "promo" | "register" | "login" | "success";
 
 export default function PromoPopup() {
-  const { isAuthenticated, isLoaded } = useClearance();
+  const { isAuthenticated, isLoaded, isLoginModalOpen, setIsLoginModalOpen } = useClearance();
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -30,22 +30,31 @@ export default function PromoPopup() {
   });
 
   useEffect(() => {
-    // If authenticated, hide and never show
+    // 1. If manually triggered via context, ALWAYS show
+    if (isLoginModalOpen) {
+      setIsVisible(true);
+      setIsDismissed(false);
+      setPhase("promo");
+      return;
+    }
+
+    // 2. If authenticated, NEVER show
     if (isAuthenticated) {
       setIsVisible(false);
       return;
     }
 
+    // 3. Check for previous session dismissal (only for automatic triggers)
     const dismissed = sessionStorage.getItem("promo_dismissed");
     
-    // IMMEDIATE TRIGGER: Force login if on the OS page as a guest
+    // 4. Force modal on /os for guests
     if (pathname === '/os' && !isAuthenticated && isLoaded) {
       setIsVisible(true);
       setPhase("promo");
       return;
     }
 
-    // DELAYED TRIGGER for landing page
+    // 5. Automatic trigger for landing page (if not dismissed)
     if (dismissed) {
       setIsDismissed(true);
       return;
@@ -56,11 +65,12 @@ export default function PromoPopup() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated, pathname, isLoaded]);
+  }, [isAuthenticated, pathname, isLoaded, isLoginModalOpen]);
 
   const handleDismiss = () => {
     setIsVisible(false);
     setIsDismissed(true);
+    setIsLoginModalOpen(false);
     sessionStorage.setItem("promo_dismissed", "true");
   };
 
@@ -105,7 +115,7 @@ export default function PromoPopup() {
         console.error(`${phase === "register" ? "Registration" : "Login"} failed:`, err);
         let msg = err.message || "Operation failed. Please try again.";
         if (err.code === 'auth/invalid-credential') msg = "Invalid credentials. Please verify your email and password.";
-        if (err.code === 'auth/user-not-found') msg = "No founding account found with this email.";
+        if (err.code === 'auth/user-not-found') msg = "No Early Adopter account found with this email.";
         if (msg.includes("Firebase")) msg += " (Check your Vercel Environment Variables)";
         setError(msg);
         setIsSubmitting(false);
@@ -118,7 +128,7 @@ export default function PromoPopup() {
 
   const isFormValid = form.fullName && form.email && form.password && form.company && form.position;
 
-  if (isDismissed) return null;
+  // Remove the block here so it can always render if isVisible is true
 
   return (
     <AnimatePresence>
@@ -184,7 +194,7 @@ export default function PromoPopup() {
 
                     {/* Body */}
                     <p className="text-[13px] font-medium text-white/60 leading-relaxed mb-8 max-w-sm">
-                      The Bureau is in its founding phase. Early adopters get a strategic head start with{" "}
+                      The Bureau is in its early adopter phase. Early adopters get a strategic head start with{" "}
                       <span className="text-white font-bold">3 complimentary uses</span>{" "}
                       of AVA&apos;s validation engine across any tool — for a total value of up to{" "}
                       <span className="text-white font-bold">MUR 30,000.</span> Thank you in advance. Your feedback is important as it will shape AVA's future.
@@ -199,12 +209,20 @@ export default function PromoPopup() {
                       <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                     </button>
 
+                    {/* Already a member? */}
+                    <button
+                      onClick={() => setPhase("login")}
+                      className="mt-6 text-[10px] font-bold text-[#CC5833] uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                      Already a member? Sign In
+                    </button>
+
                     {/* Skip */}
                     <button
                       onClick={handleDismiss}
-                      className="mt-4 text-[10px] font-bold text-white/25 uppercase tracking-widest hover:text-white/50 transition-colors"
+                      className="mt-4 text-[10px] font-bold text-white/10 uppercase tracking-widest hover:text-white/30 transition-colors"
                     >
-                      Maybe Later
+                      Enter as Guest
                     </button>
                   </motion.div>
                 )}
@@ -221,7 +239,7 @@ export default function PromoPopup() {
                     <div className="text-center mb-8">
                       <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-white/5 border border-white/10">
                         <span className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-white/50">
-                          Founding Cohort
+                          Early Adopters
                         </span>
                       </div>
                       <h3 className="text-xl font-black uppercase tracking-tight leading-tight">
@@ -281,7 +299,17 @@ export default function PromoPopup() {
                           onClick={() => setPhase("login")}
                           className="text-[10px] font-bold text-[#CC5833] uppercase tracking-widest hover:text-white transition-colors"
                         >
-                          Already a Founding-Adopter? Sign In to your OS.
+                          Already an Early Adopter? Sign In to your OS.
+                        </button>
+                      </div>
+
+                      <div className="pt-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => setPhase("login")}
+                          className="text-[10px] font-bold text-[#CC5833] uppercase tracking-widest hover:text-white transition-colors"
+                        >
+                          Already have an account? Sign In.
                         </button>
                       </div>
 
@@ -373,7 +401,7 @@ export default function PromoPopup() {
                           onClick={() => setPhase("register")}
                           className="text-[10px] font-bold text-[#CC5833] uppercase tracking-widest hover:text-white transition-colors"
                         >
-                          New to the Bureau? Register as a Founder.
+                          New to the Bureau? Register as an Early Adopter.
                         </button>
                       </div>
 
@@ -402,12 +430,12 @@ export default function PromoPopup() {
                       <CheckCircle2 size={32} className="text-[#CC5833]" />
                     </div>
                     <h3 className="text-xl font-black uppercase tracking-tight mb-3">
-                      {phase === "success" && auth?.currentUser ? `Welcome back, Founder` : "Welcome to the Founding Cohort"}
+                      {phase === "success" && auth?.currentUser ? `Welcome back, Early Adopter` : "Welcome to the Early Adopters"}
                     </h3>
                     <p className="text-sm font-medium text-white/50 leading-relaxed">
                       {phase === "success" && auth?.currentUser 
                         ? "Your OS session has been re-initialized. Redirecting..." 
-                        : "You're now part of something extraordinary. We'll be in touch."}
+                        : "You're now an Early Adopter. We'll be in touch."}
                     </p>
                   </motion.div>
                 )}

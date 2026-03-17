@@ -102,7 +102,8 @@ export default function MissionControlClient() {
         userEmail, 
         isAuthenticated, 
         refreshClearance,
-        isLoaded
+        isLoaded,
+        setIsLoginModalOpen
     } = useClearance();
 
     const { currency } = useCurrency();
@@ -168,8 +169,8 @@ export default function MissionControlClient() {
         }
 
         if (!isAuthenticated) {
-            setError("Please register or login as an Early Adopter to continue.");
-            // We could trigger a login modal here
+            setError("Identification required. Please register or login to continue.");
+            setIsLoginModalOpen(true);
             return;
         }
 
@@ -519,9 +520,19 @@ export default function MissionControlClient() {
                                         )}
 
                                         {error && (
-                                            <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-bold">
-                                                <AlertCircle size={14} />
-                                                {error}
+                                            <div className="flex flex-col gap-2 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+                                                <div className="flex items-center gap-2 text-red-400 text-[11px] font-bold">
+                                                    <AlertCircle size={14} />
+                                                    {error}
+                                                </div>
+                                                {!isAuthenticated && (
+                                                    <button 
+                                                        onClick={() => setIsLoginModalOpen(true)}
+                                                        className="text-[10px] uppercase tracking-widest font-black text-emerald-400 hover:text-emerald-300 text-left ml-5"
+                                                    >
+                                                        Register as an Early Adopter Now »
+                                                    </button>
+                                                )}
                                             </div>
                                         )}
 

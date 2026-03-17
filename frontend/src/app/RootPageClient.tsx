@@ -548,6 +548,7 @@ const GLASSBOX_ITEMS = [
         title: "DESIGN YOUR QUESTIONNAIRE FROM SCRATCH",
         description: "Don't know where to start but have clear research objectives! Use GENESIS' AI-driven tool to professionally structure, build and stress-test your survey instruments in less than 30 minutes, instead of weeks. Genesis comes with its recommendations of sample size, language preference and field deployment.",
         toolPath: "/os?app=genesis",
+        videoUrl: "/videos/genesis_130_opt.mp4",
         features: [
             "AI-driven questionnaire design frameworks",
             "Linguistic optimization for maximum response integrity",

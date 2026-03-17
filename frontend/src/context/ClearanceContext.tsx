@@ -19,6 +19,8 @@ interface ClearanceContextType {
     logout: () => void;
     isSyncing: boolean;
     refreshClearance: () => Promise<void>;
+    isLoginModalOpen: boolean;
+    setIsLoginModalOpen: (open: boolean) => void;
 }
 
 const ClearanceContext = createContext<ClearanceContextType | undefined>(undefined);
@@ -31,6 +33,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     const fetchClearance = async (email: string) => {
         try {
@@ -175,7 +178,9 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 login,
                 logout,
                 isSyncing,
-                refreshClearance: () => fetchClearance(userEmail)
+                refreshClearance: () => fetchClearance(userEmail),
+                isLoginModalOpen,
+                setIsLoginModalOpen
             }}
         >
             {children}

@@ -177,7 +177,7 @@ async def get_mission_endpoint(mission_id: str):
 async def list_missions(email: Optional[str] = None):
     """Lists missions, optionally filtered by email (Founder View)."""
     if email:
-        return await bureau_vault.list_user_missions(email, limit=3)
+        return await bureau_vault.list_user_missions(email, limit=20)
     
     # Global list for terminal/super-admin
     missions = await list_missions_db()

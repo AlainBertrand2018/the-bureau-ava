@@ -20,7 +20,7 @@ interface NavbarProps {
 export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const { isAuthenticated, credits, userEmail, logout } = useClearance();
+    const { isAuthenticated, credits, userEmail, logout, setIsLoginModalOpen } = useClearance();
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -205,11 +205,18 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                     </Link>
 
                     {isAuthenticated ? (
-                        <div className="flex items-center gap-3">
-                            <div className="hidden md:flex flex-col items-end">
+                        <div className="flex items-center gap-1 md:gap-3">
+                            <Link href="/profile" className="hidden md:flex flex-col items-end hover:opacity-80 transition-opacity">
                                 <span className="text-[10px] font-black text-[#2E4036] uppercase tracking-wider">{userEmail.split('@')[0]}</span>
-                                <span className="text-[8px] font-bold text-[#2E4036]/40 uppercase tracking-widest leading-none">Founder Access</span>
-                            </div>
+                                <span className="text-[8px] font-bold text-[#2E4036]/40 uppercase tracking-widest leading-none">Early Adopter Access</span>
+                            </Link>
+                            <Link 
+                                href="/profile"
+                                className="p-3 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
+                                title="View Dossier"
+                            >
+                                <UserCircle size={24} />
+                            </Link>
                             <button
                                 onClick={() => logout()}
                                 className="p-3 text-[#2E4036]/60 hover:text-red-500 transition-colors"
@@ -221,12 +228,10 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                     ) : (
                         <button
                             onClick={() => {
-                                // Triggering the PromoPopup is handled by its internal timer or visibility logic
-                                // But we could expose a global trigger if needed. For now, profile icon icon.
-                                router.push('/#register');
+                                setIsLoginModalOpen(true);
                             }}
                             className="p-3 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
-                            title="Sign Up as Founder"
+                            title="Sign Up as Early Adopter"
                         >
                             <UserCircle size={24} />
                         </button>

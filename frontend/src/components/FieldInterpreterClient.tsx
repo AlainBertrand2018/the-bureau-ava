@@ -85,7 +85,12 @@ const AgentCard = ({ phase }: { phase: AgentPhase }) => {
    ═══════════════════════════════════════════════════════════════ */
 
 export default function FieldInterpreterClient() {
-    const { credits, consumeCredits } = useClearance();
+    const { 
+        credits, 
+        consumeCredits, 
+        isAuthenticated, 
+        setIsLoginModalOpen 
+    } = useClearance();
     const [step, setStep] = useState<'upload' | 'processing' | 'results'>('upload');
     const [file, setFile] = useState<File | null>(null);
     const [result, setResult] = useState<{ analysis: any; pdf_base64: string } | null>(null);
@@ -141,9 +146,12 @@ export default function FieldInterpreterClient() {
     /* ─── STREAM ANALYSIS ─── */
     const startAnalysis = async () => {
         if (!file) return;
+        if (!isAuthenticated) {
+            setIsLoginModalOpen(true);
+            setError("Identity verification required to initialize Intelligent Grid.");
+            return;
+        }
         setStep('processing');
-        setError(null);
-        setResult(null);
         setPhases(defaultPhases);
 
         const reader = new FileReader();
@@ -395,15 +403,25 @@ export default function FieldInterpreterClient() {
 
                                                 <div className="flex gap-4 relative z-50">
                                                     <button
-                                                        onClick={(e) => { e.stopPropagation(); startAnalysis(); }}
-                                                        disabled={credits < 240000}
-                                                        className={`px-8 py-3 font-black rounded-xl transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)] pointer-events-auto ${credits >= 240000
+                                                        onClick={(e) => { 
+                                                            e.stopPropagation(); 
+                                                            if (!isAuthenticated) {
+                                                                setIsLoginModalOpen(true);
+                                                            } else {
+                                                                startAnalysis(); 
+                                                            }
+                                                        }}
+                                                        className={`px-8 py-3 font-black rounded-xl transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.3)] pointer-events-auto ${(!isAuthenticated || credits >= 240000)
                                                             ? "bg-emerald-500 text-white hover:bg-emerald-400"
                                                             : "bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed"
                                                             }`}
                                                     >
                                                         <Activity className="w-5 h-5" />
-                                                        {credits >= 300000 ? "Initialize 5-Phase Analysis (Up to: 300,000 CR)" : "Insufficient Credits"}
+                                                        {!isAuthenticated 
+                                                            ? "Identify as an Early Adopter to Proceed" 
+                                                            : credits >= 300000 
+                                                                ? "Initialize 5-Phase Analysis (Up to: 300,000 CR)" 
+                                                                : "Insufficient Credits"}
                                                         <ArrowRight className="w-5 h-5" />
                                                     </button>
                                                     <button

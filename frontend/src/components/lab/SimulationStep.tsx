@@ -53,7 +53,12 @@ export default function SimulationStep({
     onComplete,
 }: SimulationStepProps) {
     const { currentMission } = useMission();
-    const { credits, consumeCredits } = useClearance();
+    const { 
+        credits, 
+        consumeCredits, 
+        isAuthenticated, 
+        setIsLoginModalOpen 
+    } = useClearance();
     const [liveLogs, setLiveLogs] = useState<LiveLog[]>([]);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState("");
@@ -67,11 +72,12 @@ export default function SimulationStep({
     }, [liveLogs]);
 
     const runSimulation = async () => {
+        if (!isAuthenticated) {
+            setIsLoginModalOpen(true);
+            setError("Identity verification required to initiate diagnostic dry run.");
+            return;
+        }
         setIsSimulating(true);
-        setLiveLogs([]);
-        setProgress(0);
-        setError("");
-        setProvenance(null);
 
         // Consume Lab Credits (450,000 as per config)
         if (credits < 450000) {
@@ -240,15 +246,24 @@ export default function SimulationStep({
                     className="text-center mb-10"
                 >
                     <button
-                        onClick={runSimulation}
-                        disabled={credits < 450000}
-                        className={`inline-flex items-center gap-3 px-12 py-5 rounded-full text-sm font-black uppercase tracking-widest transition-all ${credits >= 450000
+                        onClick={() => {
+                            if (!isAuthenticated) {
+                                setIsLoginModalOpen(true);
+                            } else {
+                                runSimulation();
+                            }
+                        }}
+                        className={`inline-flex items-center gap-3 px-12 py-5 rounded-full text-sm font-black uppercase tracking-widest transition-all ${(!isAuthenticated || credits >= 450000)
                             ? "bg-emerald-600 text-white shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98]"
                             : "bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300"
                             }`}
                     >
                         <Rocket size={18} />
-                        {credits >= 450000 ? "Launch Diagnostic Dry Run (Up to: 450,000 CR)" : "Insufficient Credits"}
+                        {!isAuthenticated 
+                            ? "Identify as an Early Adopter to Proceed" 
+                            : credits >= 450000 
+                                ? "Launch Diagnostic Dry Run (Up to: 450,000 CR)" 
+                                : "Insufficient Credits"}
                     </button>
                     <p className="text-slate-400 text-xs font-bold mt-4 uppercase tracking-widest">
                         Universalizing for {currentMission?.config.target_country || "Target Market"} • {totalCalls} diagnostic calls • Estimated {Math.ceil(totalCalls * 1.5)}s
