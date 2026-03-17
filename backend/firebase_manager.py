@@ -27,15 +27,32 @@ class BureauFirebaseManager:
 
         try:
             # The Bureau's High-Resolution Truth Layer (Firebase)
-            # In a local development context, we stabilize the context even if keys are virtual.
-            if not firebase_admin._apps:
-                firebase_admin.initialize_app()
-            self.db = firestore.client()
-            bureau_logger.info("Bureau Vault (Firebase) Context: INITIALIZED")
+            # Fetching credentials from Environment for high-security deployment
+            project_id = os.getenv("FIREBASE_PROJECT_ID")
+            client_email = os.getenv("FIREBASE_CLIENT_EMAIL")
+            private_key = os.getenv("FIREBASE_PRIVATE_KEY")
+
+            if project_id and client_email and private_key:
+                # Handle \n in the env string
+                parsed_key = private_key.replace('\\n', '\n')
+                
+                if not firebase_admin._apps:
+                    cred = credentials.Certificate({
+                        "project_id": project_id,
+                        "client_email": client_email,
+                        "private_key": parsed_key,
+                        "type": "service_account",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                    })
+                    firebase_admin.initialize_app(cred)
+                
+                self.db = firestore.client()
+                bureau_logger.info(f"Bureau Vault (Firebase) Context: INITIALIZED [Project: {project_id}]")
+            else:
+                bureau_logger.warning("Bureau Vault (Firebase) Context: KEYS MISSING IN .ENV - Falling back to structural SQLite")
+                self.db = None
         except Exception as e:
-            # We fulfill the 'High-Resolution' mandate by stabilizing the backend 
-            # while silently falling back to our SQLite structural core.
-            bureau_logger.info("Bureau Vault (Firebase) Context: OPERATIONAL (Virtual Credentials Active)")
+            bureau_logger.error(f"Bureau Vault (Firebase) Context: CRITICAL INITIALIZATION FAILURE | Detail: {str(e)}")
             self.db = None
 
     async def save_visual_asset(self, asset_data: Dict[str, Any], tier: str = "FREE") -> str:
@@ -76,17 +93,29 @@ class BureauFirebaseManager:
             local_data = await get_user_clearance_local(email)
             return {
                 "clearance_level": local_data.get("clearance_level", 0),
-                "credits": local_data.get("credits", 100)
+                "credits": local_data.get("credits", 3) # Force 3 for local too
             }
         
-        user_doc = self.db.collection("users").document(email).get()
+        user_ref = self.db.collection("users").document(email)
+        user_doc = user_ref.get()
+        
         if user_doc.exists:
             data = user_doc.to_dict()
             return {
                 "clearance_level": data.get("clearance_level", 0),
-                "credits": data.get("credits", 100) # Default to 100 for new users
+                "credits": data.get("credits", 3)
             }
-        return {"clearance_level": 0, "credits": 100}
+        else:
+            # NEW USER DETECTED: Initialization with the 'Rule of 3' (Founder Uses)
+            initial_data = {
+                "clearance_level": 0,
+                "credits": 3,
+                "created_at": time.time(),
+                "role": "early_adopter"
+            }
+            user_ref.set(initial_data)
+            bureau_logger.info(f"FOUNDER DETECTED: Initialized {email} with 3 free validation runs.")
+            return {"clearance_level": 0, "credits": 3}
 
     async def update_user_credits(self, email: str, amount: int):
         """Adds or spends credits in the Firebase vault."""
@@ -95,15 +124,45 @@ class BureauFirebaseManager:
             return
         
         user_ref = self.db.collection("users").document(email)
-        # Use a transaction or increment if available in this SDK version
-        # For simplicity in this mock, we'll do a simple read-modify-write
         user_doc = user_ref.get()
-        current_credits = user_doc.to_dict().get("credits", 100) if user_doc.exists else 100
+        
+        current_credits = user_doc.to_dict().get("credits", 3) if user_doc.exists else 3
+        new_balance = max(0, current_credits + amount)
         
         user_ref.set({
-            "credits": current_credits + amount,
+            "credits": new_balance,
             "updated_at": time.time()
         }, merge=True)
+        bureau_logger.info(f"CREDIT_SYNC: {email} | Balance: {new_balance} (Changed by {amount})")
+
+    async def save_mission(self, mission_id: str, mission_data: Dict[str, Any]):
+        """Saves a mission record to the vault."""
+        if not self.db: return
+        
+        email = mission_data.get("config", {}).get("user_email")
+        
+        doc_ref = self.db.collection("missions").document(mission_id)
+        doc_ref.set({
+            **mission_data,
+            "user_email": email,
+            "server_timestamp": firestore.SERVER_TIMESTAMP,
+            "status": mission_data.get("status", "completed")
+        })
+
+    async def list_user_missions(self, email: str, limit: int = 10):
+        """Retrieves history for a specific user."""
+        if not self.db: return []
+        
+        try:
+            missions_ref = self.db.collection("missions")
+            # Filter by user email and sort by newest
+            query = missions_ref.where("user_email", "==", email).order_by("server_timestamp", direction=firestore.Query.DESCENDING).limit(limit)
+            docs = query.get()
+            
+            return [doc.to_dict() for doc in docs]
+        except Exception as e:
+            bureau_logger.error(f"Failed to list user missions from Firebase: {e}")
+            return []
 
 # Singleton instance
 bureau_vault = BureauFirebaseManager()

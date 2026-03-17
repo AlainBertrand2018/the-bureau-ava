@@ -8,6 +8,7 @@ import { IllustratorProvider } from "@/context/IllustratorContext";
 import AVAChat from "@/components/AVAChat";
 import ClientOnly from "@/components/ClientOnly";
 import { ClearanceProvider } from "@/context/ClearanceContext";
+import PromoPopup from "@/components/shared/PromoPopup";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -282,6 +283,9 @@ export default function RootLayout({
             <ChatProvider>
               <IllustratorProvider>
                 <ClearanceProvider>
+                  <ClientOnly>
+                    <PromoPopup />
+                  </ClientOnly>
                   {children}
                   <ClientOnly>
                     <AVAChat />

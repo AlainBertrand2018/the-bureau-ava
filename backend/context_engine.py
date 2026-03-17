@@ -33,6 +33,7 @@ class MissionConfiguration(BaseModel):
     target_region: str
     target_language: str
     target_audience: str
+    user_email: Optional[str] = None
     targeting_refinement: Optional[AudienceTargeting] = None
     research_topic: Optional[str] = "General Market Research"
 

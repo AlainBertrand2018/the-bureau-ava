@@ -1,5 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
 interface ClearanceContextType {
     userEmail: string;
@@ -15,70 +17,55 @@ interface ClearanceContextType {
     login: (email: string, pass: string) => Promise<boolean>;
     logout: () => void;
     isSyncing: boolean;
-    consumeCredits: (amount: number) => void;
-    addCredits: (amount: number) => void;
+    refreshClearance: () => Promise<void>;
 }
 
 const ClearanceContext = createContext<ClearanceContextType | undefined>(undefined);
 
 export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
-    const [userEmail, setUserEmail] = useState("bertrand.chagal@gmail.com");
+    const [user, setUser] = useState<User | null>(null);
+    const [userEmail, setUserEmail] = useState("");
     const [clearanceLevel, setClearanceLevel] = useState(0);
-    const [credits, setCredits] = useState(1000000);
+    const [credits, setCredits] = useState(0);
     const [isSyncing, setIsSyncing] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // Sync with backend on mount or email change
-    useEffect(() => {
-        // Hydrate auth status from localStorage
-        const storedAuth = localStorage.getItem("bureau_auth");
-        if (storedAuth === "true") {
-            setIsAuthenticated(true);
-        }
-        setIsLoaded(true);
-
-        const fetchClearance = async () => {
-            try {
-                // Initial Load from LocalStorage (Simulated Garage)
-                const savedCredits = localStorage.getItem('ava_sovereign_credits');
-                if (savedCredits && parseInt(savedCredits) >= 1000000) {
-                    setCredits(parseInt(savedCredits));
-                } else {
-                    // Force 1,000,000 for presentation
-                    setCredits(1000000);
-                    localStorage.setItem('ava_sovereign_credits', '1000000');
-                }
-
-                const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
-                const response = await fetch(`${apiUrl}/conductor/clearance?email=${userEmail}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setClearanceLevel(data.clearance_level || 0);
-                    // Server-side credits would go here in production
-                }
-            } catch (err) {
-                console.error("Failed to fetch clearance:", err);
+    const fetchClearance = async (email: string) => {
+        try {
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
+            const response = await fetch(`${apiUrl}/conductor/clearance?email=${email}`);
+            if (response.ok) {
+                const data = await response.json();
+                setClearanceLevel(data.clearance_level || 0);
+                setCredits(data.credits ?? 0);
             }
-        };
-        fetchClearance();
-    }, [userEmail]);
-
-    const consumeCredits = (amount: number) => {
-        // Presentation Bypass: No consumption
-        console.log("Presentation Mode: Bypassing credit consumption of", amount);
-        return;
+        } catch (err) {
+            console.error("Failed to fetch clearance:", err);
+        }
     };
 
-    const addCredits = (amount: number) => {
-        setCredits(prev => {
-            const newBalance = prev + amount;
-            localStorage.setItem('ava_sovereign_credits', newBalance.toString());
-            return newBalance;
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            if (currentUser) {
+                setUserEmail(currentUser.email || "");
+                setIsAuthenticated(true);
+                fetchClearance(currentUser.email || "");
+            } else {
+                setUserEmail("");
+                setIsAuthenticated(false);
+                setCredits(0);
+                setClearanceLevel(0);
+            }
+            setIsLoaded(true);
         });
-    };
+
+        return () => unsubscribe();
+    }, []);
 
     const updateClearance = async (level: number) => {
+        if (!userEmail) return;
         setIsSyncing(true);
         try {
             const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
@@ -96,30 +83,24 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const login = async (email: string, pass: string): Promise<boolean> => {
-        // SPECIFIC BUREAU CREDENTIALS
-        if (email === "bertrand.chagal@gmail.com" && pass === "ab@280765") {
-            setIsAuthenticated(true);
-            setUserEmail(email);
-            localStorage.setItem("bureau_auth", "true");
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
             return true;
+        } catch (err) {
+            console.error("Login failed:", err);
+            return false;
         }
-        return false;
     };
 
-    const logout = () => {
-        setIsAuthenticated(false);
-        localStorage.removeItem("bureau_auth");
-    };
-
-    const spendCredits = async (amount: number): Promise<boolean> => {
-        // Presentation Bypass
-        return true;
+    const logout = async () => {
+        try {
+            await signOut(auth);
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
     };
 
     const isSuperAdmin = (clearanceLevel >= 10 || userEmail === "bertrand.chagal@gmail.com") && isAuthenticated;
-
-    // Effectively unlimited credits for Super Admin
-    const actualCredits = isSuperAdmin ? 999999999 : credits;
 
     return (
         <ClearanceContext.Provider
@@ -128,10 +109,9 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 setUserEmail,
                 clearanceLevel,
                 setClearanceLevel,
-                credits: actualCredits,
+                credits: isSuperAdmin ? 9999999 : credits,
                 spendCredits: async (amount: number) => {
-                    if (isSuperAdmin) return true;
-                    return spendCredits(amount);
+                    return credits >= amount || isSuperAdmin;
                 },
                 isSuperAdmin,
                 isAuthenticated,
@@ -140,8 +120,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 login,
                 logout,
                 isSyncing,
-                consumeCredits,
-                addCredits,
+                refreshClearance: () => fetchClearance(userEmail)
             }}
         >
             {children}

@@ -4,23 +4,48 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 
-type Phase = "promo" | "register" | "success";
+import { auth, db } from "@/lib/firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useClearance } from "@/context/ClearanceContext";
+import { usePathname } from "next/navigation";
+
+type Phase = "promo" | "register" | "login" | "success";
 
 export default function PromoPopup() {
+  const { isAuthenticated, isLoaded } = useClearance();
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [phase, setPhase] = useState<Phase>("promo");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     fullName: "",
     email: "",
+    password: "",
     company: "",
     position: "",
   });
 
   useEffect(() => {
+    // If authenticated, hide and never show
+    if (isAuthenticated) {
+      setIsVisible(false);
+      return;
+    }
+
     const dismissed = sessionStorage.getItem("promo_dismissed");
+    
+    // IMMEDIATE TRIGGER: Force login if on the OS page as a guest
+    if (pathname === '/os' && !isAuthenticated && isLoaded) {
+      setIsVisible(true);
+      setPhase("promo");
+      return;
+    }
+
+    // DELAYED TRIGGER for landing page
     if (dismissed) {
       setIsDismissed(true);
       return;
@@ -31,7 +56,7 @@ export default function PromoPopup() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAuthenticated, pathname, isLoaded]);
 
   const handleDismiss = () => {
     setIsVisible(false);
@@ -42,39 +67,53 @@ export default function PromoPopup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (apiUrl) {
-        await fetch(`${apiUrl}/early-adopter`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }).catch(() => {
-          // Silently handle if endpoint doesn't exist yet
-          console.log("[Early Adopter Registration]", form);
-        });
-      } else {
-        console.log("[Early Adopter Registration]", form);
-      }
-    } catch {
-      console.log("[Early Adopter Registration - Offline]", form);
+        if (phase === "register") {
+            // 1. Firebase Auth Registration
+            const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+            const user = userCredential.user;
+
+            // 2. Update Profile Display Name
+            await updateProfile(user, { displayName: form.fullName });
+
+            // 3. Initialize Firestore Record (Rule of 3 Credits)
+            await setDoc(doc(db, "users", form.email.toLowerCase()), {
+                fullName: form.fullName,
+                company: form.company,
+                position: form.position,
+                credits: 3,
+                role: "early_adopter",
+                created_at: new Date().toISOString()
+            });
+        } else if (phase === "login") {
+            // Firebase Auth Login
+            await signInWithEmailAndPassword(auth, form.email, form.password);
+        }
+
+        setIsSubmitting(false);
+        setPhase("success");
+
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+            handleDismiss();
+        }, 3000);
+    } catch (err: any) {
+        console.error(`${phase === "register" ? "Registration" : "Login"} failed:`, err);
+        let msg = err.message || "Operation failed. Please try again.";
+        if (err.code === 'auth/invalid-credential') msg = "Invalid credentials. Please verify your email and password.";
+        if (err.code === 'auth/user-not-found') msg = "No founding account found with this email.";
+        setError(msg);
+        setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
-    setPhase("success");
-
-    // Auto-dismiss after 3 seconds
-    setTimeout(() => {
-      handleDismiss();
-    }, 3000);
   };
 
   const updateField = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const isFormValid = form.fullName && form.email && form.company && form.position;
+  const isFormValid = form.fullName && form.email && form.password && form.company && form.position;
 
   if (isDismissed) return null;
 
@@ -191,6 +230,7 @@ export default function PromoPopup() {
                       {[
                         { key: "fullName" as const, label: "Full Name", type: "text", placeholder: "Dr. Jane Doe" },
                         { key: "email" as const, label: "Email Address", type: "email", placeholder: "jane@institution.org" },
+                        { key: "password" as const, label: "Create Password", type: "password", placeholder: "••••••••" },
                         { key: "company" as const, label: "Company / Institution", type: "text", placeholder: "Research Institute" },
                         { key: "position" as const, label: "Position", type: "text", placeholder: "Head of Research" },
                       ].map((field) => (
@@ -209,6 +249,12 @@ export default function PromoPopup() {
                         </div>
                       ))}
 
+                      {error && (
+                        <p className="text-[10px] font-bold text-[#CC5833] uppercase tracking-wider text-center">
+                          {error}
+                        </p>
+                      )}
+
                       <div className="pt-2">
                         <button
                           type="submit"
@@ -226,10 +272,112 @@ export default function PromoPopup() {
                         </button>
                       </div>
 
+                      <div className="pt-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => setPhase("login")}
+                          className="text-[10px] font-bold text-[#CC5833] uppercase tracking-widest hover:text-white transition-colors"
+                        >
+                          Already a Founding-Adopter? Sign In to your OS.
+                        </button>
+                      </div>
+
                       <button
                         type="button"
                         onClick={() => setPhase("promo")}
-                        className="w-full text-center text-[10px] font-bold text-white/25 uppercase tracking-widest hover:text-white/50 transition-colors pt-1"
+                        className="w-full text-center text-[10px] font-bold text-white/25 uppercase tracking-widest hover:text-white/50 transition-colors pt-2"
+                      >
+                        ← Back
+                      </button>
+                    </form>
+                  </motion.div>
+                )}
+
+                {/* ─── Phase 2.5: Login ─── */}
+                {phase === "login" && (
+                  <motion.div
+                    key="login"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="text-center mb-8">
+                      <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                        <span className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#CC5833]">
+                          Returning Founder
+                        </span>
+                      </div>
+                      <h3 className="text-xl font-black uppercase tracking-tight leading-tight">
+                        Access Your Workspace
+                      </h3>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="relative">
+                        <label className="block text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-1.5">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          value={form.email}
+                          onChange={updateField("email")}
+                          placeholder="jane@institution.org"
+                          required
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white placeholder:text-white/15 focus:outline-none focus:border-[#CC5833]/50 focus:bg-white/[0.07] transition-all"
+                        />
+                      </div>
+                      <div className="relative">
+                        <label className="block text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-1.5">
+                          Password
+                        </label>
+                        <input
+                          type="password"
+                          value={form.password}
+                          onChange={updateField("password")}
+                          placeholder="••••••••"
+                          required
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white placeholder:text-white/15 focus:outline-none focus:border-[#CC5833]/50 focus:bg-white/[0.07] transition-all"
+                        />
+                      </div>
+
+                      {error && (
+                        <p className="text-[10px] font-bold text-[#CC5833] uppercase tracking-wider text-center">
+                          {error}
+                        </p>
+                      )}
+
+                      <div className="pt-2">
+                        <button
+                          type="submit"
+                          disabled={isSubmitting || !form.email || !form.password}
+                          className="w-full py-4 bg-[#CC5833] text-white rounded-full text-[11px] font-black uppercase tracking-[0.15em] hover:bg-[#b84a2b] transition-all shadow-lg shadow-[#CC5833]/25 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 size={14} className="animate-spin" />
+                              Validating...
+                            </>
+                          ) : (
+                            "Re-initialize Session"
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="pt-2 text-center">
+                        <button
+                          type="button"
+                          onClick={() => setPhase("register")}
+                          className="text-[10px] font-bold text-[#CC5833] uppercase tracking-widest hover:text-white transition-colors"
+                        >
+                          New to the Bureau? Register as a Founder.
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setPhase("promo")}
+                        className="w-full text-center text-[10px] font-bold text-white/25 uppercase tracking-widest hover:text-white/50 transition-colors pt-2"
                       >
                         ← Back
                       </button>
@@ -251,10 +399,12 @@ export default function PromoPopup() {
                       <CheckCircle2 size={32} className="text-[#CC5833]" />
                     </div>
                     <h3 className="text-xl font-black uppercase tracking-tight mb-3">
-                      Welcome to the Founding Cohort
+                      {phase === "success" && auth.currentUser ? `Welcome back, Founder` : "Welcome to the Founding Cohort"}
                     </h3>
                     <p className="text-sm font-medium text-white/50 leading-relaxed">
-                      You&apos;re now part of something extraordinary. We&apos;ll be in touch.
+                      {phase === "success" && auth.currentUser 
+                        ? "Your OS session has been re-initialized. Redirecting..." 
+                        : "You're now part of something extraordinary. We'll be in touch."}
                     </p>
                   </motion.div>
                 )}

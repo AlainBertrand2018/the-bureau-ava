@@ -33,7 +33,7 @@ export const CreditGauge: React.FC<{ showLabel?: boolean }> = ({ showLabel = tru
                 </AnimatePresence>
                 {showLabel && (
                     <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30 leading-none mt-1.5 flex items-center gap-1">
-                        Sovereign Credits <ShieldCheck size={8} className="text-emerald-500/50" />
+                        {credits <= 10 ? "Founder Runs" : "Sovereign Credits"} <ShieldCheck size={8} className="text-emerald-500/50" />
                     </span>
                 )}
             </div>
@@ -42,7 +42,7 @@ export const CreditGauge: React.FC<{ showLabel?: boolean }> = ({ showLabel = tru
             <div className="absolute bottom-0 left-0 h-[2px] bg-emerald-500/20 w-full overflow-hidden">
                 <motion.div
                     initial={{ width: 0 }}
-                    animate={{ width: `${Math.min((credits / 5000) * 100, 100)}%` }}
+                    animate={{ width: `${Math.min((credits / (credits <= 10 ? 3 : 1000000)) * 100, 100)}%` }}
                     className="h-full bg-emerald-500"
                 />
             </div>

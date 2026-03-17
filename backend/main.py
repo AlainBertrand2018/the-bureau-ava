@@ -114,6 +114,23 @@ async def initialize_mission(config: MissionConfiguration):
     The primary entry point for the Universalization Layer.
     Returns a stream of progress logs followed by the final mission object.
     """
+    # ── CREDIT PROTOCOL ──
+    # Every mission consumes 1 validation credit.
+    # New users get 3 free 'Founder Uses'.
+    email = config.user_email or "guest@thebureau.ai"
+    user_data = await bureau_vault.check_clearance(email)
+    
+    if user_data.get("credits", 0) <= 0:
+        bureau_logger.warning(f"ACCESS_DENIED: {email} attempted mission with 0 credits.")
+        raise HTTPException(
+            status_code=402, 
+            detail="CREDIT_EXHAUSTED: Your 3 founder uses have been consumed. Please upgrade to continue."
+        )
+
+    # Deduct 1 credit for this mission
+    await bureau_vault.update_user_credits(email, -1)
+    bureau_logger.info(f"MISSION_PROTOCOL: Initiating validation for {email}. Credit consumed.")
+
     async def stream_wrapper():
         try:
             async for chunk in context_engine.initialize_mission_stream_generator(config):
@@ -122,10 +139,14 @@ async def initialize_mission(config: MissionConfiguration):
                 try:
                     data = json.loads(chunk)
                     if data.get("type") == "mission":
-                        await save_mission(data["data"]["mission_id"], data["data"])
+                        # Mirror to Firebase and Local
+                        mission_id = data["data"]["mission_id"]
+                        await bureau_vault.save_mission(mission_id, data["data"])
+                        await save_mission(mission_id, data["data"])
+                        
                         # Legacy registry fallback
                         m = Mission(**data["data"])
-                        mission_registry[m.mission_id] = m
+                        mission_registry[mission_id] = m
                 except Exception as e:
                     bureau_logger.error(f"Failed to record mission in stream: {e}")
                     pass
@@ -150,10 +171,13 @@ async def get_mission_endpoint(mission_id: str):
     return mission
 
 @app.get("/missions")
-async def list_missions():
-    """Lists all active missions in the session."""
+async def list_missions(email: Optional[str] = None):
+    """Lists missions, optionally filtered by email (Founder View)."""
+    if email:
+        return await bureau_vault.list_user_missions(email, limit=3)
+    
+    # Global list for terminal/super-admin
     missions = await list_missions_db()
-    # Also include any hot missions not yet in DB if any (unlikely with save_mission in stream)
     return missions
 
 

@@ -109,7 +109,6 @@ export default function RootPageClient() {
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <BilateralShadowProtocol />
-      <PromoPopup />
       
       {/* [H1] What is AVA? - SEO/GEO/LLMO Signal Cache (Merged from Gateway) */}
       <div className="sr-only">

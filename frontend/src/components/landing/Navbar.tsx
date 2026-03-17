@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Sparkles, Zap, ChevronDown, Menu, X, UserCircle } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
+import { useClearance } from "@/context/ClearanceContext";
 import gsap from "gsap";
 import { ScrollToPlugin } from "gsap/dist/ScrollToPlugin";
+import { Sparkles, Zap, ChevronDown, Menu, X, UserCircle, LogOut, Wallet } from "lucide-react";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollToPlugin);
@@ -19,6 +20,7 @@ interface NavbarProps {
 export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const { isAuthenticated, credits, userEmail, logout } = useClearance();
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -183,7 +185,16 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                 </div>
 
                 {/* Right Actions */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 sm:gap-6">
+                    {isAuthenticated && (
+                        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[#CC5833]/10 border border-[#CC5833]/20 rounded-full">
+                            <Wallet size={12} className="text-[#CC5833]" />
+                            <span className="text-[10px] font-black text-[#CC5833] uppercase tracking-wider">
+                                {credits} Runs Left
+                            </span>
+                        </div>
+                    )}
+
                     <Link
                         href="/os"
                         target="_blank"
@@ -193,12 +204,33 @@ export default function Navbar({ onContactClick, onOnboardingClick }: NavbarProp
                         Playground
                     </Link>
 
-                    <button
-                        className="p-3 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
-                        title="Login / Signup"
-                    >
-                        <UserCircle size={24} />
-                    </button>
+                    {isAuthenticated ? (
+                        <div className="flex items-center gap-3">
+                            <div className="hidden md:flex flex-col items-end">
+                                <span className="text-[10px] font-black text-[#2E4036] uppercase tracking-wider">{userEmail.split('@')[0]}</span>
+                                <span className="text-[8px] font-bold text-[#2E4036]/40 uppercase tracking-widest leading-none">Founder Access</span>
+                            </div>
+                            <button
+                                onClick={() => logout()}
+                                className="p-3 text-[#2E4036]/60 hover:text-red-500 transition-colors"
+                                title="Sign Out"
+                            >
+                                <LogOut size={20} />
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                // Triggering the PromoPopup is handled by its internal timer or visibility logic
+                                // But we could expose a global trigger if needed. For now, profile icon icon.
+                                router.push('/#register');
+                            }}
+                            className="p-3 text-[#2E4036]/60 hover:text-[#CC5833] transition-colors"
+                            title="Sign Up as Founder"
+                        >
+                            <UserCircle size={24} />
+                        </button>
+                    )}
 
                     <button
                         className="lg:hidden p-3 text-[#2E4036]"

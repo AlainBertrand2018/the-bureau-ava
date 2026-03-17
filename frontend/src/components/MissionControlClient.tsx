@@ -97,7 +97,13 @@ export default function MissionControlClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { setMission, setTier } = useMission();
-    const { credits, consumeCredits } = useClearance();
+    const { 
+        credits, 
+        userEmail, 
+        isAuthenticated, 
+        refreshClearance,
+        isLoaded
+    } = useClearance();
 
     const { currency } = useCurrency();
     const SERVICE_CONFIGS = getServiceConfigs(currency);
@@ -126,9 +132,25 @@ export default function MissionControlClient() {
     const [missionData, setMissionData] = useState<any>(null);
     const [isTransitioning, setIsTransitioning] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [transitionText, setTransitionText] = useState("");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showAuditLog, setShowAuditLog] = useState(false);
+    const [history, setHistory] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (isAuthenticated && userEmail && step === "configure") {
+            const fetchHistory = async () => {
+                try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/missions?email=${userEmail}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        setHistory(data.slice(0, 3)); // Use only previous 3 runs as requested
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch mission history", err);
+                }
+            };
+            fetchHistory();
+        }
+    }, [isAuthenticated, userEmail, step]);
 
     const calibSteps = [
         "Connecting to Bureau Intelligence Grid...",
@@ -145,10 +167,18 @@ export default function MissionControlClient() {
             return;
         }
 
-        setError(null);
+        if (!isAuthenticated) {
+            setError("Please register or login as an Early Adopter to continue.");
+            // We could trigger a login modal here
+            return;
+        }
 
-        // Sentinel is FREE Trojan Horse - Cap at 50,000 Credits (Simulated)
-        // No credit deduction needed
+        if (credits <= 0 && userEmail !== "bertrand.chagal@gmail.com") {
+            setError("You have consumed all your free validation runs. Please upgrade your plan.");
+            return;
+        }
+
+        setError(null);
         setStep("calibrating");
 
         // Cycle through text for effect
@@ -164,13 +194,22 @@ export default function MissionControlClient() {
             const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/mission/initialize`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(config)
+                body: JSON.stringify({
+                    ...config,
+                    user_email: userEmail
+                })
             });
 
             if (!resp.ok) {
                 const errData = await resp.json().catch(() => null);
+                if (resp.status === 402) {
+                    throw new Error("CREDIT_EXHAUSTED: You have used your 3 free validation runs.");
+                }
                 throw new Error(errData?.detail || "Mission failed to launch.");
             }
+
+            // Refresh credits after successful consumption start
+            refreshClearance();
 
             // STREAMING RESPONSE HANDLER
             const reader = resp.body?.getReader();
@@ -439,6 +478,45 @@ export default function MissionControlClient() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Recent Missions (Rule of 3 History) */}
+                                        {history.length > 0 && (
+                                            <div className="pt-6 border-t border-emerald-500/10 space-y-4">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <h4 className="text-[10px] font-black uppercase tracking-widest text-[#CC5833] flex items-center gap-2">
+                                                        <Clock size={12} />
+                                                        Recent Validation Runs
+                                                    </h4>
+                                                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Rule of 3 History</span>
+                                                </div>
+                                                <div className="grid grid-cols-1 gap-3">
+                                                    {history.map((h: any, i: number) => (
+                                                        <motion.button 
+                                                            key={i}
+                                                            initial={{ opacity: 0, x: -10 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            transition={{ delay: i * 0.1 }}
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                setMissionData(h);
+                                                                setMission(h);
+                                                                setStep("ready");
+                                                            }}
+                                                            className="w-full text-left p-3 rounded-xl bg-white/5 border border-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all group"
+                                                        >
+                                                            <div className="flex justify-between items-start mb-0.5">
+                                                                <p className="text-[10px] font-black uppercase text-white group-hover:text-emerald-400 truncate max-w-[150px]">
+                                                                    {h.config?.research_topic || "Untitled Mission"}
+                                                                </p>
+                                                            </div>
+                                                            <p className="text-[9px] font-medium text-slate-500 line-clamp-1 group-hover:text-slate-400">
+                                                                {h.config?.target_audience || "No audience defined"}
+                                                            </p>
+                                                        </motion.button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {error && (
                                             <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] font-bold">
