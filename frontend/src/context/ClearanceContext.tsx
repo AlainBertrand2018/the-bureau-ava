@@ -10,7 +10,7 @@ interface ClearanceContextType {
     setClearanceLevel: (level: number) => void;
     credits: number;
     spendCredits: (amount: number) => Promise<boolean>;
-    consumeCredits: (amount: number) => void;
+    consumeCredits: (amount: number) => Promise<void>;
     isSuperAdmin: boolean;
     isAuthenticated: boolean;
     isLoaded: boolean;
@@ -110,16 +110,50 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
 
     const isSuperAdmin = (clearanceLevel >= 10 || userEmail === "bertrand.chagal@gmail.com") && isAuthenticated;
 
-    const consumeCredits = (amount: number) => {
-        if (isSuperAdmin) return;
-        setCredits(prev => Math.max(0, prev - amount));
+    const consumeCredits = async (amount: number) => {
+        if (isSuperAdmin || !userEmail) return;
+        
+        try {
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
+            const response = await fetch(`${apiUrl}/conductor/credits`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: userEmail, amount }),
+            });
+
+            if (response.ok) {
+                setCredits(prev => Math.max(0, prev - amount));
+            } else {
+                console.error("Failed to sync credit deduction to vault.");
+            }
+        } catch (err) {
+            console.error("Credit sync error:", err);
+            // Fallback: update local UI anyway for responsiveness, 
+            // but the backend is the source of truth on next reload.
+            setCredits(prev => Math.max(0, prev - amount));
+        }
     };
 
     const spendCredits = async (amount: number): Promise<boolean> => {
         if (isSuperAdmin) return true;
+        
+        if (!userEmail) {
+            console.warn("Credit deduction attempted without authenticated user.");
+            return false;
+        }
+
         if (credits >= amount) {
-            consumeCredits(amount);
-            return true;
+            try {
+                // Persistent Deduction via Backend
+                const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '');
+                // The consumeCredits function now handles the backend call for deduction
+                await consumeCredits(amount);
+                return true;
+            } catch (err) {
+                console.error("Network error during credit sync:", err);
+                // Fallback to local only for better UX if needed, or fail strictly
+                return false; 
+            }
         }
         return false;
     };
@@ -133,7 +167,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
                 setClearanceLevel,
                 credits: isSuperAdmin ? 9999999 : credits,
                 spendCredits,
-                consumeCredits,
+                consumeCredits, // This is the correct way to pass the function
                 isSuperAdmin,
                 isAuthenticated,
                 isLoaded,

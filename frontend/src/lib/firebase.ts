@@ -18,15 +18,17 @@ let auth: Auth | null = null;
 let db: Firestore | null = null;
 let storage: FirebaseStorage | null = null;
 
-if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined") {
+if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined" && firebaseConfig.apiKey !== "") {
   try {
     app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
     storage = getStorage(app);
   } catch (err) {
-    console.error("Firebase initialization failed:", err);
+    console.error("Firebase services failed to initialize. Authentication and Firestore features will be disabled.", err);
   }
+} else {
+  console.warn("Firebase API Key is missing. Client-side authentication and database features are unavailable. Ensure NEXT_PUBLIC_FIREBASE_API_KEY is set in your environment variables.");
 }
 
 export { app, auth, db, storage };

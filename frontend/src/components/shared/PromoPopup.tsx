@@ -106,6 +106,7 @@ export default function PromoPopup() {
         let msg = err.message || "Operation failed. Please try again.";
         if (err.code === 'auth/invalid-credential') msg = "Invalid credentials. Please verify your email and password.";
         if (err.code === 'auth/user-not-found') msg = "No founding account found with this email.";
+        if (msg.includes("Firebase")) msg += " (Check your Vercel Environment Variables)";
         setError(msg);
         setIsSubmitting(false);
     }

@@ -120,8 +120,11 @@ async def initialize_mission(config: MissionConfiguration):
     email = config.user_email or "guest@thebureau.ai"
     user_data = await bureau_vault.check_clearance(email)
     
-    if user_data.get("credits", 0) <= 0:
-        bureau_logger.warning(f"ACCESS_DENIED: {email} attempted mission with 0 credits.")
+    # SUPER ADMIN BYPASS: bertrand.chagal@gmail.com always has full clearance
+    is_super_admin = email == "bertrand.chagal@gmail.com"
+    
+    if user_data.get("credits", 0) <= 0 and not is_super_admin:
+        bureau_logger.warning(f"CLEARANCE_DENIED: {email} (Exhausted)")
         raise HTTPException(
             status_code=402, 
             detail="CREDIT_EXHAUSTED: Your 3 founder uses have been consumed. Please upgrade to continue."

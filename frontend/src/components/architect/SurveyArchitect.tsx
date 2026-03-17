@@ -144,10 +144,10 @@ export default function SurveyArchitect({ mode = "explainer" }: SurveyArchitectP
         "Finalizing Field Manual & Scientific Disclosure..."
     ];
 
-    const handlePaywallSuccess = () => {
+    const handlePaywallSuccess = async () => {
         setIsPaywallOpen(false);
         // Requirement for Genesis: 100,000 Credits
-        consumeCredits(100000);
+        await consumeCredits(100000);
         startGeneration();
     };
 

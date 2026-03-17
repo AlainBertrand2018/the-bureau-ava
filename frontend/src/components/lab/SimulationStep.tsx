@@ -79,7 +79,7 @@ export default function SimulationStep({
             setIsSimulating(false);
             return;
         }
-        consumeCredits(450000);
+        await consumeCredits(450000);
 
         // Run personas one-by-one to provide live feed
         const allResults: SimulationResult[] = [];
