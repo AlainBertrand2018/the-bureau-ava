@@ -71,6 +71,7 @@ export default function PromoPopup() {
 
     try {
         if (phase === "register") {
+            if (!auth || !db) throw new Error("Firebase services are not initialized.");
             // 1. Firebase Auth Registration
             const userCredential = await createUserWithEmailAndPassword(auth, form.email, form.password);
             const user = userCredential.user;
@@ -88,6 +89,7 @@ export default function PromoPopup() {
                 created_at: new Date().toISOString()
             });
         } else if (phase === "login") {
+            if (!auth) throw new Error("Firebase Auth is not initialized.");
             // Firebase Auth Login
             await signInWithEmailAndPassword(auth, form.email, form.password);
         }
@@ -399,10 +401,10 @@ export default function PromoPopup() {
                       <CheckCircle2 size={32} className="text-[#CC5833]" />
                     </div>
                     <h3 className="text-xl font-black uppercase tracking-tight mb-3">
-                      {phase === "success" && auth.currentUser ? `Welcome back, Founder` : "Welcome to the Founding Cohort"}
+                      {phase === "success" && auth?.currentUser ? `Welcome back, Founder` : "Welcome to the Founding Cohort"}
                     </h3>
                     <p className="text-sm font-medium text-white/50 leading-relaxed">
-                      {phase === "success" && auth.currentUser 
+                      {phase === "success" && auth?.currentUser 
                         ? "Your OS session has been re-initialized. Redirecting..." 
                         : "You're now part of something extraordinary. We'll be in touch."}
                     </p>

@@ -47,6 +47,11 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     useEffect(() => {
+        if (!auth) {
+            setIsLoaded(true);
+            return;
+        }
+
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
             if (currentUser) {
@@ -84,6 +89,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const login = async (email: string, pass: string): Promise<boolean> => {
+        if (!auth) return false;
         try {
             await signInWithEmailAndPassword(auth, email, pass);
             return true;
@@ -94,6 +100,7 @@ export const ClearanceProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const logout = async () => {
+        if (!auth) return;
         try {
             await signOut(auth);
         } catch (err) {
