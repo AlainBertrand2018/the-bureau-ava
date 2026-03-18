@@ -26,28 +26,28 @@ export default function Hero({ onAuditClick, onGenesisClick, onTryFreeClick }: H
             const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.4 } });
 
             // 1. AVA Presence enters first
-            tl.fromTo(avaRef.current, 
+            tl.fromTo(avaRef.current,
                 { x: 40, opacity: 0, scale: 0.98 },
                 { x: 0, opacity: 1, scale: 1, duration: 1.8, ease: "power2.out" }
             )
                 // 2. Badge & Headline follow with a small overlap
-                .fromTo(badgeRef.current, 
+                .fromTo(badgeRef.current,
                     { y: 20, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 1.4 }, 
+                    { y: 0, opacity: 1, duration: 1.4 },
                     "-=1.2"
                 )
-                .fromTo(headlineRef.current?.children || [], 
+                .fromTo(headlineRef.current?.children || [],
                     { y: 30, opacity: 0 },
                     { y: 0, opacity: 1, stagger: 0.15, duration: 1 },
                     "-=1.0"
                 )
                 // 3. Subheadline and CTAs
-                .fromTo(sublineRef.current, 
+                .fromTo(sublineRef.current,
                     { y: 20, opacity: 0 },
                     { y: 0, opacity: 1, duration: 1.4 },
                     "-=0.8"
                 )
-                .fromTo(ctasRef.current, 
+                .fromTo(ctasRef.current,
                     { y: 15, opacity: 0 },
                     { y: 0, opacity: 1, duration: 1 },
                     "-=0.8"
@@ -107,7 +107,7 @@ export default function Hero({ onAuditClick, onGenesisClick, onTryFreeClick }: H
                             Created, Tested &amp; Analyzed.
                         </span>
                         <span className="text-drama text-[#CC5833] -ml-1 opacity-0 !text-[clamp(1.6rem,4vw,2.8rem)] tracking-tight font-bold">
-                            Before A Single Respondent Is Reached.
+                            In Minutes... Not In Days, Weeks Or Months.
                         </span>
                     </h1>
 
