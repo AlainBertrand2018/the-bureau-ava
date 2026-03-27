@@ -1,3 +1,25 @@
+import os
+import sys
+from pathlib import Path
+
+# ── FUTUREPROOF WORKSPACE RESOLVER (v2.1) ──────────────────────
+# Ensures local modules (/backend) are findable even if run from root.
+backend_dir = str(Path(__file__).parent.absolute())
+if backend_dir not in sys.path:
+    sys.path.append(backend_dir)
+
+# ── ENVIRONMENT BOOTSTRAP ───────────────────────────────────
+from dotenv import load_dotenv
+load_dotenv(os.path.join(backend_dir, ".env")) # Specific backend env
+load_dotenv(os.path.join(os.path.dirname(backend_dir), ".env")) # Project root fallback
+
+# ── SYSTEM-AUTH WATCHDOG ────────────────────────────────────
+_key = os.getenv("GOOGLE_API_KEY")
+if not _key:
+    print("WARNING: GOOGLE_API_KEY is not defined in the environment. AI agents may fail.")
+elif "LbtQ" in _key:
+    print("CRITICAL: Detected legacy/suspended GOOGLE_API_KEY. Please rotate to the active key.")
+
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 import json
@@ -7,6 +29,9 @@ from pydantic import BaseModel
 from typing import List, Dict, Optional, Any
 import os
 import time
+import pandas as pd
+from google import genai
+from google.genai import types
 from simulation_engine import MarketSimulator
 import uvicorn
 from contextlib import asynccontextmanager
@@ -195,8 +220,11 @@ async def simulate(req: SimulationRequest):
     """Run diagnostic simulation — returns results + provenance metadata."""
     start_time = time.time()
     try:
-        mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        mid = req.mission_id
+        mission = mission_registry.get(str(mid)) if mid else None
+        targeting = None
+        if (target_ref := req.targeting_refinement) is not None:
+            targeting = target_ref.model_dump()
         df, provenance = await simulator.run_simulation(req.demographics, req.questions, mission=mission, targeting=targeting)
         latency = (time.time() - start_time) * 1000
         
@@ -221,8 +249,11 @@ async def simulate(req: SimulationRequest):
 @app.post("/generate_personas")
 async def generate_personas(req: PersonaRequest):
     try:
-        mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        mid = req.mission_id
+        mission = mission_registry.get(str(mid)) if mid else None
+        targeting = None
+        if (target_ref := req.targeting_refinement) is not None:
+            targeting = target_ref.model_dump()
         personas, usage = await simulator.generate_personas(req.count, req.context, mission=mission, targeting=targeting)
         
         await log_transaction(
@@ -241,8 +272,11 @@ async def generate_personas(req: PersonaRequest):
 @app.post("/generate_questions")
 async def generate_questions(req: QuestionRequest):
     try:
-        mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        mid = req.mission_id
+        mission = mission_registry.get(str(mid)) if mid else None
+        targeting = None
+        if (target_ref := req.targeting_refinement) is not None:
+            targeting = target_ref.model_dump()
         data, usage = await simulator.generate_questions(req.context, req.count, mission=mission, targeting=targeting)
         
         await log_transaction(
@@ -262,8 +296,11 @@ async def generate_questions(req: QuestionRequest):
 async def analyze_results(req: AnalysisRequest):
     start_time = time.time()
     try:
-        mission = mission_registry.get(req.mission_id) if req.mission_id else None
-        targeting = req.targeting_refinement.dict() if hasattr(req, 'targeting_refinement') and req.targeting_refinement else None
+        mid = req.mission_id
+        mission = mission_registry.get(str(mid)) if mid else None
+        targeting = None
+        if (target_ref := req.targeting_refinement) is not None:
+            targeting = target_ref.model_dump()
         report, usage = await simulator.generate_report(req.context, req.questions, req.results, mission=mission, targeting=targeting)
         latency = (time.time() - start_time) * 1000
         
@@ -306,29 +343,29 @@ async def submit_feedback(item: FeedbackItem):
     AGREE = the AI was correct. DISAGREE = the AI was wrong.
     This builds a calibration dataset over time.
     """
-    entry = item.dict()
+    entry = item.model_dump()
     entry["timestamp"] = entry.get("timestamp") or time.time()
     
     # Save to DB
     await log_feedback(entry)
     
     # Calculate running accuracy from DB
-    all_feedback = await get_feedback_stats()
-    total = len(all_feedback)
-    agreed = sum(1 for f in all_feedback if f["client_verdict"] == "AGREE")
+    all_feedback: list = list(await get_feedback_stats())
+    total: int = len(all_feedback)
+    agreed: int = sum(1 for f in all_feedback if f["client_verdict"] == "AGREE")
     
     return {
         "status": "recorded",
         "feedback_count": total,
-        "client_agreement_rate": round(agreed / total * 100, 1) if total > 0 else 0,
+        "client_agreement_rate": float(f"{(float(agreed) / float(total) * 100.0):.1f}") if total > 0 else 0.0,
         "message": "Thank you. Your feedback improves The Bureau's diagnostic accuracy."
     }
 
 @app.get("/feedback/stats")
 async def feedback_stats():
     """Returns aggregated feedback statistics for the trust dashboard."""
-    all_feedback = await get_feedback_stats()
-    total = len(all_feedback)
+    all_feedback: list = list(await get_feedback_stats())
+    total: int = len(all_feedback)
     if total == 0:
         return {
             "total_feedback": 0,
@@ -337,10 +374,10 @@ async def feedback_stats():
             "message": "No client feedback received yet."
         }
     
-    agreed = sum(1 for f in all_feedback if f["client_verdict"] == "AGREE")
+    agreed: int = sum(1 for f in all_feedback if f["client_verdict"] == "AGREE")
     
     # Group by finding type
-    by_type = {}
+    by_type: dict = {}
     for f in all_feedback:
         ft = f.get("finding_type", "UNKNOWN")
         if ft not in by_type:
@@ -350,20 +387,20 @@ async def feedback_stats():
             by_type[ft]["agreed"] += 1
     
     for ft in by_type:
-        by_type[ft]["accuracy"] = round(
-            by_type[ft]["agreed"] / by_type[ft]["total"] * 100, 1
-        )
+        accuracy: float = float(by_type[ft]["agreed"]) / float(by_type[ft]["total"]) * 100.0
+        by_type[ft]["accuracy"] = float(f"{accuracy:.1f}")
     
+    overall_rate: float = float(agreed) / float(total) * 100.0
     return {
         "total_feedback": total,
-        "agreement_rate": round(agreed / total * 100, 1),
+        "agreement_rate": float(f"{overall_rate:.1f}"),
         "by_finding_type": by_type
     }
 
 
 # ── Quick Audit (Hero Section Live Demo) ──
 
-async def perform_audit(question: str, targeting: Optional[Dict[str, Any]] = None):
+async def perform_audit(question: str, targeting: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Helper to perform a single-pass audit using Gemini with Consensus Rules."""
     
     # SYSTEM PROMPT: Define the "Gold Standard" for consistent auditing
@@ -421,7 +458,10 @@ async def quick_audit(req: QuickAuditRequest):
     """
     try:
         # 1. First Pass
-        targeting_dict = req.targeting_refinement.dict() if req.targeting_refinement else None
+        targeting_dict = None
+        if (refine := req.targeting_refinement) is not None:
+            targeting_dict = refine.model_dump()
+        
         original_audit = await perform_audit(req.question, targeting=targeting_dict)
         
         # ── IMMEDIATE 100 LOCK ──
@@ -437,16 +477,14 @@ async def quick_audit(req: QuickAuditRequest):
             return original_audit
 
         # 2. Recursive Perfection Loop (Limit 4)
-        current_candidate = original_audit.get("rewrite", "")
+        current_candidate: str = str(original_audit.get("rewrite", ""))
         if not current_candidate:
             return original_audit
 
-        best_rewrite = current_candidate
-        highest_score = 0
+        best_rewrite: str = current_candidate
+        highest_score: int = 0
         
-        from google import genai
-        client = genai.Client()
-
+        # Conductor Refinement
         for i in range(4):
             audit_pass = await perform_audit(current_candidate)
             score = int(audit_pass.get("quality_score", 0))
@@ -478,9 +516,7 @@ async def quick_audit(req: QuickAuditRequest):
             )
             current_candidate = ref_resp.text.strip().strip('"').strip("'")
 
-        # 3. Final Signature: Ensure the chosen rewrite meets the Lock criteria
-        # 3. Final Signature: If the model failed to provide a scale, we don't just append a satisfaction one.
-        # Instead, we ensure the prompt above is strong enough, or we use a more neutral fallback if absolutely necessary.
+        # 3. Final Signature: If the model failed to provide a scale, use a neutral fallback.
         if "(" not in best_rewrite:
              # Neutral fallback if prompt failed, but ideally prompt should handle it.
              if any(word in best_rewrite.lower() for word in ["price", "cost", "how much", "pay"]):
@@ -496,7 +532,7 @@ async def quick_audit(req: QuickAuditRequest):
         return original_audit
 
     except Exception as e:
-        log_transaction(endpoint="/quick_audit", status="ERROR", latency_ms=0)
+        await log_transaction(endpoint="/quick_audit", status="ERROR", latency_ms=0)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/admin/dashboard")
@@ -532,6 +568,8 @@ class ArchitectRequest(BaseModel):
     mission_id: Optional[str] = None
     targeting_refinement: Optional[AudienceTargeting] = None
 
+
+
 @app.post("/architect/generate")
 async def architect_generate(req: ArchitectRequest):
     """
@@ -539,12 +577,17 @@ async def architect_generate(req: ArchitectRequest):
     Includes generation, recursive self-audit, and a deployment manual.
     Returns a stream of agent logs followed by the final package.
     """
+    targeting = None
+    if (arch_ref := req.targeting_refinement) is not None:
+        targeting = arch_ref.model_dump()
+    
+    mission_mid = req.mission_id
     return StreamingResponse(
         architect.create_full_package_stream(
             req.context, 
             req.item_count, 
-            mission=mission_registry.get(req.mission_id) if req.mission_id else None, 
-            targeting=req.targeting_refinement.dict() if req.targeting_refinement else None
+            mission=mission_registry.get(str(mission_mid)) if mission_mid else None, 
+            targeting=targeting
         ), 
         media_type="application/x-ndjson"
     )
@@ -621,9 +664,6 @@ class ChatRequest(BaseModel):
 async def chat_with_ava(req: ChatRequest):
     """AVA's conversational endpoint — she talks about her capabilities and helps users plan their survey projects."""
     try:
-        from google import genai
-        from google.genai import types
-
         client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
         # Build conversation history
@@ -657,7 +697,11 @@ async def chat_with_ava(req: ChatRequest):
                 "enterprise": "€600/month (600k Credits)"
             }
         }
-        curr = req.currency if req.currency in pricing_map else "EUR"
+        in_curr = req.currency
+        curr: str = "EUR"
+        if in_curr and in_curr in pricing_map:
+            curr = str(in_curr)
+            
         p = pricing_map[curr]
         
         dynamic_system_prompt = AVA_SYSTEM_PROMPT.replace(
@@ -735,7 +779,6 @@ async def generate_preview(req: PreviewRequest):
         - roiEstimate: integer (monetary savings by fixing them, roughly $150 per critical flaw)
         """
         
-        from google import genai
         client = genai.Client()
         resp = await generate_with_retry(
              client=client,
@@ -763,7 +806,6 @@ async def generate_illustration(req: IllustrationRequest):
     Saves the result to the Bureau Vault for persistent access and sellable product delivery.
     """
     try:
-        from google import genai
         client = genai.Client()
         
         system_prompt = f"""
@@ -930,7 +972,7 @@ class PythonExecuteRequest(BaseModel):
     globals_reset: Optional[bool] = False
 
 # In-memory session for the kernel
-kernel_globals = {
+kernel_globals: dict[str, Any] = {
     "__name__": "__main__",
     "os": os,
     "json": json,
@@ -940,7 +982,6 @@ kernel_globals = {
 }
 
 try:
-    import pandas as pd
     kernel_globals["pd"] = pd
 except ImportError:
     pass
@@ -991,7 +1032,6 @@ async def execute_python(req: PythonExecuteRequest):
     # Only generate insight if there was output or an error
     if output_text.strip() or error:
         try:
-            # Crucial: Initialize client with settings.GOOGLE_API_KEY for production 
             client = genai.Client(api_key=settings.GOOGLE_API_KEY)
             insight_prompt = f"""
             SYSTEM: You are the 'Bureau Field Interpreter'. 
